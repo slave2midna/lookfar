@@ -114,6 +114,7 @@ jobs:
             README.md                            \
             LICENSE                              \
             templates                            \
+            data/                                \
             scripts/                             \
             styles/                              \
             packs/                               \
@@ -135,4 +136,3 @@ jobs:
           artifacts: "./module.json, ./module.zip"
           tag: ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }}
-
