@@ -26,4 +26,4 @@ For questions and discussions, you can join the Project FU Discord Server [#supp
 Major thanks to the following contributors:
 
 - **Design Feedback and CSS Improvements**: Various design improvements and feedback provided by the amazing [spyrella](https://github.com/spyrella).
-- **Original Creator and Module Dev**: Original Lookfar GM Assistant tool created by [why Cookie Rocket](url).
+- **Original Creator and Module Dev**: Original Lookfar GM Assistant tool created by [why Cookie Rocket](https://github.com/infrastructureaxolotl).
