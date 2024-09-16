@@ -1,49 +1,52 @@
 {
-    "id": "lfd-lookfar-gm-assistant",
-    "title": "Lookfar GM Assistant for Fabula Ultima TTRPG in Foundry VTT",
-    "description": "A module to assist the GM cognitive-intensive tasks and random generation. For use with the Fabula Ultima game system.",
-    "version": "#{VERSION}#",
-    "library": "false",
-    "manifestPlusVersion": "1.2.0",
-    "compatibility": {
-        "minimum": 10,
-        "verified": 10,
-        "maximum": 11
+  "id": "lookfar",
+  "title": "Lookfar Travel Assistant",
+  "description": "A module to assist with travel and random discovery/danger generation. For use with the Fabula Ultima game system.",
+  "version": "0.9.13",
+  "library": false,
+  "compatibility": {
+    "minimum": 11,
+    "verified": 12,
+    "maximum": 12
+  },
+  "authors": [
+    {
+      "name": "why Cookie Rocket"
     },
-    "authors": [
-        {
-            "name": "why Cookie Rocket"
-        },
-        {
-            "name": "The League of Extraordinary FVTT Developers",
-            "url": "https://github.com/League-of-Foundry-Developers"
+    {
+      "name": "Noamancy"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "projectfu",
+        "type": "system",
+        "manifest": "https://github.com/League-of-Fabulous-Developers/FoundryVTT-Fabula-Ultima/releases/latest/download/system.json",
+        "compatibility": {
+          "verified": "2.3.0"
         }
+      }
     ],
-    "relationships": {
-        "systems": [],
-        "requires": []
-    },
-    "esmodules": [
-        "scripts/dataLoader.js",
-        "scripts/lib/lib.js",
-        "scripts/travel-roll.js",
-        "scripts/rewards-budget.js",
-        "scripts/spiceupmyfight.js"
-    ],
-    "scripts": [],
-    "styles": [
-        "styles/style.css"
-    ],
-    "languages": [],
-    "url": "#{URL}#",
-    "manifest": "#{MANIFEST}#",
-    "download": "#{DOWNLOAD}#",
-    "license": "MIT License",
-    "readme": "README.md",
-    "media": [
-        {
-            "type": "icon",
-            "url": "https://avatars2.githubusercontent.com/u/71292812?s=400&u=ccdb4eeb7abf551ca8f314e5a9bfd0479a4d3d41&v=4"
-        }
-    ]
+    "requires": []
+  },
+  "esmodules": [
+    "scripts/dataLoader.js",
+    "scripts/lib/lib.js",
+    "scripts/travel-roll.js"
+  ],
+  "scripts": [],
+  "styles": [
+    "styles/style.css"
+  ],
+  "languages": [],
+  "url": "https://github.com/League-of-Foundry-Developers",
+  "license": "MIT License",
+  "readme": "README.md",
+  "media": [
+    {
+      "type": "icon",
+      "url": "https://avatars2.githubusercontent.com/u/71292812?s=400&u=ccdb4eeb7abf551ca8f314e5a9bfd0479a4d3d41&v=4"
+    }
+  ]
 }

@@ -2,37 +2,26 @@ export const dataLoader = {
   threatsData: {},
   fluffData: {},
   discoveryData: {},
-  battleEffectsData: {},
 
   async loadData() {
     try {
-      // Fetch and load data for threats
+      // Fetch and load data for threats and fluff from dangers.json
       const threatsResponse = await fetch(
-        "/modules/lfd-lookfar-gm-assistant/data/data.json"
+        "/modules/lookfar/data/dangers.json"
       );
-      this.threatsData = await threatsResponse.json();
-      console.log("Threats Data:", this.threatsData);
+	  const dangersData = await threatsResponse.json();
+	  this.threatsData = dangersData.threats || {};  // Safely assign threats data
+	  this.fluffData = dangersData.fluff || {};      // Safely assign fluff data
 
-      // Fetch and load data for fluff
-      const fluffResponse = await fetch(
-        "/modules/lfd-lookfar-gm-assistant/data/fluff.json"
-      );
-      this.fluffData = await fluffResponse.json();
+      console.log("Threats Data:", this.threatsData);
       console.log("Fluff Data:", this.fluffData);
 
       // Fetch and load data for discoveries
       const discoveryResponse = await fetch(
-        "/modules/lfd-lookfar-gm-assistant/data/discoveries.json"
+        "/modules/lookfar/data/discoveries.json"
       );
       this.discoveryData = await discoveryResponse.json();
       console.log("Discovery Data:", this.discoveryData);
-
-      // Fetch and load data for battle effects
-      const battleEffectsResponse = await fetch(
-        "/modules/lfd-lookfar-gm-assistant/data/battleEffects.json"
-      );
-      this.battleEffectsData = await battleEffectsResponse.json();
-      console.log("Battle Effects Data:", this.battleEffectsData);
 
       console.log("Data loaded successfully.");
     } catch (error) {

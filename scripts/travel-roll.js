@@ -3,12 +3,12 @@ import { dataLoader } from "./dataLoader.js";
 Hooks.once("init", async () => {
   // Load the threats data
   await dataLoader.loadData();
-  $(
-    `<link rel="stylesheet" type="text/css" href="/modules/lfd-lookfar-gm-assistant/styles/style.css">`
-  ).appendTo("head");
+  
+  // Add your CSS styles
+  $( `<link rel="stylesheet" type="text/css" href="/modules/lookfar/styles/style.css">`).appendTo("head");
 
-  // Register the game setting
-  game.settings.register("lfd-lookfar-gm-assistant", "groupLevel", {
+  // Register the game setting for group level
+  game.settings.register("lookfar", "groupLevel", {
     name: "Group Level",
     hint: "Set the group level for generating dangers.",
     scope: "world",
@@ -22,7 +22,8 @@ Hooks.once("init", async () => {
     default: "5",
   });
 
-  game.settings.register("lfd-lookfar-gm-assistant", "rollVisibility", {
+  // Register the roll visibility setting
+  game.settings.register("lookfar", "rollVisibility", {
     name: "Roll Visibility",
     hint: "Choose whether rolls and chat outputs are public or GM only.",
     scope: "world",
@@ -35,23 +36,23 @@ Hooks.once("init", async () => {
     default: "public",
   });
 
-  // Register "Treasure Hunter: Level" setting
-  game.settings.register("lfd-lookfar-gm-assistant", "treasureHunterLevel", {
+  // Register "Treasure Hunter: Level" setting with specific choices
+  game.settings.register("lookfar", "treasureHunterLevel", {
     name: "Treasure Hunter: Level",
     hint: "Modify the chance of discovery based on the level of Treasure Hunter skill.",
     scope: "world",
     config: true,
-    type: Number,
+    type: String,
     choices: {
-      0: "Level 0",
-      1: "Level 1",
-      2: "Level 2",
+      "0": "Level 0",
+      "1": "Level 1",
+      "2": "Level 2",
     },
-    default: 0,
+    default: "0",
   });
 
-  // Register "Well-Traveled" setting
-  game.settings.register("lfd-lookfar-gm-assistant", "wellTraveled", {
+  // Register the Well-Traveled setting
+  game.settings.register("lookfar", "wellTraveled", {
     name: "Well-Traveled",
     hint: "Check this if the party has the Well-Traveled trait, reducing travel roll difficulty.",
     scope: "world",
@@ -61,7 +62,7 @@ Hooks.once("init", async () => {
   });
 
   // Register text field for character name or message
-  game.settings.register("lfd-lookfar-gm-assistant", "characterMessage", {
+  game.settings.register("lookfar", "characterMessage", {
     name: "Character/Skill Message",
     hint: "Enter text that will display whenever the Travel Roll is affected by your group's Wayfarer.",
     scope: "world",
@@ -69,42 +70,85 @@ Hooks.once("init", async () => {
     type: String,
     default: "",
   });
+});  // End of the "init" hook
 
-  Hooks.on("renderApplication", (app, html, data) => {
-    if (!document.getElementById("floating-travel-check-button")) {
-      // Create an icon element for the button
-      let icon = $('<i class="fa-solid fa-person-hiking"></i>');
-
-      // Create a list item with the class 'control-tool' and append the icon to it
-      let listItem = $(
-        '<li class="control-tool" id="floating-travel-check-button" title="Make a Travel Check"></li>'
-      ).append(icon);
-
-      // Append the list item to the specified location
-      $(
-        "#interface > #ui-left > #controls > ol.sub-controls.app.control-tools.flexcol.active"
-      ).append(listItem);
-
-      // Add click event listener to the list item
-      listItem.click((ev) => {
-        ev.preventDefault();
-        showTravelCheckDialog();
-      });
-    }
-  });
-});
-
+// Define the TravelRolls class
 class TravelRolls {
   static travelChecks = {
-    Minimal: "d6",
-    Low: "d8",
-    Medium: "d10",
-    High: "d12",
-    "Very High": "d20",
+    "Minimal": "d6",
+    "Low": "d8",
+    "Medium": "d10",
+    "High": "d12",
+	"Very High": "d20",
   };
 }
 
+// Define the formHtml FIRST
+let formHtml = `
+  <style>
+    .travel-check-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .travel-check-table td, .travel-check-table th {
+      padding: 5px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .travel-check-table td:first-child {
+      width: 1%;
+      white-space: nowrap;
+    }
+  </style>
+  <form>
+    <table class="travel-check-table">
+      <caption style="font-weight: bold; margin-bottom: 10px;">Threat Level</caption>
+      <tbody>
+        ${Object.entries(TravelRolls.travelChecks)
+          .map(
+            ([key, value], index) => `
+          <tr>
+            <td>
+              <label>
+                <input type="radio" name="travelCheck" value="${value}" ${
+                  index === 0 ? "checked" : ""
+                }>
+                ${key} (${value})
+              </label>
+            </td>
+          </tr>
+        `
+          )
+          .join("")}
+      </tbody>
+    </table>
+  </form>
+`;
+
+// Add the floating button for travel check using Project FU's toolbar hook
+Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
+  console.log("Adding Travel Check button to toolbar...");
+  
+  let travelCheckButton = {
+    name: "Travel Check",
+    title: "Make a Travel Check",
+    icon: "fa-solid fa-person-hiking",
+    button: true,
+    onClick: () => {
+      console.log("Travel Check button clicked!");
+      showTravelCheckDialog();
+    },
+    visible: true
+  };
+
+  // Add your button to the tools array
+  tools.push(travelCheckButton);
+  console.log("Button added to the toolbar:", tools);
+});
+
+// Define the travel check dialog AFTER formHtml is defined
 function showTravelCheckDialog() {
+  console.log("Opening Travel Check dialog...");
   new Dialog({
     title: "Travel Check",
     content: formHtml,
@@ -127,51 +171,8 @@ function showTravelCheckDialog() {
   }).render(true);
 }
 
-let formHtml = `
-  <style>
-    .travel-check-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .travel-check-table td, .travel-check-table th {
-      padding: 5px;
-      text-align: left;
-      vertical-align: top;
-    }
-    .travel-check-table td:first-child {
-      width: 1%;
-      white-space: nowrap;
-    }
-  </style>
-  <form>
-    <table class="travel-check-table">
-      <tbody>
-        ${Object.entries(TravelRolls.travelChecks)
-          .map(
-            ([key, value], index) => `
-          <tr>
-            <td>
-              <label>
-                <input type="radio" name="travelCheck" value="${value}" ${
-              index === 0 ? "checked" : ""
-            }>
-                ${key} (${value})
-              </label>
-            </td>
-          </tr>
-        `
-          )
-          .join("")}
-      </tbody>
-    </table>
-  </form>
-`;
-
 function shouldMakeDiscovery(rollResult) {
-  const treasureHunterLevel = game.settings.get(
-    "lfd-lookfar-gm-assistant",
-    "treasureHunterLevel"
-  );
+  const treasureHunterLevel = parseInt(game.settings.get("lookfar", "treasureHunterLevel"));
   // Adjusts the discovery condition
   return rollResult <= 1 + treasureHunterLevel;
 }
@@ -184,11 +185,11 @@ function reduceDiceSize(diceSize) {
 
 async function handleRoll(selectedDifficulty) {
   const wellTraveled = game.settings.get(
-    "lfd-lookfar-gm-assistant",
+    "lookfar",
     "wellTraveled"
   );
   const characterMessage = game.settings.get(
-    "lfd-lookfar-gm-assistant",
+    "lookfar",
     "characterMessage"
   );
 
@@ -201,36 +202,42 @@ async function handleRoll(selectedDifficulty) {
       });
     }
   }
-  //why was R capitalized?
   let roll = new Roll(selectedDifficulty);
-  await roll.roll();
+  await roll.evaluate({async: true});
 
   // Determine visibility
   const rollVisibility = game.settings.get(
-    "lfd-lookfar-gm-assistant",
+    "lookfar",
     "rollVisibility"
   );
   const isWhisper = rollVisibility === "gmOnly";
 
-  // Get the IDs of all GM users if visibility is set to "gmOnly"
-  let gmUserIds = isWhisper
-    ? game.users.filter((user) => user.isGM).map((gm) => gm.id)
-    : [];
-  // Render and create the roll chat message
-  roll.render().then((rollHTML) => {
-    ChatMessage.create({
-      user: game.user._id,
-      speaker: { alias: "System" },
-      content: rollHTML,
-      whisper: gmUserIds,
-      type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-      roll: roll,
-    });
-  });
+ // Get the IDs of all GM users if visibility is set to "gmOnly"
+let gmUserIds = isWhisper
+  ? game.users.filter((user) => user.isGM).map((gm) => gm.id)
+  : [];
+
+// Render and create the roll chat message
+roll.render().then((rollHTML) => {
+  let chatData = {
+    user: game.userId,
+    speaker: { alias: "System" },
+    content: rollHTML,
+    type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+    roll: roll,
+  };
+
+  // Only include whisper key if it's meant to be whispered to GMs
+  if (isWhisper) {
+    chatData.whisper = gmUserIds;
+  }
+
+  ChatMessage.create(chatData);
+});
 
   // Determine the group level set by the GM
   const groupLevel = game.settings.get(
-    "lfd-lookfar-gm-assistant",
+    "lookfar",
     "groupLevel"
   );
 
@@ -263,7 +270,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
         callback: () => {
           // Determine visibility
           const rollVisibility = game.settings.get(
-            "lfd-lookfar-gm-assistant",
+            "lookfar",
             "rollVisibility"
           );
           const isWhisper = rollVisibility === "gmOnly";
@@ -308,11 +315,7 @@ function toReadableText(str) {
 }
 
 function generateDanger(groupLevel) {
-  if (
-    !dataLoader.threatsData ||
-    !dataLoader.threatsData.threats ||
-    !dataLoader.threatsData.threats.statusEffects
-  ) {
+  if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
     console.error("Threats data is not fully loaded.");
     return "Error: Data not available.";
   }
@@ -328,21 +331,17 @@ function generateDanger(groupLevel) {
     case "Damage":
       result += handleDamage(dataLoader.threatsData, groupLevel, severity);
       break;
-    case "statusEffect":
-      result += handleStatusEffect(
-        dataLoader.threatsData,
-        severity,
-        groupLevel
-      );
+    case "statusEffect":  // Fixed to match singular form
+      result += handleStatusEffect(dataLoader.threatsData, severity, groupLevel);
       break;
     case "Combat":
-      result += dataLoader.threatsData.threats.Combat[severity];
+      result += dataLoader.threatsData.Combat[severity];
       break;
     case "dangerClock":
-      result += dataLoader.threatsData.threats.dangerClock[severity];
+      result += dataLoader.threatsData.dangerClock[severity];
       break;
     case "villainPlanAdvance":
-      result += dataLoader.threatsData.threats.villainPlanAdvance[severity];
+      result += dataLoader.threatsData.villainPlanAdvance[severity];
       break;
     default:
       console.error("Unknown threat type:", threatType);
@@ -353,25 +352,31 @@ function generateDanger(groupLevel) {
 }
 
 function handleDamage(threatsData, groupLevel, severity) {
-  if (
-    !threatsData.threats.Damage[groupLevel] ||
-    !threatsData.threats.Damage[groupLevel][severity]
-  ) {
-    console.error("Damage data not found for:", groupLevel, severity);
+  // Directly access Damage from threatsData
+  const damageData = threatsData.Damage ? threatsData.Damage[groupLevel] : undefined;
+
+  if (!damageData || !damageData[severity]) {
+    console.error(`Damage data not found for groupLevel: ${groupLevel}, severity: ${severity}`);
     return "Error: Damage data not found.";
   }
-  return `${threatsData.threats.Damage[groupLevel][severity]} damage`;
+  return `${damageData[severity]} damage`;
 }
 
 function handleStatusEffect(threatsData, severity, groupLevel) {
+  const statusEffectsList = threatsData.statusEffects[severity];  // Adjusted to check directly in threatsData
+
+  // Check if statusEffectsList is available and has items
+  if (!statusEffectsList || statusEffectsList.length === 0) {
+    return "No status effects available";  // Handle the case when status effects for the severity are missing or empty
+  }
+
+  // For Heavy, combine Minor status effect with Minor damage
   if (severity === "Heavy") {
-    const statusEffect = getRandomElement(
-      threatsData.threats.statusEffects["Minor"]
-    );
-    const minorDamage = threatsData.threats.Damage[groupLevel]["Minor"];
+    const statusEffect = getRandomElement(threatsData.statusEffects["Minor"]);
+    const minorDamage = threatsData.Damage[groupLevel]["Minor"];
     return `${statusEffect} and ${minorDamage} damage`;
   } else {
-    return getRandomElement(threatsData.threats.statusEffects[severity]);
+    return getRandomElement(statusEffectsList);  // Select random effect from available list
   }
 }
 
@@ -408,7 +413,6 @@ function generateDiscovery() {
     console.error("Error: discoveryData is not loaded.");
     return "Error: discoveryData is not available.";
   }
-  console.log("discovery Data is " + JSON.stringify(dataLoader.discoveryData));
   // Check if adjectives array is missing or empty
   if (
     !dataLoader.discoveryData.adjectives ||
@@ -464,8 +468,8 @@ function generateDiscovery() {
       <tr>
         <td style="padding: 5px; border: 1px solid #ddd;"><strong>Keywords:</strong></td>
         <td style="padding: 5px; border: 1px solid #ddd;">${keywords.join(
-          ", "
-        )}</td>
+    ", "
+  )}</td>
       </tr>
     </table>
   `;
