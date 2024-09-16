@@ -2,7 +2,7 @@
   "id": "lookfar",
   "title": "Lookfar Travel Assistant",
   "description": "A module to assist with travel and random discovery/danger generation. For use with the Fabula Ultima game system.",
-  "version": "0.9.13",
+  "version": "0.9.14",
   "library": false,
   "compatibility": {
     "minimum": 11,
