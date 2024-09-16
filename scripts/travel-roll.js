@@ -70,6 +70,10 @@ Hooks.once("init", async () => {
     type: String,
     default: "",
   });
+
+  // Expose the travel check dialog function globally
+  game.lookfar = game.lookfar || {};
+  game.lookfar.showTravelCheckDialog = showTravelCheckDialog;
 });
 
 // Define TravelRolls
