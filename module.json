@@ -2,7 +2,7 @@
   "id": "lookfar",
   "title": "Lookfar Travel Assistant",
   "description": "A module to assist with travel and random discovery/danger generation. For use with the Fabula Ultima game system.",
-  "version": "0.9.13",
+  "version": "#{VERSION}#",
   "library": false,
   "compatibility": {
     "minimum": 11,
@@ -11,10 +11,12 @@
   },
   "authors": [
     {
-      "name": "why Cookie Rocket"
+      "name": "why Cookie Rocket",
+      "url": "https://github.com/infrastructureaxolotl"
     },
     {
-      "name": "Noamancy"
+      "name": "Noamancy",
+      "url": "https://github.com/slave2midna"
     }
   ],
   "relationships": {
@@ -40,7 +42,9 @@
     "styles/style.css"
   ],
   "languages": [],
-  "url": "https://github.com/League-of-Foundry-Developers",
+  "url": "#{URL}#",
+  "manifest": "#{MANIFEST}#",
+  "download": "#{DOWNLOAD}#",
   "license": "MIT License",
   "readme": "README.md",
   "media": [
