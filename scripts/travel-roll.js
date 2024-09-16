@@ -1,13 +1,13 @@
 import { dataLoader } from "./dataLoader.js";
 
 Hooks.once("init", async () => {
-  // Load the threats data
+  // Load data
   await dataLoader.loadData();
   
-  // Add your CSS styles
+  // Add CSS styles
   $( `<link rel="stylesheet" type="text/css" href="/modules/lookfar/styles/style.css">`).appendTo("head");
 
-  // Register the game setting for group level
+  // Register game setting for group level
   game.settings.register("lookfar", "groupLevel", {
     name: "Group Level",
     hint: "Set the group level for generating dangers.",
@@ -22,7 +22,7 @@ Hooks.once("init", async () => {
     default: "5",
   });
 
-  // Register the roll visibility setting
+  // Register roll visibility setting
   game.settings.register("lookfar", "rollVisibility", {
     name: "Roll Visibility",
     hint: "Choose whether rolls and chat outputs are public or GM only.",
@@ -36,7 +36,7 @@ Hooks.once("init", async () => {
     default: "public",
   });
 
-  // Register "Treasure Hunter: Level" setting with specific choices
+  // Register Treasure Hunter Level setting
   game.settings.register("lookfar", "treasureHunterLevel", {
     name: "Treasure Hunter: Level",
     hint: "Modify the chance of discovery based on the level of Treasure Hunter skill.",
@@ -51,7 +51,7 @@ Hooks.once("init", async () => {
     default: "0",
   });
 
-  // Register the Well-Traveled setting
+  // Register Well-Traveled setting
   game.settings.register("lookfar", "wellTraveled", {
     name: "Well-Traveled",
     hint: "Check this if the party has the Well-Traveled trait, reducing travel roll difficulty.",
@@ -70,20 +70,19 @@ Hooks.once("init", async () => {
     type: String,
     default: "",
   });
-});  // End of the "init" hook
+});
 
-// Define the TravelRolls class
+// Define TravelRolls
 class TravelRolls {
   static travelChecks = {
     "Minimal": "d6",
     "Low": "d8",
     "Medium": "d10",
     "High": "d12",
-	"Very High": "d20",
+    "Very High": "d20",
   };
 }
 
-// Define the formHtml FIRST
 let formHtml = `
   <style>
     .travel-check-table {
@@ -125,7 +124,7 @@ let formHtml = `
   </form>
 `;
 
-// Add the floating button for travel check using Project FU's toolbar hook
+// Adds floating button for travel check into Project FU's toolbar
 Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
   console.log("Adding Travel Check button to toolbar...");
   
@@ -140,13 +139,11 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
     },
     visible: true
   };
-
-  // Add your button to the tools array
   tools.push(travelCheckButton);
   console.log("Button added to the toolbar:", tools);
 });
 
-// Define the travel check dialog AFTER formHtml is defined
+// Defines the travel check dialog
 function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
   new Dialog({
@@ -331,7 +328,7 @@ function generateDanger(groupLevel) {
     case "Damage":
       result += handleDamage(dataLoader.threatsData, groupLevel, severity);
       break;
-    case "statusEffect":  // Fixed to match singular form
+    case "statusEffect":
       result += handleStatusEffect(dataLoader.threatsData, severity, groupLevel);
       break;
     case "Combat":
@@ -352,7 +349,6 @@ function generateDanger(groupLevel) {
 }
 
 function handleDamage(threatsData, groupLevel, severity) {
-  // Directly access Damage from threatsData
   const damageData = threatsData.Damage ? threatsData.Damage[groupLevel] : undefined;
 
   if (!damageData || !damageData[severity]) {
@@ -363,13 +359,12 @@ function handleDamage(threatsData, groupLevel, severity) {
 }
 
 function handleStatusEffect(threatsData, severity, groupLevel) {
-  const statusEffectsList = threatsData.statusEffects[severity];  // Adjusted to check directly in threatsData
+  const statusEffectsList = threatsData.statusEffects[severity]; 
 
   // Check if statusEffectsList is available and has items
   if (!statusEffectsList || statusEffectsList.length === 0) {
     return "No status effects available";  // Handle the case when status effects for the severity are missing or empty
   }
-
   // For Heavy, combine Minor status effect with Minor damage
   if (severity === "Heavy") {
     const statusEffect = getRandomElement(threatsData.statusEffects["Minor"]);
