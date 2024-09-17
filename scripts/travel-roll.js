@@ -19,7 +19,7 @@ Hooks.once("init", async () => {
       "20+": "20+",
       "40+": "40+",
     },
-    default: "5",
+    default: "5+",
   });
 
   // Register roll visibility setting
