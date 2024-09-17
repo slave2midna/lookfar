@@ -14,13 +14,13 @@ Please note that licensed Fabula Ultima content is not provided with this system
 | **_Customizable Settings_** | Allows GMs to adjust settings like group level and travel roll visibility for group participation in Travel Rolls. |
 | **_Wayfarer Skills_**      | Influences dice rolls for travel checks, based on character traits. Enables text entry to credit Wayfarers in game, highlighting their importance. |
 
-**Foundry Manifest URL:** `https://github.com//slave2midna/lookfar/releases/latest/download/module.json`
+**Manifest URL:** `https://github.com//slave2midna/lookfar/releases/latest/download/module.json`
 
 ## Feedback
 
 Please report any bugs or suggest features using the Issues tab on GitHub.
 
-For questions and discussions, you can join the Project FU Discord Server [#suppport forum](https://discord.com/channels/1194506991754805278/1220562380568789063 "‌"). Before suggesting new features, please review the existing issues to avoid duplication.
+For questions and discussions, you can join the Project FU Discord Server [#support forum](https://discord.com/channels/1194506991754805278/1220562380568789063 "‌"). Before suggesting new features, please review the existing issues to avoid duplication.
 
 ## Project Contributors
 
