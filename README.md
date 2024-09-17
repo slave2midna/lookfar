@@ -6,7 +6,7 @@ Hello and welcome to Lookfar! A Travel Assistant module for [Foundry VTT](https:
 
 Please note that licensed Fabula Ultima content is not provided with this system. As an endeavour of the League of Fabulous Developers, this module adheres to RoosterEma's guidelines and strives to ensure that the core book and supplements remain essential to player and GM experience.
 
-**Note:** This module is a WIP and can change at any time. At the current moment, it requires the Fabula Ultima system.
+**Note:** This module is a WIP and can change at any time. At the current moment, it requires the Fabula Ultima system. It is actively being tested on Foundry v11, and any issues on v12 are unforseen.
 
 | Features               |                                                                                                                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
