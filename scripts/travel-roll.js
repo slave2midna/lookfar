@@ -1,5 +1,24 @@
 import { dataLoader } from "./dataLoader.js";
 
+// Function to set default "Discovery" rolltable options. Will update for multiple table settings.
+function getRollTableChoices() {
+  const choices = { default: "Default Effects" }; // Add "Default" option
+  if (game.tables) {
+    const tables = game.tables.contents; // Use .contents instead of .entities
+    tables.forEach((table) => {
+      choices[table.id] = table.name;
+    });
+  }
+  return choices;
+}
+
+// Function to generate a unique list of items
+function generateUniqueList(list, minCount, maxCount) {
+  const count = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+  const shuffled = list.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
 Hooks.once("init", async () => {
   // Load data
   await dataLoader.loadData();
@@ -74,6 +93,36 @@ Hooks.once("init", async () => {
   // Expose the travel check dialog function globally
   game.lookfar = game.lookfar || {};
   game.lookfar.showTravelCheckDialog = showTravelCheckDialog;
+});
+
+// Updates the rollTable setting dynamically without needing a VTT refresh
+Hooks.on("ready", async () => {
+  const rollTableChoices = getRollTableChoices();
+  game.settings.register("lookfar", "rollTable", {
+    name: "Discovery Effect Roll Table",
+    hint: "Select the Roll Table to use for generating discovery effects.",
+    scope: "world",
+    config: true,
+    type: String,
+    choices: rollTableChoices,
+    default: "default", // Defaults to discovery.json
+    onChange: (value) => {
+      console.log(`Selected Roll Table: ${value}`);
+    },
+  });
+});
+
+// Dynamically update roll table choices when new tables are added
+Hooks.on("createRollTable", () => {
+  const rollTableChoices = getRollTableChoices();
+  game.settings.settings.get("lookfar.rollTable").choices = rollTableChoices;
+  game.settings.settings.get("lookfar.rollTable").default = "default";
+});
+
+// or deleted
+Hooks.on("deleteRollTable", () => {
+  const rollTableChoices = getRollTableChoices();
+  game.settings.settings.get("lookfar.rollTable").choices = rollTableChoices;
 });
 
 // Define TravelRolls
@@ -247,7 +296,7 @@ roll.render().then((rollHTML) => {
   if (roll.total >= 6) {
     resultMessage = "Danger! " + generateDanger(groupLevel);
   } else if (shouldMakeDiscovery(roll.total)) {
-    resultMessage = "Discovery! " + generateDiscovery();
+    resultMessage = "Discovery! " + await generateDiscovery();
   } else {
     resultMessage = "The travel day passed without incident.";
   }
@@ -289,13 +338,13 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
       },
       reroll: {
         icon: '<i class="fas fa-redo" style="color: white;"></i>',
-        callback: () => {
+        callback: async () => {
           let newResultMessage;
           if (isDanger) {
             const newDangerResult = generateDanger(groupLevel);
             newResultMessage = "Danger! " + newDangerResult;
           } else {
-            const newDiscoveryResult = generateDiscovery();
+            const newDiscoveryResult = await generateDiscovery();
             newResultMessage = "Discovery! " + newDiscoveryResult;
           }
           showRerollDialog(newResultMessage, selectedDifficulty, groupLevel);
@@ -403,72 +452,61 @@ function getRandomElement(arrayOrObject) {
   return isObject ? arrayOrObject[randomKey] : randomKey;
 }
 
-function generateDiscovery() {
-  console.log(
-    "Discovery Data check: ",
-    JSON.stringify(dataLoader.discoveryData)
-  );
-  if (!dataLoader.discoveryData) {
-    console.error("Error: discoveryData is not loaded.");
-    return "Error: discoveryData is not available.";
-  }
-  // Check if adjectives array is missing or empty
-  if (
-    !dataLoader.discoveryData.adjectives ||
-    dataLoader.discoveryData.adjectives.length === 0
-  ) {
-    console.error("Error: Adjectives data is missing or empty.");
-    return "Error: Adjectives data is not available.";
-  }
+async function generateDiscovery() {
+  console.log("Discovery Data check: ", JSON.stringify(dataLoader.discoveryData));
 
-  // Check if nouns array is missing or empty
-  if (
-    !dataLoader.discoveryData.nouns ||
-    dataLoader.discoveryData.nouns.length === 0
-  ) {
-    console.error("Error: Nouns data is missing or empty.");
-    return "Error: Nouns data is not available.";
+  const selectedTableId = game.settings.get("lookfar", "rollTable");
+
+  // Variable to hold the effect text
+  let effectText = "No discovery effect available.";
+
+  // Use the selected Roll Table if it's not the default
+  if (selectedTableId && selectedTableId !== "default") { 
+    const rollTable = game.tables.get(selectedTableId);
+    if (rollTable) {
+      console.log(`Rolling on the Roll Table: ${rollTable.name}`);
+      const rollResult = await rollTable.roll();
+      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) { // Ensure valid roll result
+        effectText = rollResult.results[0].text; // Use the roll result text as the effect
+      }
+    } else {
+      console.error("Selected Roll Table not found. Falling back to discovery.json effects.");
+    }
   }
 
-  // Check if effects object is missing or empty
-  if (
-    !dataLoader.discoveryData.effects ||
-    Object.keys(dataLoader.discoveryData.effects).length === 0
-  ) {
-    console.error("Error: Effects data is missing or empty.");
-    return "Error: Effects data is not available.";
+  // If no valid Roll Table result is found, use discovery.json effects
+  if (effectText === "No discovery effect available.") {
+    if (dataLoader.discoveryData && Array.isArray(dataLoader.discoveryData.effects)) {
+      const randomEffectIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
+      effectText = dataLoader.discoveryData.effects[randomEffectIndex]; // Randomly select from discovery.json effects
+    } else {
+      console.error("No effects data available in discovery.json.");
+    }
   }
 
-  // Generate keywords
-  const keywords = [];
-  const totalKeywords = Math.floor(Math.random() * 3) + 8; // Generates between 8 to 10
-  for (let i = 0; i < totalKeywords; i++) {
-    const wordList =
-      i % 2 === 0
-        ? dataLoader.discoveryData.adjectives
-        : dataLoader.discoveryData.nouns;
-    const word = wordList[Math.floor(Math.random() * wordList.length)];
-    keywords.push(word);
-  }
+  // Generate unique nouns and adjectives
+  const nouns = Array.isArray(dataLoader.discoveryData.nouns)
+    ? generateUniqueList(dataLoader.discoveryData.nouns, 4, 6)
+    : [];
+  
+  const adjectives = Array.isArray(dataLoader.discoveryData.adjectives)
+    ? generateUniqueList(dataLoader.discoveryData.adjectives, 4, 6)
+    : [];
 
-  // Select a random effect from the discoveries
-  const effectsKeys = Object.keys(dataLoader.discoveryData.effects);
-  const randomEffectKey =
-    effectsKeys[Math.floor(Math.random() * effectsKeys.length)];
-  const effectDescription = dataLoader.discoveryData.effects[randomEffectKey];
-
-  // Combine the effect with the keywords
+  // Return formatted table with the discovery effect and random nouns/adjectives
   return `
     <table style="width: 100%; border-collapse: collapse;">
       <tr>
-        <td style="padding: 5px; border: 1px solid #ddd;"><strong>Effect:</strong></td>
-        <td style="padding: 5px; border: 1px solid #ddd;">${randomEffectKey}: ${effectDescription}</td>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
+        <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
       </tr>
       <tr>
-        <td style="padding: 5px; border: 1px solid #ddd;"><strong>Keywords:</strong></td>
-        <td style="padding: 5px; border: 1px solid #ddd;">${keywords.join(
-    ", "
-  )}</td>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Adjectives</th>
+        <td style="padding: 5px; border: 1px solid #ddd;">${adjectives.join(", ")}</td>
+      </tr>
+      <tr>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Nouns</th>
+        <td style="padding: 5px; border: 1px solid #ddd;">${nouns.join(", ")}</td>
       </tr>
     </table>
   `;
