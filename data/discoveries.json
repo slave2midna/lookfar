@@ -207,17 +207,17 @@
         "zeppelin",
         "ziggurat"
     ],
-    "effects": {
-        "IP Recovery": "Each party member regains 1 IP. 2 IP if they have a trait that matches the environment.",
-        "HP Recovery": "Each party member regains 10 HP. 20 if they have a trait that matches the environment.",
-        "MP Recovery": "Each party member regains 10 MP. 20 if they have a trait that matches the environment.",
-        "Shortcut": "Total distance to next destination is reduced by 1.",
-        "Advantage": "During the next combat encounter, the party automatically wins initiative.",
-        "Joyful Discovery": "The party experiences something remarkable! Everyone receives 1 Fabula Point.",
-        "Chance Meeting": "The party encounters a friendly NPC who will help them in some way.",
-        "Traveling Merchant": "The party encounters a wandering merchant offering discounted prices.",
-        "Derelict Vessel": "The party stumbles upon wreckage filled with materials for projects or rituals.",
-        "Treasure Trove": "The party finds a secret location, like a lost tomb, or secret base filled with treasure.",
-        "A Safe Space": "The party finds a safer place to camp. They may rest without advancing any clocks."
-    }
+    "effects": [
+        "Each party member regains 1 IP. 2 IP if they have a trait that matches the environment.",
+        "Each party member regains 10 HP. 20 if they have a trait that matches the environment.",
+        "Each party member regains 10 MP. 20 if they have a trait that matches the environment.",
+        "Total distance to next destination is reduced by 1.",
+        "During the next combat encounter, the party automatically wins initiative.",
+        "The party experiences something remarkable! Everyone receives 1 Fabula Point.",
+        "The party encounters a friendly NPC who will help them in some way.",
+        "The party encounters a wandering merchant offering discounted prices.",
+        "The party stumbles upon wreckage filled with materials for projects or rituals.",
+        "The party finds a secret location, like a lost tomb, or secret base filled with treasure.",
+        "The party finds a safer place to camp. They may rest without advancing any clocks."
+    ]
 }
