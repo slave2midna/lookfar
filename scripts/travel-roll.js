@@ -2,7 +2,7 @@ import { dataLoader } from "./dataLoader.js";
 
 // Function to set default "Discovery" rolltable options. Will update for multiple table settings.
 function getRollTableChoices() {
-  const choices = { default: "Default Effects" }; // Add "Default" option
+  const choices = { default: "Lookfar Defaults" }; // Add "Default" option
   if (game.tables) {
     const tables = game.tables.contents; // Use .contents instead of .entities
     tables.forEach((table) => {
