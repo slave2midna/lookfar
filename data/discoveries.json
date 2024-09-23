@@ -1,5 +1,5 @@
 {
-    "adjectives": [
+    "traits": [
         "abandoned",
         "ancient",
         "arcane",
@@ -88,7 +88,7 @@
         "withered",
         "wraithlike"
     ],
-    "nouns": [
+    "terrain": [
         "alcove",
         "altar",
         "aqueduct",
