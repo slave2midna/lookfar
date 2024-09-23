@@ -14,6 +14,8 @@ Please note that licensed Fabula Ultima content is not provided with this system
 | **_Customizable Settings_** | Allows GMs to adjust settings like group level and travel roll visibility for group participation in Travel Rolls. |
 | **_Wayfarer Skills_**      | Influences dice rolls for travel checks, based on character traits. Enables text entry to credit Wayfarers in game, highlighting their importance. |
 
+You can call the travel Roll Helper via: `game.lookfar.showTravelCheckDialog();`
+
 **Manifest URL:** `https://github.com//slave2midna/lookfar/releases/latest/download/module.json`
 
 ## Feedback
