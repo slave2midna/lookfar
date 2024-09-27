@@ -430,7 +430,7 @@ async function generateDanger(groupLevel) {
     }
   }
 
-  let result = `<strong>${severity} ${readableThreatType}:</strong> `;
+  let result = ""; // Changed to directly append the danger result
 
   switch (threatType) {
     case "Damage":
@@ -453,7 +453,19 @@ async function generateDanger(groupLevel) {
       return "Error: Unknown threat type.";
   }
 
-  return `<table style="width:100%"><tr><td>${result}</td></tr><tr><td><strong>Source:</strong> ${sourceText}</td></tr></table>`;
+  // Return formatted table for danger results and source.
+  return `
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+      <tr>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Threat</th>
+        <td style="padding: 5px; border: 1px solid #ddd;">${result}</td>
+      </tr>
+      <tr>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Source</th>
+        <td style="padding: 5px; border: 1px solid #ddd;">${sourceText}</td>
+      </tr>
+    </table>
+  `;
 }
 
 function handleDamage(threatsData, groupLevel, severity) {
