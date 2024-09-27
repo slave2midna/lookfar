@@ -124,6 +124,20 @@ Hooks.on("ready", async () => {
       console.log(`Selected Discovery Keywords Roll Table: ${value}`);
     },
   });
+  
+  // Register the Danger Source Roll Table setting
+  game.settings.register("lookfar", "dangerSourceRollTable", {
+    name: "Danger Source Roll Table",
+    hint: "Select the Roll Table to use for generating danger sources.",
+    scope: "world",
+    config: true,
+    type: String,
+    choices: rollTableChoices,
+    default: "default", // Defaults to dangers.json
+    onChange: (value) => {
+      console.log(`Selected Danger Source Roll Table: ${value}`);
+    },
+  });
 });
 
 // Dynamically update roll table choices when new tables are added
@@ -308,7 +322,7 @@ roll.render().then((rollHTML) => {
   let resultMessage = "";
 
   if (roll.total >= 6) {
-    resultMessage = "Danger! " + generateDanger(groupLevel);
+    resultMessage = "Danger! " + await generateDanger(groupLevel);
   } else if (shouldMakeDiscovery(roll.total)) {
     resultMessage = "Discovery! " + await generateDiscovery();
   } else {
@@ -355,7 +369,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
         callback: async () => {
           let newResultMessage;
           if (isDanger) {
-            const newDangerResult = generateDanger(groupLevel);
+            const newDangerResult = await generateDanger(groupLevel);
             newResultMessage = "Danger! " + newDangerResult;
           } else {
             const newDiscoveryResult = await generateDiscovery();
@@ -378,7 +392,7 @@ function toReadableText(str) {
     .join(" ");
 }
 
-function generateDanger(groupLevel) {
+async function generateDanger(groupLevel) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
     console.error("Threats data is not fully loaded.");
     return "Error: Data not available.";
@@ -387,7 +401,34 @@ function generateDanger(groupLevel) {
   const severity = randomSeverity();
   const threatType = randomThreatType();
   const readableThreatType = toReadableText(threatType);
-  const fluffDescription = getRandomElement(dataLoader.fluffData);
+
+  // Get the selected danger source roll table
+  const dangerSourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");
+  
+  // Variable to hold the source text
+  let sourceText = "No danger source available.";
+
+  // Use the selected Danger Source Roll Table if it's not the default
+  if (dangerSourceTableId && dangerSourceTableId !== "default") {
+    const rollTable = game.tables.get(dangerSourceTableId);
+    if (rollTable) {
+      console.log(`Rolling on the Danger Source Roll Table: ${rollTable.name}`);
+      const rollResult = await rollTable.roll();  // Add await here
+      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+        sourceText = rollResult.results[0].text; // Use the roll result text as the source
+      }
+    } else {
+      console.error("Selected Danger Source Roll Table not found. Falling back to defaults.");
+    }
+  } else {
+    // Use Lookfar Defaults: Pick a random source from dangers.json
+    if (dataLoader.sourceData && Array.isArray(dataLoader.sourceData)) {
+      const randomSourceIndex = Math.floor(Math.random() * dataLoader.sourceData.length);
+      sourceText = dataLoader.sourceData[randomSourceIndex]; // Randomly select from dangers.json sources
+    } else {
+      console.error("No source data available in dangers.json.");
+    }
+  }
 
   let result = `<strong>${severity} ${readableThreatType}:</strong> `;
 
@@ -412,7 +453,7 @@ function generateDanger(groupLevel) {
       return "Error: Unknown threat type.";
   }
 
-  return `<table style="width:100%"><tr><td>${result}</td></tr><tr><td><strong>Source:</strong> ${fluffDescription}</td></tr></table>`;
+  return `<table style="width:100%"><tr><td>${result}</td></tr><tr><td><strong>Source:</strong> ${sourceText}</td></tr></table>`;
 }
 
 function handleDamage(threatsData, groupLevel, severity) {
