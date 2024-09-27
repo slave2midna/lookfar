@@ -19,14 +19,14 @@
     },
     "statusEffects": {
       "Minor": [
-        "Dazed",
-        "Shaken",
-        "Slow",
-        "Weak"
+        "Suffer dazed",
+        "Suffer shaken",
+        "Suffer slow",
+        "Suffer weak"
       ],
       "Heavy": [
-        "Poisoned",
-        "Enraged"
+        "Suffer poisoned",
+        "Suffer enraged"
       ],
       "Massive": [
         "Dazed",
@@ -38,9 +38,9 @@
       ]
     },
     "Combat": {
-      "Minor": "Player Count -1 Enemies",
-      "Heavy": "Player Count = Enemies",
-      "Massive": "Player Count + 1 Enemies"
+      "Minor": "Encounter! Player Count -1",
+      "Heavy": "Encounter! Player Count",
+      "Massive": "Encounter! Player +1"
     },
     "dangerClock": {
       "Minor": "Create a 4 Section Clock",
