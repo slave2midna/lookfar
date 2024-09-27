@@ -19,28 +19,28 @@
     },
     "statusEffects": {
       "Minor": [
-        "Dazed",
-        "Shaken",
-        "Slow",
-        "Weak"
+        "Suffer dazed",
+        "Suffer shaken",
+        "Suffer slow",
+        "Suffer weak"
       ],
       "Heavy": [
+        "Suffer poisoned",
+        "Suffer enraged"
+      ],
+      "Massive": [
         "Dazed",
         "Shaken",
         "Slow",
         "Weak",
-		"Poisoned",
-        "Enraged"
-      ],
-      "Massive": [
         "Poisoned",
         "Enraged"
       ]
     },
     "Combat": {
-      "Minor": "Player Count -1 Enemies",
-      "Heavy": "Player Count = Enemies",
-      "Massive": "Player Count + 1 Enemies"
+      "Minor": "Encounter! Player Count -1",
+      "Heavy": "Encounter! Player Count",
+      "Massive": "Encounter! Player +1"
     },
     "dangerClock": {
       "Minor": "Create a 4 Section Clock",
@@ -53,23 +53,23 @@
       "Massive": "+4 Clock Sections to Villain Plan"
     }
   },
-  "fluff": {
-    "Health-Related": "A condition affects the travelers, like altitude sickness, food poisoning, or exhaustion.",
-    "Travel": "The danger is related to issues with travel or equipment. Examples include vehicle breakdowns, gear malfunctions, or getting lost.",
-    "Political": "The danger is related to a local or global political situation, or protests, or social tensions resulting therefrom.",
-    "Social": "The danger is related to a social dispute. Examples include land, resources, or faith tradition conflicts.",
-    "Natural Disaster": "The danger is a natural event like earthquakes, hurricanes, or floods.",
-    "Wildlife": "The danger is related to animals, whether predatory wildlife or dangerous insects.",
-    "Cultural": "The danger stems from misunderstandings due to cultural differences, or language barriers.",
-    "Magical": "The danger results from cursed objects or land, unstable magic zones, or harmful spells.",
-    "Ethereal": "The danger is related to ghosts, spirits, or other incorporeal beings that might harm or mislead travelers.",
-    "Dimensional Anomalies": "The danger results from rifts in space-time, portals to unknown realms, or reality-altering zones.",
-    "Lost Civilization": "The danger is associated with ancient ruins or forgotten cities, like traps or awakened guardians.",
-    "Mythical Creatures": "The danger is due to an encounter with legendary beasts or cryptids that are unique and potentially dangerous.",
-    "Divine": "The danger is related to challenges or curses imposed by Arcana, gods, demigods, or other celestial beings.",
-    "Resource Scarcity": "The danger is related to the lack of essential resources like water, food, or magical energy.",
-    "Technical Failure": "The danger is related to AI gone rogue, malfunctioning gadgets, unstable power sources, or a weapon or Artifact malfunctions.",
-    "Psychic Phenomena": "The danger is related to mental assaults, illusions, or mind control from telepathic entities or magical influences.",
-    "Temporal Disruptions": "Time manipulation, something involving risks from time loops, paradoxes, or aging anomalies."
-  }
+  "sources": [
+    "A condition affects the travelers, like altitude sickness, food poisoning, or exhaustion.",
+    "Issues with travel or equipment, such as vehicle breakdowns, gear malfunctions, or getting lost.",
+    "Local or global political situations cause protests or social tensions.",
+    "Conflicts over land, resources, or faith traditions arise.",
+    "Events like earthquakes, hurricanes, or floods occur.",
+    "Animals, including predatory wildlife or dangerous insects, pose a threat.",
+    "Cultural misunderstandings or language barriers cause trouble.",
+    "Cursed objects, unstable magic zones, or harmful spells lead to danger.",
+    "Ghosts, spirits, or other incorporeal beings mislead or harm travelers.",
+    "Rifts in space-time or reality-altering zones cause problems.",
+    "Ancient ruins or forgotten cities reveal traps or awakened guardians.",
+    "Legendary beasts or cryptids pose a unique and dangerous threat.",
+    "Challenges or curses imposed by gods, demigods, or celestial beings occur.",
+    "Lack of essential resources like water, food, or magical energy becomes an issue.",
+    "AI gone rogue, malfunctioning gadgets, or unstable power sources cause problems.",
+    "Mental assaults, illusions, or mind control from telepathic entities take place.",
+    "Time loops, paradoxes, or aging anomalies threaten the group."
+  ]
 }
