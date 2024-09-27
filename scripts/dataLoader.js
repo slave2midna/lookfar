@@ -1,6 +1,6 @@
 export const dataLoader = {
   threatsData: {},
-  fluffData: {},
+  sourceData: {},
   discoveryData: {},
 
   async loadData() {
@@ -10,11 +10,11 @@ export const dataLoader = {
         "/modules/lookfar/data/dangers.json"
       );
 	  const dangersData = await threatsResponse.json();
-	  this.threatsData = dangersData.threats || {};  // Safely assign threats data
-	  this.fluffData = dangersData.fluff || {};      // Safely assign fluff data
+	  this.threatsData = dangersData.threats || {};  // Safely assign danger threats
+	  this.sourceData = dangersData.sources || {};      // Safely assign danger sources
 
       console.log("Threats Data:", this.threatsData);
-      console.log("Fluff Data:", this.fluffData);
+      console.log("Source Data:", this.sourceData);
 
       // Fetch and load data for discoveries
       const discoveryResponse = await fetch(
