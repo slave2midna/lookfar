@@ -467,19 +467,28 @@ function handleDamage(threatsData, groupLevel, severity) {
 }
 
 function handleStatusEffect(threatsData, severity, groupLevel) {
-  const statusEffectsList = threatsData.statusEffects[severity]; 
+  const statusEffectsListMinor = threatsData.statusEffects["Minor"];
+  const statusEffectsListHeavy = threatsData.statusEffects["Heavy"];
 
-  // Check if statusEffectsList is available and has items
-  if (!statusEffectsList || statusEffectsList.length === 0) {
-    return "No status effects available";  // Handle the case when status effects for the severity are missing or empty
-  }
-  // For Heavy, combine Minor status effect with Minor damage
-  if (severity === "Heavy") {
-    const statusEffect = getRandomElement(threatsData.statusEffects["Minor"]);
-    const minorDamage = threatsData.Damage[groupLevel]["Minor"];
-    return `${statusEffect} and ${minorDamage} damage`;
+  if (severity === "Massive") {
+    // 50% chance to pull either a Minor status effect with Heavy damage or a Heavy status effect with Minor damage
+    const useMinorEffect = Math.random() < 0.5;
+
+    if (useMinorEffect) {
+      // Pick a Minor status effect with Heavy damage
+      const statusEffect = getRandomElement(statusEffectsListMinor);
+      const heavyDamage = threatsData.Damage[groupLevel]["Heavy"];
+      return `${statusEffect} and ${heavyDamage} damage`;
+    } else {
+      // Pick a Heavy status effect with Minor damage
+      const statusEffect = getRandomElement(statusEffectsListHeavy);
+      const minorDamage = threatsData.Damage[groupLevel]["Minor"];
+      return `${statusEffect} and ${minorDamage} damage`;
+    }
   } else {
-    return getRandomElement(statusEffectsList);  // Select random effect from available list
+    // Regular logic for Minor and Heavy severities
+    const statusEffectsList = threatsData.statusEffects[severity];
+    return getRandomElement(statusEffectsList);
   }
 }
 
