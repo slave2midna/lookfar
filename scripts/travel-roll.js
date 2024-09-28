@@ -322,12 +322,12 @@ roll.render().then((rollHTML) => {
   let resultMessage = "";
 
   if (roll.total >= 6) {
-    resultMessage = "Danger! " + await generateDanger(groupLevel);
+    resultMessage = "Danger! " + await generateDanger(selectedDifficulty, groupLevel);
   } else if (shouldMakeDiscovery(roll.total)) {
     resultMessage = "Discovery! " + await generateDiscovery();
   } else {
     resultMessage = "The travel day passed without incident.";
-  }
+}
 
   showRerollDialog(resultMessage, selectedDifficulty, groupLevel);
 }
@@ -369,7 +369,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
         callback: async () => {
           let newResultMessage;
           if (isDanger) {
-            const newDangerResult = await generateDanger(groupLevel);
+            const newDangerResult = await generateDanger(selectedDifficulty, groupLevel);
             newResultMessage = "Danger! " + newDangerResult;
           } else {
             const newDiscoveryResult = await generateDiscovery();
@@ -392,13 +392,13 @@ function toReadableText(str) {
     .join(" ");
 }
 
-async function generateDanger(groupLevel) {
+async function generateDanger(selectedDifficulty, groupLevel) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
     console.error("Threats data is not fully loaded.");
     return "Error: Data not available.";
   }
 
-  const severity = randomSeverity();
+  const severity = randomSeverity(selectedDifficulty);
   const threatType = randomThreatType();
   const readableThreatType = toReadableText(threatType);
 
@@ -504,9 +504,29 @@ function handleStatusEffect(threatsData, severity, groupLevel) {
   }
 }
 
-function randomSeverity() {
-  const roll = Math.random();
-  return roll < 0.6 ? "Minor" : roll < 0.9 ? "Heavy" : "Massive";
+function randomSeverity(difficulty) {
+  // Use regex to extract the number from the die string (e.g., 'd6' -> 6)
+  const difficultyMatch = /^d(\d+)$/.exec(difficulty);
+  
+  // Parse the extracted number
+  const difficultyNumber = difficultyMatch ? parseInt(difficultyMatch[1]) : NaN;
+
+  // Error out if we can't parse the difficulty number or if it's not a valid positive number
+  if (isNaN(difficultyNumber) || difficultyNumber <= 0) {
+    throw new Error(`Invalid difficulty number: ${difficulty}`);
+  }
+
+  // Roll a random number from 1 to difficultyNumber
+  const severityRoll = Math.floor(Math.random() * difficultyNumber) + 1;
+
+  // Adjust severity based on the new ranges
+  if (severityRoll <= 5) {
+    return "Minor";
+  } else if (severityRoll <= 9) {
+    return "Heavy";
+  } else {
+    return "Massive";
+  }
 }
 
 function randomThreatType() {
