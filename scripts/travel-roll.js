@@ -284,7 +284,7 @@ async function handleRoll(selectedDifficulty) {
   await roll.evaluate({async: true});
 
   // 3D dice handling
-  await game.dice3d?.showForRoll(roll);
+  // await game.dice3d?.showForRoll(roll);
 
   // Determine visibility
   const rollVisibility = game.settings.get(
