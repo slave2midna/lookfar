@@ -373,8 +373,9 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
         callback: async () => {
           let newResultMessage;
           if (isDanger) {
+            const dangerSeverity = await randomSeverity(selectedDifficulty);
             const newDangerResult = await generateDanger(selectedDifficulty, groupLevel);
-            newResultMessage = "Danger! " + newDangerResult;
+            newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
           } else {
             const newDiscoveryResult = await generateDiscovery();
             newResultMessage = "Discovery! " + newDiscoveryResult;
