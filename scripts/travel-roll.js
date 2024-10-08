@@ -299,7 +299,7 @@ let gmUserIds = isWhisper
   : [];
 
 // Render and create the roll chat message
-roll.render().then((rollHTML) => {
+roll.toMessage((rollHTML) => {
   let chatData = {
     user: game.userId,
     speaker: { alias: "System" },
