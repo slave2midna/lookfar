@@ -25,8 +25,8 @@
         "Suffer weak"
       ],
       "Heavy": [
-        "Suffer poisoned",
-        "Suffer enraged"
+        "Suffer poison",
+        "Suffer enrage"
       ],
       "Massive": [
         "Dazed",
@@ -38,19 +38,19 @@
       ]
     },
     "Combat": {
-      "Minor": "Encounter! Player Count -1",
-      "Heavy": "Encounter! Player Count",
-      "Massive": "Encounter! Player +1"
+      "Minor": "Easy encounter!",
+      "Heavy": "Normal encounter!",
+      "Massive": "Hard encounter!"
     },
     "dangerClock": {
-      "Minor": "Create a 4 Section Clock",
-      "Heavy": "Create a 6 Section Clock",
-      "Massive": "Create an 8 Section Clock"
+      "Minor": "A 4 Section Clock",
+      "Heavy": "A 6 Section Clock",
+      "Massive": "An 8 Section Clock"
     },
     "villainPlanAdvance": {
-      "Minor": "+2 Clock Sections to Villain Plan",
-      "Heavy": "+3 Clock Sections to Villain Plan",
-      "Massive": "+4 Clock Sections to Villain Plan"
+      "Minor": "Villian plan advances +2",
+      "Heavy": "Villian plan advances +3",
+      "Massive": "Villian plan advances +4"
     }
   },
   "sources": [
