@@ -284,7 +284,7 @@ async function handleRoll(selectedDifficulty) {
   await roll.evaluate({async: true});
 
   // 3D dice handling
-  await game.dice3d?.showForRoll(travelRoll);
+  await game.dice3d?.showForRoll(roll);
 
   // Determine visibility
   const rollVisibility = game.settings.get(
@@ -323,15 +323,16 @@ roll.render().then((rollHTML) => {
   );
 
 let resultMessage = "";
+let dangerSeverity = ""; // Variable to store severity
 
-  if (roll.total >= 6) {
-    resultMessage = "Danger! " + await generateDanger(selectedDifficulty, groupLevel);
-  } else if (shouldMakeDiscovery(roll.total)) {
-    resultMessage = "Discovery! " + await generateDiscovery();
-  } else {
-    resultMessage = "The travel day passed without incident.";
+if (roll.total >= 6) {
+  dangerSeverity = await randomSeverity(selectedDifficulty);
+  resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel);
+} else if (shouldMakeDiscovery(roll.total)) {
+  resultMessage = "Discovery! " + await generateDiscovery();
+} else {
+  resultMessage = "The travel day passed without incident.";
 }
-
   showRerollDialog(resultMessage, selectedDifficulty, groupLevel);
 }
 
