@@ -305,7 +305,7 @@ roll.render().then((rollHTML) => {
     speaker: { alias: "System" },
     content: rollHTML,
     type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-    rolls: [roll],
+    rolls: [travelRoll],
   };
 
   // Only include whisper key if it's meant to be whispered to GMs
