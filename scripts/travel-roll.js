@@ -322,12 +322,10 @@ roll.render().then((rollHTML) => {
     "groupLevel"
   );
 
-  let resultMessage = "";
-  let dangerSeverity = ""; // Variable to store severity
+let resultMessage = "";
 
   if (roll.total >= 6) {
-    dangerSeverity = await randomSeverity(selectedDifficulty);
-    resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel); // injecting danger severity into message. This is a test. Might remove.
+    resultMessage = "Danger! " + await generateDanger(selectedDifficulty, groupLevel);
   } else if (shouldMakeDiscovery(roll.total)) {
     resultMessage = "Discovery! " + await generateDiscovery();
   } else {
