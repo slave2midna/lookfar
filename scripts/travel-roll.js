@@ -299,13 +299,13 @@ let gmUserIds = isWhisper
   : [];
 
 // Render and create the roll chat message
-roll.toMessage((rollHTML) => {
+roll.render().then((rollHTML) => {
   let chatData = {
     user: game.userId,
     speaker: { alias: "System" },
     content: rollHTML,
     type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-    roll: roll,
+    rolls: [roll],
   };
 
   // Only include whisper key if it's meant to be whispered to GMs
