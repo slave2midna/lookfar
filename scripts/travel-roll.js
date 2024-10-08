@@ -280,11 +280,11 @@ async function handleRoll(selectedDifficulty) {
       });
     }
   }
-  let roll = new Roll(selectedDifficulty);
-  await roll.evaluate({async: true});
+  let travelRoll = new Roll(selectedDifficulty);
+  await travelRoll.evaluate({async: true});
 
   // 3D dice handling
-  // await game.dice3d?.showForRoll(roll);
+  await game.dice3d?.showForRoll(travelRoll);
 
   // Determine visibility
   const rollVisibility = game.settings.get(
