@@ -280,11 +280,11 @@ async function handleRoll(selectedDifficulty) {
       });
     }
   }
-  let travelRoll = new Roll(selectedDifficulty);
-  await travelRoll.evaluate({async: true});
+  let roll = new Roll(selectedDifficulty);
+  await roll.evaluate({async: true});
 
   // 3D dice handling
-  await game.dice3d?.showForRoll(travelRoll);
+  await game.dice3d?.showForRoll(roll);
 
   // Determine visibility
   const rollVisibility = game.settings.get(
@@ -305,7 +305,7 @@ roll.render().then((rollHTML) => {
     speaker: { alias: "System" },
     content: rollHTML,
     type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-    rolls: [travelRoll],
+    rolls: [roll],
   };
 
   // Only include whisper key if it's meant to be whispered to GMs
