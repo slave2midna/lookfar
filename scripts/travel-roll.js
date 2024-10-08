@@ -283,6 +283,9 @@ async function handleRoll(selectedDifficulty) {
   let roll = new Roll(selectedDifficulty);
   await roll.evaluate({async: true});
 
+  // 3D dice handling
+  await game.dice3d?.showForRoll(travelRoll);
+
   // Determine visibility
   const rollVisibility = game.settings.get(
     "lookfar",
