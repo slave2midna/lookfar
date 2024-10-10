@@ -400,20 +400,26 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, discove
         },
       },
       reroll: {
-        icon: '<i class="fas fa-redo" style="color: white;"></i>',
-        callback: async () => {
-          let newResultMessage;
-          if (isDanger) {
-            const dangerSeverity = await randomSeverity(selectedDifficulty);
-            const newDangerResult = await generateDanger(selectedDifficulty, groupLevel);
-            newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-          } else {
-            const newDiscoveryResult = await generateDiscovery();
-            newResultMessage = "Discovery! " + newDiscoveryResult;
-          }
-          showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, discoveryType);
-        },
-      },
+  icon: '<i class="fas fa-redo" style="color: white;"></i>',
+  callback: async () => {
+    let newResultMessage;
+    if (isDanger) {
+      const dangerSeverity = await randomSeverity(selectedDifficulty);
+      const newDangerResult = await generateDanger(selectedDifficulty, groupLevel);
+      newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
+    } else if (discoveryType) {
+      // Pass the discoveryType when generating the new discovery
+      const newDiscoveryResult = await generateDiscovery(discoveryType);
+      newResultMessage = discoveryType === "major"
+        ? "Major Discovery! " + newDiscoveryResult
+        : "Minor Discovery! " + newDiscoveryResult;
+    } else {
+      const newDiscoveryResult = await generateDiscovery("major");
+      newResultMessage = "Discovery! " + newDiscoveryResult;
+    }
+    showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, discoveryType);
+  },
+},
     },
     default: "keep",
     close: () => {},
