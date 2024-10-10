@@ -299,7 +299,7 @@ let gmUserIds = isWhisper
 await roll.render().then((rollHTML) => {
   let chatData = {
     user: game.userId,
-    speaker: { alias: "System" },
+    speaker: { alias: "Travel Roll" },
     content: rollHTML,
     type: CONST.CHAT_MESSAGE_TYPES.ROLL,
     rolls: [roll],
