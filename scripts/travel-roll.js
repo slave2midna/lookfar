@@ -296,7 +296,7 @@ let gmUserIds = isWhisper
   : [];
 
 // Render and create the roll chat message
-roll.render().then((rollHTML) => {
+await roll.render().then((rollHTML) => {
   let chatData = {
     user: game.userId,
     speaker: { alias: "System" },
@@ -310,7 +310,19 @@ roll.render().then((rollHTML) => {
     chatData.whisper = gmUserIds;
   }
 
-  ChatMessage.create(chatData);
+  return ChatMessage.create(chatData).then(chatMessage => {
+      if (game.dice3d) {
+        return new Promise((resolve) => {
+          let hookId = Hooks.on("diceSoNiceRollComplete", (messageId) => {
+            if (messageId === chatMessage.id) {
+              Hooks.off("diceSoNiceRollComplete", hookId);
+              resolve(chatMessage)
+            }
+          })
+        })
+      }
+    return chatMessage;
+  });
 });
 
   // Determine the group level set by the GM
