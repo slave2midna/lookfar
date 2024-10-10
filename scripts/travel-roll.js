@@ -364,10 +364,10 @@ if (roll.total >= 6) {
 } else {
   resultMessage = "The travel day passed without incident.";
 }
-  showRerollDialog(resultMessage, selectedDifficulty, groupLevel);
+  showRerollDialog(resultMessage, selectedDifficulty, groupLevel, discoveryType);
 }
 
-function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
+function showRerollDialog(initialResult, selectedDifficulty, groupLevel, discoveryType) {
   let isDanger = initialResult.includes("Danger!");
   let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
 
@@ -411,7 +411,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
             const newDiscoveryResult = await generateDiscovery();
             newResultMessage = "Discovery! " + newDiscoveryResult;
           }
-          showRerollDialog(newResultMessage, selectedDifficulty, groupLevel);
+          showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, discoveryType);
         },
       },
     },
