@@ -90,6 +90,16 @@ Hooks.once("init", async () => {
     default: "",
   });
 
+    // Register Minor Discoveries setting
+  game.settings.register("lookfar", "minorDiscoveries", {
+    name: "Enable Minor Discoveries",
+    hint: "When enabled, travel rolls may result in minor discoveries (finds without effects).",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
   // Expose the travel check dialog function globally
   game.lookfar = game.lookfar || {};
   game.lookfar.showTravelCheckDialog = showTravelCheckDialog;
@@ -251,8 +261,17 @@ function showTravelCheckDialog() {
 
 function shouldMakeDiscovery(rollResult) {
   const treasureHunterLevel = parseInt(game.settings.get("lookfar", "treasureHunterLevel"));
-  // Adjusts the discovery condition
-  return rollResult <= 1 + treasureHunterLevel;
+  const minorDiscoveriesEnabled = game.settings.get("lookfar", "minorDiscoveries");
+
+  if (minorDiscoveriesEnabled) {
+    if (rollResult === 1) {
+      return "major";
+    } else if (rollResult === 2 || rollResult === 3) {
+      return "minor";
+    }
+  }
+  // Original behavior: Major discovery on 1
+  return rollResult <= 1 + treasureHunterLevel ? "major" : false;
 }
 
 // Reduces the dice size for well-traveled setting
@@ -332,20 +351,23 @@ await roll.render().then((rollHTML) => {
   );
 
 let resultMessage = "";
+let discoveryType = shouldMakeDiscovery(roll.total);  
 let dangerSeverity = ""; // Variable to store severity
 
 if (roll.total >= 6) {
   dangerSeverity = await randomSeverity(selectedDifficulty);
   resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel);
-} else if (shouldMakeDiscovery(roll.total)) {
-  resultMessage = "Discovery! " + await generateDiscovery();
+} else if (discoveryType) {
+  resultMessage = discoveryType === "major"
+    ? "Major Discovery! " + await generateDiscovery("major")
+    : "Minor Discovery! " + await generateDiscovery("minor");
 } else {
   resultMessage = "The travel day passed without incident.";
 }
-  showRerollDialog(resultMessage, selectedDifficulty, groupLevel);
+  showRerollDialog(resultMessage, selectedDifficulty, groupLevel, discoveryType);
 }
 
-function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
+function showRerollDialog(initialResult, selectedDifficulty, groupLevel, discoveryType) {
   let isDanger = initialResult.includes("Danger!");
   let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
 
@@ -373,25 +395,31 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel) {
           ChatMessage.create({
             content: initialResult,
             whisper: gmUserIds,
-            speaker: { alias: "System" },
+            speaker: { alias: "Travel Roll" },
           });
         },
       },
       reroll: {
-        icon: '<i class="fas fa-redo" style="color: white;"></i>',
-        callback: async () => {
-          let newResultMessage;
-          if (isDanger) {
-            const dangerSeverity = await randomSeverity(selectedDifficulty);
-            const newDangerResult = await generateDanger(selectedDifficulty, groupLevel);
-            newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-          } else {
-            const newDiscoveryResult = await generateDiscovery();
-            newResultMessage = "Discovery! " + newDiscoveryResult;
-          }
-          showRerollDialog(newResultMessage, selectedDifficulty, groupLevel);
-        },
-      },
+  icon: '<i class="fas fa-redo" style="color: white;"></i>',
+  callback: async () => {
+    let newResultMessage;
+    if (isDanger) {
+      const dangerSeverity = await randomSeverity(selectedDifficulty);
+      const newDangerResult = await generateDanger(selectedDifficulty, groupLevel);
+      newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
+    } else if (discoveryType) {
+      // Pass the discoveryType when generating the new discovery
+      const newDiscoveryResult = await generateDiscovery(discoveryType);
+      newResultMessage = discoveryType === "major"
+        ? "Major Discovery! " + newDiscoveryResult
+        : "Minor Discovery! " + newDiscoveryResult;
+    } else {
+      const newDiscoveryResult = await generateDiscovery("major");
+      newResultMessage = "Discovery! " + newDiscoveryResult;
+    }
+    showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, discoveryType);
+  },
+},
     },
     default: "keep",
     close: () => {},
@@ -562,9 +590,9 @@ function getRandomElement(arrayOrObject) {
   return isObject ? arrayOrObject[randomKey] : randomKey;
 }
 
-async function generateDiscovery() {
-  console.log("Discovery Data check: ", JSON.stringify(dataLoader.discoveryData));
-
+async function generateDiscovery(type = "major") {
+  console.log("Generating Discovery... Type:", type);
+  
   // Get the selected roll table IDs for effects and keywords
   const effectTableId = game.settings.get("lookfar", "rollTable");
   const keywordTableId = game.settings.get("lookfar", "keywordRollTable");
@@ -573,25 +601,28 @@ async function generateDiscovery() {
   let effectText = "No discovery effect available.";
   let keywords = [];
 
-  // Use the selected Discovery Effect Roll Table if it's not the default
-  if (effectTableId && effectTableId !== "default") {
-    const rollTable = game.tables.get(effectTableId);
-    if (rollTable) {
-      console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
-      const rollResult = await rollTable.roll();
-      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-        effectText = rollResult.results[0].text; // Use the roll result text as the effect
+  // Only generate effects if it's a major discovery
+  if (type === "major") {
+    // Use the selected Discovery Effect Roll Table if it's not the default
+    if (effectTableId && effectTableId !== "default") {
+      const rollTable = game.tables.get(effectTableId);
+      if (rollTable) {
+        console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
+        const rollResult = await rollTable.roll();
+        if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+          effectText = rollResult.results[0].text; // Use the roll result text as the effect
+        }
+      } else {
+        console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
       }
     } else {
-      console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
-    }
-  } else {
-    // Use Lookfar Defaults: Pick a random effect from discovery.json
-    if (dataLoader.discoveryData && Array.isArray(dataLoader.discoveryData.effects)) {
-      const randomEffectIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
-      effectText = dataLoader.discoveryData.effects[randomEffectIndex]; // Randomly select from discovery.json effects
-    } else {
-      console.error("No effects data available in discovery.json.");
+      // Use Lookfar Defaults: Pick a random effect from discovery.json
+      if (dataLoader.discoveryData && Array.isArray(dataLoader.discoveryData.effects)) {
+        const randomEffectIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
+        effectText = dataLoader.discoveryData.effects[randomEffectIndex]; // Randomly select from discovery.json effects
+      } else {
+        console.error("No effects data available in discovery.json.");
+      }
     }
   }
 
@@ -600,7 +631,7 @@ async function generateDiscovery() {
     const rollTable = game.tables.get(keywordTableId);
     if (rollTable) {
       console.log(`Rolling on the Discovery Keywords Roll Table: ${rollTable.name}`);
-      for (let i = 0; i < 4 + Math.floor(Math.random() * 3); i++) { // Get 4-6 keywords
+      for (let i = 0; i < (type === "major" ? 4 : 2) + Math.floor(Math.random() * (type === "major" ? 3 : 2)); i++) { // Get 4-6 for major, 2-3 for minor
         const rollResult = await rollTable.roll();
         if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
           keywords.push(rollResult.results[0].text); // Add the result to the keywords list
@@ -621,13 +652,15 @@ async function generateDiscovery() {
       ? generateUniqueList(dataLoader.discoveryData.traits, 4, 6)
       : [];
 
-    // Return formatted table with default traits/terrain
+    // Return formatted table with default traits/terrain, and hide effect row for minor
     return `
       <table style="width: 100%; border-collapse: collapse;">
+        ${type === "major" && effectText ? `
         <tr>
           <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
           <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
         </tr>
+        ` : ""}
         <tr>
           <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Traits</th>
           <td style="padding: 5px; border: 1px solid #ddd;">${traits.join(", ")}</td>
@@ -640,13 +673,15 @@ async function generateDiscovery() {
     `;
   }
 
-  // If the Discovery Keywords Roll Table is selected, return formatted table with keywords
+  // If the Discovery Keywords Roll Table is selected, return formatted table with keywords, and hide effect row for minor
   return `
     <table style="width: 100%; border-collapse: collapse;">
+      ${type === "major" && effectText ? `
       <tr>
         <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
         <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
       </tr>
+      ` : ""}
       <tr>
         <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Keywords</th>
         <td style="padding: 5px; border: 1px solid #ddd;">${keywords.join(", ")}</td>
