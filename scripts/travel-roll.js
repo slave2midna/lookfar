@@ -283,11 +283,6 @@ async function handleRoll(selectedDifficulty) {
   let roll = new Roll(selectedDifficulty);
   await roll.evaluate({async: true});
 
-  // Show the Dice So Nice animation if available
-  if (game.dice3d) {
-    await game.dice3d.showForRoll(roll);
-  }
-
   // Determine visibility
   const rollVisibility = game.settings.get(
     "lookfar",
@@ -308,7 +303,6 @@ roll.render().then((rollHTML) => {
     content: rollHTML,
     type: CONST.CHAT_MESSAGE_TYPES.ROLL,
     rolls: [roll],
-    flags: { "dice-so-nice": { hide: true } }, // This disables the automatic Dice So Nice! animation
   };
 
   // Only include whisper key if it's meant to be whispered to GMs
