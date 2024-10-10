@@ -639,7 +639,7 @@ async function generateDiscovery(type = "major") {
   // If no keywords table is selected or it's set to default, use the default traits/terrain
   if (keywordTableId === "default" || keywords.length === 0) {
     const terrain = Array.isArray(dataLoader.discoveryData.terrain)
-      ? generateUniqueList(dataLoader.discoveryData.terrain, 4, 6
+      ? generateUniqueList(dataLoader.discoveryData.terrain, 4, 6)
       : [];
 
     const traits = Array.isArray(dataLoader.discoveryData.traits)
