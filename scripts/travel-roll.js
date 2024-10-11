@@ -352,11 +352,11 @@ await roll.render().then((rollHTML) => {
 
 let resultMessage = "";
 let discoveryType = shouldMakeDiscovery(roll.total);  
-let dangerSeverity = ""; // Variable to store severity
+let dangerSeverity = ""; // Variable to store danger severity
 
 if (roll.total >= 6) {
   dangerSeverity = await randomSeverity(selectedDifficulty);
-  resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel);
+  resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
 } else if (discoveryType) {
   resultMessage = discoveryType === "major"
     ? "Major Discovery! " + await generateDiscovery("major")
@@ -404,10 +404,9 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
   callback: async () => {
     let newResultMessage;
     if (isDanger) {
-      const dangerSeverity = await randomSeverity(selectedDifficulty);
-      const newDangerResult = await generateDanger(selectedDifficulty, groupLevel);
-      newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-    } else if (discoveryType) {
+  const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+  newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
+} else if (discoveryType) {
       // Pass the discoveryType when generating the new discovery
       const newDiscoveryResult = await generateDiscovery(discoveryType);
       newResultMessage = discoveryType === "major"
@@ -434,13 +433,12 @@ function toReadableText(str) {
     .join(" ");
 }
 
-async function generateDanger(selectedDifficulty, groupLevel) {
+async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
     console.error("Threats data is not fully loaded.");
     return "Error: Data not available.";
   }
 
-  const severity = randomSeverity(selectedDifficulty);
   const threatType = randomThreatType();
   const readableThreatType = toReadableText(threatType);
 
