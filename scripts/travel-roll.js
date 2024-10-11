@@ -472,26 +472,26 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
 
   let result = ""; // Changed to directly append the danger result
 
-  switch (threatType) {
-    case "Damage":
-      result += handleDamage(dataLoader.threatsData, groupLevel, severity);
-      break;
-    case "statusEffect":
-      result += handleStatusEffect(dataLoader.threatsData, severity, groupLevel);
-      break;
-    case "Combat":
-      result += dataLoader.threatsData.Combat[severity];
-      break;
-    case "dangerClock":
-      result += dataLoader.threatsData.dangerClock[severity];
-      break;
-    case "villainPlanAdvance":
-      result += dataLoader.threatsData.villainPlanAdvance[severity];
-      break;
-    default:
-      console.error("Unknown threat type:", threatType);
-      return "Error: Unknown threat type.";
-  }
+switch (threatType) {
+  case "Damage":
+    result += handleDamage(dataLoader.threatsData, groupLevel, dangerSeverity);
+    break;
+  case "statusEffect":
+    result += handleStatusEffect(dataLoader.threatsData, dangerSeverity, groupLevel);
+    break;
+  case "Combat":
+    result += dataLoader.threatsData.Combat[dangerSeverity];
+    break;
+  case "dangerClock":
+    result += dataLoader.threatsData.dangerClock[dangerSeverity];
+    break;
+  case "villainPlanAdvance":
+    result += dataLoader.threatsData.villainPlanAdvance[dangerSeverity];
+    break;
+  default:
+    console.error("Unknown threat type:", threatType);
+    return "Error: Unknown threat type.";
+}
 
   // Return formatted table for danger results and source.
   return `
@@ -508,38 +508,35 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   `;
 }
 
-function handleDamage(threatsData, groupLevel, severity) {
+function handleDamage(threatsData, groupLevel, dangerSeverity) {
   const damageData = threatsData.Damage ? threatsData.Damage[groupLevel] : undefined;
 
-  if (!damageData || !damageData[severity]) {
-    console.error(`Damage data not found for groupLevel: ${groupLevel}, severity: ${severity}`);
+  if (!damageData || !damageData[dangerSeverity]) {
+    console.error(`Damage data not found for groupLevel: ${groupLevel}, severity: ${dangerSeverity}`);
     return "Error: Damage data not found.";
   }
-  return `${damageData[severity]} damage`;
+  return `${damageData[dangerSeverity]} damage`;
 }
 
-function handleStatusEffect(threatsData, severity, groupLevel) {
+function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
   const statusEffectsListMinor = threatsData.statusEffects["Minor"];
   const statusEffectsListHeavy = threatsData.statusEffects["Heavy"];
 
-  if (severity === "Massive") {
+  if (dangerSeverity === "Massive") {
     // 50% chance to pull either a Minor status effect with Heavy damage or a Heavy status effect with Minor damage
     const useMinorEffect = Math.random() < 0.5;
 
     if (useMinorEffect) {
-      // Pick a Minor status effect with Heavy damage
       const statusEffect = getRandomElement(statusEffectsListMinor);
       const heavyDamage = threatsData.Damage[groupLevel]["Heavy"];
       return `${statusEffect} and ${heavyDamage} damage`;
     } else {
-      // Pick a Heavy status effect with Minor damage
       const statusEffect = getRandomElement(statusEffectsListHeavy);
       const minorDamage = threatsData.Damage[groupLevel]["Minor"];
       return `${statusEffect} and ${minorDamage} damage`;
     }
   } else {
-    // Regular logic for Minor and Heavy severities
-    const statusEffectsList = threatsData.statusEffects[severity];
+    const statusEffectsList = threatsData.statusEffects[dangerSeverity];
     return getRandomElement(statusEffectsList);
   }
 }
