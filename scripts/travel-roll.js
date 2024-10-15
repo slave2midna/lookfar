@@ -40,21 +40,7 @@ Hooks.once("init", async () => {
     },
     default: "5+",
   });
-
-  // Register roll visibility setting
-  game.settings.register("lookfar", "rollVisibility", {
-    name: "Roll Visibility",
-    hint: "Choose whether rolls and chat outputs are public or GM only.",
-    scope: "world",
-    config: true,
-    type: String,
-    choices: {
-      public: "Public",
-      gmOnly: "GM Only",
-    },
-    default: "public",
-  });
-
+  
   // Register Treasure Hunter Level setting
   game.settings.register("lookfar", "treasureHunterLevel", {
     name: "Treasure Hunter: Level",
@@ -120,6 +106,25 @@ Hooks.on("ready", async () => {
       console.log(`Selected Discovery Effect Roll Table: ${value}`);
     },
   });
+  
+  // Listen for socket messages for reroll dialogs and travel roll results
+game.socket.on("module.lookfar", (data) => {
+  if (data?.type === "showResult") {
+    // Show the reroll dialog on all clients
+    showRerollDialog(
+      data.resultMessage,
+      data.selectedDifficulty,
+      data.groupLevel,
+      data.dangerSeverity,
+      data.discoveryType
+    );
+   } else if (data?.type === "closeDialog") {
+    // Close the dialog if it's open on the client
+    if (currentDialog) {
+      currentDialog.close();
+    } 
+  }
+});
 
     // Register the "Discovery Keywords Roll Table" setting
   game.settings.register("lookfar", "keywordRollTable", {
@@ -281,149 +286,158 @@ function reduceDiceSize(diceSize) {
 }
 
 async function handleRoll(selectedDifficulty) {
-  const wellTraveled = game.settings.get(
-    "lookfar",
-    "wellTraveled"
-  );
-  const characterMessage = game.settings.get(
-    "lookfar",
-    "characterMessage"
-  );
+  const wellTraveled = game.settings.get("lookfar", "wellTraveled");
+  const characterMessage = game.settings.get("lookfar", "characterMessage");
 
   // Reduce the dice size if Well-Traveled is checked
   if (wellTraveled) {
     selectedDifficulty = reduceDiceSize(selectedDifficulty);
     if (characterMessage) {
       ChatMessage.create({
-        content: characterMessage, //change this to whatever you want to use to acknowledge your friendly neighborhood Wayfarer
+        content: characterMessage,
       });
     }
   }
+
   let roll = new Roll(selectedDifficulty);
-  await roll.evaluate({async: true});
+  await roll.evaluate({ async: true });
 
-  // Determine visibility
-  const rollVisibility = game.settings.get(
-    "lookfar",
-    "rollVisibility"
-  );
-  const isWhisper = rollVisibility === "gmOnly";
-
- // Get the IDs of all GM users if visibility is set to "gmOnly"
-let gmUserIds = isWhisper
-  ? game.users.filter((user) => user.isGM).map((gm) => gm.id)
-  : [];
-
-// Render and create the roll chat message
-await roll.render().then((rollHTML) => {
-  let chatData = {
-    user: game.userId,
-    speaker: { alias: "Travel Roll" },
-    content: rollHTML,
-    type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-    rolls: [roll],
-  };
-
-  // Only include whisper key if it's meant to be whispered to GMs
-  if (isWhisper) {
-    chatData.whisper = gmUserIds;
-  }
-
-  return ChatMessage.create(chatData).then(chatMessage => {
+  // Render and create the roll chat message
+  await roll.render().then((rollHTML) => {
+    let chatData = {
+      user: game.userId,
+      speaker: { alias: "Travel Roll" },
+      content: rollHTML,
+      type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+      rolls: [roll],
+    };
+    return ChatMessage.create(chatData).then((chatMessage) => {
       if (game.dice3d) {
         return new Promise((resolve) => {
           let hookId = Hooks.on("diceSoNiceRollComplete", (messageId) => {
             if (messageId === chatMessage.id) {
               Hooks.off("diceSoNiceRollComplete", hookId);
-              resolve(chatMessage)
+              resolve(chatMessage);
             }
-          })
-        })
+          });
+        });
       }
-    return chatMessage;
+      return chatMessage;
+    });
   });
-});
 
   // Determine the group level set by the GM
-  const groupLevel = game.settings.get(
-    "lookfar",
-    "groupLevel"
-  );
+  const groupLevel = game.settings.get("lookfar", "groupLevel");
 
-let resultMessage = "";
-let discoveryType = shouldMakeDiscovery(roll.total);  
-let dangerSeverity = ""; // Variable to store danger severity
+  let resultMessage = "";
+  let discoveryType = shouldMakeDiscovery(roll.total);
+  let dangerSeverity = "";
 
-if (roll.total >= 6) {
-  dangerSeverity = await randomSeverity(selectedDifficulty);
-  resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-} else if (discoveryType) {
-  resultMessage = discoveryType === "major"
-    ? "Major Discovery! " + await generateDiscovery("major")
-    : "Minor Discovery! " + await generateDiscovery("minor");
-} else {
-  resultMessage = "The travel day passed without incident.";
-}
+  if (roll.total >= 6) {
+    dangerSeverity = await randomSeverity(selectedDifficulty);
+    resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+  } else if (discoveryType) {
+    resultMessage = discoveryType === "major"
+      ? "Major Discovery! " + await generateDiscovery("major")
+      : "Minor Discovery! " + await generateDiscovery("minor");
+  } else {
+    resultMessage = "The travel day passed without incident.";
+  }
+
+  // Emit the result to all clients
+  game.socket.emit("module.lookfar", {
+    type: "showResult",
+    resultMessage,
+    selectedDifficulty,
+    groupLevel,
+    dangerSeverity,
+    discoveryType,
+  });
+
+  // Show the dialog on the initiating client (for local confirmation)
   showRerollDialog(resultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
 }
+
+// Keep a reference to the current dialog
+let currentDialog = null;
 
 function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity, discoveryType) {
   let isDanger = initialResult.includes("Danger!");
   let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
 
-  let d = new Dialog({
+  // Close the existing dialog if it's open
+  if (currentDialog) {
+    currentDialog.close();
+  }
+
+  // Check if the current user is a GM
+  const isGM = game.user.isGM;
+
+  const buttons = isGM ? {
+    keep: {
+    icon: '<i class="fas fa-check" style="color: white;"></i>',
+    callback: () => {
+      ChatMessage.create({
+        content: initialResult,
+        speaker: { alias: "Travel Roll" },
+      });
+
+      // Emit a message to close the dialog on all clients
+      game.socket.emit("module.lookfar", {
+        type: "closeDialog",
+      });
+
+      // Close the dialog locally
+      if (currentDialog) {
+        currentDialog.close();
+      }
+    },
+  },
+  reroll: {
+      icon: '<i class="fas fa-redo" style="color: white;"></i>',
+      callback: async () => {
+        let newResultMessage;
+        if (isDanger) {
+          const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+          newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
+        } else if (discoveryType) {
+          const newDiscoveryResult = await generateDiscovery(discoveryType);
+          newResultMessage = discoveryType === "major"
+            ? "Major Discovery! " + newDiscoveryResult
+            : "Minor Discovery! " + newDiscoveryResult;
+        } else {
+          const newDiscoveryResult = await generateDiscovery("major");
+          newResultMessage = "Discovery! " + newDiscoveryResult;
+        }
+
+        // Emit the new result to all clients
+        game.socket.emit("module.lookfar", {
+          type: "showResult",
+          resultMessage: newResultMessage,
+          selectedDifficulty,
+          groupLevel,
+          dangerSeverity,
+          discoveryType,
+        });
+        
+        showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+    },
+  },
+} : {}; // Non-GM users don't get any buttons
+
+  currentDialog = new Dialog({
     title: title,
     render: (html) => {
       html.addClass("ff6-dialog");
     },
-    content: `<p>Current Result: ${initialResult}</p><p>Do you want to keep this result or reroll?</p>`,
-    buttons: {
-      keep: {
-        icon: '<i class="fas fa-check" style="color: white;"></i>',
-        callback: () => {
-          // Determine visibility
-          const rollVisibility = game.settings.get(
-            "lookfar",
-            "rollVisibility"
-          );
-          const isWhisper = rollVisibility === "gmOnly";
-          // Get the IDs of all GM users if visibility is set to "gmOnly"
-          let gmUserIds = isWhisper
-            ? game.users.filter((user) => user.isGM).map((gm) => gm.id)
-            : [];
-
-          ChatMessage.create({
-            content: initialResult,
-            whisper: gmUserIds,
-            speaker: { alias: "Travel Roll" },
-          });
-        },
-      },
-      reroll: {
-  icon: '<i class="fas fa-redo" style="color: white;"></i>',
-  callback: async () => {
-    let newResultMessage;
-    if (isDanger) {
-  const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-  newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-} else if (discoveryType) {
-      // Pass the discoveryType when generating the new discovery
-      const newDiscoveryResult = await generateDiscovery(discoveryType);
-      newResultMessage = discoveryType === "major"
-        ? "Major Discovery! " + newDiscoveryResult
-        : "Minor Discovery! " + newDiscoveryResult;
-    } else {
-      const newDiscoveryResult = await generateDiscovery("major");
-      newResultMessage = "Discovery! " + newDiscoveryResult;
-    }
-    showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
-  },
-},
-    },
+    content: `<p>Current Result: ${initialResult}</p><p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
+    buttons: buttons,
     default: "keep",
-    close: () => {},
+    close: () => {
+      currentDialog = null;
+    },
   });
-  d.render(true);
+  currentDialog.render(true);
 }
 
 function toReadableText(str) {
