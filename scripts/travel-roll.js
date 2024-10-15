@@ -40,21 +40,7 @@ Hooks.once("init", async () => {
     },
     default: "5+",
   });
-
-  // Register roll visibility setting
-  game.settings.register("lookfar", "rollVisibility", {
-    name: "Roll Visibility",
-    hint: "Choose whether rolls and chat outputs are public or GM only.",
-    scope: "world",
-    config: true,
-    type: String,
-    choices: {
-      public: "Public",
-      gmOnly: "GM Only",
-    },
-    default: "public",
-  });
-
+  
   // Register Treasure Hunter Level setting
   game.settings.register("lookfar", "treasureHunterLevel", {
     name: "Treasure Hunter: Level",
@@ -302,18 +288,6 @@ async function handleRoll(selectedDifficulty) {
   let roll = new Roll(selectedDifficulty);
   await roll.evaluate({async: true});
 
-  // Determine visibility
-  const rollVisibility = game.settings.get(
-    "lookfar",
-    "rollVisibility"
-  );
-  const isWhisper = rollVisibility === "gmOnly";
-
- // Get the IDs of all GM users if visibility is set to "gmOnly"
-let gmUserIds = isWhisper
-  ? game.users.filter((user) => user.isGM).map((gm) => gm.id)
-  : [];
-
 // Render and create the roll chat message
 await roll.render().then((rollHTML) => {
   let chatData = {
@@ -323,12 +297,7 @@ await roll.render().then((rollHTML) => {
     type: CONST.CHAT_MESSAGE_TYPES.ROLL,
     rolls: [roll],
   };
-
-  // Only include whisper key if it's meant to be whispered to GMs
-  if (isWhisper) {
-    chatData.whisper = gmUserIds;
-  }
-
+  
   return ChatMessage.create(chatData).then(chatMessage => {
       if (game.dice3d) {
         return new Promise((resolve) => {
@@ -379,26 +348,14 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     content: `<p>Current Result: ${initialResult}</p><p>Do you want to keep this result or reroll?</p>`,
     buttons: {
       keep: {
-        icon: '<i class="fas fa-check" style="color: white;"></i>',
-        callback: () => {
-          // Determine visibility
-          const rollVisibility = game.settings.get(
-            "lookfar",
-            "rollVisibility"
-          );
-          const isWhisper = rollVisibility === "gmOnly";
-          // Get the IDs of all GM users if visibility is set to "gmOnly"
-          let gmUserIds = isWhisper
-            ? game.users.filter((user) => user.isGM).map((gm) => gm.id)
-            : [];
-
-          ChatMessage.create({
-            content: initialResult,
-            whisper: gmUserIds,
-            speaker: { alias: "Travel Roll" },
-          });
-        },
-      },
+  icon: '<i class="fas fa-check" style="color: white;"></i>',
+  callback: () => {
+    ChatMessage.create({
+      content: initialResult,
+      speaker: { alias: "Travel Roll" },
+    });
+  },
+},
       reroll: {
   icon: '<i class="fas fa-redo" style="color: white;"></i>',
   callback: async () => {
