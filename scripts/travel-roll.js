@@ -118,6 +118,11 @@ game.socket.on("module.lookfar", (data) => {
       data.dangerSeverity,
       data.discoveryType
     );
+   } else if (data?.type === "closeDialog") {
+    // Close the dialog if it's open on the client
+    if (currentDialog) {
+      currentDialog.close();
+    } 
   }
 });
 
@@ -370,15 +375,25 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
 
   const buttons = isGM ? {
     keep: {
-      icon: '<i class="fas fa-check" style="color: white;"></i>',
-      callback: () => {
-        ChatMessage.create({
-          content: initialResult,
-          speaker: { alias: "Travel Roll" },
-        });
-      },
+    icon: '<i class="fas fa-check" style="color: white;"></i>',
+    callback: () => {
+      ChatMessage.create({
+        content: initialResult,
+        speaker: { alias: "Travel Roll" },
+      });
+
+      // Emit a message to close the dialog on all clients
+      game.socket.emit("module.lookfar", {
+        type: "closeDialog",
+      });
+
+      // Close the dialog locally
+      if (currentDialog) {
+        currentDialog.close();
+      }
     },
-    reroll: {
+  },
+  reroll: {
       icon: '<i class="fas fa-redo" style="color: white;"></i>',
       callback: async () => {
         let newResultMessage;
@@ -404,12 +419,11 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
           dangerSeverity,
           discoveryType,
         });
-
-        // Show the new dialog on the initiating client (for local confirmation)
+        
         showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
-      },
     },
-  } : {}; // Non-GM users don't get any buttons
+  },
+} : {}; // Non-GM users don't get any buttons
 
   currentDialog = new Dialog({
     title: title,
