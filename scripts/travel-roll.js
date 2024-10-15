@@ -365,54 +365,59 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     currentDialog.close();
   }
 
+  // Check if the current user is a GM
+  const isGM = game.user.isGM;
+
+  const buttons = isGM ? {
+    keep: {
+      icon: '<i class="fas fa-check" style="color: white;"></i>',
+      callback: () => {
+        ChatMessage.create({
+          content: initialResult,
+          speaker: { alias: "Travel Roll" },
+        });
+      },
+    },
+    reroll: {
+      icon: '<i class="fas fa-redo" style="color: white;"></i>',
+      callback: async () => {
+        let newResultMessage;
+        if (isDanger) {
+          const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+          newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
+        } else if (discoveryType) {
+          const newDiscoveryResult = await generateDiscovery(discoveryType);
+          newResultMessage = discoveryType === "major"
+            ? "Major Discovery! " + newDiscoveryResult
+            : "Minor Discovery! " + newDiscoveryResult;
+        } else {
+          const newDiscoveryResult = await generateDiscovery("major");
+          newResultMessage = "Discovery! " + newDiscoveryResult;
+        }
+
+        // Emit the new result to all clients
+        game.socket.emit("module.lookfar", {
+          type: "showResult",
+          resultMessage: newResultMessage,
+          selectedDifficulty,
+          groupLevel,
+          dangerSeverity,
+          discoveryType,
+        });
+
+        // Show the new dialog on the initiating client (for local confirmation)
+        showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+      },
+    },
+  } : {}; // Non-GM users don't get any buttons
+
   currentDialog = new Dialog({
     title: title,
     render: (html) => {
       html.addClass("ff6-dialog");
     },
-    content: `<p>Current Result: ${initialResult}</p><p>Do you want to keep this result or reroll?</p>`,
-    buttons: {
-      keep: {
-        icon: '<i class="fas fa-check" style="color: white;"></i>',
-        callback: () => {
-          ChatMessage.create({
-            content: initialResult,
-            speaker: { alias: "Travel Roll" },
-          });
-        },
-      },
-      reroll: {
-        icon: '<i class="fas fa-redo" style="color: white;"></i>',
-        callback: async () => {
-          let newResultMessage;
-          if (isDanger) {
-            const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-            newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-          } else if (discoveryType) {
-            const newDiscoveryResult = await generateDiscovery(discoveryType);
-            newResultMessage = discoveryType === "major"
-              ? "Major Discovery! " + newDiscoveryResult
-              : "Minor Discovery! " + newDiscoveryResult;
-          } else {
-            const newDiscoveryResult = await generateDiscovery("major");
-            newResultMessage = "Discovery! " + newDiscoveryResult;
-          }
-
-          // Emit the new result to all clients
-          game.socket.emit("module.lookfar", {
-            type: "showResult",
-            resultMessage: newResultMessage,
-            selectedDifficulty,
-            groupLevel,
-            dangerSeverity,
-            discoveryType,
-          });
-
-          // Show the new dialog on the initiating client (for local confirmation)
-          showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
-        },
-      },
-    },
+    content: `<p>Current Result: ${initialResult}</p><p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
+    buttons: buttons,
     default: "keep",
     close: () => {
       currentDialog = null;
