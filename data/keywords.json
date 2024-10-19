@@ -1,13 +1,11 @@
 {
   "traits": [
-    // List all traits here as strings, same as your original file.
     "abandoned",
     "ancient",
     "arcane",
     ...
   ],
   "terrain": [
-    // List all terrain types here as strings, same as your original file.
     "alcove",
     "altar",
     "aqueduct",
