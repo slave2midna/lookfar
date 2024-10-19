@@ -55,6 +55,23 @@
       "Party automatically wins the next initiative.",
       "Party receives 1 Fabula Point.",
       "Resting here will not advance any clocks."
+    },
+    "Treasure": {
+      "5+": {
+        "2 PCs": "500z",
+        "3 PCs": "750z",
+        "4+ PCs": "1000z"
+      },
+      "20+": {
+        "2 PCs": "1000z",
+        "3 PCs": "1500z",
+        "4+ PCs": "2000z"
+      },
+      "40+": {
+        "2 PCs": "2000z",
+        "3 PCs": "3000z",
+        "4+ PCs": "4000z"
+      }
     }
   },
   "sources": [
