@@ -1,15 +1,74 @@
 {
-    "effects": [
-        "Each party member regains 1 IP. 2 IP if they have a trait that matches the environment.",
-        "Each party member regains 10 HP. 20 if they have a trait that matches the environment.",
-        "Each party member regains 10 MP. 20 if they have a trait that matches the environment.",
-        "Total distance to next destination is reduced by 1.",
-        "During the next combat encounter, the party automatically wins initiative.",
-        "The party experiences something remarkable! Everyone receives 1 Fabula Point.",
-        "The party encounters a friendly NPC who will help them in some way.",
-        "The party encounters a wandering merchant offering discounted prices.",
-        "The party stumbles upon wreckage filled with materials for projects or rituals.",
-        "The party finds a secret location, like a lost tomb, or secret base filled with treasure.",
-        "The party finds a safer place to camp. They may rest without advancing any clocks."
-    ]
+  "rewards": {
+    "Health": {
+      "5+": {
+        "Minor": 10,
+        "Heavy": 30,
+        "Massive": 40
+      },
+      "20+": {
+        "Minor": 20,
+        "Heavy": 40,
+        "Massive": 60
+      },
+      "40+": {
+        "Minor": 30,
+        "Heavy": 50,
+        "Massive": 80
+      }
+    },
+    "Magic": {
+      "5+": {
+        "Minor": 10,
+        "Heavy": 30,
+        "Massive": 40
+      },
+      "20+": {
+        "Minor": 20,
+        "Heavy": 40,
+        "Massive": 60
+      },
+      "40+": {
+        "Minor": 30,
+        "Heavy": 50,
+        "Massive": 80
+      }
+    },
+    "Items": {
+      "5+": {
+        "Minor": "+1 inventory point",
+        "Heavy": "+2 inventory points",
+        "Massive": "+3 inventory points"
+      },
+      "20+": {
+        "Minor": "+2 inventory points",
+        "Heavy": "+3 inventory points",
+        "Massive": "+4 inventory points"
+      },
+      "40+": {
+        "Minor": "+3 inventory points",
+        "Heavy": "+4 inventory points",
+        "Massive": "+5 inventory points"
+      }
+    },
+    "Boons": {
+      "Party automatically wins the next initiative.",
+      "Party receives 1 Fabula Point.",
+      "Resting here will not advance any clocks."
+    }
+  },
+  "sources": [
+    "Beautiful scenery that remains almost untouched for centuries.",
+    "Ruins of a village that tells the story of an old war.",
+    "Striking flowers or delicious fruits that only exist here.",
+    "Mythical creature passing through, singing a mysterious melody.",
+    "Rare group of animals in the middle of their migratory path.",
+    "A dark cave with incredibly rare gems.",
+    "Veils of color cross the sky that only a few people can see.",
+    "A meteor shower that only happens once every 50 years.",
+    "Remnants of temporal magic that gives a vision of the past.",
+    "A statue of an old, forgotten hero.",
+    "Scents coming from a plant that is used to make perfume.",
+    "Musicians on the trail perform a traditional song."
+  ]
 }
