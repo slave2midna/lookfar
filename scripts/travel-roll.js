@@ -126,20 +126,6 @@ game.socket.on("module.lookfar", (data) => {
   }
 });
 
-    // Register the "Discovery Keywords Roll Table" setting
-  game.settings.register("lookfar", "keywordRollTable", {
-    name: "Discovery Keywords Roll Table",
-    hint: "Select the Roll Table to use for generating discovery keywords.",
-    scope: "world",
-    config: true,
-    type: String,
-    choices: rollTableChoices,
-    default: "default", 
-    onChange: (value) => {
-      console.log(`Selected Discovery Keywords Roll Table: ${value}`);
-    },
-  });
-  
   // Register the Danger Source Roll Table setting
   game.settings.register("lookfar", "dangerSourceRollTable", {
     name: "Danger Source Roll Table",
@@ -600,100 +586,29 @@ function getRandomElement(arrayOrObject) {
 }
 
 async function generateDiscovery(type = "major") {
-  console.log("Generating Discovery... Type:", type);
-  
-  // Get the selected roll table IDs for effects and keywords
-  const effectTableId = game.settings.get("lookfar", "rollTable");
-  const keywordTableId = game.settings.get("lookfar", "keywordRollTable");
+  console.log("Generating Reward and Source... Type:", type);
 
-  // Variable to hold the effect text
-  let effectText = "No discovery effect available.";
-  let keywords = [];
+  // Randomly select a reward type (e.g., Health, Magic, Items, Treasure)
+  const rewardType = getRandomElement(Object.keys(dataLoader.rewardsData));
 
-  // Only generate effects if it's a major discovery
-  if (type === "major") {
-    // Use the selected Discovery Effect Roll Table if it's not the default
-    if (effectTableId && effectTableId !== "default") {
-      const rollTable = game.tables.get(effectTableId);
-      if (rollTable) {
-        console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
-        const rollResult = await rollTable.roll();
-        if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-          effectText = rollResult.results[0].text; // Use the roll result text as the effect
-        }
-      } else {
-        console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
-      }
-    } else {
-      // Use Lookfar Defaults: Pick a random effect from discovery.json
-      if (dataLoader.discoveryData && Array.isArray(dataLoader.discoveryData.effects)) {
-        const randomEffectIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
-        effectText = dataLoader.discoveryData.effects[randomEffectIndex]; // Randomly select from discovery.json effects
-      } else {
-        console.error("No effects data available in discovery.json.");
-      }
-    }
-  }
+  // Retrieve reward based on group level and discovery severity
+  const groupLevel = game.settings.get("lookfar", "groupLevel");
+  const severity = type === "major" ? "Massive" : "Minor";  // Adjust as needed
+  const reward = dataLoader.rewardsData[rewardType][groupLevel][severity] || "No reward available";
 
-  // Check if the Discovery Keywords Roll Table is selected
-  if (keywordTableId && keywordTableId !== "default") {
-    const rollTable = game.tables.get(keywordTableId);
-    if (rollTable) {
-      console.log(`Rolling on the Discovery Keywords Roll Table: ${rollTable.name}`);
-      for (let i = 0; i < (type === "major" ? 4 : 2) + Math.floor(Math.random() * (type === "major" ? 3 : 2)); i++) { // Get 4-6 for major, 2-3 for minor
-        const rollResult = await rollTable.roll();
-        if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-          keywords.push(rollResult.results[0].text); // Add the result to the keywords list
-        }
-      }
-    } else {
-      console.error("Selected Discovery Keywords Roll Table not found. Falling back to defaults.");
-    }
-  }
+  // Randomly select a discovery source
+  const source = getRandomElement(dataLoader.discoverySources);
 
-  // If no keywords table is selected or it's set to default, use the default traits/terrain
-  if (keywordTableId === "default" || keywords.length === 0) {
-    const terrain = Array.isArray(dataLoader.discoveryData.terrain)
-      ? generateUniqueList(dataLoader.discoveryData.terrain, 4, 6)
-      : [];
-
-    const traits = Array.isArray(dataLoader.discoveryData.traits)
-      ? generateUniqueList(dataLoader.discoveryData.traits, 4, 6)
-      : [];
-
-    // Return formatted table with default traits/terrain, and hide effect row for minor
-    return `
-      <table style="width: 100%; border-collapse: collapse;">
-        ${type === "major" && effectText ? `
-        <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
-          <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
-        </tr>
-        ` : ""}
-        <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Traits</th>
-          <td style="padding: 5px; border: 1px solid #ddd;">${traits.join(", ")}</td>
-        </tr>
-        <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Terrain</th>
-          <td style="padding: 5px; border: 1px solid #ddd;">${terrain.join(", ")}</td>
-        </tr>
-      </table>
-    `;
-  }
-
-  // If the Discovery Keywords Roll Table is selected, return formatted table with keywords, and hide effect row for minor
+  // Return formatted table for the reward and source
   return `
-    <table style="width: 100%; border-collapse: collapse;">
-      ${type === "major" && effectText ? `
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
-        <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Reward</th>
+        <td style="padding: 5px; border: 1px solid #ddd;">${reward}</td>
       </tr>
-      ` : ""}
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Keywords</th>
-        <td style="padding: 5px; border: 1px solid #ddd;">${keywords.join(", ")}</td>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Source</th>
+        <td style="padding: 5px; border: 1px solid #ddd;">${source}</td>
       </tr>
     </table>
   `;
