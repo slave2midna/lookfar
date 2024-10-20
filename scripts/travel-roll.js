@@ -591,13 +591,43 @@ async function generateDiscovery(type = "major") {
   // Randomly select a reward type (e.g., Health, Magic, Items, Treasure)
   const rewardType = getRandomElement(Object.keys(dataLoader.rewardsData));
 
-  // Retrieve reward based on group level and discovery severity
+  // Retrieve group level and discovery severity
   const groupLevel = game.settings.get("lookfar", "groupLevel");
-  const severity = type === "major" ? "Massive" : "Minor";  // Adjust as needed
-  const reward = dataLoader.rewardsData[rewardType][groupLevel][severity] || "No reward available";
+  const severity = type === "major" ? "Massive" : "Minor";  // Adjust severity for discovery
+
+  let reward = "No reward available";
+
+  switch (rewardType) {
+    case "Health":
+      reward = `Recover ${dataLoader.rewardsData.Health[groupLevel][severity]} HP.`;
+      break;
+    case "Magic":
+      reward = `Recover ${dataLoader.rewardsData.Magic[groupLevel][severity]} MP.`;
+      break;
+    case "Items":
+      reward = `Receive ${dataLoader.rewardsData.Items[groupLevel][severity]} item(s).`;
+      break;
+    case "Boons":
+      const boons = dataLoader.rewardsData.Boons;
+      reward = getRandomElement(boons);
+      break;
+    case "Treasure":
+      const connectedPlayers = game.users.players.filter((p) => p.active).length;
+      let playerCount = "2 PCs"; // Default to 2 PCs
+      if (connectedPlayers === 3) {
+        playerCount = "3 PCs";
+      } else if (connectedPlayers >= 4) {
+        playerCount = "4+ PCs";
+      }
+      reward = `Receive ${dataLoader.rewardsData.Treasure[groupLevel][playerCount]} treasure.`;
+      break;
+    default:
+      console.error(`Unknown reward type: ${rewardType}`);
+      break;
+  }
 
   // Randomly select a discovery source
-  const source = getRandomElement(dataLoader.discoverySources);
+  const source = getRandomElement(dataLoader.discoverySources) || "No source available";
 
   // Return formatted table for the reward and source
   return `
