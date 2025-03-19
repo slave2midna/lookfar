@@ -1,0 +1,19 @@
+{
+  "LOOKFAR.TravelCheck": "Travel Check",
+  "LOOKFAR.RollTravelCheck": "Make a Travel Check",
+  "LOOKFAR.GroupLevel": "Group Level",
+  "LOOKFAR.GroupLevelHint": "Set the group level for generating dangers.",
+  "LOOKFAR.TreasureHunterLevel": "Treasure Hunter: Level",
+  "LOOKFAR.TreasureHunterHint": "Modify the chance of discovery based on the level of Treasure Hunter skill.",
+  "LOOKFAR.WellTraveled": "Well-Traveled",
+  "LOOKFAR.WellTraveledHint": "Check this if the party has the Well-Traveled trait, reducing travel roll difficulty.",
+  "LOOKFAR.CharacterMessage": "Character/Skill Message",
+  "LOOKFAR.CharacterMessageHint": "Enter text that will display whenever the Travel Roll is affected by your group's Wayfarer.",
+  "LOOKFAR.MinorDiscoveries": "Enable Minor Discoveries",
+  "LOOKFAR.MinorDiscoveriesHint": "When enabled, travel rolls may result in minor discoveries (finds without effects).",
+  "LOOKFAR.ConfirmDangerResult": "Confirm Danger Result",
+  "LOOKFAR.ConfirmDiscoveryResult": "Confirm Discovery Result",
+  "LOOKFAR.KeepResult": "Keep Result",
+  "LOOKFAR.Reroll": "Reroll",
+  "LOOKFAR.WaitingForGM": "Waiting for GM decision..."
+}
