@@ -9,9 +9,7 @@ export const LookfarRolls = {
     if (wellTraveled) {
       selectedDifficulty = LookfarRolls.reduceDiceSize(selectedDifficulty);
       if (characterMessage) {
-        ChatMessage.create({
-          content: characterMessage,
-        });
+        ChatMessage.create({ content: characterMessage });
       }
     }
 
@@ -216,9 +214,3 @@ export const LookfarRolls = {
     return str.replace(/([A-Z])/g, " $1").trim();
   }
 };
-
-// Register the handler
-Hooks.on("lookfarTravelRoll", async (selectedDifficulty) => {
-  const result = await LookfarRolls.handleTravelRoll(selectedDifficulty);
-  Hooks.call("lookfarShowRerollDialog", result);
-});
