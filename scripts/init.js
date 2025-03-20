@@ -1,6 +1,6 @@
 import { LookfarSettings } from "./settings.js";
 import { LookfarUI } from "./uiManager.js";
-import { LookfarRolls } from "./rollManager.js";
+import { LookfarRolls } from "./travelRoll.js";
 import { dataLoader } from "./dataLoader.js";
 
 // Initialize the module
