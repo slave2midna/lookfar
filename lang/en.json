@@ -16,4 +16,50 @@
   "LOOKFAR.KeepResult": "Keep Result",
   "LOOKFAR.Reroll": "Reroll",
   "LOOKFAR.WaitingForGM": "Waiting for GM decision..."
+  "LOOKFAR.DiscoveryEffectRollTable": "Discovery Effect Roll Table",
+  "LOOKFAR.DiscoveryEffectRollTableHint": "Select the Roll Table to use for generating discovery effects.",
+  
+  "LOOKFAR.DiscoveryKeywordsRollTable": "Discovery Keywords Roll Table",
+  "LOOKFAR.DiscoveryKeywordsRollTableHint": "Select the Roll Table to use for generating discovery keywords.",
+
+  "LOOKFAR.DangerSourceRollTable": "Danger Source Roll Table",
+  "LOOKFAR.DangerSourceRollTableHint": "Select the Roll Table to use for generating danger sources.",
+
+  "LOOKFAR.ThreatLevel": "Threat Level",
+  
+  "LOOKFAR.Minimal": "Minimal",
+  "LOOKFAR.Low": "Low",
+  "LOOKFAR.Medium": "Medium",
+  "LOOKFAR.High": "High",
+  "LOOKFAR.VeryHigh": "Very High",
+
+  "LOOKFAR.TravelCheck": "Travel Check",
+  "LOOKFAR.RollTravelCheck": "Make a Travel Check",
+
+  "LOOKFAR.OpeningTravelCheckDialog": "Opening Travel Check dialog...",
+
+  "LOOKFAR.Danger": "Danger",
+  "LOOKFAR.ConfirmDangerResult": "Confirm Danger Result",
+  "LOOKFAR.ConfirmDiscoveryResult": "Confirm Discovery Result",
+
+  "LOOKFAR.CurrentResult": "Current Result",
+  "LOOKFAR.KeepOrReroll": "Do you want to keep this result or reroll?",
+  "LOOKFAR.WaitingForGM": "Waiting for GM decision...",
+
+  "LOOKFAR.KeepResult": "Keep Result",
+  "LOOKFAR.Reroll": "Reroll",
+
+  "LOOKFAR.MajorDiscovery": "Major Discovery! ",
+  "LOOKFAR.MinorDiscovery": "Minor Discovery! ",
+  "LOOKFAR.TravelDayPassedWithoutIncident": "The travel day passed without incident.",
+
+  "LOOKFAR.NoDangerSourceAvailable": "No danger source available.",
+
+  "LOOKFAR.NoDiscoveryEffectAvailable": "No discovery effect available.",
+
+  "LOOKFAR.Effect": "Effect",
+  "LOOKFAR.Keywords": "Keywords",
+
+  "LOOKFAR.Threat": "Threat",
+  "LOOKFAR.Source": "Source"
 }
