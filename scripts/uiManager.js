@@ -164,13 +164,17 @@ export const LookfarUI = {
       render: (html) => {
         html.addClass("ff6-dialog");
       },
-      content: `<p>Current Result: ${initialResult}</p><p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
+      content: `<p>Current Result: ${initialResult}</p>
+                <p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>
+                <p><strong>Updated Roll Result:</strong></p>
+                ${initialResult}`,  // **Ensure new result is displayed!**
       buttons: buttons,
       default: "keep",
       close: () => {
         LookfarUI.currentDialog = null;
       },
     });
+
     LookfarUI.currentDialog.render(true);
   }
 };
