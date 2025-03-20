@@ -6,17 +6,15 @@ import { dataLoader } from "./dataLoader.js";
 // Initialize the module
 Hooks.once("init", async () => {
   console.log("Lookfar Travel Assistant: Initializing...");
-  
-  // Load Data
+
+  // Load Data first before proceeding
   await dataLoader.loadData();
 
-  // Register settings
+  // Now initialize everything else
   LookfarSettings.registerSettings();
-
-  // Initialize UI components
   LookfarUI.init();
 
-  // Expose Travel Check Dialog to global scope for macros and external modules
+  // Expose Travel Check Dialog globally
   game.lookfar = game.lookfar || {};
   game.lookfar.showTravelCheckDialog = LookfarUI.showTravelCheckDialog;
 });
