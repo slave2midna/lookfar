@@ -90,25 +90,6 @@ let formHtml = `
   </form>
 `;
 
-// Adds floating button for travel check into Project FU's toolbar
-Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
-  console.log("Adding Travel Check button to toolbar...");
-  
-  let travelCheckButton = {
-    name: "Travel Check",
-    title: "Make a Travel Check",
-    icon: "fa-solid fa-person-hiking",
-    button: true,
-    onClick: () => {
-      console.log("Travel Check button clicked!");
-      showTravelCheckDialog();
-    },
-    visible: true
-  };
-  tools.push(travelCheckButton);
-  console.log("Button added to the toolbar:", tools);
-});
-
 // Defines the travel check dialog
 function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
