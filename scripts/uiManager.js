@@ -115,9 +115,7 @@ export const LookfarUI = {
       keep: {
         icon: '<i class="fas fa-check" style="color: white;"></i>',
         callback: () => {
-  console.log("Keeping result:", initialResult);
-}
-          // Emit message to close dialog on all clients
+          LookfarUI.sendResultToChat(initialResult);
           game.socket.emit("module.lookfar", { type: "closeDialog" });
 
           if (LookfarUI.currentDialog) {
@@ -152,8 +150,8 @@ export const LookfarUI = {
           });
 
           setTimeout(() => {
-  LookfarUI.showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
-}, 100); // Ensures the UI updates properly
+            LookfarUI.showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+          }, 100);
         },
       },
     } : {}; // Non-GM users get no buttons
@@ -164,8 +162,8 @@ export const LookfarUI = {
         html.addClass("ff6-dialog");
       },
       content: `<p><strong>Current Result:</strong></p>
-          <div>${initialResult}</div>
-          <p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
+                ${initialResult}
+                <p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
       buttons: buttons,
       default: "keep",
       close: () => {
@@ -174,5 +172,17 @@ export const LookfarUI = {
     });
 
     LookfarUI.currentDialog.render(true);
+  },
+
+  sendResultToChat(resultMessage) {
+    const rollVisibility = game.settings.get("lookfar", "rollVisibility");
+    const isWhisper = rollVisibility === "gmOnly";
+    const gmUserIds = isWhisper ? game.users.filter((user) => user.isGM).map((gm) => gm.id) : [];
+
+    ChatMessage.create({
+      content: resultMessage,
+      whisper: gmUserIds,
+      speaker: { alias: "System" },
+    });
   }
 };
