@@ -1,7 +1,7 @@
 {
   "id": "lookfar",
-  "title": "Lookfar Travel Assistant",
-  "description": "A module to assist with travel and random discovery/danger generation. For use with the Fabula Ultima game system.",
+  "title": "Lookfar GM Assistant",
+  "description": "A collection of tools and resources to assist GMs with running a Fabula Ultima campaign.",
   "version": "#{VERSION}#",
   "library": false,
   "compatibility": {
@@ -33,9 +33,7 @@
     "requires": []
   },
   "esmodules": [
-    "scripts/dataLoader.js",
-    "scripts/lib/lib.js",
-    "scripts/travel-roll.js"
+    "scripts/init.js"
   ],
   "scripts": [],
   "styles": [
