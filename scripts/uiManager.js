@@ -4,7 +4,7 @@ export const LookfarUI = {
     $(`<link rel="stylesheet" type="text/css" href="/modules/lookfar/styles/style.css">`).appendTo("head");
 
     // Add travel check button to Project FU's toolbar
-    Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
+    Hooks.once(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
       console.log("Adding Travel Check button to toolbar...");
       let travelCheckButton = {
         name: "Travel Check",
