@@ -28,8 +28,8 @@ Hooks.once("init", async () => {
 
   // Register game setting for group level
   game.settings.register("lookfar", "groupLevel", {
-    name: "Group Level",
-    hint: "Set the group level for generating dangers.",
+    name: game.i18n.localize("LOOKFAR.GroupLevel"),
+    hint: game.i18n.localize("LOOKFAR.GroupLevelHint"),
     scope: "world",
     config: true,
     type: String,
@@ -43,8 +43,8 @@ Hooks.once("init", async () => {
   
   // Register Treasure Hunter Level setting
   game.settings.register("lookfar", "treasureHunterLevel", {
-    name: "Treasure Hunter: Level",
-    hint: "Modify the chance of discovery based on the level of Treasure Hunter skill.",
+    name: game.i18n.localize("LOOKFAR.TreasureHunterLevel"),
+    hint: game.i18n.localize("LOOKFAR.TreasureHunterHint"),
     scope: "world",
     config: true,
     type: String,
@@ -58,8 +58,8 @@ Hooks.once("init", async () => {
 
   // Register Well-Traveled setting
   game.settings.register("lookfar", "wellTraveled", {
-    name: "Well-Traveled",
-    hint: "Check this if the party has the Well-Traveled trait, reducing travel roll difficulty.",
+    name: game.i18n.localize("LOOKFAR.WellTraveled"),
+    hint: game.i18n.localize("LOOKFAR.WellTraveledHint"),
     scope: "world",
     config: true,
     type: Boolean,
@@ -68,8 +68,8 @@ Hooks.once("init", async () => {
 
   // Register text field for character name or message
   game.settings.register("lookfar", "characterMessage", {
-    name: "Character/Skill Message",
-    hint: "Enter text that will display whenever the Travel Roll is affected by your group's Wayfarer.",
+    name: game.i18n.localize("LOOKFAR.CharacterMessage"),
+    hint: game.i18n.localize("LOOKFAR.CharacterMessageHint"),
     scope: "world",
     config: true,
     type: String,
@@ -78,8 +78,8 @@ Hooks.once("init", async () => {
 
     // Register Minor Discoveries setting
   game.settings.register("lookfar", "minorDiscoveries", {
-    name: "Enable Minor Discoveries",
-    hint: "When enabled, travel rolls may result in minor discoveries (finds without effects).",
+    name: game.i18n.localize("LOOKFAR.MinorDiscoveries"),
+    hint: game.i18n.localize("LOOKFAR.MinorDiscoveriesHint"),
     scope: "world",
     config: true,
     type: Boolean,
@@ -95,8 +95,8 @@ Hooks.once("init", async () => {
 Hooks.on("ready", async () => {
   const rollTableChoices = getRollTableChoices();
   game.settings.register("lookfar", "rollTable", {
-    name: "Discovery Effect Roll Table",
-    hint: "Select the Roll Table to use for generating discovery effects.",
+    name: game.i18n.localize("LOOKFAR.DiscoveryEffectRollTable"),
+    hint: game.i18n.localize("LOOKFAR.DiscoveryEffectRollTableHint"),
     scope: "world",
     config: true,
     type: String,
@@ -128,8 +128,8 @@ game.socket.on("module.lookfar", (data) => {
 
     // Register the "Discovery Keywords Roll Table" setting
   game.settings.register("lookfar", "keywordRollTable", {
-    name: "Discovery Keywords Roll Table",
-    hint: "Select the Roll Table to use for generating discovery keywords.",
+    name: game.i18n.localize("LOOKFAR.DiscoveryKeywordsRollTable"),
+    hint: game.i18n.localize("LOOKFAR.DiscoveryKeywordsRollTableHint"),
     scope: "world",
     config: true,
     type: String,
@@ -142,8 +142,8 @@ game.socket.on("module.lookfar", (data) => {
   
   // Register the Danger Source Roll Table setting
   game.settings.register("lookfar", "dangerSourceRollTable", {
-    name: "Danger Source Roll Table",
-    hint: "Select the Roll Table to use for generating danger sources.",
+    name: game.i18n.localize("LOOKFAR.DangerSourceRollTable"),
+    hint: game.i18n.localize("LOOKFAR.DangerSourceRollTableHint")
     scope: "world",
     config: true,
     type: String,
@@ -197,7 +197,7 @@ let formHtml = `
   </style>
   <form>
     <table class="travel-check-table">
-      <caption style="font-weight: bold; margin-bottom: 10px;">Threat Level</caption>
+      <caption style="font-weight: bold; margin-bottom: 10px;">${game.i18n.localize("LOOKFAR.ThreatLevel")}</caption>
       <tbody>
         ${Object.entries(TravelRolls.travelChecks)
           .map(
@@ -225,8 +225,8 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
   console.log("Adding Travel Check button to toolbar...");
   
   let travelCheckButton = {
-    name: "Travel Check",
-    title: "Make a Travel Check",
+    name: game.i18n.localize("LOOKFAR.TravelCheck"),
+    title: game.i18n.localize("LOOKFAR.RollTravelCheck"),
     icon: "fa-solid fa-person-hiking",
     button: true,
     onClick: () => {
@@ -241,9 +241,9 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
 
 // Defines the travel check dialog
 function showTravelCheckDialog() {
-  console.log("Opening Travel Check dialog...");
+  console.log(game.i18n.localize("LOOKFAR.OpeningTravelCheckDialog"));
   new Dialog({
-    title: "Travel Check",
+    title: game.i18n.localize("LOOKFAR.TravelCheck"),
     content: formHtml,
     render: (html) => {
       html.addClass("ff6-dialog");
@@ -335,13 +335,13 @@ async function handleRoll(selectedDifficulty) {
 
   if (roll.total >= 6) {
     dangerSeverity = await randomSeverity(selectedDifficulty);
-    resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+    resultMessage = `${dangerSeverity} ${game.i18n.localize("LOOKFAR.Danger")}! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
   } else if (discoveryType) {
     resultMessage = discoveryType === "major"
-      ? "Major Discovery! " + await generateDiscovery("major")
-      : "Minor Discovery! " + await generateDiscovery("minor");
+        ? game.i18n.localize("LOOKFAR.MajorDiscovery") + await generateDiscovery("major")
+        : game.i18n.localize("LOOKFAR.MinorDiscovery") + await generateDiscovery("minor");
   } else {
-    resultMessage = "The travel day passed without incident.";
+    resultMessage = game.i18n.localize("LOOKFAR.TravelDayPassedWithoutIncident");
   }
 
   // Emit the result to all clients
@@ -362,8 +362,10 @@ async function handleRoll(selectedDifficulty) {
 let currentDialog = null;
 
 function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity, discoveryType) {
-  let isDanger = initialResult.includes("Danger!");
-  let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
+  let isDanger = initialResult.includes(game.i18n.localize("LOOKFAR.Danger"));
+  let title = isDanger 
+  ? game.i18n.localize("LOOKFAR.ConfirmDangerResult") 
+  : game.i18n.localize("LOOKFAR.ConfirmDiscoveryResult");
 
   // Close the existing dialog if it's open
   if (currentDialog) {
@@ -374,8 +376,9 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
   const isGM = game.user.isGM;
 
   const buttons = isGM ? {
-    keep: {
+  keep: {
     icon: '<i class="fas fa-check" style="color: white;"></i>',
+    label: game.i18n.localize("LOOKFAR.KeepResult"),
     callback: () => {
       ChatMessage.create({
         content: initialResult,
@@ -395,6 +398,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
   },
   reroll: {
       icon: '<i class="fas fa-redo" style="color: white;"></i>',
+      label: game.i18n.localize("LOOKFAR.Reroll"),
       callback: async () => {
         let newResultMessage;
         if (isDanger) {
@@ -430,7 +434,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     render: (html) => {
       html.addClass("ff6-dialog");
     },
-    content: `<p>Current Result: ${initialResult}</p><p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
+    content: `<p>${game.i18n.localize("LOOKFAR.CurrentResult")}: ${initialResult}</p><p>${isGM ? game.i18n.localize("LOOKFAR.KeepOrReroll") : game.i18n.localize("LOOKFAR.WaitingForGM")}</p>`,
     buttons: buttons,
     default: "keep",
     close: () => {
@@ -460,7 +464,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   const dangerSourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");
   
   // Variable to hold the source text
-  let sourceText = "No danger source available.";
+  let sourceText = game.i18n.localize("LOOKFAR.NoDangerSourceAvailable");
 
   // Use the selected Danger Source Roll Table if it's not the default
   if (dangerSourceTableId && dangerSourceTableId !== "default") {
@@ -607,7 +611,7 @@ async function generateDiscovery(type = "major") {
   const keywordTableId = game.settings.get("lookfar", "keywordRollTable");
 
   // Variable to hold the effect text
-  let effectText = "No discovery effect available.";
+  let effectText = game.i18n.localize("LOOKFAR.NoDiscoveryEffectAvailable");
   let keywords = [];
 
   // Only generate effects if it's a major discovery
@@ -666,7 +670,7 @@ async function generateDiscovery(type = "major") {
       <table style="width: 100%; border-collapse: collapse;">
         ${type === "major" && effectText ? `
         <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
+          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">${game.i18n.localize("LOOKFAR.Effect")}</th>
           <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
         </tr>
         ` : ""}
@@ -675,7 +679,7 @@ async function generateDiscovery(type = "major") {
           <td style="padding: 5px; border: 1px solid #ddd;">${traits.join(", ")}</td>
         </tr>
         <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Terrain</th>
+          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">${game.i18n.localize("LOOKFAR.Keywords")}</th>
           <td style="padding: 5px; border: 1px solid #ddd;">${terrain.join(", ")}</td>
         </tr>
       </table>
@@ -687,12 +691,12 @@ async function generateDiscovery(type = "major") {
     <table style="width: 100%; border-collapse: collapse;">
       ${type === "major" && effectText ? `
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">${game.i18n.localize("LOOKFAR.Effect")}</th>
         <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
       </tr>
       ` : ""}
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Keywords</th>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">${game.i18n.localize("LOOKFAR.Keywords")}</th>
         <td style="padding: 5px; border: 1px solid #ddd;">${keywords.join(", ")}</td>
       </tr>
     </table>
