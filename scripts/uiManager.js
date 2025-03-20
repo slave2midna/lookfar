@@ -181,7 +181,7 @@ export const LookfarUI = {
 
     ChatMessage.create({
       content: resultMessage,
-      whisper: gmUserIds,
+      whisper: isWhisper ? gmUserIds : [],
       speaker: { alias: "System" },
     });
   }
