@@ -1,7 +1,7 @@
 export const LookfarUI = {
   init() {
     // Add CSS styles dynamically
-    $( `<link rel="stylesheet" type="text/css" href="/modules/lookfar/styles/style.css">`).appendTo("head");
+    $(`<link rel="stylesheet" type="text/css" href="/modules/lookfar/styles/style.css">`).appendTo("head");
 
     // Add travel check button to Project FU's toolbar
     Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
@@ -26,7 +26,7 @@ export const LookfarUI = {
   showTravelCheckDialog() {
     console.log("Opening Travel Check dialog...");
     new Dialog({
-      title: game.i18n.localize("travel.dialog.title"),
+      title: "Travel Check",
       content: LookfarUI.getTravelCheckForm(),
       render: (html) => {
         html.addClass("ff6-dialog");
@@ -65,7 +65,7 @@ export const LookfarUI = {
       </style>
       <form>
         <table class="travel-check-table">
-          <caption style="font-weight: bold; margin-bottom: 10px;">${game.i18n.localize("travel.dialog.threatLevel")}</caption>
+          <caption style="font-weight: bold; margin-bottom: 10px;">Threat Level</caption>
           <tbody>
             ${LookfarUI.getTravelCheckOptions()}
           </tbody>
@@ -91,7 +91,7 @@ export const LookfarUI = {
           <td>
             <label>
               <input type="radio" name="travelCheck" value="${value}" ${index === 0 ? "checked" : ""}>
-              ${game.i18n.localize(`travel.difficulty.${key}`)} (${value})
+              ${key} (${value})
             </label>
           </td>
         </tr>
@@ -103,7 +103,7 @@ export const LookfarUI = {
   // Show a result confirmation dialog (Reroll UI)
   showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity, discoveryType) {
     let isDanger = initialResult.includes("Danger!");
-    let title = isDanger ? game.i18n.localize("travel.dialog.confirmDanger") : game.i18n.localize("travel.dialog.confirmDiscovery");
+    let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
 
     // Close existing dialog if open
     if (LookfarUI.currentDialog) {
@@ -164,7 +164,7 @@ export const LookfarUI = {
       render: (html) => {
         html.addClass("ff6-dialog");
       },
-      content: `<p>${game.i18n.localize("travel.dialog.currentResult")}: ${initialResult}</p><p>${isGM ? game.i18n.localize("travel.dialog.gmDecision") : game.i18n.localize("travel.dialog.waitingForGM")}</p>`,
+      content: `<p>Current Result: ${initialResult}</p><p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
       buttons: buttons,
       default: "keep",
       close: () => {
@@ -174,8 +174,3 @@ export const LookfarUI = {
     LookfarUI.currentDialog.render(true);
   }
 };
-
-// Initialize UI elements
-Hooks.once("init", () => {
-  LookfarUI.init();
-});
