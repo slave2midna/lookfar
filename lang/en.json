@@ -92,5 +92,20 @@
   "LOOKFAR.MinorDiscovery": "Minor Discovery! ",
   "LOOKFAR.Discovery": "Discovery! ",
   
-  "LOOKFAR.TravelDayPassedWithoutIncident": "The travel day passed without incident."
+  "LOOKFAR.TravelDayPassedWithoutIncident": "The travel day passed without incident.",
+  "LOOKFAR.LookfarDefaults": "Lookfar Defaults",
+
+  "LOOKFAR.RollingOnDangerSourceTable": "Rolling on the Danger Source Roll Table",
+  "LOOKFAR.RollingOnDiscoveryEffectTable": "Rolling on the Discovery Effect Roll Table",
+  "LOOKFAR.RollingOnDiscoveryKeywordsTable": "Rolling on the Discovery Keywords Roll Table",
+  "LOOKFAR.GeneratingDiscoveryType": "Generating Discovery... Type",
+
+  "LOOKFAR.ErrorDataNotAvailable": "Error: Data not available.",
+  "LOOKFAR.ErrorDamageDataNotFound": "Error: Damage data not found.",
+  "LOOKFAR.ErrorUnknownThreatType": "Error: Unknown threat type.",
+
+  "LOOKFAR.Damage": "damage",
+  "LOOKFAR.And": "and",
+
+  "LOOKFAR.TravelRollAlias": "Travel Roll"
 }
