@@ -115,11 +115,8 @@ export const LookfarUI = {
       keep: {
         icon: '<i class="fas fa-check" style="color: white;"></i>',
         callback: () => {
-          ChatMessage.create({
-            content: initialResult,
-            speaker: { alias: "Travel Roll" },
-          });
-
+  console.log("Keeping result:", initialResult);
+}
           // Emit message to close dialog on all clients
           game.socket.emit("module.lookfar", { type: "closeDialog" });
 
@@ -154,7 +151,9 @@ export const LookfarUI = {
             discoveryType,
           });
 
-          LookfarUI.showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+          setTimeout(() => {
+  LookfarUI.showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+}, 100); // Ensures the UI updates properly
         },
       },
     } : {}; // Non-GM users get no buttons
@@ -164,10 +163,9 @@ export const LookfarUI = {
       render: (html) => {
         html.addClass("ff6-dialog");
       },
-      content: `<p>Current Result: ${initialResult}</p>
-                <p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>
-                <p><strong>Updated Roll Result:</strong></p>
-                ${initialResult}`,  // **Ensure new result is displayed!**
+      content: `<p><strong>Current Result:</strong></p>
+          <div>${initialResult}</div>
+          <p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
       buttons: buttons,
       default: "keep",
       close: () => {
