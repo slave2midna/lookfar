@@ -143,7 +143,7 @@ game.socket.on("module.lookfar", (data) => {
   // Register the Danger Source Roll Table setting
   game.settings.register("lookfar", "dangerSourceRollTable", {
     name: game.i18n.localize("LOOKFAR.DangerSourceRollTable"),
-    hint: game.i18n.localize("LOOKFAR.DangerSourceRollTableHint")
+    hint: game.i18n.localize("LOOKFAR.DangerSourceRollTableHint"),
     scope: "world",
     config: true,
     type: String,
