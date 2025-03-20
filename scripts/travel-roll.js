@@ -103,7 +103,7 @@ Hooks.on("ready", async () => {
     choices: rollTableChoices,
     default: "default", // Defaults to discovery.json
     onChange: (value) => {
-      console.log(`Selected Discovery Effect Roll Table: ${value}`);
+      console.log(game.i18n.localize("LOOKFAR.SelectedDiscoveryEffectRollTable") + ": " + value);
     },
   });
   
@@ -136,7 +136,7 @@ game.socket.on("module.lookfar", (data) => {
     choices: rollTableChoices,
     default: "default", 
     onChange: (value) => {
-      console.log(`Selected Discovery Keywords Roll Table: ${value}`);
+      console.log(game.i18n.localize("LOOKFAR.SelectedDiscoveryKeywordsRollTable") + ": " + value);
     },
   });
   
@@ -150,7 +150,7 @@ game.socket.on("module.lookfar", (data) => {
     choices: rollTableChoices,
     default: "default", // Defaults to dangers.json
     onChange: (value) => {
-      console.log(`Selected Danger Source Roll Table: ${value}`);
+      console.log(game.i18n.localize("LOOKFAR.SelectedDangerSourceRollTable") + ": " + value);
     },
   });
 });
@@ -171,11 +171,11 @@ Hooks.on("deleteRollTable", () => {
 // Define TravelRolls
 class TravelRolls {
   static travelChecks = {
-    "Minimal": "d6",
-    "Low": "d8",
-    "Medium": "d10",
-    "High": "d12",
-    "Very High": "d20",
+    [game.i18n.localize("LOOKFAR.Minimal")]: "d6",
+    [game.i18n.localize("LOOKFAR.Low")]: "d8",
+    [game.i18n.localize("LOOKFAR.Medium")]: "d10",
+    [game.i18n.localize("LOOKFAR.High")]: "d12",
+    [game.i18n.localize("LOOKFAR.VeryHigh")]: "d20",
   };
 }
 
@@ -403,15 +403,15 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
         let newResultMessage;
         if (isDanger) {
           const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-          newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
+          newResultMessage = `${dangerSeverity} ${game.i18n.localize("LOOKFAR.Danger")}! ` + newDangerResult;
         } else if (discoveryType) {
           const newDiscoveryResult = await generateDiscovery(discoveryType);
           newResultMessage = discoveryType === "major"
-            ? "Major Discovery! " + newDiscoveryResult
-            : "Minor Discovery! " + newDiscoveryResult;
+              ? game.i18n.localize("LOOKFAR.MajorDiscovery") + newDiscoveryResult
+              : game.i18n.localize("LOOKFAR.MinorDiscovery") + newDiscoveryResult;
         } else {
           const newDiscoveryResult = await generateDiscovery("major");
-          newResultMessage = "Discovery! " + newDiscoveryResult;
+          newResultMessage = game.i18n.localize("LOOKFAR.Discovery") + newDiscoveryResult;
         }
 
         // Emit the new result to all clients
@@ -453,7 +453,7 @@ function toReadableText(str) {
 
 async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
-    console.error("Threats data is not fully loaded.");
+    console.error(game.i18n.localize("LOOKFAR.ThreatsDataNotLoaded"));
     return "Error: Data not available.";
   }
 
@@ -476,7 +476,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
         sourceText = rollResult.results[0].text; // Use the roll result text as the source
       }
     } else {
-      console.error("Selected Danger Source Roll Table not found. Falling back to defaults.");
+      console.error(game.i18n.localize("LOOKFAR.DangerSourceTableNotFound"));
     }
   } else {
     // Use Lookfar Defaults: Pick a random source from dangers.json
@@ -484,7 +484,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
       const randomSourceIndex = Math.floor(Math.random() * dataLoader.sourceData.length);
       sourceText = dataLoader.sourceData[randomSourceIndex]; // Randomly select from dangers.json sources
     } else {
-      console.error("No source data available in dangers.json.");
+      console.error(game.i18n.localize("LOOKFAR.NoSourceDataInDangers"));
     }
   }
 
@@ -515,11 +515,11 @@ switch (threatType) {
   return `
     <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Threat</th>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">${game.i18n.localize("LOOKFAR.Threat")}</th>
         <td style="padding: 5px; border: 1px solid #ddd;">${result}</td>
       </tr>
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Source</th>
+        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">${game.i18n.localize("LOOKFAR.Source")}</th>
         <td style="padding: 5px; border: 1px solid #ddd;">${sourceText}</td>
       </tr>
     </table>
@@ -634,7 +634,7 @@ async function generateDiscovery(type = "major") {
         const randomEffectIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
         effectText = dataLoader.discoveryData.effects[randomEffectIndex]; // Randomly select from discovery.json effects
       } else {
-        console.error("No effects data available in discovery.json.");
+        console.error(game.i18n.localize("LOOKFAR.NoEffectsDataInDiscovery"));
       }
     }
   }
@@ -651,7 +651,7 @@ async function generateDiscovery(type = "major") {
         }
       }
     } else {
-      console.error("Selected Discovery Keywords Roll Table not found. Falling back to defaults.");
+      console.error(game.i18n.localize("LOOKFAR.DiscoveryKeywordsTableNotFound"));
     }
   }
 
@@ -675,7 +675,7 @@ async function generateDiscovery(type = "major") {
         </tr>
         ` : ""}
         <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Traits</th>
+          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">${game.i18n.localize("LOOKFAR.Traits")}</th>
           <td style="padding: 5px; border: 1px solid #ddd;">${traits.join(", ")}</td>
         </tr>
         <tr>
