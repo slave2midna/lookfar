@@ -60,14 +60,9 @@
   "LOOKFAR.ErrorDamageDataNotFound": "Error: Damage data not found.",
   "LOOKFAR.ErrorUnknownThreatType": "Error: Unknown threat type.",
   "LOOKFAR.Damage": "damage",
-  "LOOKFAR.And": "and",
   "LOOKFAR.TravelRollAlias": "Travel Roll",
   "LOOKFAR.DiscoveryEffectTableNotFound": "Selected Discovery Effect Roll Table not found. Falling back to defaults.",
-
   "LOOKFAR.AddingTravelCheckButton": "Adding Travel Check button to toolbar...",
   "LOOKFAR.TravelCheckButtonClicked": "Travel Check button clicked!",
-  "LOOKFAR.RollingOnDiscoveryEffectTable": "Rolling on the Discovery Effect Roll Table",
-  "LOOKFAR.RollingOnDiscoveryKeywordsTable": "Rolling on the Discovery Keywords Roll Table",
-  "LOOKFAR.GeneratingDiscoveryType": "Generating Discovery... Type",
   "LOOKFAR.ButtonAddedToToolbar": "Button added to the toolbar"
 }
