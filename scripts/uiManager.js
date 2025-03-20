@@ -43,8 +43,7 @@ export const LookfarUI = {
       default: "roll",
       close: () => {},
     }).render(true);
-  }
-};
+  },
 
   // Generates travel check form
   getTravelCheckForm() {
