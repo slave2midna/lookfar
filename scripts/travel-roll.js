@@ -382,7 +382,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     callback: () => {
       ChatMessage.create({
         content: initialResult,
-        speaker: { alias: "Travel Roll" },
+        speaker: { alias: game.i18n.localize("LOOKFAR.TravelRollAlias") },
       });
 
       // Emit a message to close the dialog on all clients
@@ -530,7 +530,7 @@ function handleDamage(threatsData, groupLevel, dangerSeverity) {
   const damageData = threatsData.Damage ? threatsData.Damage[groupLevel] : undefined;
 
   if (!damageData || !damageData[dangerSeverity]) {
-    console.error(`Damage data not found for groupLevel: ${groupLevel}, severity: ${dangerSeverity}`);
+    console.error(game.i18n.localize("LOOKFAR.ErrorDamageDataNotFound") + ` groupLevel: ${groupLevel}, severity: ${dangerSeverity}`);
     return game.i18n.localize("LOOKFAR.ErrorDamageDataNotFound");
   }
   return `${damageData[dangerSeverity]} ` + game.i18n.localize("LOOKFAR.Damage");
@@ -626,7 +626,7 @@ async function generateDiscovery(type = "major") {
           effectText = rollResult.results[0].text; // Use the roll result text as the effect
         }
       } else {
-        console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
+        console.error(game.i18n.localize("LOOKFAR.DiscoveryEffectTableNotFound"));
       }
     } else {
       // Use Lookfar Defaults: Pick a random effect from discovery.json
