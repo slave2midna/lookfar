@@ -18,98 +18,49 @@
   "LOOKFAR.WaitingForGM": "Waiting for GM decision...",
   "LOOKFAR.DiscoveryEffectRollTable": "Discovery Effect Roll Table",
   "LOOKFAR.DiscoveryEffectRollTableHint": "Select the Roll Table to use for generating discovery effects.",
-  
   "LOOKFAR.DiscoveryKeywordsRollTable": "Discovery Keywords Roll Table",
   "LOOKFAR.DiscoveryKeywordsRollTableHint": "Select the Roll Table to use for generating discovery keywords.",
-
   "LOOKFAR.DangerSourceRollTable": "Danger Source Roll Table",
   "LOOKFAR.DangerSourceRollTableHint": "Select the Roll Table to use for generating danger sources.",
-
   "LOOKFAR.ThreatLevel": "Threat Level",
-  
   "LOOKFAR.Minimal": "Minimal",
   "LOOKFAR.Low": "Low",
   "LOOKFAR.Medium": "Medium",
   "LOOKFAR.High": "High",
   "LOOKFAR.VeryHigh": "Very High",
-
-  "LOOKFAR.TravelCheck": "Travel Check",
-  "LOOKFAR.RollTravelCheck": "Make a Travel Check",
-
   "LOOKFAR.OpeningTravelCheckDialog": "Opening Travel Check dialog...",
-
   "LOOKFAR.Danger": "Danger",
-  "LOOKFAR.ConfirmDangerResult": "Confirm Danger Result",
-  "LOOKFAR.ConfirmDiscoveryResult": "Confirm Discovery Result",
-
   "LOOKFAR.CurrentResult": "Current Result",
   "LOOKFAR.KeepOrReroll": "Do you want to keep this result or reroll?",
-  "LOOKFAR.WaitingForGM": "Waiting for GM decision...",
-
-  "LOOKFAR.KeepResult": "Keep Result",
-  "LOOKFAR.Reroll": "Reroll",
-
   "LOOKFAR.MajorDiscovery": "Major Discovery! ",
   "LOOKFAR.MinorDiscovery": "Minor Discovery! ",
   "LOOKFAR.TravelDayPassedWithoutIncident": "The travel day passed without incident.",
-
   "LOOKFAR.NoDangerSourceAvailable": "No danger source available.",
-
   "LOOKFAR.NoDiscoveryEffectAvailable": "No discovery effect available.",
-
   "LOOKFAR.Effect": "Effect",
   "LOOKFAR.Keywords": "Keywords",
-
   "LOOKFAR.Threat": "Threat",
   "LOOKFAR.Source": "Source",
-
-  "LOOKFAR.DangerSourceRollTableHint": "Select the Roll Table to use for generating danger sources.",
-
-  "LOOKFAR.Minimal": "Minimal",
-  "LOOKFAR.Low": "Low",
-  "LOOKFAR.Medium": "Medium",
-  "LOOKFAR.High": "High",
-  "LOOKFAR.VeryHigh": "Very High",
-
   "LOOKFAR.SelectedDiscoveryEffectRollTable": "Selected Discovery Effect Roll Table",
   "LOOKFAR.SelectedDiscoveryKeywordsRollTable": "Selected Discovery Keywords Roll Table",
   "LOOKFAR.SelectedDangerSourceRollTable": "Selected Danger Source Roll Table",
-
-  "LOOKFAR.Threat": "Threat",
-  "LOOKFAR.Source": "Source",
-
   "LOOKFAR.ThreatsDataNotLoaded": "Threats data is not fully loaded.",
   "LOOKFAR.DangerSourceTableNotFound": "Selected Danger Source Roll Table not found. Falling back to defaults.",
   "LOOKFAR.NoSourceDataInDangers": "No source data available in dangers.json.",
   "LOOKFAR.NoEffectsDataInDiscovery": "No effects data available in discovery.json.",
   "LOOKFAR.DiscoveryKeywordsTableNotFound": "Selected Discovery Keywords Roll Table not found. Falling back to defaults.",
-
   "LOOKFAR.Traits": "Traits",
-  "LOOKFAR.Keywords": "Keywords",
-
-  "LOOKFAR.Danger": "Danger",
-  "LOOKFAR.MajorDiscovery": "Major Discovery! ",
-  "LOOKFAR.MinorDiscovery": "Minor Discovery! ",
   "LOOKFAR.Discovery": "Discovery! ",
-  
-  "LOOKFAR.TravelDayPassedWithoutIncident": "The travel day passed without incident.",
   "LOOKFAR.LookfarDefaults": "Lookfar Defaults",
-
   "LOOKFAR.RollingOnDangerSourceTable": "Rolling on the Danger Source Roll Table",
   "LOOKFAR.RollingOnDiscoveryEffectTable": "Rolling on the Discovery Effect Roll Table",
   "LOOKFAR.RollingOnDiscoveryKeywordsTable": "Rolling on the Discovery Keywords Roll Table",
   "LOOKFAR.GeneratingDiscoveryType": "Generating Discovery... Type",
-
   "LOOKFAR.ErrorDataNotAvailable": "Error: Data not available.",
   "LOOKFAR.ErrorDamageDataNotFound": "Error: Damage data not found.",
   "LOOKFAR.ErrorUnknownThreatType": "Error: Unknown threat type.",
-
   "LOOKFAR.Damage": "damage",
   "LOOKFAR.And": "and",
-
   "LOOKFAR.TravelRollAlias": "Travel Roll",
-  
-  "LOOKFAR.DiscoveryEffectTableNotFound": "Selected Discovery Effect Roll Table not found. Falling back to defaults.",
-  "LOOKFAR.ErrorDamageDataNotFound": "Error: Damage data not found.",
-  "LOOKFAR.ErrorUnknownThreatType": "Error: Unknown threat type."
+  "LOOKFAR.DiscoveryEffectTableNotFound": "Selected Discovery Effect Roll Table not found. Falling back to defaults."
 }
