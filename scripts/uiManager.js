@@ -4,22 +4,31 @@ export const LookfarUI = {
     $(`<link rel="stylesheet" type="text/css" href="/modules/lookfar/styles/style.css">`).appendTo("head");
 
     // Add travel check button to Project FU's toolbar
-    Hooks.once(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
-      console.log("Adding Travel Check button to toolbar...");
-      let travelCheckButton = {
-        name: "Travel Check",
-        title: "Make a Travel Check",
-        icon: "fa-solid fa-person-hiking",
-        button: true,
-        onClick: () => {
-          console.log("Travel Check button clicked!");
-          LookfarUI.showTravelCheckDialog();
-        },
-        visible: true
-      };
-      tools.push(travelCheckButton);
-      console.log("Button added to the toolbar:", tools);
-    });
+    Hooks.once("ready", () => {
+  // Ensure Project FU is loaded before proceeding
+  if (!game.modules.get("projectfu")?.active) {
+    console.error("Lookfar Travel Assistant: Project FU module is not active! Travel Roll button cannot be added.");
+    return;
+  }
+
+  // Now that Foundry is ready, register the toolbar button
+  Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
+    console.log("Adding Travel Check button to toolbar...");
+    let travelCheckButton = {
+      name: "Travel Check",
+      title: "Make a Travel Check",
+      icon: "fa-solid fa-person-hiking",
+      button: true,
+      onClick: () => {
+        console.log("Travel Check button clicked!");
+        LookfarUI.showTravelCheckDialog();
+      },
+      visible: true
+    };
+    tools.push(travelCheckButton);
+    console.log("Button added to the toolbar:", tools);
+  });
+});
   },
 
   // Travel check dialog UI
