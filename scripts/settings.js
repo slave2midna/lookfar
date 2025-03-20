@@ -9,9 +9,9 @@ export const LookfarSettings = {
       choices: {
         "5+": "5+",
         "20+": "20+",
-        "40+": "40+",
+        "40+": "40+"
       },
-      default: "5+",
+      default: "5+"
     });
 
     game.settings.register("lookfar", "treasureHunterLevel", {
@@ -23,9 +23,9 @@ export const LookfarSettings = {
       choices: {
         "0": "Level 0",
         "1": "Level 1",
-        "2": "Level 2",
+        "2": "Level 2"
       },
-      default: "0",
+      default: "0"
     });
 
     game.settings.register("lookfar", "wellTraveled", {
@@ -34,7 +34,7 @@ export const LookfarSettings = {
       scope: "world",
       config: true,
       type: Boolean,
-      default: false,
+      default: false
     });
 
     game.settings.register("lookfar", "characterMessage", {
@@ -43,7 +43,7 @@ export const LookfarSettings = {
       scope: "world",
       config: true,
       type: String,
-      default: "",
+      default: ""
     });
 
     game.settings.register("lookfar", "minorDiscoveries", {
@@ -52,7 +52,7 @@ export const LookfarSettings = {
       scope: "world",
       config: true,
       type: Boolean,
-      default: true,
+      default: true
     });
 
     LookfarSettings.registerDynamicRollTableSettings();
@@ -69,9 +69,7 @@ export const LookfarSettings = {
       type: String,
       choices: rollTableChoices,
       default: "default",
-      onChange: (value) => {
-        console.log(`Selected Discovery Effect Roll Table: ${value}`);
-      },
+      onChange: (value) => console.log(`Selected Discovery Effect Roll Table: ${value}`)
     });
 
     game.settings.register("lookfar", "keywordRollTable", {
@@ -82,9 +80,7 @@ export const LookfarSettings = {
       type: String,
       choices: rollTableChoices,
       default: "default",
-      onChange: (value) => {
-        console.log(`Selected Discovery Keywords Roll Table: ${value}`);
-      },
+      onChange: (value) => console.log(`Selected Discovery Keywords Roll Table: ${value}`)
     });
 
     game.settings.register("lookfar", "dangerSourceRollTable", {
@@ -95,9 +91,7 @@ export const LookfarSettings = {
       type: String,
       choices: rollTableChoices,
       default: "default",
-      onChange: (value) => {
-        console.log(`Selected Danger Source Roll Table: ${value}`);
-      },
+      onChange: (value) => console.log(`Selected Danger Source Roll Table: ${value}`)
     });
   },
 
@@ -118,12 +112,3 @@ export const LookfarSettings = {
     game.settings.settings.get("lookfar.dangerSourceRollTable").choices = rollTableChoices;
   }
 };
-
-// Register settings on module init
-Hooks.once("init", () => {
-  LookfarSettings.registerSettings();
-});
-
-// Update roll table choices dynamically when new tables are added or removed
-Hooks.on("createRollTable", () => LookfarSettings.updateRollTableChoices());
-Hooks.on("deleteRollTable", () => LookfarSettings.updateRollTableChoices());
