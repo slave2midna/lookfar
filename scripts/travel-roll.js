@@ -2,7 +2,7 @@ import { dataLoader } from "./dataLoader.js";
 
 // Function to set default "Discovery" rolltable options. Will update for multiple table settings.
 function getRollTableChoices() {
-  const choices = { default: "Lookfar Defaults" }; // Add "Default" option
+  const choices = { default: game.i18n.localize("LOOKFAR.LookfarDefaults") }; // Add "Default" option
   if (game.tables) {
     const tables = game.tables.contents; // Use .contents instead of .entities
     tables.forEach((table) => {
@@ -306,7 +306,7 @@ async function handleRoll(selectedDifficulty) {
   await roll.render().then((rollHTML) => {
     let chatData = {
       user: game.userId,
-      speaker: { alias: "Travel Roll" },
+      speaker: { alias: game.i18n.localize("LOOKFAR.TravelRollAlias") },
       content: rollHTML,
       type: CONST.CHAT_MESSAGE_TYPES.ROLL,
       rolls: [roll],
@@ -454,7 +454,7 @@ function toReadableText(str) {
 async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
     console.error(game.i18n.localize("LOOKFAR.ThreatsDataNotLoaded"));
-    return "Error: Data not available.";
+    return game.i18n.localize("LOOKFAR.ErrorDataNotAvailable");
   }
 
   const threatType = randomThreatType();
@@ -470,7 +470,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   if (dangerSourceTableId && dangerSourceTableId !== "default") {
     const rollTable = game.tables.get(dangerSourceTableId);
     if (rollTable) {
-      console.log(`Rolling on the Danger Source Roll Table: ${rollTable.name}`);
+      console.log(game.i18n.localize("LOOKFAR.RollingOnDangerSourceTable") + ": " + rollTable.name);
       const rollResult = await rollTable.roll();  // Add await here
       if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
         sourceText = rollResult.results[0].text; // Use the roll result text as the source
@@ -507,8 +507,8 @@ switch (threatType) {
     result += dataLoader.threatsData.villainPlanAdvance[dangerSeverity];
     break;
   default:
-    console.error("Unknown threat type:", threatType);
-    return "Error: Unknown threat type.";
+    console.error(game.i18n.localize("LOOKFAR.ErrorUnknownThreatType"), threatType);
+    return game.i18n.localize("LOOKFAR.ErrorUnknownThreatType");
 }
 
   // Return formatted table for danger results and source.
@@ -531,9 +531,9 @@ function handleDamage(threatsData, groupLevel, dangerSeverity) {
 
   if (!damageData || !damageData[dangerSeverity]) {
     console.error(`Damage data not found for groupLevel: ${groupLevel}, severity: ${dangerSeverity}`);
-    return "Error: Damage data not found.";
+    return game.i18n.localize("LOOKFAR.ErrorDamageDataNotFound");
   }
-  return `${damageData[dangerSeverity]} damage`;
+  return `${damageData[dangerSeverity]} ` + game.i18n.localize("LOOKFAR.Damage");
 }
 
 function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
@@ -547,11 +547,11 @@ function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
     if (useMinorEffect) {
       const statusEffect = getRandomElement(statusEffectsListMinor);
       const heavyDamage = threatsData.Damage[groupLevel]["Heavy"];
-      return `${statusEffect} and ${heavyDamage} damage`;
+      return `${statusEffect} ` + game.i18n.localize("LOOKFAR.And") + ` ${heavyDamage} ` + game.i18n.localize("LOOKFAR.Damage");
     } else {
       const statusEffect = getRandomElement(statusEffectsListHeavy);
       const minorDamage = threatsData.Damage[groupLevel]["Minor"];
-      return `${statusEffect} and ${minorDamage} damage`;
+      return `${statusEffect} ` + game.i18n.localize("LOOKFAR.And") + ` ${minorDamage} ` + game.i18n.localize("LOOKFAR.Damage");
     }
   } else {
     const statusEffectsList = threatsData.statusEffects[dangerSeverity];
@@ -604,7 +604,7 @@ function getRandomElement(arrayOrObject) {
 }
 
 async function generateDiscovery(type = "major") {
-  console.log("Generating Discovery... Type:", type);
+  console.log(game.i18n.localize("LOOKFAR.GeneratingDiscoveryType") + ": " + type);
   
   // Get the selected roll table IDs for effects and keywords
   const effectTableId = game.settings.get("lookfar", "rollTable");
@@ -620,7 +620,7 @@ async function generateDiscovery(type = "major") {
     if (effectTableId && effectTableId !== "default") {
       const rollTable = game.tables.get(effectTableId);
       if (rollTable) {
-        console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
+        console.log(game.i18n.localize("LOOKFAR.RollingOnDiscoveryEffectTable") + ": " + rollTable.name);
         const rollResult = await rollTable.roll();
         if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
           effectText = rollResult.results[0].text; // Use the roll result text as the effect
@@ -643,7 +643,7 @@ async function generateDiscovery(type = "major") {
   if (keywordTableId && keywordTableId !== "default") {
     const rollTable = game.tables.get(keywordTableId);
     if (rollTable) {
-      console.log(`Rolling on the Discovery Keywords Roll Table: ${rollTable.name}`);
+      console.log(game.i18n.localize("LOOKFAR.RollingOnDiscoveryKeywordsTable") + ": " + rollTable.name);
       for (let i = 0; i < (type === "major" ? 4 : 2) + Math.floor(Math.random() * (type === "major" ? 3 : 2)); i++) { // Get 4-6 for major, 2-3 for minor
         const rollResult = await rollTable.roll();
         if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
