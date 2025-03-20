@@ -14,6 +14,19 @@ export const LookfarSettings = {
       default: "5+"
     });
 
+    game.settings.register("lookfar", "rollVisibility", {
+      name: "Roll Visibility",
+      hint: "Choose whether rolls and chat outputs are public or GM only.",
+      scope: "world",
+      config: true,
+      type: String,
+      choices: {
+        public: "Public",
+        gmOnly: "GM Only",
+      },
+      default: "public",
+    });
+
     game.settings.register("lookfar", "treasureHunterLevel", {
       name: "Treasure Hunter: Level",
       hint: "Modify the chance of discovery based on the level of Treasure Hunter skill.",
