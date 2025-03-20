@@ -10,8 +10,15 @@ export const dataLoader = {
         "/modules/lookfar/data/dangers.json"
       );
 	  const dangersData = await threatsResponse.json();
-	  this.threatsData = dangersData.threats || {};  // Safely assign danger threats
-	  this.sourceData = dangersData.sources || {};      // Safely assign danger sources
+this.threatsData = dangersData?.threats ?? {};  
+this.sourceData = dangersData?.sources ?? {};  
+
+if (Object.keys(this.threatsData).length === 0) {
+  console.warn("Warning: No threats data found in dangers.json.");
+}
+if (Object.keys(this.sourceData).length === 0) {
+  console.warn("Warning: No sources data found in dangers.json.");
+}
 
       console.log("Threats Data:", this.threatsData);
       console.log("Source Data:", this.sourceData);
