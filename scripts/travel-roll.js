@@ -170,18 +170,14 @@ Hooks.on("deleteRollTable", () => {
 
 // Define TravelRolls
 class TravelRolls {
-  static travelChecks = {}; // Initialize as an empty object
-}
-
-Hooks.on("ready", () => {
-  TravelRolls.travelChecks = {
-    [game.i18n.localize("LOOKFAR.Minimal")]: "d6",
-    [game.i18n.localize("LOOKFAR.Low")]: "d8",
-    [game.i18n.localize("LOOKFAR.Medium")]: "d10",
-    [game.i18n.localize("LOOKFAR.High")]: "d12",
-    [game.i18n.localize("LOOKFAR.VeryHigh")]: "d20",
+  static travelChecks = {
+    "Minimal": "d6",
+    "Low": "d8",
+    "Medium": "d10",
+    "High": "d12",
+    "Very High": "d20",
   };
-});
+}
 
 let formHtml = `
   <style>
