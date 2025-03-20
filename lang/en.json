@@ -15,7 +15,7 @@
   "LOOKFAR.ConfirmDiscoveryResult": "Confirm Discovery Result",
   "LOOKFAR.KeepResult": "Keep Result",
   "LOOKFAR.Reroll": "Reroll",
-  "LOOKFAR.WaitingForGM": "Waiting for GM decision..."
+  "LOOKFAR.WaitingForGM": "Waiting for GM decision...",
   "LOOKFAR.DiscoveryEffectRollTable": "Discovery Effect Roll Table",
   "LOOKFAR.DiscoveryEffectRollTableHint": "Select the Roll Table to use for generating discovery effects.",
   
@@ -61,5 +61,36 @@
   "LOOKFAR.Keywords": "Keywords",
 
   "LOOKFAR.Threat": "Threat",
-  "LOOKFAR.Source": "Source"
+  "LOOKFAR.Source": "Source",
+
+  "LOOKFAR.DangerSourceRollTableHint": "Select the Roll Table to use for generating danger sources.",
+
+  "LOOKFAR.Minimal": "Minimal",
+  "LOOKFAR.Low": "Low",
+  "LOOKFAR.Medium": "Medium",
+  "LOOKFAR.High": "High",
+  "LOOKFAR.VeryHigh": "Very High",
+
+  "LOOKFAR.SelectedDiscoveryEffectRollTable": "Selected Discovery Effect Roll Table",
+  "LOOKFAR.SelectedDiscoveryKeywordsRollTable": "Selected Discovery Keywords Roll Table",
+  "LOOKFAR.SelectedDangerSourceRollTable": "Selected Danger Source Roll Table",
+
+  "LOOKFAR.Threat": "Threat",
+  "LOOKFAR.Source": "Source",
+
+  "LOOKFAR.ThreatsDataNotLoaded": "Threats data is not fully loaded.",
+  "LOOKFAR.DangerSourceTableNotFound": "Selected Danger Source Roll Table not found. Falling back to defaults.",
+  "LOOKFAR.NoSourceDataInDangers": "No source data available in dangers.json.",
+  "LOOKFAR.NoEffectsDataInDiscovery": "No effects data available in discovery.json.",
+  "LOOKFAR.DiscoveryKeywordsTableNotFound": "Selected Discovery Keywords Roll Table not found. Falling back to defaults.",
+
+  "LOOKFAR.Traits": "Traits",
+  "LOOKFAR.Keywords": "Keywords",
+
+  "LOOKFAR.Danger": "Danger",
+  "LOOKFAR.MajorDiscovery": "Major Discovery! ",
+  "LOOKFAR.MinorDiscovery": "Minor Discovery! ",
+  "LOOKFAR.Discovery": "Discovery! ",
+  
+  "LOOKFAR.TravelDayPassedWithoutIncident": "The travel day passed without incident."
 }
