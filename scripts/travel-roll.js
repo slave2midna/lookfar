@@ -222,7 +222,7 @@ let formHtml = `
 
 // Adds floating button for travel check into Project FU's toolbar
 Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
-  console.log("Adding Travel Check button to toolbar...");
+  console.log(game.i18n.localize("LOOKFAR.AddingTravelCheckButton"));
   
   let travelCheckButton = {
     name: game.i18n.localize("LOOKFAR.TravelCheck"),
@@ -230,13 +230,13 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
     icon: "fa-solid fa-person-hiking",
     button: true,
     onClick: () => {
-      console.log("Travel Check button clicked!");
+      console.log(game.i18n.localize("LOOKFAR.TravelCheckButtonClicked"));
       showTravelCheckDialog();
     },
     visible: true
   };
   tools.push(travelCheckButton);
-  console.log("Button added to the toolbar:", tools);
+  console.log(game.i18n.localize("LOOKFAR.ButtonAddedToToolbar") + ": ", tools);
 });
 
 // Defines the travel check dialog
