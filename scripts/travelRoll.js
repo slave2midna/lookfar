@@ -90,11 +90,15 @@ let formHtml = `
 function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
   new Dialog({
-    title: "Travel Check",
-    content: formHtml,
-    render: (html) => {
-//      html.addClass("ff6-dialog"); will add dialogs later
-    },
+  title: "Travel Check",
+  content: formHtml,
+  render: (html) => {
+    const dialogEl = html.closest(".app.dialog");
+    if (dialogEl) {
+      dialogEl.style.maxHeight = "none";
+      dialogEl.style.overflow = "hidden";
+    }
+  },
     buttons: {
       roll: {
         icon: '<i class="fas fa-check"></i>',
