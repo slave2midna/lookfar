@@ -286,9 +286,6 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     },
     content: `
   <div style="font-weight: bold; font-size: 1.1rem; text-align: center; margin-bottom: 10px;">
-    Current Result
-  </div>
-  <div style="margin-bottom: 10px;">
     ${initialResult}
   </div>
   <p style="margin-bottom: 1rem;">
@@ -390,12 +387,12 @@ if (!result) {
   return `
     <table style="width: 100%; border-collapse: collapse;">
       <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap">Threat</th>
-        <td style="padding: 5px; border: 1px solid">${result}</td>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Threat</th>
+        <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
       </tr>
       <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap">Source</th>
-        <td style="padding: 5px; border: 1px solid">${sourceText}</td>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
       </tr>
     </table>
   `;
@@ -536,12 +533,12 @@ if (sourceTableId && sourceTableId !== "default") {
     return `
   <table style="width: 100%; border-collapse: collapse;">
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap">Effect</th>
-      <td style="padding: 5px; border: 1px solid">${effectText}</td>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
     </tr>
     <tr>
       <th style="padding: 5px; border: 1px solid; white-space: nowrap">Source</th>
-      <td style="padding: 5px; border: 1px solid">${sourceText}</td>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
     </tr>
   </table>
 `;
