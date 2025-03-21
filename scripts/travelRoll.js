@@ -232,8 +232,8 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     icon: '<i class="fas fa-check"></i>',
     callback: () => {
       ChatMessage.create({
-        content: initialResult,
-        speaker: { alias: "Travel Roll" },
+        content: `<div style="text-align: center;">${initialResult}</div>`,
+        speaker: { alias: "Travel Result" },
       });
 
       // Emit a message to close the dialog on all clients
@@ -285,7 +285,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
       html.addClass("ff6-dialog");
     },
     content: `
-  <div style="font-weight: bold; font-size: 1.1rem; text-align: center; margin-bottom: 10px;">
+  <div style="font-size: 1.1rem; text-align: center; margin-bottom: 10px;">
     ${initialResult}
   </div>
   <p style="margin-bottom: 1rem;">
