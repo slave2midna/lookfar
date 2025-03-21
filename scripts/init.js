@@ -9,9 +9,4 @@ Hooks.once("init", async () => {
   LookfarSettings.registerSettings();
 });
 
-Hooks.on("lookfarTravelRoll", async (selectedDifficulty) => {
-  const result = await LookfarRolls.handleTravelRoll(selectedDifficulty);
-  Hooks.call("lookfarShowRerollDialog", result);
-});
-
 console.log("Lookfar GM Assistant Loaded.");
