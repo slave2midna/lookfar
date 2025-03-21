@@ -73,8 +73,9 @@ export const LookfarSettings = {
 
   registerDynamicRollTableSettings() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
-
-    game.settings.register("lookfar", "rollTable", {
+    
+    // Discovery Effect Roll Table
+    game.settings.register("lookfar", "discoveryEffectRollTable", {
       name: "Discovery Effect Roll Table",
       hint: "Select the Roll Table to use for generating discovery effects.",
       scope: "world",
@@ -85,6 +86,30 @@ export const LookfarSettings = {
       onChange: (value) => console.log(`Selected Discovery Effect Roll Table: ${value}`)
     });
 
+    // Discovery Source Roll Table
+    game.settings.register("lookfar", "discoverySourceRollTable", {
+      name: "Discovery Source Roll Table",
+      hint: "Select the Roll Table to use for generating discovery sources.",
+      scope: "world",
+      config: true,
+      type: String,
+      choices: rollTableChoices,
+      default: "default",
+      onChange: (value) => console.log(`Selected Discovery Source Roll Table: ${value}`)
+    });
+
+    // Danger Threat Roll Table
+    game.settings.register("lookfar", "dangerThreatRollTable", {
+      name: "Danger Threat Roll Table",
+      hint: "Select the Roll Table to use for generating danger threats.",
+      scope: "world",
+      config: true,
+      type: String,
+      choices: rollTableChoices,
+      default: "default",
+      onChange: (value) => console.log(`Selected Danger Threat Roll Table: ${value}`)
+});
+    
     game.settings.register("lookfar", "dangerSourceRollTable", {
       name: "Danger Source Roll Table",
       hint: "Select the Roll Table to use for generating danger sources.",
@@ -109,7 +134,9 @@ export const LookfarSettings = {
 
   updateRollTableChoices() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
-    game.settings.settings.get("lookfar.rollTable").choices = rollTableChoices;
+    game.settings.settings.get("lookfar.discoveryEffectRollTable").choices = rollTableChoices;
+    game.settings.settings.get("lookfar.discoverySourceRollTable").choices = rollTableChoices;
+    game.settings.settings.get("lookfar.dangerThreatRollTable").choices = rollTableChoices;
     game.settings.settings.get("lookfar.dangerSourceRollTable").choices = rollTableChoices;
   }
 };
