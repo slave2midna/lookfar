@@ -51,7 +51,7 @@ class TravelRolls {
 let formHtml = `
   <form>
     <table class="travel-check-table">
-      <caption style="font-weight: bold; font-size: 1.2em; padding: 5px;">Threat Level</caption>
+      <caption style="font-weight: bold; font-size: 1.1em;">Threat Level</caption>
       <tbody>
         ${Object.entries(TravelRolls.travelChecks)
           .map(
