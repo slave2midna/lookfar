@@ -64,7 +64,7 @@ let formHtml = `
       white-space: nowrap;
     }
   </style>
-  <form>
+  <form style="overflow: hidden; max-height: 100%;">
     <table class="travel-check-table">
       <caption style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">Threat Level</caption>
       <tbody>
@@ -74,14 +74,11 @@ let formHtml = `
           <tr>
             <td>
               <label>
-                <input type="radio" name="travelCheck" value="${value}" ${
-                  index === 0 ? "checked" : ""
-                }>
+                <input type="radio" name="travelCheck" value="${value}" ${index === 0 ? "checked" : ""}>
                 ${key} (${value})
               </label>
             </td>
-          </tr>
-        `
+          </tr>`
           )
           .join("")}
       </tbody>
