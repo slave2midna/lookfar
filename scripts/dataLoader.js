@@ -1,38 +1,44 @@
 export const dataLoader = {
   threatsData: {},
-  sourceData: {},
+  sourceData: [],
   discoveryData: {},
+  keywordData: {},
 
   async loadData() {
+    // Load dangers.json (threats)
     try {
-      // Fetch and load data for threats and fluff from dangers.json
-      const threatsResponse = await fetch(
-        "/modules/lookfar/data/dangers.json"
-      );
-	  const dangersData = await threatsResponse.json();
-this.threatsData = dangersData?.threats ?? {};  
-this.sourceData = dangersData?.sources ?? {};  
+      const response = await fetch("/modules/lookfar/data/dangers.json");
+      const dangersData = await response.json();
 
-if (Object.keys(this.threatsData).length === 0) {
-  console.warn("Warning: No threats data found in dangers.json.");
-}
-if (Object.keys(this.sourceData).length === 0) {
-  console.warn("Warning: No sources data found in dangers.json.");
-}
+      this.threatsData = dangersData.threats || {};
+      this.sourceData = dangersData.sources || [];
 
       console.log("Threats Data:", this.threatsData);
-      console.log("Source Data:", this.sourceData);
+      console.log("Danger Sources:", this.sourceData);
+    } catch (error) {
+      console.error("Failed to load dangers.json:", error);
+    }
 
-      // Fetch and load data for discoveries
+    // Load discoveries.json (effects only)
+    try {
       const discoveryResponse = await fetch(
         "/modules/lookfar/data/discoveries.json"
       );
       this.discoveryData = await discoveryResponse.json();
       console.log("Discovery Data:", this.discoveryData);
-
-      console.log("Data loaded successfully.");
     } catch (error) {
-      console.error("Error loading data:", error);
+      console.error("Failed to load discoveries.json:", error);
+    }
+
+    // Load keywords.json (traits + terrain)
+    try {
+      const keywordsResponse = await fetch(
+        "/modules/lookfar/data/keywords.json"
+      );
+      this.keywordData = await keywordsResponse.json();
+      console.log("Keyword Data:", this.keywordData);
+    } catch (error) {
+      console.error("Failed to load keywords.json:", error);
     }
   },
 };
