@@ -458,11 +458,9 @@ async function generateDiscovery(type = "major") {
   
   // Get the selected roll table IDs for effects and keywords
   const effectTableId = game.settings.get("lookfar", "rollTable");
-  const keywordTableId = game.settings.get("lookfar", "keywordRollTable");
 
   // Variable to hold the effect text
   let effectText = "No discovery effect available.";
-  let keywords = [];
 
   // Only generate effects if it's a major discovery
   if (type === "major") {
@@ -488,23 +486,6 @@ async function generateDiscovery(type = "major") {
       }
     }
   }
-
-  // Check if the Discovery Keywords Roll Table is selected
-  if (keywordTableId && keywordTableId !== "default") {
-    const rollTable = game.tables.get(keywordTableId);
-    if (rollTable) {
-      console.log(`Rolling on the Discovery Keywords Roll Table: ${rollTable.name}`);
-      for (let i = 0; i < (type === "major" ? 4 : 2) + Math.floor(Math.random() * (type === "major" ? 3 : 2)); i++) { // Get 4-6 for major, 2-3 for minor
-        const rollResult = await rollTable.roll();
-        if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-          keywords.push(rollResult.results[0].text); // Add the result to the keywords list
-        }
-      }
-    } else {
-      console.error("Selected Discovery Keywords Roll Table not found. Falling back to defaults.");
-    }
-  }
-  
     // Return formatted table with default traits/terrain, and hide effect row for minor
     return `
   <table style="width: 100%; border-collapse: collapse;">
@@ -526,10 +507,6 @@ async function generateDiscovery(type = "major") {
         <td style="padding: 5px;">${effectText}</td>
       </tr>
       ` : ""}
-      <tr>
-        <th style="padding: 5px; white-space: nowrap">Keywords</th>
-        <td style="padding: 5px;">${keywords.join(", ")}</td>
-      </tr>
     </table>
   `;
 }
