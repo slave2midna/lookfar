@@ -85,17 +85,6 @@ export const LookfarSettings = {
       onChange: (value) => console.log(`Selected Discovery Effect Roll Table: ${value}`)
     });
 
-    game.settings.register("lookfar", "keywordRollTable", {
-      name: "Discovery Keywords Roll Table",
-      hint: "Select the Roll Table to use for generating discovery keywords.",
-      scope: "world",
-      config: true,
-      type: String,
-      choices: rollTableChoices,
-      default: "default",
-      onChange: (value) => console.log(`Selected Discovery Keywords Roll Table: ${value}`)
-    });
-
     game.settings.register("lookfar", "dangerSourceRollTable", {
       name: "Danger Source Roll Table",
       hint: "Select the Roll Table to use for generating danger sources.",
@@ -121,7 +110,6 @@ export const LookfarSettings = {
   updateRollTableChoices() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
     game.settings.settings.get("lookfar.rollTable").choices = rollTableChoices;
-    game.settings.settings.get("lookfar.keywordRollTable").choices = rollTableChoices;
     game.settings.settings.get("lookfar.dangerSourceRollTable").choices = rollTableChoices;
   }
 };
