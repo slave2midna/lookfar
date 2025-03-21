@@ -67,8 +67,6 @@ export const LookfarSettings = {
       type: Boolean,
       default: true
     });
-
-    LookfarSettings.registerDynamicRollTableSettings();
   },
 
   registerDynamicRollTableSettings() {
