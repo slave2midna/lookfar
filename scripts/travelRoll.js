@@ -114,6 +114,10 @@ function showTravelCheckDialog() {
   }).render(true);
 }
 
+Hooks.on("lookfarShowTravelCheckDialog", () => {
+  showTravelCheckDialog();
+});
+
 function shouldMakeDiscovery(rollResult) {
   const treasureHunterLevel = parseInt(game.settings.get("lookfar", "treasureHunterLevel"));
   const minorDiscoveriesEnabled = game.settings.get("lookfar", "minorDiscoveries");
