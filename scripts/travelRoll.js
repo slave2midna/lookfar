@@ -75,22 +75,13 @@ let formHtml = `
 function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
   new Dialog({
-  title: "Travel Check",
-  content: formHtml,
-  render: (html) => {
-    const dialogEl = html.closest(".app.dialog");
-    if (dialogEl) {
-      dialogEl.style.maxHeight = "none";
-      dialogEl.style.overflow = "hidden";
-    }
-  },
+    title: "Travel Check",
+    content: formHtml,
     buttons: {
       roll: {
         icon: '<i class="fas fa-check"></i>',
         callback: (html) => {
-          const selectedDifficulty = html
-            .find('[name="travelCheck"]:checked')
-            .val();
+          const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
           handleRoll(selectedDifficulty);
         },
       },
