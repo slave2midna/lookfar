@@ -1,15 +1,29 @@
 {
   "effects": [
-    "Each party member regains 1 IP. 2 IP if they have a trait that matches the environment.",
-    "Each party member regains 10 HP. 20 if they have a trait that matches the environment.",
-    "Each party member regains 10 MP. 20 if they have a trait that matches the environment.",
-    "Total distance to next destination is reduced by 1.",
-    "During the next combat encounter, the party automatically wins initiative.",
-    "The party experiences something remarkable! Everyone receives 1 Fabula Point.",
-    "The party encounters a friendly NPC who will help them in some way.",
-    "The party encounters a wandering merchant offering discounted prices.",
-    "The party stumbles upon wreckage filled with materials for projects or rituals.",
-    "The party finds a secret location, like a lost tomb, or secret base filled with treasure.",
-    "The party finds a safer place to camp. They may rest without advancing any clocks."
+    "Each party member regains 1 IP.",
+    "Each party member regains 10 HP.",
+    "Each party member regains 10 MP.",
+    "Distance to next destination reduced by 1.",
+    "Party automatically wins next initiative.",
+    "The party receives 1 Fabula Point.",
+    "The party encounters a friendly NPC.",
+    "The party encounters a wandering merchant.",
+    "The party gains materials.",
+    "The party gains treasure.",
+    "The party may rest without advancing clocks."
+  ],
+  "sources": [
+    "A beautiful scenery that remains almost untouched for centuries",
+    "Ruins of a village that tells the story of an old war",
+    "A striking flower or delicious fruit that only exists in that particular location",
+    "A wondrous mythical creature passes through, singing a mysterious melody and/or leaving a trail of magical energy",
+    "A rare sight of a group of animals in the middle of their migratory journey",
+    "A crystal cave with incredibly hard gems",
+    "A veil of colors in the sky that only a few people are allowed to see",
+    "A meteor shower that only happens once every 50 years",
+    "Remnants of temporal magic that gives a vision of the past",
+    "A statue of an old, forgotten hero",
+    "A scent coming from a plant that is used to make perfume",
+    "A troupe of musicians performing a traditional song"
   ]
 }
