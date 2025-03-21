@@ -338,27 +338,43 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
     }
   }
 
-  let result = ""; // Changed to directly append the danger result
+const threatTableId = game.settings.get("lookfar", "dangerThreatRollTable");
+let result = "";
 
-switch (threatType) {
-  case "Damage":
-    result += handleDamage(dataLoader.threatsData, groupLevel, dangerSeverity);
-    break;
-  case "statusEffect":
-    result += handleStatusEffect(dataLoader.threatsData, dangerSeverity, groupLevel);
-    break;
-  case "Combat":
-    result += dataLoader.threatsData.Combat[dangerSeverity];
-    break;
-  case "dangerClock":
-    result += dataLoader.threatsData.dangerClock[dangerSeverity];
-    break;
-  case "villainPlanAdvance":
-    result += dataLoader.threatsData.villainPlanAdvance[dangerSeverity];
-    break;
-  default:
-    console.error("Unknown threat type:", threatType);
-    return "Error: Unknown threat type.";
+if (threatTableId && threatTableId !== "default") {
+  const rollTable = game.tables.get(threatTableId);
+  if (rollTable) {
+    console.log(`Rolling on the Danger Threat Roll Table: ${rollTable.name}`);
+    const rollResult = await rollTable.roll();
+    if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+      result = rollResult.results[0].text;
+    }
+  } else {
+    console.error("Selected Danger Threat Roll Table not found. Falling back to defaults.");
+  }
+}
+
+if (!result) {
+  switch (threatType) {
+    case "Damage":
+      result += handleDamage(dataLoader.threatsData, groupLevel, dangerSeverity);
+      break;
+    case "statusEffect":
+      result += handleStatusEffect(dataLoader.threatsData, dangerSeverity, groupLevel);
+      break;
+    case "Combat":
+      result += dataLoader.threatsData.Combat[dangerSeverity];
+      break;
+    case "dangerClock":
+      result += dataLoader.threatsData.dangerClock[dangerSeverity];
+      break;
+    case "villainPlanAdvance":
+      result += dataLoader.threatsData.villainPlanAdvance[dangerSeverity];
+      break;
+    default:
+      console.error("Unknown threat type:", threatType);
+      return "Error: Unknown threat type.";
+  }
 }
 
   // Return formatted table for danger results and source.
@@ -457,7 +473,7 @@ async function generateDiscovery(type = "major") {
   console.log("Generating Discovery... Type:", type);
   
   // Get the selected roll table IDs for effects and keywords
-  const effectTableId = game.settings.get("lookfar", "rollTable");
+  const effectTableId = game.settings.get("lookfar", "discoveryEffectRollTable");
 
   // Variable to hold the effect text
   let effectText = "No discovery effect available.";
@@ -486,12 +502,26 @@ async function generateDiscovery(type = "major") {
       }
     }
   }
-  // Variable to hold the discovery source
+
+const sourceTableId = game.settings.get("lookfar", "discoverySourceRollTable");
 let sourceText = "No discovery source available.";
 
-if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
-  const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
-  sourceText = dataLoader.discoveryData.sources[randomIndex];
+if (sourceTableId && sourceTableId !== "default") {
+  const rollTable = game.tables.get(sourceTableId);
+  if (rollTable) {
+    console.log(`Rolling on the Discovery Source Roll Table: ${rollTable.name}`);
+    const rollResult = await rollTable.roll();
+    if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+      sourceText = rollResult.results[0].text;
+    }
+  } else {
+    console.error("Selected Discovery Source Roll Table not found. Falling back to defaults.");
+  }
+} else {
+  if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
+    const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
+    sourceText = dataLoader.discoveryData.sources[randomIndex];
+  }
 }
     // Return formatted table with default traits/terrain, and hide effect row for minor
     return `
