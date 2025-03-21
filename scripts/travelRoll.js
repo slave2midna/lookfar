@@ -19,23 +19,22 @@ function generateUniqueList(list, minCount, maxCount) {
   return shuffled.slice(0, count);
 }
   
-  // Listen for socket messages for reroll dialogs and travel roll results
-game.socket.on("module.lookfar", (data) => {
-  if (data?.type === "showResult") {
-    // Show the reroll dialog on all clients
-    showRerollDialog(
-      data.resultMessage,
-      data.selectedDifficulty,
-      data.groupLevel,
-      data.dangerSeverity,
-      data.discoveryType
-    );
-   } else if (data?.type === "closeDialog") {
-    // Close the dialog if it's open on the client
-    if (currentDialog) {
-      currentDialog.close();
-    } 
-  }
+Hooks.once("ready", () => {
+  game.socket.on("module.lookfar", (data) => {
+    if (data?.type === "showResult") {
+      showRerollDialog(
+        data.resultMessage,
+        data.selectedDifficulty,
+        data.groupLevel,
+        data.dangerSeverity,
+        data.discoveryType
+      );
+    } else if (data?.type === "closeDialog") {
+      if (currentDialog) {
+        currentDialog.close();
+      }
+    }
+  });
 });
 
 // Define TravelRolls
