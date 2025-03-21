@@ -96,7 +96,7 @@ function showTravelCheckDialog() {
     title: "Travel Check",
     content: formHtml,
     render: (html) => {
-      html.addClass("ff6-dialog");
+//      html.addClass("ff6-dialog"); will add dialogs later
     },
     buttons: {
       roll: {
