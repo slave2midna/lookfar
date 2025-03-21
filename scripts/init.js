@@ -7,9 +7,9 @@ Hooks.once("init", async () => {
   console.log("Lookfar GM Assistant: Initializing...");
   await dataLoader.loadData();
   LookfarSettings.registerSettings();
+  console.log("Lookfar GM Assistant Loaded.");
+});
 
 Hooks.once("ready", () => {
   LookfarSettings.registerDynamicRollTableSettings();
 });
-  
-console.log("Lookfar GM Assistant Loaded.");
