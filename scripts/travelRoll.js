@@ -497,16 +497,4 @@ async function generateDiscovery(type = "major") {
     ` : ""}
   </table>
 `;
-
-  // If the Discovery Keywords Roll Table is selected, return formatted table with keywords, and hide effect row for minor
-  return `
-    <table style="width: 100%; border-collapse: collapse;">
-      ${type === "major" && effectText ? `
-      <tr>
-        <th style="padding: 5px; white-space: nowrap">Effect</th>
-        <td style="padding: 5px;">${effectText}</td>
-      </tr>
-      ` : ""}
-    </table>
-  `;
 }
