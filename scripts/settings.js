@@ -1,13 +1,3 @@
-function promptReload(message = "Some of the changed settings require a reload of the application to take effect. Would you like to reload now?") {
-  Dialog.confirm({
-    title: "Reload Application?",
-    content: `<p>${message}</p>`,
-    yes: () => window.location.reload(),
-    no: () => {},
-    defaultYes: true
-  });
-}
-
 export const LookfarSettings = {
   registerSettings() {
     game.settings.register("lookfar", "groupLevel", {
@@ -91,10 +81,7 @@ game.settings.register("lookfar", "discoveryEffectRollTable", {
   type: String,
   choices: rollTableChoices,
   default: "default",
-  onChange: (value) => {
-    console.log(`Selected Discovery Effect Roll Table: ${value}`);
-    promptReload();
-  }
+  requiresReload: true
 });
 
 // Discovery Source Roll Table
@@ -106,10 +93,7 @@ game.settings.register("lookfar", "discoverySourceRollTable", {
   type: String,
   choices: rollTableChoices,
   default: "default",
-  onChange: (value) => {
-    console.log(`Selected Discovery Source Roll Table: ${value}`);
-    promptReload();
-  }
+  requiresReload: true
 });
 
 // Danger Threat Roll Table
@@ -121,10 +105,7 @@ game.settings.register("lookfar", "dangerThreatRollTable", {
   type: String,
   choices: rollTableChoices,
   default: "default",
-  onChange: (value) => {
-    console.log(`Selected Danger Threat Roll Table: ${value}`);
-    promptReload();
-  }
+  requiresReload: true
 });
 
 // Danger Source Roll Table
@@ -136,10 +117,7 @@ game.settings.register("lookfar", "dangerSourceRollTable", {
   type: String,
   choices: rollTableChoices,
   default: "default",
-  onChange: (value) => {
-    console.log(`Selected Danger Source Roll Table: ${value}`);
-    promptReload();
-  }
+  requiresReload: true
 });
   },
 
