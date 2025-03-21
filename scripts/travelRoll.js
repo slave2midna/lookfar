@@ -284,7 +284,12 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     render: (html) => {
       html.addClass("ff6-dialog");
     },
-    content: `<p>Current Result: ${initialResult}</p><p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>`,
+    content: `
+  <div style="text-align: center; font-size: 1.1rem; margin-bottom: 10px;">
+    ${initialResult}
+  </div>
+  <p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>
+`,
     buttons: buttons,
     default: "keep",
     close: () => {
@@ -380,12 +385,12 @@ if (!result) {
   return `
     <table style="width: 100%; border-collapse: collapse;">
       <tr>
-        <th style="padding: 5px; white-space: nowrap">Threat</th>
-        <td style="padding: 5px;">${result}</td>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap">Threat</th>
+        <td style="padding: 5px; border: 1px solid">${result}</td>
       </tr>
       <tr>
-        <th style="padding: 5px; white-space: nowrap">Source</th>
-        <td style="padding: 5px;">${sourceText}</td>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap">Source</th>
+        <td style="padding: 5px; border: 1px solid">${sourceText}</td>
       </tr>
     </table>
   `;
@@ -526,12 +531,12 @@ if (sourceTableId && sourceTableId !== "default") {
     return `
   <table style="width: 100%; border-collapse: collapse;">
     <tr>
-      <th style="padding: 5px; white-space: nowrap">Effect</th>
-      <td style="padding: 5px;">${effectText}</td>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap">Effect</th>
+      <td style="padding: 5px; border: 1px solid">${effectText}</td>
     </tr>
     <tr>
-      <th style="padding: 5px; white-space: nowrap">Source</th>
-      <td style="padding: 5px;">${sourceText}</td>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap">Source</th>
+      <td style="padding: 5px; border: 1px solid">${sourceText}</td>
     </tr>
   </table>
 `;
