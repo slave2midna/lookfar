@@ -66,7 +66,7 @@ let formHtml = `
   </style>
   <form>
     <table class="travel-check-table">
-      <caption style="font-weight: bold; margin-bottom: 10px;">Threat Level</caption>
+      <caption style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">Threat Level</caption>
       <tbody>
         ${Object.entries(TravelRolls.travelChecks)
           .map(
@@ -285,10 +285,15 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
       html.addClass("ff6-dialog");
     },
     content: `
-  <div style="text-align: center; font-size: 1.1rem; margin-bottom: 10px;">
+  <div style="font-weight: bold; font-size: 1.1rem; text-align: center; margin-bottom: 10px;">
+    Current Result
+  </div>
+  <div style="margin-bottom: 10px;">
     ${initialResult}
   </div>
-  <p>${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}</p>
+  <p style="margin-bottom: 1rem;">
+    ${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}
+  </p>
 `,
     buttons: buttons,
     default: "keep",
