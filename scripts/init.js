@@ -1,6 +1,7 @@
 import { LookfarSettings } from "./settings.js";
-import { LookfarRolls } from "./travelRoll.js";
 import { dataLoader } from "./dataLoader.js";
+import "./travelRoll.js";
+import "./buttonManager.js";
 
 // Initialize the module
 Hooks.once("init", async () => {
