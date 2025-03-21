@@ -38,3 +38,4 @@ Hooks.once("ready", () => {
 //   tools.push(treasureRollButton);
 //   console.log("Treasure Roll button added to the toolbar:", tools);
 // });
+});
