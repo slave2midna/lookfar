@@ -100,7 +100,7 @@ function showTravelCheckDialog() {
     },
     buttons: {
       roll: {
-        icon: '<i class="fas fa-check" style="color: white"></i>',
+        icon: '<i class="fas fa-check"></i>',
         callback: (html) => {
           const selectedDifficulty = html
             .find('[name="travelCheck"]:checked')
@@ -229,7 +229,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
 
   const buttons = isGM ? {
     keep: {
-    icon: '<i class="fas fa-check" style="color: white;"></i>',
+    icon: '<i class="fas fa-check"></i>',
     callback: () => {
       ChatMessage.create({
         content: initialResult,
@@ -248,7 +248,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     },
   },
   reroll: {
-      icon: '<i class="fas fa-redo" style="color: white;"></i>',
+      icon: '<i class="fas fa-redo"></i>',
       callback: async () => {
         let newResultMessage;
         if (isDanger) {
@@ -363,14 +363,14 @@ switch (threatType) {
 
   // Return formatted table for danger results and source.
   return `
-    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+    <table style="width: 100%; border-collapse: collapse;">
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Threat</th>
-        <td style="padding: 5px; border: 1px solid #ddd;">${result}</td>
+        <th style="padding: 5px; white-space: nowrap">Threat</th>
+        <td style="padding: 5px;">${result}</td>
       </tr>
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Source</th>
-        <td style="padding: 5px; border: 1px solid #ddd;">${sourceText}</td>
+        <th style="padding: 5px; white-space: nowrap">Source</th>
+        <td style="padding: 5px;">${sourceText}</td>
       </tr>
     </table>
   `;
@@ -520,17 +520,17 @@ async function generateDiscovery(type = "major") {
       <table style="width: 100%; border-collapse: collapse;">
         ${type === "major" && effectText ? `
         <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
-          <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
+          <th style="padding: 5px; white-space: nowrap">Effect</th>
+          <td style="padding: 5px;">${effectText}</td>
         </tr>
         ` : ""}
         <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Traits</th>
-          <td style="padding: 5px; border: 1px solid #ddd;">${traits.join(", ")}</td>
+          <th style="padding: 5px; white-space: nowrap">Traits</th>
+          <td style="padding: 5px;">${traits.join(", ")}</td>
         </tr>
         <tr>
-          <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Terrain</th>
-          <td style="padding: 5px; border: 1px solid #ddd;">${terrain.join(", ")}</td>
+          <th style="padding: 5px; white-space: nowrap">Terrain</th>
+          <td style="padding: 5px;">${terrain.join(", ")}</td>
         </tr>
       </table>
     `;
@@ -541,13 +541,13 @@ async function generateDiscovery(type = "major") {
     <table style="width: 100%; border-collapse: collapse;">
       ${type === "major" && effectText ? `
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Effect</th>
-        <td style="padding: 5px; border: 1px solid #ddd;">${effectText}</td>
+        <th style="padding: 5px; white-space: nowrap">Effect</th>
+        <td style="padding: 5px;">${effectText}</td>
       </tr>
       ` : ""}
       <tr>
-        <th style="padding: 5px; border: 1px solid #ddd; white-space: nowrap">Keywords</th>
-        <td style="padding: 5px; border: 1px solid #ddd;">${keywords.join(", ")}</td>
+        <th style="padding: 5px; white-space: nowrap">Keywords</th>
+        <td style="padding: 5px;">${keywords.join(", ")}</td>
       </tr>
     </table>
   `;
