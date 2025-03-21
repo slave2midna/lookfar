@@ -4,7 +4,7 @@ import "./travelRoll.js";
 import "./buttonManager.js";
 
 Hooks.once("init", async () => {
-  console.log("Lookfar Travel Assistant: Initializing...");
+  console.log("Lookfar GM Assistant: Initializing...");
   await dataLoader.loadData();
   LookfarSettings.registerSettings();
 });
