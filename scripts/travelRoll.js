@@ -486,15 +486,24 @@ async function generateDiscovery(type = "major") {
       }
     }
   }
+  // Variable to hold the discovery source
+let sourceText = "No discovery source available.";
+
+if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
+  const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
+  sourceText = dataLoader.discoveryData.sources[randomIndex];
+}
     // Return formatted table with default traits/terrain, and hide effect row for minor
     return `
   <table style="width: 100%; border-collapse: collapse;">
-    ${type === "major" && effectText ? `
     <tr>
-      <th style="padding: 5px;">Effect</th>
+      <th style="padding: 5px; white-space: nowrap">Effect</th>
       <td style="padding: 5px;">${effectText}</td>
     </tr>
-    ` : ""}
+    <tr>
+      <th style="padding: 5px; white-space: nowrap">Source</th>
+      <td style="padding: 5px;">${sourceText}</td>
+    </tr>
   </table>
 `;
 }
