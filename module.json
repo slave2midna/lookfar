@@ -36,9 +36,7 @@
     "scripts/init.js"
   ],
   "scripts": [],
-  "styles": [
-    "styles/style.css"
-  ],
+  "styles": [],
   "languages": [],
   "url": "#{URL}#",
   "manifest": "#{MANIFEST}#",
