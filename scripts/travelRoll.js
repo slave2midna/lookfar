@@ -49,24 +49,9 @@ class TravelRolls {
 }
 
 let formHtml = `
-  <style>
-    .travel-check-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .travel-check-table td, .travel-check-table th {
-      padding: 5px;
-      text-align: left;
-      vertical-align: top;
-    }
-    .travel-check-table td:first-child {
-      width: 1%;
-      white-space: nowrap;
-    }
-  </style>
-  <form style="overflow: hidden; max-height: 100%;">
+  <form>
     <table class="travel-check-table">
-      <caption style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">Threat Level</caption>
+      <caption><strong>Threat Level</strong></caption>
       <tbody>
         ${Object.entries(TravelRolls.travelChecks)
           .map(
