@@ -1,3 +1,13 @@
+function promptReload(message = "Some of the changed settings require a reload of the application to take effect. Would you like to reload now?") {
+  Dialog.confirm({
+    title: "Reload Application?",
+    content: `<p>${message}</p>`,
+    yes: () => window.location.reload(),
+    no: () => {},
+    defaultYes: true
+  });
+}
+
 export const LookfarSettings = {
   registerSettings() {
     game.settings.register("lookfar", "groupLevel", {
@@ -73,51 +83,64 @@ export const LookfarSettings = {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
     
     // Discovery Effect Roll Table
-    game.settings.register("lookfar", "discoveryEffectRollTable", {
-      name: "Discovery Effect Roll Table",
-      hint: "Select the Roll Table to use for generating discovery effects.",
-      scope: "world",
-      config: true,
-      type: String,
-      choices: rollTableChoices,
-      default: "default",
-      onChange: (value) => console.log(`Selected Discovery Effect Roll Table: ${value}`)
-    });
-
-    // Discovery Source Roll Table
-    game.settings.register("lookfar", "discoverySourceRollTable", {
-      name: "Discovery Source Roll Table",
-      hint: "Select the Roll Table to use for generating discovery sources.",
-      scope: "world",
-      config: true,
-      type: String,
-      choices: rollTableChoices,
-      default: "default",
-      onChange: (value) => console.log(`Selected Discovery Source Roll Table: ${value}`)
-    });
-
-    // Danger Threat Roll Table
-    game.settings.register("lookfar", "dangerThreatRollTable", {
-      name: "Danger Threat Roll Table",
-      hint: "Select the Roll Table to use for generating danger threats.",
-      scope: "world",
-      config: true,
-      type: String,
-      choices: rollTableChoices,
-      default: "default",
-      onChange: (value) => console.log(`Selected Danger Threat Roll Table: ${value}`)
+game.settings.register("lookfar", "discoveryEffectRollTable", {
+  name: "Discovery Effect Roll Table",
+  hint: "Select the Roll Table to use for generating discovery effects.",
+  scope: "world",
+  config: true,
+  type: String,
+  choices: rollTableChoices,
+  default: "default",
+  onChange: (value) => {
+    console.log(`Selected Discovery Effect Roll Table: ${value}`);
+    promptReload();
+  }
 });
-    
-    game.settings.register("lookfar", "dangerSourceRollTable", {
-      name: "Danger Source Roll Table",
-      hint: "Select the Roll Table to use for generating danger sources.",
-      scope: "world",
-      config: true,
-      type: String,
-      choices: rollTableChoices,
-      default: "default",
-      onChange: (value) => console.log(`Selected Danger Source Roll Table: ${value}`)
-    });
+
+// Discovery Source Roll Table
+game.settings.register("lookfar", "discoverySourceRollTable", {
+  name: "Discovery Source Roll Table",
+  hint: "Select the Roll Table to use for generating discovery sources.",
+  scope: "world",
+  config: true,
+  type: String,
+  choices: rollTableChoices,
+  default: "default",
+  onChange: (value) => {
+    console.log(`Selected Discovery Source Roll Table: ${value}`);
+    promptReload();
+  }
+});
+
+// Danger Threat Roll Table
+game.settings.register("lookfar", "dangerThreatRollTable", {
+  name: "Danger Threat Roll Table",
+  hint: "Select the Roll Table to use for generating danger threats.",
+  scope: "world",
+  config: true,
+  type: String,
+  choices: rollTableChoices,
+  default: "default",
+  onChange: (value) => {
+    console.log(`Selected Danger Threat Roll Table: ${value}`);
+    promptReload();
+  }
+});
+
+// Danger Source Roll Table
+game.settings.register("lookfar", "dangerSourceRollTable", {
+  name: "Danger Source Roll Table",
+  hint: "Select the Roll Table to use for generating danger sources.",
+  scope: "world",
+  config: true,
+  type: String,
+  choices: rollTableChoices,
+  default: "default",
+  onChange: (value) => {
+    console.log(`Selected Danger Source Roll Table: ${value}`);
+    promptReload();
+  }
+});
   },
 
   getRollTableChoices() {
