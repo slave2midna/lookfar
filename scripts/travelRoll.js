@@ -308,7 +308,6 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   }
 
   const threatType = randomThreatType();
-  const readableThreatType = toReadableText(threatType);
 
   // Get the selected danger source roll table
   const dangerSourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");
