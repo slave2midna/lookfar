@@ -504,37 +504,18 @@ async function generateDiscovery(type = "major") {
       console.error("Selected Discovery Keywords Roll Table not found. Falling back to defaults.");
     }
   }
-
-  // If no keywords table is selected or it's set to default, use the default traits/terrain
-  if (keywordTableId === "default" || keywords.length === 0) {
-    const terrain = Array.isArray(dataLoader.discoveryData.terrain)
-      ? generateUniqueList(dataLoader.discoveryData.terrain, 4, 6)
-      : [];
-
-    const traits = Array.isArray(dataLoader.discoveryData.traits)
-      ? generateUniqueList(dataLoader.discoveryData.traits, 4, 6)
-      : [];
-
+  
     // Return formatted table with default traits/terrain, and hide effect row for minor
     return `
-      <table style="width: 100%; border-collapse: collapse;">
-        ${type === "major" && effectText ? `
-        <tr>
-          <th style="padding: 5px; white-space: nowrap">Effect</th>
-          <td style="padding: 5px;">${effectText}</td>
-        </tr>
-        ` : ""}
-        <tr>
-          <th style="padding: 5px; white-space: nowrap">Traits</th>
-          <td style="padding: 5px;">${traits.join(", ")}</td>
-        </tr>
-        <tr>
-          <th style="padding: 5px; white-space: nowrap">Terrain</th>
-          <td style="padding: 5px;">${terrain.join(", ")}</td>
-        </tr>
-      </table>
-    `;
-  }
+  <table style="width: 100%; border-collapse: collapse;">
+    ${type === "major" && effectText ? `
+    <tr>
+      <th style="padding: 5px;">Effect</th>
+      <td style="padding: 5px;">${effectText}</td>
+    </tr>
+    ` : ""}
+  </table>
+`;
 
   // If the Discovery Keywords Roll Table is selected, return formatted table with keywords, and hide effect row for minor
   return `
