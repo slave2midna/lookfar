@@ -123,9 +123,9 @@ function showTravelCheckDialog() {
       roll: {
         icon: '<i class="fas fa-check"></i>',
         callback: (html) => {
-          const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
-          handleRoll(selectedDifficulty);
-        },
+  const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
+  handleRoll(selectedDifficulty, html);
+},
       },
     },
     default: "roll",
@@ -155,7 +155,7 @@ function reduceDiceSize(diceSize) {
   return diceMap[diceSize] || diceSize; // Returns the reduced size, or the original if not found
 }
 
-async function handleRoll(selectedDifficulty) {
+async function handleRoll(selectedDifficulty, html) {
   const wellTraveled = html.find("#wellTraveled").is(":checked");
 
   // Reduce the dice size if Well-Traveled is checked
