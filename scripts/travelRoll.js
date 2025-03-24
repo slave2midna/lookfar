@@ -89,15 +89,16 @@ let formHtml = `
               </td>
             </tr>
             <tr>
-              <td>
-                <label for="treasureHunterLevel">Treasure Hunting:</label>
-                <select id="treasureHunterLevel" name="treasureHunterLevel">
-                  <option value="0">Level 1</option>
-                  <option value="1">Level 2</option>
-                  <option value="2">Level 3</option>
-                </select>
-              </td>
-            </tr>
+  <td>
+    <label>Treasure Hunting:</label>
+    <div id="treasureHunterLevel" style="display: flex; gap: 5px; font-size: 1.2em;">
+      <i class="fa-regular fa-star" data-value="1"></i>
+      <i class="fa-regular fa-star" data-value="2"></i>
+      <i class="fa-regular fa-star" data-value="3"></i>
+    </div>
+    <input type="hidden" id="treasureHunterLevelInput" value="0">
+  </td>
+</tr>
             <tr>
               <td>
                 <label>
@@ -123,12 +124,28 @@ function showTravelCheckDialog() {
       roll: {
         icon: '<i class="fas fa-check"></i>',
         callback: (html) => {
-  const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
-  handleRoll(selectedDifficulty, html);
-},
+          const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
+          handleRoll(selectedDifficulty, html);
+        },
       },
     },
     default: "roll",
+
+    // 🔽 Here’s the render function that adds the star click behavior
+    render: (html) => {
+      const stars = html.find("#treasureHunterLevel i");
+      stars.on("click", function () {
+        const value = Number($(this).data("value"));
+        html.find("#treasureHunterLevelInput").val(value);
+        stars.each(function () {
+          const starVal = Number($(this).data("value"));
+          $(this)
+            .removeClass("fa-solid fa-regular")
+            .addClass(starVal <= value ? "fa-solid" : "fa-regular");
+        });
+      });
+    },
+
     close: () => {},
   }).render(true);
 }
@@ -194,7 +211,7 @@ async function handleRoll(selectedDifficulty, html) {
   const groupLevel = html.find("#groupLevel").val();
 
   let resultMessage = "";
-  const treasureHunterLevel = parseInt(html.find("#treasureHunterLevel").val());
+  const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
   const minorDiscoveriesEnabled = true; // Or connect to a future dialog checkbox if needed
   let discoveryType = shouldMakeDiscovery(roll.total, treasureHunterLevel, minorDiscoveriesEnabled);
   let dangerSeverity = "";
