@@ -137,7 +137,7 @@ Hooks.on("lookfarShowTravelCheckDialog", () => {
   showTravelCheckDialog();
 });
 
-function shouldMakeDiscovery(rollResult) {
+function shouldMakeDiscovery(rollResult, treasureHunterLevel, minorDiscoveriesEnabled) {
   const treasureHunterLevel = parseInt(game.settings.get("lookfar", "treasureHunterLevel"));
   const minorDiscoveriesEnabled = game.settings.get("lookfar", "minorDiscoveries");
 
@@ -159,8 +159,8 @@ function reduceDiceSize(diceSize) {
 }
 
 async function handleRoll(selectedDifficulty) {
-  const wellTraveled = game.settings.get("lookfar", "wellTraveled");
-  const characterMessage = game.settings.get("lookfar", "characterMessage");
+  const wellTraveled = html.find("#wellTraveled").is(":checked");
+  const characterMessage = ""; // Optional: Keep empty or connect to a future dialog field
 
   // Reduce the dice size if Well-Traveled is checked
   if (wellTraveled) {
@@ -200,10 +200,12 @@ async function handleRoll(selectedDifficulty) {
   });
 
   // Determine the group level set by the GM
-  const groupLevel = game.settings.get("lookfar", "groupLevel");
+  const groupLevel = html.find("#groupLevel").val();
 
   let resultMessage = "";
-  let discoveryType = shouldMakeDiscovery(roll.total);
+  const treasureHunterLevel = parseInt(html.find("#treasureHunterLevel").val());
+  const minorDiscoveriesEnabled = true; // Or connect to a future dialog checkbox if needed
+  let discoveryType = shouldMakeDiscovery(roll.total, treasureHunterLevel, minorDiscoveriesEnabled);
   let dangerSeverity = "";
 
   if (roll.total >= 6) {
