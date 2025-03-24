@@ -13,6 +13,7 @@ export const LookfarSettings = {
       },
       default: "public",
     });
+  },
 
   registerDynamicRollTableSettings() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
