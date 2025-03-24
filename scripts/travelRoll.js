@@ -138,9 +138,6 @@ Hooks.on("lookfarShowTravelCheckDialog", () => {
 });
 
 function shouldMakeDiscovery(rollResult, treasureHunterLevel, minorDiscoveriesEnabled) {
-  const treasureHunterLevel = parseInt(game.settings.get("lookfar", "treasureHunterLevel"));
-  const minorDiscoveriesEnabled = game.settings.get("lookfar", "minorDiscoveries");
-
   if (minorDiscoveriesEnabled) {
     if (rollResult === 1) {
       return "major";
@@ -160,16 +157,10 @@ function reduceDiceSize(diceSize) {
 
 async function handleRoll(selectedDifficulty) {
   const wellTraveled = html.find("#wellTraveled").is(":checked");
-  const characterMessage = ""; // Optional: Keep empty or connect to a future dialog field
 
   // Reduce the dice size if Well-Traveled is checked
   if (wellTraveled) {
     selectedDifficulty = reduceDiceSize(selectedDifficulty);
-    if (characterMessage) {
-      ChatMessage.create({
-        content: characterMessage,
-      });
-    }
   }
 
   let roll = new Roll(selectedDifficulty);
