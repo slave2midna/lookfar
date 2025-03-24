@@ -50,24 +50,66 @@ class TravelRolls {
 
 let formHtml = `
   <form>
-    <table class="travel-check-table">
-      <caption style="font-weight: bold; font-size: 1.1em;">Threat Level</caption>
-      <tbody>
-        ${Object.entries(TravelRolls.travelChecks)
-          .map(
-            ([key, value], index) => `
-          <tr>
-            <td>
-              <label>
-                <input type="radio" name="travelCheck" value="${value}" ${index === 0 ? "checked" : ""}>
-                ${key} (${value})
-              </label>
-            </td>
-          </tr>`
-          )
-          .join("")}
-      </tbody>
-    </table>
+    <div style="display: flex; gap: 20px; align-items: flex-start;">
+      <!-- Threat Level Column -->
+      <div style="flex: 1;">
+        <table class="travel-check-table">
+          <caption style="font-weight: bold; font-size: 1.1em;">Threat Level</caption>
+          <tbody>
+            ${Object.entries(TravelRolls.travelChecks)
+              .map(
+                ([key, value], index) => `
+                <tr>
+                  <td>
+                    <label>
+                      <input type="radio" name="travelCheck" value="${value}" ${index === 0 ? "checked" : ""}>
+                      ${key} (${value})
+                    </label>
+                  </td>
+                </tr>`
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Wayfaring Options Column -->
+      <div style="flex: 1;">
+        <table class="travel-check-table">
+          <caption style="font-weight: bold; font-size: 1.1em;">Wayfaring</caption>
+          <tbody>
+            <tr>
+              <td>
+                <label for="groupLevel">Party Level:</label>
+                <select id="groupLevel" name="groupLevel">
+                  <option value="5+">5+</option>
+                  <option value="20+">20+</option>
+                  <option value="40+">40+</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="treasureHunterLevel">Treasure Hunting:</label>
+                <select id="treasureHunterLevel" name="treasureHunterLevel">
+                  <option value="0">Level 1</option>
+                  <option value="1">Level 2</option>
+                  <option value="2">Level 3</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>
+                  <input type="checkbox" id="wellTraveled" name="wellTraveled">
+                  Well-Traveled
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </form>
 `;
 
