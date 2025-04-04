@@ -175,15 +175,7 @@ Hooks.on("lookfarShowTravelCheckDialog", () => {
   showTravelCheckDialog();
 });
 
-function shouldMakeDiscovery(rollResult, treasureHunterLevel, minorDiscoveriesEnabled) {
-  if (minorDiscoveriesEnabled) {
-    if (rollResult === 1) {
-      return "major";
-    } else if (rollResult === 2 || rollResult === 3) {
-      return "minor";
-    }
-  }
-  // Original behavior: Major discovery on 1
+function shouldMakeDiscovery(rollResult, treasureHunterLevel) {
   return rollResult <= 1 + treasureHunterLevel ? "major" : false;
 }
 
@@ -233,8 +225,7 @@ async function handleRoll(selectedDifficulty, html) {
 
   let resultMessage = "";
   const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
-  const minorDiscoveriesEnabled = true; // Or connect to a future dialog checkbox if needed
-  let discoveryType = shouldMakeDiscovery(roll.total, treasureHunterLevel, minorDiscoveriesEnabled);
+  let discoveryType = shouldMakeDiscovery(roll.total, treasureHunterLevel);
   let dangerSeverity = "";
 
   if (roll.total >= 6) {
