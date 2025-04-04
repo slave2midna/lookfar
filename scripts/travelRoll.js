@@ -126,7 +126,7 @@ function showTravelCheckDialog() {
       roll: {
         icon: '<i class="fas fa-check"></i>',
         callback: (html) => {
-          const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
+          let selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
           handleRoll(selectedDifficulty, html);
         },
       },
