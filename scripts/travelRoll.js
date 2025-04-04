@@ -63,7 +63,7 @@ let formHtml = `
                   <td>
                     <label>
                       <input type="radio" name="travelCheck" value="${value}" ${index === 0 ? "checked" : ""}>
-                      ${key} (${value})
+                      ${key} (<span class="dice-display" data-original="${value}">${value}</span>)
                     </label>
                   </td>
                 </tr>`
@@ -155,6 +155,22 @@ function showTravelCheckDialog() {
     close: () => {},
   }).render(true);
 }
+
+// Listen for changes on the "Well-Traveled" checkbox
+document.getElementById("wellTraveled").addEventListener("change", (e) => {
+  const isChecked = e.target.checked;
+  const diceMap = {
+    d8: "d6",
+    d10: "d8",
+    d12: "d10",
+    d20: "d12"
+  };
+
+  document.querySelectorAll(".dice-display").forEach(span => {
+    const original = span.dataset.original;
+    span.textContent = isChecked ? (diceMap[original] || original) : original;
+  });
+});
 
 Hooks.on("lookfarShowTravelCheckDialog", () => {
   showTravelCheckDialog();
