@@ -293,15 +293,10 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
         if (isDanger) {
           const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
           newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-        } else if (discoveryType) {
-          const newDiscoveryResult = await generateDiscovery(discoveryType);
-          newResultMessage = discoveryType === "major"
-            ? "Major Discovery! " + newDiscoveryResult
-            : "Minor Discovery! " + newDiscoveryResult;
-        } else {
-          const newDiscoveryResult = await generateDiscovery("major");
-          newResultMessage = "Discovery! " + newDiscoveryResult;
-        }
+       } else {
+  const newDiscoveryResult = await generateDiscovery();
+  newResultMessage = "Discovery! " + newDiscoveryResult;
+}
 
         // Emit the new result to all clients
         game.socket.emit("module.lookfar", {
