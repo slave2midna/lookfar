@@ -126,12 +126,41 @@ function showTravelCheckDialog() {
       icon: '<i class="fas fa-check"></i>',
       callback: (html) => {
         const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
-        handleRoll(selectedDifficulty, html);
+const groupLevel = html.find("#groupLevel").val();
+const treasureHunterLevel = html.find("#treasureHunterLevelInput").val();
+const wellTraveled = html.find("#wellTraveled").is(":checked");
+
+// Store these values
+localStorage.setItem("lookfar-groupLevel", groupLevel);
+localStorage.setItem("lookfar-treasureHunterLevel", treasureHunterLevel);
+localStorage.setItem("lookfar-wellTraveled", wellTraveled);
+
+handleRoll(selectedDifficulty, html);
       },
     },
   },
   default: "roll",
   render: (html) => {
+    // Restore previous values
+const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
+const savedTreasureHunterLevel = parseInt(localStorage.getItem("lookfar-treasureHunterLevel") || "0");
+const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
+
+// Restore Group Level dropdown
+html.find("#groupLevel").val(savedGroupLevel);
+
+// Restore Treasure Hunter stars
+html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
+html.find("#treasureHunterLevel i").each(function () {
+  const starVal = Number($(this).data("value"));
+  $(this)
+    .removeClass("fa-solid fa-regular")
+    .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
+});
+
+// Restore Well-Traveled checkbox and update dice display
+html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
+
     // ⭐ Treasure Hunter stars logic
     const stars = html.find("#treasureHunterLevel i");
     stars.on("click", function () {
