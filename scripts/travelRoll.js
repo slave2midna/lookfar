@@ -89,12 +89,14 @@ let formHtml = `
               </td>
             </tr>
             <tr>
-  <td>
-    <label>Treasure Hunting:</label>
-    <div id="treasureHunterLevel" style="display: flex; gap: 5px; font-size: 1.2em;">
-      <i class="fa-regular fa-star" data-value="1"></i>
-      <i class="fa-regular fa-star" data-value="2"></i>
-      <i class="fa-regular fa-star" data-value="3"></i>
+  <td style="white-space: nowrap;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <label style="margin: 0;">Treasure Hunting:</label>
+      <div id="treasureHunterLevel" style="display: flex; gap: 5px; font-size: 1.2em; white-space: nowrap;">
+        <i class="fa-regular fa-star" data-value="1"></i>
+        <i class="fa-regular fa-star" data-value="2"></i>
+        <i class="fa-regular fa-star" data-value="3"></i>
+      </div>
     </div>
     <input type="hidden" id="treasureHunterLevelInput" value="0">
   </td>
