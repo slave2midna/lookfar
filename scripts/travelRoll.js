@@ -135,15 +135,19 @@ function showTravelCheckDialog() {
     render: (html) => {
       const stars = html.find("#treasureHunterLevel i");
       stars.on("click", function () {
-        const value = Number($(this).data("value"));
-        html.find("#treasureHunterLevelInput").val(value);
-        stars.each(function () {
-          const starVal = Number($(this).data("value"));
-          $(this)
-            .removeClass("fa-solid fa-regular")
-            .addClass(starVal <= value ? "fa-solid" : "fa-regular");
-        });
-      });
+  const clickedValue = Number($(this).data("value"));
+  const currentValue = Number(html.find("#treasureHunterLevelInput").val());
+  const newValue = (clickedValue === currentValue) ? 0 : clickedValue;
+
+  html.find("#treasureHunterLevelInput").val(newValue);
+
+  stars.each(function () {
+    const starVal = Number($(this).data("value"));
+    $(this)
+      .removeClass("fa-solid fa-regular")
+      .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
+  });
+});
     },
 
     close: () => {},
