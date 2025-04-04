@@ -176,7 +176,7 @@ Hooks.on("lookfarShowTravelCheckDialog", () => {
 });
 
 function shouldMakeDiscovery(rollResult, treasureHunterLevel) {
-  return rollResult <= 1 + treasureHunterLevel ? "major" : false;
+  return rollResult <= 1 + treasureHunterLevel;
 }
 
 // Reduces the dice size for well-traveled setting
@@ -225,19 +225,17 @@ async function handleRoll(selectedDifficulty, html) {
 
   let resultMessage = "";
   const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
-  let discoveryType = shouldMakeDiscovery(roll.total, treasureHunterLevel);
+  const isDiscovery = shouldMakeDiscovery(roll.total, treasureHunterLevel);
   let dangerSeverity = "";
 
   if (roll.total >= 6) {
     dangerSeverity = await randomSeverity(selectedDifficulty);
     resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-  } else if (discoveryType) {
-    resultMessage = discoveryType === "major"
-      ? "Major Discovery! " + await generateDiscovery("major")
-      : "Minor Discovery! " + await generateDiscovery("minor");
-  } else {
-    resultMessage = "The travel day passed without incident.";
-  }
+  } else if (isDiscovery) {
+  resultMessage = "Discovery! " + await generateDiscovery();
+} else {
+  resultMessage = "The travel day passed without incident.";
+}
 
   // Emit the result to all clients
   game.socket.emit("module.lookfar", {
@@ -516,71 +514,69 @@ function getRandomElement(arrayOrObject) {
   return isObject ? arrayOrObject[randomKey] : randomKey;
 }
 
-async function generateDiscovery(type = "major") {
-  console.log("Generating Discovery... Type:", type);
-  
-  // Get the selected roll table IDs for effects and keywords
+async function generateDiscovery() {
+  console.log("Generating Discovery...");
+
+  // Get the selected roll table IDs for effects and sources
   const effectTableId = game.settings.get("lookfar", "discoveryEffectRollTable");
+  const sourceTableId = game.settings.get("lookfar", "discoverySourceRollTable");
 
-  // Variable to hold the effect text
   let effectText = "No discovery effect available.";
+  let sourceText = "No discovery source available.";
 
-  // Only generate effects if it's a major discovery
-  if (type === "major") {
-    // Use the selected Discovery Effect Roll Table if it's not the default
-    if (effectTableId && effectTableId !== "default") {
-      const rollTable = game.tables.get(effectTableId);
-      if (rollTable) {
-        console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
-        const rollResult = await rollTable.roll();
-        if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-          effectText = rollResult.results[0].text; // Use the roll result text as the effect
-        }
-      } else {
-        console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
+  // Handle Discovery Effect
+  if (effectTableId && effectTableId !== "default") {
+    const rollTable = game.tables.get(effectTableId);
+    if (rollTable) {
+      console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
+      const rollResult = await rollTable.roll();
+      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+        effectText = rollResult.results[0].text;
       }
     } else {
-      // Use Lookfar Defaults: Pick a random effect from discovery.json
-      if (dataLoader.discoveryData && Array.isArray(dataLoader.discoveryData.effects)) {
-        const randomEffectIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
-        effectText = dataLoader.discoveryData.effects[randomEffectIndex]; // Randomly select from discovery.json effects
-      } else {
-        console.error("No effects data available in discovery.json.");
-      }
-    }
-  }
-
-const sourceTableId = game.settings.get("lookfar", "discoverySourceRollTable");
-let sourceText = "No discovery source available.";
-
-if (sourceTableId && sourceTableId !== "default") {
-  const rollTable = game.tables.get(sourceTableId);
-  if (rollTable) {
-    console.log(`Rolling on the Discovery Source Roll Table: ${rollTable.name}`);
-    const rollResult = await rollTable.roll();
-    if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-      sourceText = rollResult.results[0].text;
+      console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
     }
   } else {
-    console.error("Selected Discovery Source Roll Table not found. Falling back to defaults.");
+    if (dataLoader.discoveryData?.effects && Array.isArray(dataLoader.discoveryData.effects)) {
+      const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
+      effectText = dataLoader.discoveryData.effects[randomIndex];
+    } else {
+      console.error("No effects data available in discovery.json.");
+    }
   }
-} else {
-  if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
-    const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
-    sourceText = dataLoader.discoveryData.sources[randomIndex];
+
+  // Handle Discovery Source
+  if (sourceTableId && sourceTableId !== "default") {
+    const rollTable = game.tables.get(sourceTableId);
+    if (rollTable) {
+      console.log(`Rolling on the Discovery Source Roll Table: ${rollTable.name}`);
+      const rollResult = await rollTable.roll();
+      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+        sourceText = rollResult.results[0].text;
+      }
+    } else {
+      console.error("Selected Discovery Source Roll Table not found. Falling back to defaults.");
+    }
+  } else {
+    if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
+      const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
+      sourceText = dataLoader.discoveryData.sources[randomIndex];
+    } else {
+      console.error("No source data available in discovery.json.");
+    }
   }
-}
-    // Return formatted table with default traits/terrain, and hide effect row for minor
-    return `
-  <table style="width: 100%; border-collapse: collapse;">
-    <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
-      <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
-    </tr>
-    <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap">Source</th>
-      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
-    </tr>
-  </table>
-`;
+
+  // Return final formatted result
+  return `
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
+        <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
+      </tr>
+      <tr>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+      </tr>
+    </table>
+  `;
 }
