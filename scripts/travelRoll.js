@@ -26,8 +26,7 @@ Hooks.once("ready", () => {
         data.resultMessage,
         data.selectedDifficulty,
         data.groupLevel,
-        data.dangerSeverity,
-        data.discoveryType
+        data.dangerSeverity
       );
     } else if (data?.type === "closeDialog") {
       if (currentDialog) {
@@ -244,17 +243,16 @@ async function handleRoll(selectedDifficulty, html) {
     selectedDifficulty,
     groupLevel,
     dangerSeverity,
-    discoveryType,
   });
 
   // Show the dialog on the initiating client (for local confirmation)
-  showRerollDialog(resultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+  showRerollDialog(resultMessage, selectedDifficulty, groupLevel, dangerSeverity);
 }
 
 // Keep a reference to the current dialog
 let currentDialog = null;
 
-function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity, discoveryType) {
+function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity) {
   let isDanger = initialResult.includes("Danger!");
   let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
 
@@ -305,10 +303,9 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
           selectedDifficulty,
           groupLevel,
           dangerSeverity,
-          discoveryType,
         });
         
-        showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+        showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity);
     },
   },
 } : {}; // Non-GM users don't get any buttons
