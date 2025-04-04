@@ -120,57 +120,54 @@ let formHtml = `
 function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
   new Dialog({
-    title: "Travel Check",
-    content: formHtml,
-    buttons: {
-      roll: {
-        icon: '<i class="fas fa-check"></i>',
-        callback: (html) => {
-          let selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
-          handleRoll(selectedDifficulty, html);
-        },
+  title: "Travel Check",
+  content: formHtml,
+  buttons: {
+    roll: {
+      icon: '<i class="fas fa-check"></i>',
+      callback: (html) => {
+        const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
+        handleRoll(selectedDifficulty, html);
       },
     },
-    default: "roll",
+  },
+  default: "roll",
+  render: (html) => {
+    // ⭐ Treasure Hunter stars logic
+    const stars = html.find("#treasureHunterLevel i");
+    stars.on("click", function () {
+      const clickedValue = Number($(this).data("value"));
+      const currentValue = Number(html.find("#treasureHunterLevelInput").val());
+      const newValue = (clickedValue === currentValue) ? 0 : clickedValue;
 
-    // 🔽 Here’s the render function that adds the star click behavior
-    render: (html) => {
-      const stars = html.find("#treasureHunterLevel i");
-      stars.on("click", function () {
-  const clickedValue = Number($(this).data("value"));
-  const currentValue = Number(html.find("#treasureHunterLevelInput").val());
-  const newValue = (clickedValue === currentValue) ? 0 : clickedValue;
+      html.find("#treasureHunterLevelInput").val(newValue);
 
-  html.find("#treasureHunterLevelInput").val(newValue);
+      stars.each(function () {
+        const starVal = Number($(this).data("value"));
+        $(this)
+          .removeClass("fa-solid fa-regular")
+          .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
+      });
+    });
 
-  stars.each(function () {
-    const starVal = Number($(this).data("value"));
-    $(this)
-      .removeClass("fa-solid fa-regular")
-      .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
-  });
-});
-    },
+    // ✅ Well-Traveled checkbox logic
+    html.find("#wellTraveled").on("change", (e) => {
+      const isChecked = e.target.checked;
+      const diceMap = {
+        d8: "d6",
+        d10: "d8",
+        d12: "d10",
+        d20: "d12"
+      };
 
-    close: () => {},
-  }).render(true);
-}
-
-// Listen for changes on the "Well-Traveled" checkbox
-document.getElementById("wellTraveled").addEventListener("change", (e) => {
-  const isChecked = e.target.checked;
-  const diceMap = {
-    d8: "d6",
-    d10: "d8",
-    d12: "d10",
-    d20: "d12"
-  };
-
-  document.querySelectorAll(".dice-display").forEach(span => {
-    const original = span.dataset.original;
-    span.textContent = isChecked ? (diceMap[original] || original) : original;
-  });
-});
+      html.find(".dice-display").each(function () {
+        const original = $(this).data("original");
+        $(this).text(isChecked ? (diceMap[original] || original) : original);
+      });
+    });
+  },
+  close: () => {}
+}).render(true);
 
 Hooks.on("lookfarShowTravelCheckDialog", () => {
   showTravelCheckDialog();
