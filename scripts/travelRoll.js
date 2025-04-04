@@ -168,7 +168,9 @@ function showTravelCheckDialog() {
   },
   close: () => {}
 }).render(true);
+}
 
+// ⬇️ Move this outside the function definition
 Hooks.on("lookfarShowTravelCheckDialog", () => {
   showTravelCheckDialog();
 });
