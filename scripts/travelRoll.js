@@ -26,8 +26,7 @@ Hooks.once("ready", () => {
         data.resultMessage,
         data.selectedDifficulty,
         data.groupLevel,
-        data.dangerSeverity,
-        data.discoveryType
+        data.dangerSeverity
       );
     } else if (data?.type === "closeDialog") {
       if (currentDialog) {
@@ -50,24 +49,69 @@ class TravelRolls {
 
 let formHtml = `
   <form>
-    <table class="travel-check-table">
-      <caption style="font-weight: bold; font-size: 1.1em;">Threat Level</caption>
-      <tbody>
-        ${Object.entries(TravelRolls.travelChecks)
-          .map(
-            ([key, value], index) => `
-          <tr>
-            <td>
-              <label>
-                <input type="radio" name="travelCheck" value="${value}" ${index === 0 ? "checked" : ""}>
-                ${key} (${value})
-              </label>
-            </td>
-          </tr>`
-          )
-          .join("")}
-      </tbody>
-    </table>
+    <div style="display: flex; gap: 20px; align-items: flex-start;">
+      <!-- Threat Level Column -->
+      <div style="flex: 1;">
+        <table class="travel-check-table">
+          <caption style="font-weight: bold; font-size: 1.1em;">Threat Level</caption>
+          <tbody>
+            ${Object.entries(TravelRolls.travelChecks)
+              .map(
+                ([key, value], index) => `
+                <tr>
+                  <td>
+                    <label>
+                      <input type="radio" name="travelCheck" value="${value}" ${index === 0 ? "checked" : ""}>
+                      ${key} (<span class="dice-display" data-original="${value}">${value}</span>)
+                    </label>
+                  </td>
+                </tr>`
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Wayfaring Options Column -->
+      <div style="flex: 1;">
+        <table class="travel-check-table">
+          <caption style="font-weight: bold; font-size: 1.1em;">Wayfaring</caption>
+          <tbody>
+            <tr>
+              <td>
+                <label for="groupLevel">Party Level:</label>
+                <select id="groupLevel" name="groupLevel">
+                  <option value="5+">5+</option>
+                  <option value="20+">20+</option>
+                  <option value="40+">40+</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+  <td style="white-space: nowrap;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <label style="margin: 0;">Treasure Hunting:</label>
+      <div id="treasureHunterLevel" style="display: flex; gap: 5px; font-size: 1.2em; white-space: nowrap;">
+        <i class="fa-regular fa-star" data-value="1"></i>
+        <i class="fa-regular fa-star" data-value="2"></i>
+        <i class="fa-regular fa-star" data-value="3"></i>
+      </div>
+    </div>
+    <input type="hidden" id="treasureHunterLevelInput" value="0">
+  </td>
+</tr>
+            <tr>
+              <td>
+                <label>
+                  <input type="checkbox" id="wellTraveled" name="wellTraveled">
+                  Well-Traveled
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </form>
 `;
 
@@ -75,39 +119,91 @@ let formHtml = `
 function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
   new Dialog({
-    title: "Travel Check",
-    content: formHtml,
-    buttons: {
-      roll: {
-        icon: '<i class="fas fa-check"></i>',
-        callback: (html) => {
-          const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
-          handleRoll(selectedDifficulty);
-        },
+  title: "Travel Check",
+  content: formHtml,
+  buttons: {
+    roll: {
+      icon: '<i class="fas fa-check"></i>',
+      callback: (html) => {
+        const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
+const groupLevel = html.find("#groupLevel").val();
+const treasureHunterLevel = html.find("#treasureHunterLevelInput").val();
+const wellTraveled = html.find("#wellTraveled").is(":checked");
+
+// Store these values
+localStorage.setItem("lookfar-groupLevel", groupLevel);
+localStorage.setItem("lookfar-treasureHunterLevel", treasureHunterLevel);
+localStorage.setItem("lookfar-wellTraveled", wellTraveled);
+
+handleRoll(selectedDifficulty, html);
       },
     },
-    default: "roll",
-    close: () => {},
-  }).render(true);
-}
+  },
+  default: "roll",
+  render: (html) => {
+    // Restore previous values
+const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
+const savedTreasureHunterLevel = parseInt(localStorage.getItem("lookfar-treasureHunterLevel") || "0");
+const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
 
+// Restore Group Level dropdown
+html.find("#groupLevel").val(savedGroupLevel);
+
+// Restore Treasure Hunter stars
+html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
+html.find("#treasureHunterLevel i").each(function () {
+  const starVal = Number($(this).data("value"));
+  $(this)
+    .removeClass("fa-solid fa-regular")
+    .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
+});
+
+    // ⭐ Treasure Hunter stars logic
+    const stars = html.find("#treasureHunterLevel i");
+    stars.on("click", function () {
+      const clickedValue = Number($(this).data("value"));
+      const currentValue = Number(html.find("#treasureHunterLevelInput").val());
+      const newValue = (clickedValue === currentValue) ? 0 : clickedValue;
+
+      html.find("#treasureHunterLevelInput").val(newValue);
+
+      stars.each(function () {
+        const starVal = Number($(this).data("value"));
+        $(this)
+          .removeClass("fa-solid fa-regular")
+          .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
+      });
+    });
+
+   // ✅ Well-Traveled checkbox logic — SET FIRST
+html.find("#wellTraveled").on("change", (e) => {
+  const isChecked = e.target.checked;
+  const diceMap = {
+    d8: "d6",
+    d10: "d8",
+    d12: "d10",
+    d20: "d12"
+  };
+
+  html.find(".dice-display").each(function () {
+    const original = $(this).data("original");
+    $(this).text(isChecked ? (diceMap[original] || original) : original);
+  });
+});
+
+// Restore Well-Traveled checkbox and immediately trigger dice display update
+html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
+  },
+  close: () => {}
+}).render(true);
+}
+// ⬇️ Move this outside the function definition
 Hooks.on("lookfarShowTravelCheckDialog", () => {
   showTravelCheckDialog();
 });
 
-function shouldMakeDiscovery(rollResult) {
-  const treasureHunterLevel = parseInt(game.settings.get("lookfar", "treasureHunterLevel"));
-  const minorDiscoveriesEnabled = game.settings.get("lookfar", "minorDiscoveries");
-
-  if (minorDiscoveriesEnabled) {
-    if (rollResult === 1) {
-      return "major";
-    } else if (rollResult === 2 || rollResult === 3) {
-      return "minor";
-    }
-  }
-  // Original behavior: Major discovery on 1
-  return rollResult <= 1 + treasureHunterLevel ? "major" : false;
+function shouldMakeDiscovery(rollResult, treasureHunterLevel) {
+  return rollResult <= 1 + treasureHunterLevel;
 }
 
 // Reduces the dice size for well-traveled setting
@@ -116,18 +212,12 @@ function reduceDiceSize(diceSize) {
   return diceMap[diceSize] || diceSize; // Returns the reduced size, or the original if not found
 }
 
-async function handleRoll(selectedDifficulty) {
-  const wellTraveled = game.settings.get("lookfar", "wellTraveled");
-  const characterMessage = game.settings.get("lookfar", "characterMessage");
+async function handleRoll(selectedDifficulty, html) {
+  const wellTraveled = html.find("#wellTraveled").is(":checked");
 
   // Reduce the dice size if Well-Traveled is checked
   if (wellTraveled) {
     selectedDifficulty = reduceDiceSize(selectedDifficulty);
-    if (characterMessage) {
-      ChatMessage.create({
-        content: characterMessage,
-      });
-    }
   }
 
   let roll = new Roll(selectedDifficulty);
@@ -158,22 +248,21 @@ async function handleRoll(selectedDifficulty) {
   });
 
   // Determine the group level set by the GM
-  const groupLevel = game.settings.get("lookfar", "groupLevel");
+  const groupLevel = html.find("#groupLevel").val();
 
   let resultMessage = "";
-  let discoveryType = shouldMakeDiscovery(roll.total);
+  const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
+  const isDiscovery = shouldMakeDiscovery(roll.total, treasureHunterLevel);
   let dangerSeverity = "";
 
   if (roll.total >= 6) {
     dangerSeverity = await randomSeverity(selectedDifficulty);
     resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-  } else if (discoveryType) {
-    resultMessage = discoveryType === "major"
-      ? "Major Discovery! " + await generateDiscovery("major")
-      : "Minor Discovery! " + await generateDiscovery("minor");
-  } else {
-    resultMessage = "The travel day passed without incident.";
-  }
+  } else if (isDiscovery) {
+  resultMessage = "Discovery! " + await generateDiscovery();
+} else {
+  resultMessage = "The travel day passed without incident.";
+}
 
   // Emit the result to all clients
   game.socket.emit("module.lookfar", {
@@ -182,17 +271,16 @@ async function handleRoll(selectedDifficulty) {
     selectedDifficulty,
     groupLevel,
     dangerSeverity,
-    discoveryType,
   });
 
   // Show the dialog on the initiating client (for local confirmation)
-  showRerollDialog(resultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+  showRerollDialog(resultMessage, selectedDifficulty, groupLevel, dangerSeverity);
 }
 
 // Keep a reference to the current dialog
 let currentDialog = null;
 
-function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity, discoveryType) {
+function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity) {
   let isDanger = initialResult.includes("Danger!");
   let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
 
@@ -231,15 +319,10 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
         if (isDanger) {
           const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
           newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-        } else if (discoveryType) {
-          const newDiscoveryResult = await generateDiscovery(discoveryType);
-          newResultMessage = discoveryType === "major"
-            ? "Major Discovery! " + newDiscoveryResult
-            : "Minor Discovery! " + newDiscoveryResult;
-        } else {
-          const newDiscoveryResult = await generateDiscovery("major");
-          newResultMessage = "Discovery! " + newDiscoveryResult;
-        }
+       } else {
+  const newDiscoveryResult = await generateDiscovery();
+  newResultMessage = "Discovery! " + newDiscoveryResult;
+}
 
         // Emit the new result to all clients
         game.socket.emit("module.lookfar", {
@@ -248,10 +331,9 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
           selectedDifficulty,
           groupLevel,
           dangerSeverity,
-          discoveryType,
         });
         
-        showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity, discoveryType);
+        showRerollDialog(newResultMessage, selectedDifficulty, groupLevel, dangerSeverity);
     },
   },
 } : {}; // Non-GM users don't get any buttons
@@ -452,71 +534,69 @@ function getRandomElement(arrayOrObject) {
   return isObject ? arrayOrObject[randomKey] : randomKey;
 }
 
-async function generateDiscovery(type = "major") {
-  console.log("Generating Discovery... Type:", type);
-  
-  // Get the selected roll table IDs for effects and keywords
+async function generateDiscovery() {
+  console.log("Generating Discovery...");
+
+  // Get the selected roll table IDs for effects and sources
   const effectTableId = game.settings.get("lookfar", "discoveryEffectRollTable");
+  const sourceTableId = game.settings.get("lookfar", "discoverySourceRollTable");
 
-  // Variable to hold the effect text
   let effectText = "No discovery effect available.";
+  let sourceText = "No discovery source available.";
 
-  // Only generate effects if it's a major discovery
-  if (type === "major") {
-    // Use the selected Discovery Effect Roll Table if it's not the default
-    if (effectTableId && effectTableId !== "default") {
-      const rollTable = game.tables.get(effectTableId);
-      if (rollTable) {
-        console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
-        const rollResult = await rollTable.roll();
-        if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-          effectText = rollResult.results[0].text; // Use the roll result text as the effect
-        }
-      } else {
-        console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
+  // Handle Discovery Effect
+  if (effectTableId && effectTableId !== "default") {
+    const rollTable = game.tables.get(effectTableId);
+    if (rollTable) {
+      console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
+      const rollResult = await rollTable.roll();
+      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+        effectText = rollResult.results[0].text;
       }
     } else {
-      // Use Lookfar Defaults: Pick a random effect from discovery.json
-      if (dataLoader.discoveryData && Array.isArray(dataLoader.discoveryData.effects)) {
-        const randomEffectIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
-        effectText = dataLoader.discoveryData.effects[randomEffectIndex]; // Randomly select from discovery.json effects
-      } else {
-        console.error("No effects data available in discovery.json.");
-      }
-    }
-  }
-
-const sourceTableId = game.settings.get("lookfar", "discoverySourceRollTable");
-let sourceText = "No discovery source available.";
-
-if (sourceTableId && sourceTableId !== "default") {
-  const rollTable = game.tables.get(sourceTableId);
-  if (rollTable) {
-    console.log(`Rolling on the Discovery Source Roll Table: ${rollTable.name}`);
-    const rollResult = await rollTable.roll();
-    if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-      sourceText = rollResult.results[0].text;
+      console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
     }
   } else {
-    console.error("Selected Discovery Source Roll Table not found. Falling back to defaults.");
+    if (dataLoader.discoveryData?.effects && Array.isArray(dataLoader.discoveryData.effects)) {
+      const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
+      effectText = dataLoader.discoveryData.effects[randomIndex];
+    } else {
+      console.error("No effects data available in discovery.json.");
+    }
   }
-} else {
-  if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
-    const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
-    sourceText = dataLoader.discoveryData.sources[randomIndex];
+
+  // Handle Discovery Source
+  if (sourceTableId && sourceTableId !== "default") {
+    const rollTable = game.tables.get(sourceTableId);
+    if (rollTable) {
+      console.log(`Rolling on the Discovery Source Roll Table: ${rollTable.name}`);
+      const rollResult = await rollTable.roll();
+      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+        sourceText = rollResult.results[0].text;
+      }
+    } else {
+      console.error("Selected Discovery Source Roll Table not found. Falling back to defaults.");
+    }
+  } else {
+    if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
+      const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
+      sourceText = dataLoader.discoveryData.sources[randomIndex];
+    } else {
+      console.error("No source data available in discovery.json.");
+    }
   }
-}
-    // Return formatted table with default traits/terrain, and hide effect row for minor
-    return `
-  <table style="width: 100%; border-collapse: collapse;">
-    <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
-      <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
-    </tr>
-    <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap">Source</th>
-      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
-    </tr>
-  </table>
-`;
+
+  // Return final formatted result
+  return `
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
+        <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
+      </tr>
+      <tr>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+      </tr>
+    </table>
+  `;
 }
