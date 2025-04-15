@@ -1,24 +1,33 @@
 export const LookfarSettings = {
   registerSettings() {
     
-    game.settings.register("lookfar", "rollVisibility", {
-      name: "Roll Visibility",
-      hint: "Choose whether rolls and chat outputs are public or GM only.",
-      scope: "world",
-      config: true,
-      type: String,
-      choices: {
-        public: "Public",
-        gmOnly: "GM Only",
+game.settings.register("lookfar", "rollVisibility", {
+  name: "Roll Visibility",
+  hint: "Choose whether rolls and chat outputs are public or GM only.",
+  scope: "world",
+  config: true,
+  type: String,
+  choices: {
+      public: "Public",
+      gmOnly: "GM Only",
       },
       default: "public",
-    });
-  },
+});
 
+game.settings.register("lookfar", "enableKeywords", {
+  name: "Enable Keywords",
+  hint: "Enable keywords when generating travel check results.",
+  scope: "world",
+  config: true,
+  type: Boolean,
+  default: false,
+});
+    
+  },
   registerDynamicRollTableSettings() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
     
-    // Discovery Effect Roll Table
+  // Discovery Effect Roll Table
 game.settings.register("lookfar", "discoveryEffectRollTable", {
   name: "Discovery Effect Roll Table",
   hint: "Select the Roll Table to use for generating discovery effects.",
