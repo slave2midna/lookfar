@@ -158,9 +158,6 @@ html.find("#treasureHunterLevel i").each(function () {
     .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
 });
 
-// Restore Well-Traveled checkbox and update dice display
-html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
-
     // ⭐ Treasure Hunter stars logic
     const stars = html.find("#treasureHunterLevel i");
     stars.on("click", function () {
@@ -178,25 +175,27 @@ html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
       });
     });
 
-    // ✅ Well-Traveled checkbox logic
-    html.find("#wellTraveled").on("change", (e) => {
-      const isChecked = e.target.checked;
-      const diceMap = {
-        d8: "d6",
-        d10: "d8",
-        d12: "d10",
-        d20: "d12"
-      };
+   // ✅ Well-Traveled checkbox logic — SET FIRST
+html.find("#wellTraveled").on("change", (e) => {
+  const isChecked = e.target.checked;
+  const diceMap = {
+    d8: "d6",
+    d10: "d8",
+    d12: "d10",
+    d20: "d12"
+  };
 
-      html.find(".dice-display").each(function () {
-        const original = $(this).data("original");
-        $(this).text(isChecked ? (diceMap[original] || original) : original);
-      });
-    });
+  html.find(".dice-display").each(function () {
+    const original = $(this).data("original");
+    $(this).text(isChecked ? (diceMap[original] || original) : original);
+  });
+});
+
+// Restore Well-Traveled checkbox and immediately trigger dice display update
+html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
   },
   close: () => {}
 }).render(true);
-}
 
 // ⬇️ Move this outside the function definition
 Hooks.on("lookfarShowTravelCheckDialog", () => {
