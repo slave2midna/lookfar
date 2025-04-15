@@ -158,7 +158,7 @@ html.find("#treasureHunterLevel i").each(function () {
     .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
 });
 
-    // ⭐ Treasure Hunter stars logic
+    // Treasure Hunter logic
     const stars = html.find("#treasureHunterLevel i");
     stars.on("click", function () {
       const clickedValue = Number($(this).data("value"));
@@ -175,7 +175,7 @@ html.find("#treasureHunterLevel i").each(function () {
       });
     });
 
-   // ✅ Well-Traveled checkbox logic — SET FIRST
+   // Well-Traveled checkbox logic
 html.find("#wellTraveled").on("change", (e) => {
   const isChecked = e.target.checked;
   const diceMap = {
@@ -256,12 +256,30 @@ async function handleRoll(selectedDifficulty, html) {
   let dangerSeverity = "";
 
   if (roll.total >= 6) {
-    dangerSeverity = await randomSeverity(selectedDifficulty);
-    resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-  } else if (isDiscovery) {
-  resultMessage = "Discovery! " + await generateDiscovery();
+  dangerSeverity = await randomSeverity(selectedDifficulty);
+  const resultType = `${dangerSeverity} Danger!`;
+  const resultTable = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+  resultMessage = `
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      ${resultType}
+    </div>
+    ${resultTable}
+  `;
+} else if (isDiscovery) {
+  const resultType = "Discovery!";
+  const resultTable = await generateDiscovery();
+  resultMessage = `
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      ${resultType}
+    </div>
+    ${resultTable}
+  `;
 } else {
-  resultMessage = "The travel day passed without incident.";
+  resultMessage = `
+    <div style="text-align: center; font-size: 1.2rem;">
+      The travel day passed without incident.
+    </div>
+  `;
 }
 
   // Emit the result to all clients
@@ -345,10 +363,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     },
     content: `
   <div style="font-size: 1.1rem; margin-bottom: 10px;">
-    <div style="text-align: center; font-weight: bold;">${title}</div>
-    <div style="text-align: left; margin-top: 10px;">
-      ${initialResult}
-    </div>
+    ${initialResult}
   </div>
   <p style="margin-bottom: 1rem;">
     ${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}
