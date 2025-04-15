@@ -444,17 +444,18 @@ if (!result) {
 
   // Return formatted table for danger results and source.
   return `
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Threat</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
-      </tr>
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
-      </tr>
-    </table>
-  `;
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Threat</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
+    </tr>
+    <tr>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+    </tr>
+  </table>
+  ${generateKeywords()}
+`;
 }
 
 function handleDamage(threatsData, groupLevel, dangerSeverity) {
@@ -534,6 +535,30 @@ function getRandomElement(arrayOrObject) {
   return isObject ? arrayOrObject[randomKey] : randomKey;
 }
 
+// If keywords are enabled, this function generates Keywords
+function generateKeywords() {
+  if (!game.settings.get("lookfar", "enableKeywords")) return "";
+
+  const traits = dataLoader.keywordData?.traits || [];
+  const terrain = dataLoader.keywordData?.terrain || [];
+
+  const traitKeywords = generateUniqueList(traits, 3, 4).join(", ");
+  const terrainKeywords = generateUniqueList(terrain, 3, 4).join(", ");
+
+  return `
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+      <tr>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Trait</th>
+        <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
+      </tr>
+      <tr>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Terrain</th>
+        <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
+      </tr>
+    </table>
+  `;
+}
+
 async function generateDiscovery() {
   console.log("Generating Discovery...");
 
@@ -588,15 +613,16 @@ async function generateDiscovery() {
 
   // Return final formatted result
   return `
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
-      </tr>
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
-      </tr>
-    </table>
-  `;
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
+    </tr>
+    <tr>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+    </tr>
+  </table>
+  ${generateKeywords()}
+`;
 }
