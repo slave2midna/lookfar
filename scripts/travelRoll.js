@@ -282,7 +282,7 @@ let currentDialog = null;
 
 function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity) {
   let isDanger = initialResult.includes("Danger!");
-  let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
+  let title = isDanger ? "Danger Result" : "Discovery Result";
 
   // Close the existing dialog if it's open
   if (currentDialog) {
