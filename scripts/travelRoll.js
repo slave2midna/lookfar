@@ -335,11 +335,23 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
       callback: async () => {
         let newResultMessage;
         if (isDanger) {
-          const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-          newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-       } else {
-  const newDiscoveryResult = await generateDiscovery();
-  newResultMessage = "Discovery! " + newDiscoveryResult;
+  const resultType = `${dangerSeverity} Danger!`;
+  const resultTable = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+  newResultMessage = `
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      ${resultType}
+    </div>
+    ${resultTable}
+  `;
+} else {
+  const resultType = "Discovery!";
+  const resultTable = await generateDiscovery();
+  newResultMessage = `
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      ${resultType}
+    </div>
+    ${resultTable}
+  `;
 }
 
         // Emit the new result to all clients
