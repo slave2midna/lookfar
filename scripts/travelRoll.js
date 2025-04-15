@@ -344,8 +344,11 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
       html.addClass("ff6-dialog");
     },
     content: `
-  <div style="font-size: 1.1rem; text-align: center; margin-bottom: 10px;">
-    ${initialResult}
+  <div style="font-size: 1.1rem; margin-bottom: 10px;">
+    <div style="text-align: center; font-weight: bold;">${title}</div>
+    <div style="text-align: left; margin-top: 10px;">
+      ${initialResult}
+    </div>
   </div>
   <p style="margin-bottom: 1rem;">
     ${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}
