@@ -444,7 +444,7 @@ if (!result) {
 
   // Return formatted table for danger results and source.
   return `
-  <table style=""width: 100%; table-layout: fixed; border-collapse: collapse;">
+  <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
     <tr>
       <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Threat</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
@@ -548,11 +548,11 @@ function generateKeywords() {
   return `
   <table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 10px;">
     <tr>
-      <th style="width: 120px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Traits</th>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Traits</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
     </tr>
     <tr>
-      <th style="width: 120px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Terrain</th>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Terrain</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
     </tr>
   </table>
