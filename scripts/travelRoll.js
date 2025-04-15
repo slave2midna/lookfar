@@ -196,7 +196,7 @@ html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
   },
   close: () => {}
 }).render(true);
-
+}
 // ⬇️ Move this outside the function definition
 Hooks.on("lookfarShowTravelCheckDialog", () => {
   showTravelCheckDialog();
