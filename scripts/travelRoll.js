@@ -444,7 +444,7 @@ if (!result) {
 
   // Return formatted table for danger results and source.
   return `
-  <table style="width: 100%; border-collapse: collapse;">
+  <table style=""width: 100%; table-layout: fixed; border-collapse: collapse;">
     <tr>
       <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Threat</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
@@ -546,7 +546,7 @@ function generateKeywords() {
   const terrainKeywords = generateUniqueList(terrain, 3, 4).join(", ");
 
   return `
-    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 10px;">
       <tr>
         <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Traits</th>
         <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
@@ -613,7 +613,7 @@ async function generateDiscovery() {
 
   // Return final formatted result
   return `
-  <table style="width: 100%; border-collapse: collapse;">
+  <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
     <tr>
       <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
