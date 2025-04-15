@@ -546,17 +546,17 @@ function generateKeywords() {
   const terrainKeywords = generateUniqueList(terrain, 3, 4).join(", ");
 
   return `
-    <table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 10px;">
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Traits</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
-      </tr>
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Terrain</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
-      </tr>
-    </table>
-  `;
+  <table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 10px;">
+    <tr>
+      <th style="width: 120px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Traits</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
+    </tr>
+    <tr>
+      <th style="width: 120px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Terrain</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
+    </tr>
+  </table>
+`;
 }
 
 async function generateDiscovery() {
