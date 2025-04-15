@@ -548,7 +548,7 @@ function generateKeywords() {
   return `
     <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
       <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Trait</th>
+        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Traits</th>
         <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
       </tr>
       <tr>
