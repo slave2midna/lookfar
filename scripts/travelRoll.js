@@ -628,7 +628,7 @@ async function generateDiscovery() {
   } else {
     if (dataLoader.discoveryData?.effects && Array.isArray(dataLoader.discoveryData.effects)) {
       const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
-      effectText = dataLoader.discoveryData.effects[randomIndex];
+      effectText = game.i18n.localize(dataLoader.discoveryData.effects[randomIndex]);
     } else {
       console.error("No effects data available in discovery.json.");
     }
@@ -649,7 +649,7 @@ async function generateDiscovery() {
   } else {
     if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
       const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
-      sourceText = dataLoader.discoveryData.sources[randomIndex];
+      sourceText = game.i18n.localize(dataLoader.discoveryData.sources[randomIndex]);
     } else {
       console.error("No source data available in discovery.json.");
     }
