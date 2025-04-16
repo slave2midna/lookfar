@@ -469,13 +469,13 @@ if (!result) {
       result += handleStatusEffect(dataLoader.threatsData, dangerSeverity, groupLevel);
       break;
     case "Combat":
-      result += dataLoader.threatsData.Combat[dangerSeverity];
+      result += game.i18n.localize(dataLoader.threatsData.Combat[dangerSeverity]);
       break;
     case "dangerClock":
-      result += dataLoader.threatsData.dangerClock[dangerSeverity];
+      result += game.i18n.localize(dataLoader.threatsData.dangerClock[dangerSeverity]);
       break;
     case "villainPlanAdvance":
-      result += dataLoader.threatsData.villainPlanAdvance[dangerSeverity];
+      result += game.i18n.localize(dataLoader.threatsData.villainPlanAdvance[dangerSeverity]);
       break;
     default:
       console.error("Unknown threat type:", threatType);
@@ -528,7 +528,7 @@ function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
     }
   } else {
     const statusEffectsList = threatsData.statusEffects[dangerSeverity];
-    return getRandomElement(statusEffectsList);
+    return game.i18n.localize(getRandomElement(statusEffectsList));
   }
 }
 
@@ -649,7 +649,7 @@ async function generateDiscovery() {
   } else {
     if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
       const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
-      sourceText = dataLoader.discoveryData.sources[randomIndex];
+      sourceText = game.i18n.localize(dataLoader.sourceData[randomSourceIndex]);
     } else {
       console.error("No source data available in discovery.json.");
     }
