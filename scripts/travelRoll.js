@@ -53,7 +53,11 @@ class TravelRolls {
   };
 }
 
-let formHtml = `
+// Defines the travel check dialog
+function showTravelCheckDialog() {
+  console.log("Opening Travel Check dialog...");
+
+  let formHtml = `
   <form>
     <div style="display: flex; gap: 20px; align-items: flex-start;">
       <!-- Threat Level Column -->
@@ -120,10 +124,7 @@ let formHtml = `
     </div>
   </form>
 `;
-
-// Defines the travel check dialog
-function showTravelCheckDialog() {
-  console.log("Opening Travel Check dialog...");
+  
   new Dialog({
   title: game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.Title"),
   content: formHtml,
