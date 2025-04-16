@@ -40,6 +40,52 @@
         "Hint": "Select the Roll Table to use for generating danger sources."
       },
       "DefaultRollTable": "Lookfar Defaults"
+    },
+    "Dialogs": {
+      "TravelCheck": {
+        "Title": "Travel Check",
+        "ThreatLevel": "Threat Level",
+        "Wayfaring": "Wayfaring",
+        "PartyLevel": "Party Level:",
+        "TreasureHunting": "Treasure Hunting",
+        "WellTraveled": "Well-Traveled"
+      },
+      "TravelResult": {
+        "Title": "Travel Result",
+        "Prompt": "Do you want to keep this result or reroll?",
+        "Waiting": "Waiting for GM decision...",
+        "NoIncident": "The travel day passed without incident."
+      },
+      "Result": {
+        "Danger": "Danger!",
+        "Discovery": "Discovery!"
+      },
+      "TableHeaders": {
+        "Threat": "Threat",
+        "Source": "Source",
+        "Effect": "Effect",
+        "Traits": "Traits",
+        "Terrain": "Terrain"
+      }
+    },
+    "Severity": {
+      "Minor": "Minor",
+      "Heavy": "Heavy",
+      "Massive": "Massive"
+    },
+    "Chat": {
+      "Alias": {
+        "Roll": "Travel Roll",
+        "Result": "Travel Result"
+      }
+    },
+    "Errors": {
+      "DataUnavailable": "Error: Data not available.",
+      "DamageMissing": "Error: Damage data not found.",
+      "ThreatUnknown": "Error: Unknown threat type.",
+      "NoDangerSource": "No danger source available.",
+      "NoDiscoveryEffect": "No discovery effect available.",
+      "NoDiscoverySource": "No discovery source available."
     }
   }
 }
