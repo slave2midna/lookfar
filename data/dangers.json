@@ -19,57 +19,57 @@
     },
     "statusEffects": {
       "Minor": [
-        "Suffer dazed",
-        "Suffer shaken",
-        "Suffer slow",
-        "Suffer weak"
+        "LOOKFAR.Dangers.StatusEffects.Minor.Dazed",
+        "LOOKFAR.Dangers.StatusEffects.Minor.Shaken",
+        "LOOKFAR.Dangers.StatusEffects.Minor.Slow",
+        "LOOKFAR.Dangers.StatusEffects.Minor.Weak"
       ],
       "Heavy": [
-        "Suffer poison",
-        "Suffer enrage"
+        "LOOKFAR.Dangers.StatusEffects.Heavy.Poison",
+        "LOOKFAR.Dangers.StatusEffects.Heavy.Enrage"
       ],
       "Massive": [
-        "Dazed",
-        "Shaken",
-        "Slow",
-        "Weak",
-        "Poisoned",
-        "Enraged"
+        "LOOKFAR.Dangers.StatusEffects.Massive.Dazed",
+        "LOOKFAR.Dangers.StatusEffects.Massive.Shaken",
+        "LOOKFAR.Dangers.StatusEffects.Massive.Slow",
+        "LOOKFAR.Dangers.StatusEffects.Massive.Weak",
+        "LOOKFAR.Dangers.StatusEffects.Massive.Poisoned",
+        "LOOKFAR.Dangers.StatusEffects.Massive.Enraged"
       ]
     },
     "Combat": {
-      "Minor": "Easy encounter!",
-      "Heavy": "Normal encounter!",
-      "Massive": "Hard encounter!"
+      "Minor": "LOOKFAR.Dangers.Combat.Minor",
+      "Heavy": "LOOKFAR.Dangers.Combat.Heavy",
+      "Massive": "LOOKFAR.Dangers.Combat.Massive"
     },
     "dangerClock": {
-      "Minor": "A 4 Section Clock",
-      "Heavy": "A 6 Section Clock",
-      "Massive": "An 8 Section Clock"
+      "Minor": "LOOKFAR.Dangers.DangerClock.Minor",
+      "Heavy": "LOOKFAR.Dangers.DangerClock.Heavy",
+      "Massive": "LOOKFAR.Dangers.DangerClock.Massive"
     },
     "villainPlanAdvance": {
-      "Minor": "Villian plan advances +2",
-      "Heavy": "Villian plan advances +3",
-      "Massive": "Villian plan advances +4"
+      "Minor": "LOOKFAR.Dangers.VillainPlanAdvance.Minor",
+      "Heavy": "LOOKFAR.Dangers.VillainPlanAdvance.Heavy",
+      "Massive": "LOOKFAR.Dangers.VillainPlanAdvance.Massive"
     }
   },
   "sources": [
-    "A condition affects the travelers, like altitude sickness, food poisoning, or exhaustion.",
-    "Issues with travel or equipment, such as vehicle breakdowns, gear malfunctions, or getting lost.",
-    "Local or global political situations cause protests or social tensions.",
-    "Conflicts over land, resources, or faith traditions arise.",
-    "Events like earthquakes, hurricanes, or floods occur.",
-    "Animals, including predatory wildlife or dangerous insects, pose a threat.",
-    "Cultural misunderstandings or language barriers cause trouble.",
-    "Cursed objects, unstable magic zones, or harmful spells lead to danger.",
-    "Ghosts, spirits, or other incorporeal beings mislead or harm travelers.",
-    "Rifts in space-time or reality-altering zones cause problems.",
-    "Ancient ruins or forgotten cities reveal traps or awakened guardians.",
-    "Legendary beasts or cryptids pose a unique and dangerous threat.",
-    "Challenges or curses imposed by gods, demigods, or celestial beings occur.",
-    "Lack of essential resources like water, food, or magical energy becomes an issue.",
-    "AI gone rogue, malfunctioning gadgets, or unstable power sources cause problems.",
-    "Mental assaults, illusions, or mind control from telepathic entities take place.",
-    "Time loops, paradoxes, or aging anomalies threaten the group."
+    "LOOKFAR.Dangers.Sources.Source1",
+    "LOOKFAR.Dangers.Sources.Source2",
+    "LOOKFAR.Dangers.Sources.Source3",
+    "LOOKFAR.Dangers.Sources.Source4",
+    "LOOKFAR.Dangers.Sources.Source5",
+    "LOOKFAR.Dangers.Sources.Source6",
+    "LOOKFAR.Dangers.Sources.Source7",
+    "LOOKFAR.Dangers.Sources.Source8",
+    "LOOKFAR.Dangers.Sources.Source9",
+    "LOOKFAR.Dangers.Sources.Source10",
+    "LOOKFAR.Dangers.Sources.Source11",
+    "LOOKFAR.Dangers.Sources.Source12",
+    "LOOKFAR.Dangers.Sources.Source13",
+    "LOOKFAR.Dangers.Sources.Source14",
+    "LOOKFAR.Dangers.Sources.Source15",
+    "LOOKFAR.Dangers.Sources.Source16",
+    "LOOKFAR.Dangers.Sources.Source17"
   ]
 }
