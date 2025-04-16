@@ -81,7 +81,7 @@ let formHtml = `
       <!-- Wayfaring Options Column -->
       <div style="flex: 1;">
         <table class="travel-check-table">
-          <caption style="font-weight: bold; font-size: 1.1em;">game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.Wayfaring")</caption>
+          <caption style="font-weight: bold; font-size: 1.1em;">${game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.Wayfaring")}</caption>
           <tbody>
             <tr>
               <td>
@@ -96,7 +96,7 @@ let formHtml = `
             <tr>
   <td style="white-space: nowrap;">
     <div style="display: flex; align-items: center; gap: 10px;">
-      <label style="margin: 0;">game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.TreasureHunting"):</label>
+      <label style="margin: 0;">${game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.TreasureHunting")}:</label>
       <div id="treasureHunterLevel" style="display: flex; gap: 5px; font-size: 1.2em; white-space: nowrap;">
         <i class="fa-regular fa-star" data-value="1"></i>
         <i class="fa-regular fa-star" data-value="2"></i>
@@ -110,7 +110,7 @@ let formHtml = `
               <td>
                 <label>
                   <input type="checkbox" id="wellTraveled" name="wellTraveled">
-                  game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.WellTraveled")
+                  ${game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.WellTraveled")}
                 </label>
               </td>
             </tr>
@@ -272,7 +272,7 @@ async function handleRoll(selectedDifficulty, html) {
     ${resultTable}
   `;
 } else if (isDiscovery) {
-  const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");;
+  const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");
   const resultTable = await generateDiscovery();
   resultMessage = `
     <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
@@ -486,11 +486,11 @@ if (!result) {
   return `
   <table style="width: 100%; border-collapse: collapse;">
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Threat")</th>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Threat")}</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
     </tr>
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")</th>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")}</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
     </tr>
   </table>
@@ -588,11 +588,11 @@ function generateKeywords() {
   return `
   <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
     <tr>
-      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Traits")</th>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Traits")}</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
     </tr>
     <tr>
-      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Terrain"</th>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Terrain")}</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
     </tr>
   </table>
@@ -655,11 +655,11 @@ async function generateDiscovery() {
   return `
   <table style="width: 100%; border-collapse: collapse;">
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Effect")</th>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Effect")}</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
     </tr>
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")</th>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")}</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
     </tr>
   </table>
