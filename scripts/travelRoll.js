@@ -429,7 +429,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
       console.log(`Rolling on the Danger Source Roll Table: ${rollTable.name}`);
       const rollResult = await rollTable.roll();  // Add await here
       if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-         = rollResult.results[0].text; // Use the roll result text as the source
+        sourceText = rollResult.results[0].text; // Use the roll result text as the source
       }
     } else {
       console.error("Selected Danger Source Roll Table not found. Falling back to defaults.");
@@ -438,7 +438,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
     // Use Lookfar Defaults: Pick a random source from dangers.json
     if (dataLoader.sourceData && Array.isArray(dataLoader.sourceData)) {
       const randomSourceIndex = Math.floor(Math.random() * dataLoader.sourceData.length);
-       = dataLoader.sourceData[randomSourceIndex]; // Randomly select from dangers.json sources
+      sourceText = game.i18n.localize(dataLoader.sourceData[randomSourceIndex]); // Randomly select from dangers.json sources
     } else {
       console.error("No source data available in dangers.json.");
     }
