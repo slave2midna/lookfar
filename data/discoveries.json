@@ -1,29 +1,29 @@
 {
   "effects": [
-    "Each party member regains 1 IP.",
-    "Each party member regains 10 HP.",
-    "Each party member regains 10 MP.",
-    "Distance to next destination reduced by 1.",
-    "Party automatically wins next initiative.",
-    "The party receives 1 Fabula Point.",
-    "The party encounters a friendly NPC.",
-    "The party encounters a wandering merchant.",
-    "The party gains materials.",
-    "The party gains treasure.",
-    "The party may rest without advancing clocks."
+    "LOOKFAR.Discoveries.Effects.Effect1",
+    "LOOKFAR.Discoveries.Effects.Effect2",
+    "LOOKFAR.Discoveries.Effects.Effect3",
+    "LOOKFAR.Discoveries.Effects.Effect4",
+    "LOOKFAR.Discoveries.Effects.Effect5",
+    "LOOKFAR.Discoveries.Effects.Effect6",
+    "LOOKFAR.Discoveries.Effects.Effect7",
+    "LOOKFAR.Discoveries.Effects.Effect8",
+    "LOOKFAR.Discoveries.Effects.Effect9",
+    "LOOKFAR.Discoveries.Effects.Effect10",
+    "LOOKFAR.Discoveries.Effects.Effect11"
   ],
   "sources": [
-    "A beautiful scenery that remains almost untouched for centuries",
-    "Ruins of a village that tells the story of an old war",
-    "A striking flower or delicious fruit that only exists in that particular location",
-    "A wondrous mythical creature passes through, singing a mysterious melody and/or leaving a trail of magical energy",
-    "A rare sight of a group of animals in the middle of their migratory journey",
-    "A crystal cave with incredibly hard gems",
-    "A veil of colors in the sky that only a few people are allowed to see",
-    "A meteor shower that only happens once every 50 years",
-    "Remnants of temporal magic that gives a vision of the past",
-    "A statue of an old, forgotten hero",
-    "A scent coming from a plant that is used to make perfume",
-    "A troupe of musicians performing a traditional song"
+    "LOOKFAR.Discoveries.Sources.Source1",
+    "LOOKFAR.Discoveries.Sources.Source2",
+    "LOOKFAR.Discoveries.Sources.Source3",
+    "LOOKFAR.Discoveries.Sources.Source4",
+    "LOOKFAR.Discoveries.Sources.Source5",
+    "LOOKFAR.Discoveries.Sources.Source6",
+    "LOOKFAR.Discoveries.Sources.Source7",
+    "LOOKFAR.Discoveries.Sources.Source8",
+    "LOOKFAR.Discoveries.Sources.Source9",
+    "LOOKFAR.Discoveries.Sources.Source10",
+    "LOOKFAR.Discoveries.Sources.Source11",
+    "LOOKFAR.Discoveries.Sources.Source12"
   ]
 }
