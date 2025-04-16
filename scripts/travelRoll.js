@@ -300,7 +300,6 @@ let currentDialog = null;
 
 function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity) {
   let isDanger = initialResult.includes("Danger!");
-  let title = isDanger ? "Danger Result" : "Discovery Result";
 
   // Close the existing dialog if it's open
   if (currentDialog) {
@@ -369,7 +368,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
 } : {}; // Non-GM users don't get any buttons
 
   currentDialog = new Dialog({
-    title: title,
+    title: "Result",
     render: (html) => {
       html.addClass("ff6-dialog");
     },
