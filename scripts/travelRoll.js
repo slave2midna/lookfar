@@ -518,11 +518,11 @@ function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
     const useMinorEffect = Math.random() < 0.5;
 
     if (useMinorEffect) {
-      const statusEffect = getRandomElement(statusEffectsListMinor);
+      const statusEffect = game.i18n.localize(getRandomElement(statusEffectsListMinor));
       const heavyDamage = threatsData.Damage[groupLevel]["Heavy"];
       return `${statusEffect} and ${heavyDamage} damage`;
     } else {
-      const statusEffect = getRandomElement(statusEffectsListHeavy);
+      const statusEffect = game.i18n.localize(getRandomElement(statusEffectsListHeavy));
       const minorDamage = threatsData.Damage[groupLevel]["Minor"];
       return `${statusEffect} and ${minorDamage} damage`;
     }
