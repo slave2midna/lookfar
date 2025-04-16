@@ -22,6 +22,12 @@ function generateUniqueList(list, minCount, maxCount) {
 Hooks.once("ready", () => {
   game.socket.on("module.lookfar", (data) => {
     if (data?.type === "showResult") {
+      const visibility = game.settings.get("lookfar", "resultVisibility"); // still using old key internally
+      const isGM = game.user.isGM;
+
+      // Show only to GM if setting is "gmOnly"
+      if (visibility === "gmOnly" && !isGM) return;
+
       showRerollDialog(
         data.resultMessage,
         data.selectedDifficulty,
@@ -291,8 +297,13 @@ async function handleRoll(selectedDifficulty, html) {
     dangerSeverity,
   });
 
-  // Show the dialog on the initiating client (for local confirmation)
+const visibility = game.settings.get("lookfar", "resultVisibility");
+const isGM = game.user.isGM;
+
+// Show dialog locally only if it's public, or this user is a GM
+if (visibility === "public" || isGM) {
   showRerollDialog(resultMessage, selectedDifficulty, groupLevel, dangerSeverity);
+}
 }
 
 // Keep a reference to the current dialog

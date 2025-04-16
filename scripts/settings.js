@@ -1,17 +1,17 @@
 export const LookfarSettings = {
   registerSettings() {
     
-game.settings.register("lookfar", "rollVisibility", {
-  name: "Roll Visibility",
-  hint: "Choose whether rolls and chat outputs are public or GM only.",
+game.settings.register("lookfar", "resultVisibility", {
+  name: "Result Visibility",  // <— updated name
+  hint: "Choose whether results and chat outputs are public or GM only.",  // <— optional update
   scope: "world",
   config: true,
   type: String,
   choices: {
-      public: "Public",
-      gmOnly: "GM Only",
-      },
-      default: "public",
+    public: "Public",
+    gmOnly: "GM Only",
+  },
+  default: "public",
 });
 
 game.settings.register("lookfar", "enableKeywords", {
