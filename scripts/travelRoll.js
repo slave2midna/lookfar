@@ -492,7 +492,7 @@ if (!result) {
     </tr>
     <tr>
       <th style="padding: 5px; border: 1px solid; white-space: nowrap;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")}</th>
-      <td style="padding: 5px; border: 1px solid; text-align: left;">${}</td>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
     </tr>
   </table>
   ${generateKeywords()}
