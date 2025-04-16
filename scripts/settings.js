@@ -1,7 +1,7 @@
 export const LookfarSettings = {
   registerSettings() {
     
-game.settings.register("lookfar", "rollVisibility", {
+game.settings.register("lookfar", "resultVisibility", {
   name: "Result Visibility",  // <— updated name
   hint: "Choose whether results and chat outputs are public or GM only.",  // <— optional update
   scope: "world",
