@@ -158,7 +158,7 @@ html.find("#treasureHunterLevel i").each(function () {
     .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
 });
 
-    // ⭐ Treasure Hunter stars logic
+    // Treasure Hunter logic
     const stars = html.find("#treasureHunterLevel i");
     stars.on("click", function () {
       const clickedValue = Number($(this).data("value"));
@@ -175,7 +175,7 @@ html.find("#treasureHunterLevel i").each(function () {
       });
     });
 
-   // ✅ Well-Traveled checkbox logic — SET FIRST
+   // Well-Traveled checkbox logic
 html.find("#wellTraveled").on("change", (e) => {
   const isChecked = e.target.checked;
   const diceMap = {
@@ -256,12 +256,30 @@ async function handleRoll(selectedDifficulty, html) {
   let dangerSeverity = "";
 
   if (roll.total >= 6) {
-    dangerSeverity = await randomSeverity(selectedDifficulty);
-    resultMessage = `${dangerSeverity} Danger! ` + await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-  } else if (isDiscovery) {
-  resultMessage = "Discovery! " + await generateDiscovery();
+  dangerSeverity = await randomSeverity(selectedDifficulty);
+  const resultType = `${dangerSeverity} Danger!`;
+  const resultTable = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+  resultMessage = `
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      ${resultType}
+    </div>
+    ${resultTable}
+  `;
+} else if (isDiscovery) {
+  const resultType = "Discovery!";
+  const resultTable = await generateDiscovery();
+  resultMessage = `
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      ${resultType}
+    </div>
+    ${resultTable}
+  `;
 } else {
-  resultMessage = "The travel day passed without incident.";
+  resultMessage = `
+    <div style="text-align: center; font-size: 1.2rem;">
+      The travel day passed without incident.
+    </div>
+  `;
 }
 
   // Emit the result to all clients
@@ -282,7 +300,6 @@ let currentDialog = null;
 
 function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity) {
   let isDanger = initialResult.includes("Danger!");
-  let title = isDanger ? "Confirm Danger Result" : "Confirm Discovery Result";
 
   // Close the existing dialog if it's open
   if (currentDialog) {
@@ -317,11 +334,23 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
       callback: async () => {
         let newResultMessage;
         if (isDanger) {
-          const newDangerResult = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-          newResultMessage = `${dangerSeverity} Danger! ` + newDangerResult;
-       } else {
-  const newDiscoveryResult = await generateDiscovery();
-  newResultMessage = "Discovery! " + newDiscoveryResult;
+  const resultType = `${dangerSeverity} Danger!`;
+  const resultTable = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+  newResultMessage = `
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      ${resultType}
+    </div>
+    ${resultTable}
+  `;
+} else {
+  const resultType = "Discovery!";
+  const resultTable = await generateDiscovery();
+  newResultMessage = `
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      ${resultType}
+    </div>
+    ${resultTable}
+  `;
 }
 
         // Emit the new result to all clients
@@ -339,12 +368,12 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
 } : {}; // Non-GM users don't get any buttons
 
   currentDialog = new Dialog({
-    title: title,
+    title: "Travel Result",
     render: (html) => {
       html.addClass("ff6-dialog");
     },
     content: `
-  <div style="font-size: 1.1rem; text-align: center; margin-bottom: 10px;">
+  <div style="font-size: 1.1rem; margin-bottom: 10px;">
     ${initialResult}
   </div>
   <p style="margin-bottom: 1rem;">
@@ -444,17 +473,18 @@ if (!result) {
 
   // Return formatted table for danger results and source.
   return `
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Threat</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
-      </tr>
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
-      </tr>
-    </table>
-  `;
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Threat</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
+    </tr>
+    <tr>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+    </tr>
+  </table>
+  ${generateKeywords()}
+`;
 }
 
 function handleDamage(threatsData, groupLevel, dangerSeverity) {
@@ -534,6 +564,30 @@ function getRandomElement(arrayOrObject) {
   return isObject ? arrayOrObject[randomKey] : randomKey;
 }
 
+// If keywords are enabled, this function generates Keywords
+function generateKeywords() {
+  if (!game.settings.get("lookfar", "enableKeywords")) return "";
+
+  const traits = dataLoader.keywordData?.traits || [];
+  const terrain = dataLoader.keywordData?.terrain || [];
+
+  const traitKeywords = generateUniqueList(traits, 3, 4).join(", ");
+  const terrainKeywords = generateUniqueList(terrain, 3, 4).join(", ");
+
+  return `
+  <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <tr>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Traits</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
+    </tr>
+    <tr>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Terrain</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
+    </tr>
+  </table>
+`;
+}
+
 async function generateDiscovery() {
   console.log("Generating Discovery...");
 
@@ -588,15 +642,16 @@ async function generateDiscovery() {
 
   // Return final formatted result
   return `
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
-      </tr>
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
-      </tr>
-    </table>
-  `;
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
+    </tr>
+    <tr>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+    </tr>
+  </table>
+  ${generateKeywords()}
+`;
 }
