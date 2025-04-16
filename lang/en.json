@@ -9,6 +9,37 @@
         "Name": "Treasure Roll",
         "Title": "Generate Some Treasure"
       }
+    },
+    "Settings": {
+      "ResultVisibility": {
+        "Name": "Result Visibility",
+        "Hint": "Choose whether results and chat outputs are public or GM only.",
+        "Choices": {
+          "Public": "Public",
+          "GMOnly": "GM Only"
+        }
+      },
+      "EnableKeywords": {
+        "Name": "Enable Keywords",
+        "Hint": "Enable keywords when generating travel check results."
+      },
+      "DiscoveryEffectTable": {
+        "Name": "Discovery Effect Roll Table",
+        "Hint": "Select the Roll Table to use for generating discovery effects."
+      },
+      "DiscoverySourceTable": {
+        "Name": "Discovery Source Roll Table",
+        "Hint": "Select the Roll Table to use for generating discovery sources."
+      },
+      "DangerThreatTable": {
+        "Name": "Danger Threat Roll Table",
+        "Hint": "Select the Roll Table to use for generating danger threats."
+      },
+      "DangerSourceTable": {
+        "Name": "Danger Source Roll Table",
+        "Hint": "Select the Roll Table to use for generating danger sources."
+      },
+      "DefaultRollTable": "Lookfar Defaults"
     }
   }
 }
