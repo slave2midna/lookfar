@@ -304,6 +304,7 @@ const isGM = game.user.isGM;
 if (visibility === "public" || isGM) {
   showRerollDialog(resultMessage, selectedDifficulty, groupLevel, dangerSeverity);
 }
+}
 
 // Keep a reference to the current dialog
 let currentDialog = null;
