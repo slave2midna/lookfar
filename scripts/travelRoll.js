@@ -297,7 +297,11 @@ async function handleRoll(selectedDifficulty, html) {
     dangerSeverity,
   });
 
-  // Show the dialog on the initiating client (for local confirmation)
+const visibility = game.settings.get("lookfar", "resultVisibility");
+const isGM = game.user.isGM;
+
+// Show dialog locally only if it's public, or this user is a GM
+if (visibility === "public" || isGM) {
   showRerollDialog(resultMessage, selectedDifficulty, groupLevel, dangerSeverity);
 }
 
