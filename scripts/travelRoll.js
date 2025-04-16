@@ -2,7 +2,7 @@ import { dataLoader } from "./dataLoader.js";
 
 // Function to set default "Discovery" rolltable options. Will update for multiple table settings.
 function getRollTableChoices() {
-  const choices = { default: "Lookfar Defaults" }; // Add "Default" option
+  const choices = { default: game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") }; // Add "Default" option
   if (game.tables) {
     const tables = game.tables.contents; // Use .contents instead of .entities
     tables.forEach((table) => {
@@ -59,7 +59,7 @@ let formHtml = `
       <!-- Threat Level Column -->
       <div style="flex: 1;">
         <table class="travel-check-table">
-          <caption style="font-weight: bold; font-size: 1.1em;">Threat Level</caption>
+          <caption style="font-weight: bold; font-size: 1.1em;">game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.ThreatLevel")</caption>
           <tbody>
             ${Object.entries(TravelRolls.travelChecks)
               .map(
@@ -81,11 +81,11 @@ let formHtml = `
       <!-- Wayfaring Options Column -->
       <div style="flex: 1;">
         <table class="travel-check-table">
-          <caption style="font-weight: bold; font-size: 1.1em;">Wayfaring</caption>
+          <caption style="font-weight: bold; font-size: 1.1em;">game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.Wayfaring")</caption>
           <tbody>
             <tr>
               <td>
-                <label for="groupLevel">Party Level:</label>
+                <label for="groupLevel">game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.PartyLevel"):</label>
                 <select id="groupLevel" name="groupLevel">
                   <option value="5+">5+</option>
                   <option value="20+">20+</option>
@@ -96,7 +96,7 @@ let formHtml = `
             <tr>
   <td style="white-space: nowrap;">
     <div style="display: flex; align-items: center; gap: 10px;">
-      <label style="margin: 0;">Treasure Hunting:</label>
+      <label style="margin: 0;">game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.TreasureHunting"):</label>
       <div id="treasureHunterLevel" style="display: flex; gap: 5px; font-size: 1.2em; white-space: nowrap;">
         <i class="fa-regular fa-star" data-value="1"></i>
         <i class="fa-regular fa-star" data-value="2"></i>
@@ -110,7 +110,7 @@ let formHtml = `
               <td>
                 <label>
                   <input type="checkbox" id="wellTraveled" name="wellTraveled">
-                  Well-Traveled
+                  game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.WellTraveled")
                 </label>
               </td>
             </tr>
@@ -125,7 +125,7 @@ let formHtml = `
 function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
   new Dialog({
-  title: "Travel Check",
+  title: game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.Title"),
   content: formHtml,
   buttons: {
     roll: {
@@ -233,7 +233,7 @@ async function handleRoll(selectedDifficulty, html) {
   await roll.render().then((rollHTML) => {
     let chatData = {
       user: game.userId,
-      speaker: { alias: "Travel Roll" },
+      speaker: { alias: game.i18n.localize("LOOKFAR.Chat.Alias.Roll") },
       content: rollHTML,
       type: CONST.CHAT_MESSAGE_TYPES.ROLL,
       rolls: [roll],
@@ -263,7 +263,7 @@ async function handleRoll(selectedDifficulty, html) {
 
   if (roll.total >= 6) {
   dangerSeverity = await randomSeverity(selectedDifficulty);
-  const resultType = `${dangerSeverity} Danger!`;
+  const resultType = `${game.i18n.localize("LOOKFAR.Severity." + dangerSeverity)} ${game.i18n.localize("LOOKFAR.Dialogs.Result.Danger")}`;
   const resultTable = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
   resultMessage = `
     <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
@@ -283,7 +283,7 @@ async function handleRoll(selectedDifficulty, html) {
 } else {
   resultMessage = `
     <div style="text-align: center; font-size: 1.2rem;">
-      The travel day passed without incident.
+      game.i18n.localize("LOOKFAR.Dialogs.TravelResult.NoIncident").
     </div>
   `;
 }
@@ -354,7 +354,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     ${resultTable}
   `;
 } else {
-  const resultType = "Discovery!";
+  const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");
   const resultTable = await generateDiscovery();
   newResultMessage = `
     <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
@@ -379,7 +379,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
 } : {}; // Non-GM users don't get any buttons
 
   currentDialog = new Dialog({
-    title: "Travel Result",
+    title: game.i18n.localize("LOOKFAR.Dialogs.TravelResult.Title"),
     render: (html) => {
       html.addClass("ff6-dialog");
     },
@@ -388,7 +388,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     ${initialResult}
   </div>
   <p style="margin-bottom: 1rem;">
-    ${isGM ? "Do you want to keep this result or reroll?" : "Waiting for GM decision..."}
+    ${isGM ? game.i18n.localize("LOOKFAR.Dialogs.TravelResult.Prompt") : game.i18n.localize("LOOKFAR.Dialogs.TravelResult.Waiting")}
   </p>
 `,
     buttons: buttons,
@@ -410,7 +410,7 @@ function toReadableText(str) {
 async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
     console.error("Threats data is not fully loaded.");
-    return "Error: Data not available.";
+    return game.i18n.localize("LOOKFAR.Errors.DataUnavailable");
   }
 
   const threatType = randomThreatType();
@@ -419,7 +419,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   const dangerSourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");
   
   // Variable to hold the source text
-  let sourceText = "No danger source available.";
+  let sourceText = game.i18n.localize("LOOKFAR.Errors.NoDangerSource");
 
   // Use the selected Danger Source Roll Table if it's not the default
   if (dangerSourceTableId && dangerSourceTableId !== "default") {
@@ -478,7 +478,7 @@ if (!result) {
       break;
     default:
       console.error("Unknown threat type:", threatType);
-      return "Error: Unknown threat type.";
+      return game.i18n.localize("LOOKFAR.Errors.ThreatUnknown");
   }
 }
 
@@ -486,11 +486,11 @@ if (!result) {
   return `
   <table style="width: 100%; border-collapse: collapse;">
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Threat</th>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Threat")</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
     </tr>
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
     </tr>
   </table>
@@ -503,7 +503,7 @@ function handleDamage(threatsData, groupLevel, dangerSeverity) {
 
   if (!damageData || !damageData[dangerSeverity]) {
     console.error(`Damage data not found for groupLevel: ${groupLevel}, severity: ${dangerSeverity}`);
-    return "Error: Damage data not found.";
+    return game.i18n.localize("LOOKFAR.Errors.DamageMissing");
   }
   return `${damageData[dangerSeverity]} damage`;
 }
@@ -588,11 +588,11 @@ function generateKeywords() {
   return `
   <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
     <tr>
-      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Traits</th>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Traits")</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
     </tr>
     <tr>
-      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">Terrain</th>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Terrain"</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
     </tr>
   </table>
@@ -606,8 +606,8 @@ async function generateDiscovery() {
   const effectTableId = game.settings.get("lookfar", "discoveryEffectRollTable");
   const sourceTableId = game.settings.get("lookfar", "discoverySourceRollTable");
 
-  let effectText = "No discovery effect available.";
-  let sourceText = "No discovery source available.";
+  let effectText = game.i18n.localize("LOOKFAR.Errors.NoDiscoveryEffect");
+  let sourceText = game.i18n.localize("LOOKFAR.Errors.NoDiscoverySource");
 
   // Handle Discovery Effect
   if (effectTableId && effectTableId !== "default") {
@@ -655,11 +655,11 @@ async function generateDiscovery() {
   return `
   <table style="width: 100%; border-collapse: collapse;">
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Effect</th>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Effect")</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
     </tr>
     <tr>
-      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">Source</th>
+      <th style="padding: 5px; border: 1px solid; white-space: nowrap;">game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")</th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
     </tr>
   </table>
