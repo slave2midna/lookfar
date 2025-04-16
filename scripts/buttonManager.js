@@ -6,8 +6,8 @@ Hooks.once("ready", () => {
     console.log("Adding Travel Check button to toolbar...");
 
     const travelCheckButton = {
-      name: "Travel Check",
-      title: "Make a Travel Check",
+      name: game.i18n.localize("LOOKFAR.Button.TravelCheck.Name"),
+      title: game.i18n.localize("LOOKFAR.Button.TravelCheck.Title"),
       icon: "fa-solid fa-person-hiking",
       button: true,
       onClick: () => {
@@ -29,8 +29,8 @@ Hooks.once("ready", () => {
     console.log("Adding Treasure Roll button to toolbar...");
 
     const treasureRollButton = {
-      name: "Treasure Roll",
-      title: "Generate Some Treasure",
+      name: game.i18n.localize("LOOKFAR.Button.TreasureRoll.Name"),
+      title: game.i18n.localize("LOOKFAR.Button.TreasureRoll.Title"),
       icon: "fa-solid fa-gem",
       button: true,
       onClick: () => {
