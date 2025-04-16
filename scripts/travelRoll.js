@@ -22,6 +22,12 @@ function generateUniqueList(list, minCount, maxCount) {
 Hooks.once("ready", () => {
   game.socket.on("module.lookfar", (data) => {
     if (data?.type === "showResult") {
+      const visibility = game.settings.get("lookfar", "resultVisibility"); // still using old key internally
+      const isGM = game.user.isGM;
+
+      // Show only to GM if setting is "gmOnly"
+      if (visibility === "gmOnly" && !isGM) return;
+
       showRerollDialog(
         data.resultMessage,
         data.selectedDifficulty,
