@@ -429,7 +429,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
       console.log(`Rolling on the Danger Source Roll Table: ${rollTable.name}`);
       const rollResult = await rollTable.roll();  // Add await here
       if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-        sourceText = rollResult.results[0].text; // Use the roll result text as the source
+         = rollResult.results[0].text; // Use the roll result text as the source
       }
     } else {
       console.error("Selected Danger Source Roll Table not found. Falling back to defaults.");
@@ -438,7 +438,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
     // Use Lookfar Defaults: Pick a random source from dangers.json
     if (dataLoader.sourceData && Array.isArray(dataLoader.sourceData)) {
       const randomSourceIndex = Math.floor(Math.random() * dataLoader.sourceData.length);
-      sourceText = dataLoader.sourceData[randomSourceIndex]; // Randomly select from dangers.json sources
+       = dataLoader.sourceData[randomSourceIndex]; // Randomly select from dangers.json sources
     } else {
       console.error("No source data available in dangers.json.");
     }
@@ -492,7 +492,7 @@ if (!result) {
     </tr>
     <tr>
       <th style="padding: 5px; border: 1px solid; white-space: nowrap;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")}</th>
-      <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+      <td style="padding: 5px; border: 1px solid; text-align: left;">${}</td>
     </tr>
   </table>
   ${generateKeywords()}
@@ -649,7 +649,7 @@ async function generateDiscovery() {
   } else {
     if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
       const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
-      sourceText = game.i18n.localize(dataLoader.sourceData[randomSourceIndex]);
+      sourceText = dataLoader.discoveryData.sources[randomIndex];
     } else {
       console.error("No source data available in discovery.json.");
     }
