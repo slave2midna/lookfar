@@ -368,7 +368,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
 } : {}; // Non-GM users don't get any buttons
 
   currentDialog = new Dialog({
-    title: "Result",
+    title: "Travel Result",
     render: (html) => {
       html.addClass("ff6-dialog");
     },
