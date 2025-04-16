@@ -282,10 +282,10 @@ async function handleRoll(selectedDifficulty, html) {
   `;
 } else {
   resultMessage = `
-    <div style="text-align: center; font-size: 1.2rem;">
-      game.i18n.localize("LOOKFAR.Dialogs.TravelResult.NoIncident").
-    </div>
-  `;
+  <div style="text-align: center; font-size: 1.2rem;">
+    ${game.i18n.localize("LOOKFAR.Dialogs.TravelResult.NoIncident")}
+  </div>
+`;
 }
 
   // Emit the result to all clients
