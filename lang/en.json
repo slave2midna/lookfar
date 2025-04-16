@@ -1,0 +1,14 @@
+{
+  "LOOKFAR": {
+    "Button": {
+      "TravelCheck": {
+        "Name": "Travel Check",
+        "Title": "Make a Travel Check"
+      },
+      "TreasureRoll": {
+        "Name": "Treasure Roll",
+        "Title": "Generate Some Treasure"
+      }
+    }
+  }
+}
