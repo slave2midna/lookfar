@@ -583,8 +583,11 @@ function generateKeywords() {
   const traits = dataLoader.keywordData?.traits || [];
   const terrain = dataLoader.keywordData?.terrain || [];
 
-  const traitKeywords = generateUniqueList(traits, 3, 4).join(", ");
-  const terrainKeywords = generateUniqueList(terrain, 3, 4).join(", ");
+  const localizedTraits = generateUniqueList(traits, 3, 4).map(k => game.i18n.localize(k));
+  const localizedTerrain = generateUniqueList(terrain, 3, 4).map(k => game.i18n.localize(k));
+
+  const traitKeywords = localizedTraits.join(", ");
+  const terrainKeywords = localizedTerrain.join(", ");
 
   return `
   <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
