@@ -310,7 +310,7 @@ if (visibility === "public" || isGM) {
 let currentDialog = null;
 
 function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity) {
-  let isDanger = initialResult.includes("Danger!");
+  let isDanger = initialResult.includes(game.i18n.localize("LOOKFAR.Dialogs.Result.Danger"));
 
   // Close the existing dialog if it's open
   if (currentDialog) {
