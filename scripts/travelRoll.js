@@ -85,7 +85,7 @@ let formHtml = `
           <tbody>
             <tr>
               <td>
-                <label for="groupLevel">game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.PartyLevel"):</label>
+                <label for="groupLevel">${game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.PartyLevel")}:</label>
                 <select id="groupLevel" name="groupLevel">
                   <option value="5+">5+</option>
                   <option value="20+">20+</option>
