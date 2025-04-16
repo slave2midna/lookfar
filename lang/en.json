@@ -351,6 +351,35 @@
         "Source16": "A curse or magical interference subtly warps your environment.",
         "Source17": "An ally reveals a secret that throws everything into question."
       }
+    },
+    "Discoveries": {
+      "Effects": {
+        "Effect1": "Each party member regains 1 IP.",
+        "Effect2": "Each party member regains 10 HP.",
+        "Effect3": "You discover a rare herb with healing properties.",
+        "Effect4": "You find a relic of cultural or historical importance.",
+        "Effect5": "You gain insight into a local custom or legend.",
+        "Effect6": "You learn a shortcut that will aid future travel.",
+        "Effect7": "A friendly creature aids your party temporarily.",
+        "Effect8": "You find ancient writing that hints at future events.",
+        "Effect9": "A clue to a larger mystery is uncovered.",
+        "Effect10": "The landscape inspires a sudden burst of creativity.",
+        "Effect11": "You forge a useful tool or item from salvaged parts."
+      },
+      "Sources": {
+        "Source1": "A beautiful scenery that remains almost untouched for centuries.",
+        "Source2": "Ruins of a village that tells the story of an old war.",
+        "Source3": "An altar with inscriptions from a forgotten civilization.",
+        "Source4": "A cave where an old campfire and supplies are found.",
+        "Source5": "A buried time capsule from another age.",
+        "Source6": "Tracks from an unknown species.",
+        "Source7": "A monolith covered in glowing runes.",
+        "Source8": "Bones of a massive creature never before seen.",
+        "Source9": "A place where the stars seem to align perfectly.",
+        "Source10": "An unusual weather phenomenon revealing hidden terrain.",
+        "Source11": "A melody carried on the wind, with no clear origin.",
+        "Source12": "A single tree growing out of stone, radiating magic."
+      }
     }
   }
 }
