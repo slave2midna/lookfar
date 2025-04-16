@@ -59,7 +59,7 @@ let formHtml = `
       <!-- Threat Level Column -->
       <div style="flex: 1;">
         <table class="travel-check-table">
-          <caption style="font-weight: bold; font-size: 1.1em;">game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.ThreatLevel")</caption>
+          <caption style="font-weight: bold; font-size: 1.1em;">${game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.ThreatLevel")}</caption>
           <tbody>
             ${Object.entries(TravelRolls.travelChecks)
               .map(
@@ -272,7 +272,7 @@ async function handleRoll(selectedDifficulty, html) {
     ${resultTable}
   `;
 } else if (isDiscovery) {
-  const resultType = "Discovery!";
+  const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");;
   const resultTable = await generateDiscovery();
   resultMessage = `
     <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
@@ -326,7 +326,7 @@ function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerS
     callback: () => {
       ChatMessage.create({
         content: `<div style="text-align: center;">${initialResult}</div>`,
-        speaker: { alias: "Travel Result" },
+        speaker: { alias: game.i18n.localize("LOOKFAR.Chat.Alias.Result") },
       });
 
       // Emit a message to close the dialog on all clients
