@@ -107,6 +107,7 @@ function rollIngredient(nature, origin, budget) {
   };
 }
 
+Hooks.on("lookfarShowTreasureRollDialog", () => {
 // 💰 Main Dialog
 new Dialog({
   render: (html) => {
@@ -282,3 +283,4 @@ new Dialog({
   },
   default: "ok"
 }).render(true);
+});
