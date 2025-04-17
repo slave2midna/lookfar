@@ -1,15 +1,10 @@
 import { dataLoader } from "./dataLoader.js";
 
-let natureTables, originTables, detailTables, detailDescriptions;
-let weapons, weaponQualities, elements;
-let armors, armorQualities;
-let accessories, accessoryQualities, tasteWords;
-
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function rollMaterial(nature, origin, maxVal, budget) {
+function rollMaterial(nature, origin, maxVal, budget, natureTables, originTables, detailTables, detailDescriptions) {
   if (!natureTables[nature] || budget < 50) return null;
 
   const detailKeys = Object.keys(detailTables);
@@ -24,7 +19,7 @@ function rollMaterial(nature, origin, maxVal, budget) {
   return { name, value, detail };
 }
 
-function rollWeapon() {
+function rollWeapon(weapons, weaponQualities, elements) {
   let base = getRandom(weapons);
   let name = base.name;
   let value = base.value;
@@ -52,7 +47,7 @@ function rollWeapon() {
   return { name, value, quality };
 }
 
-function rollArmor() {
+function rollArmor(armors, armorQualities) {
   const base = getRandom(armors);
   let name = base.name;
   let value = base.value;
@@ -67,7 +62,7 @@ function rollArmor() {
   return { name, value, quality };
 }
 
-function rollAccessory() {
+function rollAccessory(accessories, accessoryQualities) {
   const type = getRandom(accessories);
   const quality = getRandom(accessoryQualities);
   return {
@@ -77,7 +72,7 @@ function rollAccessory() {
   };
 }
 
-function rollIngredient(nature, origin, budget) {
+function rollIngredient(nature, origin, budget, natureTables, originTables, tasteWords) {
   if (!natureTables[nature] || budget < 10) return null;
 
   const taste = getRandom(tasteWords);
