@@ -1,0 +1,386 @@
+{
+	"LOOKFAR": {
+	  "Button": {
+		"TravelCheck": {
+		  "Name": "Vérification de voyage",
+		  "Title": "Effectuer une vérification de voyage"
+		},
+		"TreasureRoll": {
+		  "Name": "Lancer de trésor",
+		  "Title": "Générer un trésor"
+		}
+	  },
+	  "Settings": {
+		"ResultVisibility": {
+		  "Name": "Visibilité des résultats",
+		  "Hint": "Choisissez si les résultats et les sorties de chat sont publics ou réservés au MJ.",
+		  "Choices": {
+			"Public": "Public",
+			"GMOnly": "MJ uniquement"
+		  }
+		},
+		"EnableKeywords": {
+		  "Name": "Activer les mots-clés",
+		  "Hint": "Activer les mots-clés lors de la génération des résultats de vérification de voyage."
+		},
+		"DiscoveryEffectTable": {
+		  "Name": "Table aléatoire des effets de découverte",
+		  "Hint": "Sélectionnez la table aléatoire à utiliser pour générer les effets de découverte."
+		},
+		"DiscoverySourceTable": {
+		  "Name": "Table aléatoire des sources de découverte",
+		  "Hint": "Sélectionnez la table aléatoire à utiliser pour générer les sources de découverte."
+		},
+		"DangerThreatTable": {
+		  "Name": "Table aléatoire des menaces de danger",
+		  "Hint": "Sélectionnez la table aléatoire à utiliser pour générer les menaces de danger."
+		},
+		"DangerSourceTable": {
+		  "Name": "Table aléatoire des sources de danger",
+		  "Hint": "Sélectionnez la table aléatoire à utiliser pour générer les sources de danger."
+		},
+		"DefaultRollTable": "Défauts de Lookfar"
+	  },
+	  "Dialogs": {
+		"TravelCheck": {
+		  "Title": "Vérification de voyage",
+		  "ThreatLevel": "Niveau de menace",
+		  "Wayfaring": "Voyage",
+		  "PartyLevel": "Niveau du groupe :",
+		  "TreasureHunting": "Chasse au trésor",
+		  "WellTraveled": "Chasseur de trésors"
+		},
+		"TravelResult": {
+		  "Title": "Résultat de voyage",
+		  "Prompt": "Voulez-vous conserver ce résultat ou relancer ?",
+		  "Waiting": "En attente de la décision du MJ...",
+		  "NoIncident": "La journée de voyage s'est déroulée sans incident."
+		},
+		"Result": {
+		  "Danger": "Danger !",
+		  "Discovery": "Découverte !"
+		},
+		"TableHeaders": {
+		  "Threat": "Menace",
+		  "Source": "Source",
+		  "Effect": "Effet",
+		  "Traits": "Caractéristiques",
+		  "Terrain": "Terrain"
+		}
+	  },
+	  "Severity": {
+		"Minor": "Mineur",
+		"Heavy": "Lourd",
+		"Massive": "Massif"
+	  },
+	  "Chat": {
+		"Alias": {
+		  "Roll": "Lancer de voyage",
+		  "Result": "Résultat de voyage"
+		}
+	  },
+	  "Errors": {
+		"DataUnavailable": "Erreur : Données non disponibles.",
+		"DamageMissing": "Erreur : Données de dégâts introuvables.",
+		"ThreatUnknown": "Erreur : Type de menace inconnu.",
+		"NoDangerSource": "Aucune source de danger disponible.",
+		"NoDiscoveryEffect": "Aucun effet de découverte disponible.",
+		"NoDiscoverySource": "Aucune source de découverte disponible."
+	  },
+	  "Keywords": {
+		"Traits": {
+		  "Abandoned": "abandonné",
+		  "Ancient": "ancien",
+		  "Arcane": "arcanique",
+		  "Bewitched": "ensorcelé",
+		  "Blighted": "dévasté",
+		  "Cavernous": "caverneux",
+		  "Celestial": "céleste",
+		  "Chimeric": "chimérique",
+		  "Crumbling": "en ruine",
+		  "Cryptic": "cryptique",
+		  "Cursed": "maudit",
+		  "Decayed": "décomposé",
+		  "Desolate": "désolé",
+		  "Deserted": "déserté",
+		  "Dilapidated": "délabré",
+		  "Dimensional": "dimensionnel",
+		  "Eldritch": "étrange",
+		  "Ephemeral": "éphémère",
+		  "Ethereal": "éthéré",
+		  "Eternal": "éternel",
+		  "Fabled": "légendaire",
+		  "Faded": "fané",
+		  "Forbidden": "interdit",
+		  "Forging": "forge",
+		  "Forgotten": "oublié",
+		  "Fractured": "fracturé",
+		  "Frozen": "gelé",
+		  "Ghostly": "fantomatique",
+		  "Gloomy": "sombre",
+		  "Gossamer": "vaporeux",
+		  "Hallowed": "sacré",
+		  "Haunted": "hanté",
+		  "Hidden": "caché",
+		  "Infernal": "infernal",
+		  "Isolated": "isolé",
+		  "Legendary": "légendaire",
+		  "Luminous": "lumineux",
+		  "Lurking": "rôdeur",
+		  "Magical": "magique",
+		  "Moonlit": "éclairé par la lune",
+		  "Mysterious": "mystérieux",
+		  "Mystic": "mystique",
+		  "Mystical": "mystique",
+		  "Neglected": "négligé",
+		  "Obsidian": "obsidienne",
+		  "Obscured": "obscurci",
+		  "Obscure": "obscur",
+		  "Obscuring": "obscurcissant",
+		  "Otherworldly": "d'un autre monde",
+		  "Overgrown": "envahi par la végétation",
+		  "Overlooked": "négligé",
+		  "Petrified": "pétrifié",
+		  "Phantasmal": "fantomatique",
+		  "Primeval": "primitif",
+		  "Pristine": "immaculé",
+		  "Relic": "relique",
+		  "Resplendent": "resplendissant",
+		  "Runed": "runique",
+		  "Ruined": "ruiné",
+		  "Sacred": "sacré",
+		  "Sanctified": "sanctifié",
+		  "Secret": "secret",
+		  "Secluded": "isolé",
+		  "Serene": "serein",
+		  "Shaded": "ombragé",
+		  "Shadowed": "ombragé",
+		  "Shattered": "brisée",
+		  "Shimmering": "scintillant",
+		  "Spectral": "spectral",
+		  "Stygian": "stygien",
+		  "Sunken": "englouti",
+		  "Surreal": "surréaliste",
+		  "Sylvan": "sylvestre",
+		  "Temporal": "temporel",
+		  "TimeWorn": "usé par le temps",
+		  "Twilight": "crépuscule",
+		  "Uncharted": "inconnu",
+		  "Unhallowed": "profané",
+		  "Unseen": "invisible",
+		  "Unearthed": "déterré",
+		  "Verdant": "verdoyant",
+		  "Veiled": "voilé",
+		  "Venerable": "vénérable",
+		  "Vivid": "vif",
+		  "Weathered": "usé par les intempéries",
+		  "Withered": "flétri",
+		  "Wraithlike": "semblable à un spectre"
+		},
+		"Terrain": {
+		  "Alcove": "alcôve",
+		  "Altar": "autel",
+		  "Aqueduct": "aqueduc",
+		  "Archipelago": "archipel",
+		  "Arena": "arène",
+		  "Archive": "archive",
+		  "Bazaar": "bazar",
+		  "Barracks": "caserne",
+		  "Battleground": "champ de bataille",
+		  "Butte": "butte",
+		  "Cairn": "cairn",
+		  "Campsite": "camping",
+		  "Catacombs": "catacombes",
+		  "Causeway": "chaussée",
+		  "Cauldron": "chaudron",
+		  "Cavern": "caverne",
+		  "Castle": "château",
+		  "Chapel": "chapelle",
+		  "Chasm": "gouffre",
+		  "Citadel": "citadelle",
+		  "Cliff": "falaise",
+		  "Conservatory": "conservatoire",
+		  "Corridor": "couloir",
+		  "Crags": "rochers",
+		  "Crater": "cratère",
+		  "Crypt": "crypte",
+		  "Den": "tanière",
+		  "Dome": "dôme",
+		  "Dungeon": "donjon",
+		  "Eddy": "remous",
+		  "Embankment": "remblai",
+		  "Estuary": "estuaire",
+		  "Expanse": "étendue",
+		  "Fane": "temple",
+		  "Fen": "marécage",
+		  "Fjord": "fjord",
+		  "Forest": "forêt",
+		  "Fortress": "forteresse",
+		  "Fountain": "fontaine",
+		  "Foundry": "fonderie",
+		  "Garrison": "garnison",
+		  "Garden": "jardin",
+		  "Glade": "clairière",
+		  "Grove": "bosquet",
+		  "Grotto": "grotte",
+		  "Harbor": "port",
+		  "Haven": "refuge",
+		  "Henge": "henge",
+		  "Isle": "île",
+		  "Jungle": "jungle",
+		  "Keep": "donjon",
+		  "Knoll": "colline",
+		  "Labyrinth": "labyrinthe",
+		  "Library": "bibliothèque",
+		  "Lodge": "loge",
+		  "Manor": "manoir",
+		  "Mausoleum": "mausolée",
+		  "Meadow": "prairie",
+		  "Menhir": "menhir",
+		  "Mesa": "mesa",
+		  "Mill": "moulin",
+		  "Mire": "bourbier",
+		  "Monolith": "monolithe",
+		  "Moat": "douve",
+		  "Nexus": "nexus",
+		  "Observatory": "observatoire",
+		  "Oasis": "oasis",
+		  "Obelisk": "obélisque",
+		  "Outpost": "avant-poste",
+		  "Orchard": "verger",
+		  "Parapet": "parapet",
+		  "Pathway": "sentier",
+		  "Pavilion": "pavillon",
+		  "Pit": "fosse",
+		  "Plaza": "place",
+		  "Portal": "portail",
+		  "Promontory": "promontoire",
+		  "Quarry": "carrière",
+		  "Quicksand": "sables mouvants",
+		  "Ravine": "ravin",
+		  "Reef": "récif",
+		  "Ridge": "crête",
+		  "Rift": "faille",
+		  "Ruination": "ruine",
+		  "Ruins": "ruines",
+		  "Sanctuary": "sanctuaire",
+		  "Sanctum": "sanctuaire",
+		  "Seraglio": "sérail",
+		  "Shrine": "sanctuaire",
+		  "Shipwreck": "épave",
+		  "Shelter": "abri",
+		  "Spire": "flèche",
+		  "Spring": "source",
+		  "Steppe": "steppe",
+		  "Stronghold": "forteresse",
+		  "Summit": "sommet",
+		  "Tavern": "taverne",
+		  "Temple": "temple",
+		  "Throne": "trône",
+		  "Tomb": "tombe",
+		  "Tombstone": "pierre tombale",
+		  "Tower": "tour",
+		  "Trails": "sentiers",
+		  "Trenches": "tranchées",
+		  "Tundra": "toundra",
+		  "Undercroft": "crypte",
+		  "Valley": "vallée",
+		  "Vault": "voûte",
+		  "Village": "village",
+		  "Vortex": "vortex",
+		  "Waterfall": "cascade",
+		  "Wreckage": "épave",
+		  "Xystus": "xyste",
+		  "Yard": "cour",
+		  "Zeppelin": "zeppelin",
+		  "Ziggurat": "ziggourat"
+		}
+	  },
+	  "Dangers": {
+		"StatusEffects": {
+		  "Minor": {
+			"Dazed": "Subissez l'état étourdit",
+			"Shaken": "Subissez l'état traumatisé",
+			"Slow": "Subissez l'état ralenti",
+			"Weak": "Subissez l'état affaibli"
+		  },
+		  "Heavy": {
+			"Poison": "Subissez l'état poison",
+			"Enrage": "Subissez l'état enragé"
+		  },
+		  "Massive": {
+			"Dazed": "Subissez l'état étourdit",
+			"Shaken": "Subissez l'état traumatisé",
+			"Slow": "Subissez l'état ralenti",
+			"Weak": "Subissez l'état affaibli",
+			"Poisoned": "Subissez l'état poison",
+			"Enraged": "Subissez l'état enragé"
+		  }
+		},
+		"Combat": {
+		  "Minor": "Une rencontre de combat facile",
+		  "Heavy": "Une rencontre de combat difficile",
+		  "Massive": "Une rencontre de combat mortelle"
+		},
+		"DangerCadran": {
+		  "Minor": "Un cadran de danger de 4 sections est créé",
+		  "Heavy": "Un cadran de danger de 6 sections est créé",
+		  "Massive": "Un cadran de danger de 8 sections est créé"
+		},
+		"VillainPlanAdvance": {
+		  "Minor": "Le plan du méchant avance de 2 étapes",
+		  "Heavy": "Le plan du méchant avance de 3 étapes",
+		  "Massive": "Le plan du méchant avance de 4 étapes"
+		},
+		"Sources": {
+		  "Source1": "Le mal des montagnes, une intoxication alimentaire ou une fatigue générale ralentit le groupe.",
+		  "Source2": "L'équipement de voyage tombe en panne — les chariots se cassent, les armes se brisent ou des objets cruciaux disparaissent.",
+		  "Source3": "Des troubles politiques locaux ou mondiaux provoquent des interruptions ou des confrontations.",
+		  "Source4": "Un événement naturel violent — tempêtes, tremblements de terre, inondations — apporte retard et péril.",
+		  "Source5": "Vous attirez l'attention d'un rival, d'un méchant ou d'un monstre.",
+		  "Source6": "Une interférence surnaturelle modifie le chemin : portails, hantises, présages.",
+		  "Source7": "Un PNJ mystérieux apparaît, modifiant ou obstruant votre chemin.",
+		  "Source8": "Un mécanisme ancien ou caché est déclenché de manière inattendue.",
+		  "Source9": "Vous empiétez sur un terrain sacré ou violez un tabou sans le savoir.",
+		  "Source10": "La nature sauvage révèle un secret — mais cela a un prix.",
+		  "Source11": "La faune devient territoriale ou agressive, créant des complications.",
+		  "Source12": "Un point de repère a changé, égarant votre chemin.",
+		  "Source13": "Les ressources s'épuisent plus vite que prévu, mettant à rude épreuve la survie.",
+		  "Source14": "Des rêves ou des visions perturbent la progression avec des avertissements cryptiques.",
+		  "Source15": "Une présence divine ou arcanique teste votre valeur ou votre pureté.",
+		  "Source16": "Une malédiction ou une interférence magique déforme subtilement votre environnement.",
+		  "Source17": "Un allié révèle un secret qui remet tout en question."
+		}
+	  },
+	  "Discoveries": {
+		"Effects": {
+		  "Effect1": "Chaque membre du groupe récupère 1 PI.",
+		  "Effect2": "Chaque membre du groupe récupère 10 PV.",
+		  "Effect3": "Vous découvrez une herbe rare aux propriétés curatives.",
+		  "Effect4": "Vous trouvez une relique d'importance culturelle ou historique.",
+		  "Effect5": "Vous obtenez des informations sur une coutume ou une légende locale.",
+		  "Effect6": "Vous apprenez un raccourci qui facilitera les voyages futurs.",
+		  "Effect7": "Une créature amicale aide temporairement votre groupe.",
+		  "Effect8": "Vous trouvez une écriture ancienne qui fait allusion à des événements futurs.",
+		  "Effect9": "Un indice sur un mystère plus grand est découvert.",
+		  "Effect10": "Le paysage inspire une soudaine bouffée de créativité.",
+		  "Effect11": "Vous forgez un outil ou un objet utile à partir de pièces récupérées."
+		},
+		"Sources": {
+		  "Source1": "Un paysage magnifique resté presque intact pendant des siècles.",
+		  "Source2": "Les ruines d'un village qui racontent l'histoire d'une ancienne guerre.",
+		  "Source3": "Un autel avec des inscriptions d'une civilisation oubliée.",
+		  "Source4": "Une grotte où un ancien feu de camp et des fournitures sont trouvés.",
+		  "Source5": "Une capsule temporelle enterrée d'une autre époque.",
+		  "Source6": "Des traces d'une espèce inconnue.",
+		  "Source7": "Un monolithe couvert de runes lumineuses.",
+		  "Source8": "Les os d'une créature massive jamais vue auparavant.",
+		  "Source9": "Un endroit où les étoiles semblent s'aligner parfaitement.",
+		  "Source10": "Un phénomène météorologique inhabituel révélant un terrain caché.",
+		  "Source11": "Une mélodie portée par le vent, sans origine claire.",
+		  "Source12": "Un arbre unique poussant sur de la pierre, irradiant la magie."
+		}
+	  }
+	}
+  }
+  
