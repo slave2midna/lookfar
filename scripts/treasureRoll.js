@@ -108,9 +108,15 @@ function rollIngredient(nature, origin, budget) {
 }
 
 Hooks.on("lookfarShowTreasureRollDialog", () => {
-// 💰 Main Dialog
-new Dialog({
-  render: (html) => {
+  if (!game.lookfar || !game.lookfar.data || !game.lookfar.data.treasureData) {
+    ui.notifications.error("Treasure data not loaded.");
+    return;
+  }
+
+  const treasureData = game.lookfar.data.treasureData;
+
+  new Dialog({
+    render: (html) => {
     html.closest(".app").css({
       height: "auto",
       maxHeight: "600px",
