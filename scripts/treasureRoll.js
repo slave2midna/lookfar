@@ -115,20 +115,6 @@ function rollIngredient(nature, origin, budget) {
 }
 
 Hooks.on("lookfarShowTreasureRollDialog", () => {
-  const {
-    natureTables,
-    originTables,
-    detailTables,
-    detailDescriptions,
-    weapons,
-    weaponQualities,
-    elements,
-    armors,
-    armorQualities,
-    accessories,
-    accessoryQualities,
-    tasteWords
-  } = dataLoader.treasureData;
   
   new Dialog({
     render: (html) => {
