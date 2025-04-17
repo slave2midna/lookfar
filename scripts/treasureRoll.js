@@ -97,23 +97,30 @@ function rollIngredient(nature, origin, budget) {
   };
 }
 
-Hooks.on("lookfarShowTreasureRollDialog", () => {
-  ({
-    natureTables,
-    originTables,
-    detailTables,
-    detailDescriptions,
-    weapons,
-    weaponQualities,
-    elements,
-    armors,
-    armorQualities,
-    accessories,
-    accessoryQualities,
-    tasteWords
-  } = dataLoader.treasureData);
+Hooks.once("ready", () => {
+  Hooks.on("lookfarShowTreasureRollDialog", () => {
+    const {
+      natureTables,
+      originTables,
+      detailTables,
+      detailDescriptions,
+      weaponList,
+      weaponQualities,
+      weaponElements,
+      armorList,
+      armorQualities,
+      accessoryNames,
+      accessoryQualities,
+      tasteWords
+    } = dataLoader.treasureData || {};
 
-  new Dialog({
+    if (!natureTables || !originTables) {
+      ui.notifications.error("Treasure data failed to load.");
+      console.error("Missing treasure data:", dataLoader.treasureData);
+      return;
+    }
+
+    new Dialog({
     render: (html) => {
     html.closest(".app").css({
       height: "auto",
