@@ -1,6 +1,9 @@
 import { LookfarSettings } from "./settings.js";
 import { dataLoader } from "./dataLoader.js";
+
+// Load dialog scripts
 import "./travelRoll.js";
+import "./treasureRoll.js";
 import "./buttonManager.js";
 
 Hooks.once("init", async () => {
