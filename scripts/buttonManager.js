@@ -44,5 +44,4 @@ Hooks.once("ready", () => {
     tools.sort((a, b) => (a.sort || 0) - (b.sort || 0));
     console.log("Treasure Roll button added to the toolbar:", tools);
   });
-  */
 });
