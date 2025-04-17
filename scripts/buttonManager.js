@@ -23,8 +23,7 @@ Hooks.once("ready", () => {
     console.log("Travel Check button added to the toolbar:", tools);
   });
 
-  // Uncomment this section when the Treasure Roll feature is ready
-  /*
+  // Adds floating button for Treasure generator into Project FU's toolbar
   Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
     console.log("Adding Treasure Roll button to toolbar...");
 
