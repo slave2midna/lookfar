@@ -1,5 +1,27 @@
 import { dataLoader } from "./dataLoader.js";
 
+let natureTables, originTables, detailTables, detailDescriptions;
+let weapons, weaponQualities, elements;
+let armors, armorQualities;
+let accessories, accessoryQualities, tasteWords;
+
+Hooks.once("ready", () => {
+  ({
+    natureTables,
+    originTables,
+    detailTables,
+    detailDescriptions,
+    weapons,
+    weaponQualities,
+    elements,
+    armors,
+    armorQualities,
+    accessories,
+    accessoryQualities,
+    tasteWords
+  } = dataLoader.treasureData);
+});
+
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
