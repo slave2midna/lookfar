@@ -1,20 +1,5 @@
 import { dataLoader } from "./dataLoader.js";
 
-const {
-  natureTables,
-  originTables,
-  detailTables,
-  detailDescriptions,
-  weapons,
-  weaponQualities,
-  elements,
-  armors,
-  armorQualities,
-  accessories,
-  accessoryQualities,
-  tasteWords
-} = dataLoader.treasureData;
-
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -108,13 +93,21 @@ function rollIngredient(nature, origin, budget) {
 }
 
 Hooks.on("lookfarShowTreasureRollDialog", () => {
-  if (!game.lookfar || !game.lookfar.data || !game.lookfar.data.treasureData) {
-    ui.notifications.error("Treasure data not loaded.");
-    return;
-  }
-
-  const treasureData = game.lookfar.data.treasureData;
-
+  const {
+    natureTables,
+    originTables,
+    detailTables,
+    detailDescriptions,
+    weapons,
+    weaponQualities,
+    elements,
+    armors,
+    armorQualities,
+    accessories,
+    accessoryQualities,
+    tasteWords
+  } = dataLoader.treasureData;
+  
   new Dialog({
     render: (html) => {
     html.closest(".app").css({
