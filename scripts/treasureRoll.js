@@ -293,5 +293,6 @@ Hooks.once("ready", () => {
     }
   },
   default: "ok"
-}).render(true);
-});
+    }).render(true);
+  });
+})
