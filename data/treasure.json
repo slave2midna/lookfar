@@ -184,4 +184,6 @@
     { "name": "Spell Up", "value": 2000 },
     { "name": "Weapon Up", "value": 2000 }
   ]
+},
+  "tasteWords": ["Bitter", "Salty", "Sour", "Sweet", "Umami", "Distinct"]
 }
