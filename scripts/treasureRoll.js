@@ -98,7 +98,7 @@ function rollIngredient(nature, origin, budget) {
 }
 
 Hooks.on("lookfarShowTreasureRollDialog", () => {
-  const {
+  ({
     natureTables,
     originTables,
     detailTables,
@@ -111,7 +111,7 @@ Hooks.on("lookfarShowTreasureRollDialog", () => {
     accessories,
     accessoryQualities,
     tasteWords
-  } = dataLoader.treasureData;
+  } = dataLoader.treasureData);
 
   new Dialog({
     render: (html) => {
