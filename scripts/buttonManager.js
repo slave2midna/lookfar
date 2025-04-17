@@ -34,7 +34,7 @@ Hooks.once("ready", () => {
       button: true,
       onClick: () => {
         console.log("Treasure Roll button clicked!");
-        Hooks.call("lookfarShowTravelCheckDialog"); // Placeholder
+        Hooks.call("lookfarShowTreasureRollDialog");
       },
       visible: true,
       sort: 10000
