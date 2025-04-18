@@ -88,6 +88,46 @@ function rollIngredient(nature, origin, budget, natureTables, originTables, tast
   };
 }
 
+function showTreasureResultsDialog(items, inventoryPoints, remaining) {
+  let output = items.length === 0
+    ? `<strong>No Loot Generated</strong><br>`
+    : `<strong>Generated Items:</strong><br><br>`;
+
+  for (const item of items) {
+    output += `• <strong>${item.name}</strong> (Value: ${item.value})<br>`;
+    if (item.detail) output += `<em>${item.detail}</em><br>`;
+    else if (item.taste) output += `<em>${item.taste}</em><br>`;
+    else if (item.quality !== "None") output += `<em>Quality: ${item.quality}</em><br>`;
+    output += `<br>`;
+  }
+
+  if (inventoryPoints > 0) output += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
+  output += `<strong>Remaining Budget:</strong> ${remaining}<br>`;
+
+  new Dialog({
+    title: "Treasure Roll Results",
+    content: output,
+    buttons: {
+      keep: {
+        label: "Keep",
+        callback: () => {
+          ChatMessage.create({
+            content: output,
+            speaker: { alias: "Treasure Result" }
+          });
+        }
+      },
+      reroll: {
+        label: "Reroll",
+        callback: () => {
+          ui.notifications.warn("Reroll functionality is not implemented yet.");
+        }
+      }
+    },
+    default: "keep"
+  }).render(true);
+}
+
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", () => {
     const {
@@ -247,26 +287,7 @@ Hooks.once("ready", () => {
               remaining -= result.value;
             }
 
-            // 🧾 Output
-            let output = items.length === 0
-              ? `<strong>No Loot Generated</strong><br>`
-              : `<strong>Generated Items:</strong><br><br>`;
-
-            for (const item of items) {
-              output += `• <strong>${item.name}</strong> (Value: ${item.value})<br>`;
-              if (item.detail) output += `<em>${item.detail}</em><br>`;
-              else if (item.taste) output += `<em>${item.taste}</em><br>`;
-              else if (item.quality !== "None") output += `<em>Quality: ${item.quality}</em><br>`;
-              output += `<br>`;
-            }
-
-            if (inventoryPoints > 0) output += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
-            output += `<strong>Remaining Budget:</strong> ${remaining}<br>`;
-
-            ChatMessage.create({
-              content: output,
-              speaker: { alias: "Treasure Result" }
-            });
+            showTreasureResultsDialog(items, inventoryPoints, remaining);
           }
         }
       },
