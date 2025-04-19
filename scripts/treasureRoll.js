@@ -95,13 +95,13 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 
 // Helper to render results in a dialog with Keep/Reroll
 function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
-  let html = `<strong>Generated Items:</strong><br><br>`;
+  let html = ``;
   for (const item of items) {
-    html += `• <strong>${item.name}</strong> (Value: ${item.value})<br>`;
+    html += `<div style="text-align: center;"><strong>${item.name}</strong> (Value: ${item.value})<br>`;
     if (item.detail) html += `<em>${item.detail}</em><br>`;
     else if (item.taste) html += `<em>${item.taste}</em><br>`;
     else if (item.quality !== "None") html += `<em>Quality: ${item.quality}</em><br>`;
-    html += `<br>`;
+    html += `</div><br>`;
   }
 
   if (inventoryPoints > 0) {
