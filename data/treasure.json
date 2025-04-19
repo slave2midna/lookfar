@@ -80,7 +80,7 @@
     { "name": "Flamewalker", "value": 1500, "description": "grants immunity to fire damage." },
     { "name": "Forestwalker", "value": 1500, "description": "grants immunity to earth damage." },
     { "name": "Frostwalker", "value": 1500, "description": "grants immunity to ice damage." },
-    { "name": "Airwalker", "value": 1500, "description": "grants immunity to air damage." },
+    { "name": "Windwalker", "value": 1500, "description": "grants immunity to air damage." },
     { "name": "Stormwalker", "value": 1500, "description": "grants immunity to bolt damage." },
     { "name": "Shadowwalker", "value": 1500, "description": "grants immunity to dark damage." },
     { "name": "Sunwalker", "value": 1500, "description": "grants immunity to light damage." },
