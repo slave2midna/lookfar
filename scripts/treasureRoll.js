@@ -98,9 +98,22 @@ function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
   let html = ``;
   for (const item of items) {
     html += `<div style="text-align: center;"><strong>${item.name}</strong> (Value: ${item.value})<br>`;
-    if (item.detail) html += `<em>${item.detail}</em><br>`;
-    else if (item.taste) html += `<em>${item.taste}</em><br>`;
-    else if (item.quality !== "None") html += `<em>Quality: ${item.quality}</em><br>`;
+
+    if (item.detail) {
+      html += `<em>${item.detail}</em><br>`;
+    } else if (item.taste) {
+      html += `<em>${item.taste}</em><br>`;
+    } else if (item.quality !== "None") {
+      const allQualities = [
+        ...dataLoader.treasureData.weaponQualities,
+        ...dataLoader.treasureData.armorQualities,
+        ...dataLoader.treasureData.accessoryQualities
+      ];
+      const qualityObj = allQualities.find(q => q.name === item.quality);
+      const description = qualityObj?.description || item.quality;
+      html += `<em>Quality: ${description}</em><br>`;
+    }
+
     html += `</div><br>`;
   }
 
