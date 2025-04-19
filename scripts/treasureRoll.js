@@ -188,13 +188,13 @@ Hooks.once("ready", () => {
 
         switch (type) {
           case "Weapon":
-            item = rollWeapon(weapons, weaponQualities, elements);
+            item = rollWeapon(weaponList, weaponQualities, weaponElements);
             break;
           case "Armor":
-            item = rollArmor(armors, armorQualities);
+            item = rollArmor(armorList, armorQualities);
             break;
           case "Accessory":
-            item = rollAccessory(accessories, accessoryQualities);
+            item = rollAccessory(accessoryNames, accessoryQualities);
             break;
           case "Material":
             item = rollMaterial(nature, origin, maxVal, remainingBudget, detailTables, originTables, natureTables, detailDescriptions);
