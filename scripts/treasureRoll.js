@@ -139,12 +139,12 @@ Hooks.once("ready", () => {
       originTables,
       detailTables,
       detailDescriptions,
-      weapons,
+      weaponList,
       weaponQualities,
-      elements,
-      armors,
+      weaponElements,
+      armorList,
       armorQualities,
-      accessories,
+      accessoryNames,
       accessoryQualities,
       tasteWords
     } = dataLoader.treasureData;
