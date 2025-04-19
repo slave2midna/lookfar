@@ -102,7 +102,7 @@
     { "name": "Horrifying", "value": 1500, "description": "targets suffers shaken on hit." },
     { "name": "Debilitating", "value": 1500, "description": "targets suffers weak on hit." }
   ],
-  "weaponElements": ["Fire", "Ice", "Earth", "Bolt", "Air", "Dark", "Light", "Poison"],
+  "weaponElements": ["Flaming", "Cold", "Stone", "Electric", "Windy", "Cursed", "Holy", "Poisoned"],
   "armorList": [
     { "name": "Silk Shirt", "value": 100 },
     { "name": "Travel Garb", "value": 100 },
