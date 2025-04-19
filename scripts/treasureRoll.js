@@ -1,10 +1,12 @@
 import { dataLoader } from "./dataLoader.js";
 
+// Utility
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function rollMaterial(nature, origin, maxVal, budget, natureTables, originTables, detailTables, detailDescriptions) {
+// Loot Generation Functions
+function rollMaterial(nature, origin, maxVal, budget, detailTables, originTables, natureTables, detailDescriptions) {
   if (!natureTables[nature] || budget < 50) return null;
 
   const detailKeys = Object.keys(detailTables);
@@ -14,7 +16,8 @@ function rollMaterial(nature, origin, maxVal, budget, natureTables, originTables
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
 
-  return value > budget ? null : { name, value, detail };
+  if (value > budget) return null;
+  return { name, value, detail };
 }
 
 function rollWeapon(weapons, weaponQualities, elements) {
@@ -70,7 +73,7 @@ function rollAccessory(accessories, accessoryQualities) {
   };
 }
 
-function rollIngredient(nature, origin, budget, natureTables, originTables, tasteWords) {
+function rollIngredient(nature, origin, budget, tasteWords, natureTables, originTables) {
   if (!natureTables[nature] || budget < 10) return null;
 
   const taste = getRandom(tasteWords);
@@ -81,96 +84,158 @@ function rollIngredient(nature, origin, budget, natureTables, originTables, tast
   const unitValue = taste === "Distinct" ? 20 : 10;
   const total = unitValue * quantity;
 
-  return total > budget ? null : {
+  if (total > budget) return null;
+
+  return {
     name: `${taste} ${originWord} ${natureWord} x${quantity}`,
     value: total,
     taste: `Taste: ${taste}`
   };
 }
 
-function showTreasureResultsDialog(items, inventoryPoints, remaining) {
-  let output = items.length === 0
-    ? `<strong>No Loot Generated</strong><br>`
-    : `<strong>Generated Items:</strong><br><br>`;
-
+// Helper to render results in a dialog with Keep/Reroll
+function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
+  let html = `<strong>Generated Items:</strong><br><br>`;
   for (const item of items) {
-    output += `• <strong>${item.name}</strong> (Value: ${item.value})<br>`;
-    if (item.detail) output += `<em>${item.detail}</em><br>`;
-    else if (item.taste) output += `<em>${item.taste}</em><br>`;
-    else if (item.quality !== "None") output += `<em>Quality: ${item.quality}</em><br>`;
-    output += `<br>`;
+    html += `• <strong>${item.name}</strong> (Value: ${item.value})<br>`;
+    if (item.detail) html += `<em>${item.detail}</em><br>`;
+    else if (item.taste) html += `<em>${item.taste}</em><br>`;
+    else if (item.quality !== "None") html += `<em>Quality: ${item.quality}</em><br>`;
+    html += `<br>`;
   }
 
-  if (inventoryPoints > 0) output += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
-  output += `<strong>Remaining Budget:</strong> ${remaining}<br>`;
+  if (inventoryPoints > 0) {
+    html += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
+  }
+
+  html += `<strong>Remaining Budget:</strong> ${budget}<br>`;
 
   new Dialog({
-    title: "Treasure Roll Results",
-    content: output,
+    title: "Treasure Results",
+    content: html,
     buttons: {
       keep: {
         label: "Keep",
         callback: () => {
           ChatMessage.create({
-            content: output,
+            content: html,
             speaker: { alias: "Treasure Result" }
           });
         }
       },
       reroll: {
         label: "Reroll",
-        callback: () => {
-          ui.notifications.warn("Reroll functionality is not implemented yet.");
-        }
+        callback: () => Hooks.call("lookfarShowTreasureRollDialog", config) // Pass stored config
       }
-    },
-    default: "keep"
+    }
   }).render(true);
 }
 
+// Hook Setup
 Hooks.once("ready", () => {
-  Hooks.on("lookfarShowTreasureRollDialog", () => {
+  Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
     const {
       natureTables,
       originTables,
       detailTables,
       detailDescriptions,
-      weaponList,
+      weapons,
       weaponQualities,
-      weaponElements,
-      armorList,
+      elements,
+      armors,
       armorQualities,
-      accessoryNames,
+      accessories,
       accessoryQualities,
       tasteWords
-    } = dataLoader.treasureData || {};
+    } = dataLoader.treasureData;
 
-    if (!natureTables || !originTables) {
-      ui.notifications.error("Treasure data failed to load.");
-      console.error("Missing treasure data:", dataLoader.treasureData);
+    if (rerollConfig) {
+      const {
+        budget,
+        maxVal,
+        origin,
+        nature,
+        includeWeapons,
+        includeArmor,
+        includeAccessories,
+        includeSupplies,
+        includeIngredients,
+        includeMaterials
+      } = rerollConfig;
+
+      let remainingBudget = budget;
+      let inventoryPoints = includeSupplies ? Math.floor(Math.random() * 4) + 1 : 0;
+      let items = [];
+      let ingredientCount = 0;
+      let failedAttempts = 0;
+      let maxAttempts = 10;
+
+      while (remainingBudget > 0 && items.length < 4 && failedAttempts < maxAttempts) {
+        let value = Math.round((Math.random() * maxVal) / 10) * 10;
+        if (value > remainingBudget) value = remainingBudget;
+
+        let itemTypes = [];
+        if (includeWeapons) itemTypes.push("Weapon");
+        if (includeArmor) itemTypes.push("Armor");
+        if (includeAccessories) itemTypes.push("Accessory");
+        if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
+        if (includeMaterials) itemTypes.push("Material");
+
+        if (itemTypes.length === 0) break;
+
+        const type = getRandom(itemTypes);
+        let item = null;
+
+        switch (type) {
+          case "Weapon":
+            item = rollWeapon(weapons, weaponQualities, elements);
+            break;
+          case "Armor":
+            item = rollArmor(armors, armorQualities);
+            break;
+          case "Accessory":
+            item = rollAccessory(accessories, accessoryQualities);
+            break;
+          case "Material":
+            item = rollMaterial(nature, origin, maxVal, remainingBudget, detailTables, originTables, natureTables, detailDescriptions);
+            break;
+          case "Ingredient":
+            item = rollIngredient(nature, origin, remainingBudget, tasteWords, natureTables, originTables);
+            ingredientCount++;
+            break;
+        }
+
+        if (!item || item.value > remainingBudget || item.value > maxVal) {
+          failedAttempts++;
+          continue;
+        }
+
+        items.push(item);
+        remainingBudget -= item.value;
+      }
+
+      if (items.length === 0 && inventoryPoints === 0) {
+        ui.notifications.warn("No loot generated.");
+        return;
+      }
+
+      renderTreasureResultDialog(items, remainingBudget, inventoryPoints, rerollConfig);
       return;
     }
 
+    // If not a reroll, render the main form
     new Dialog({
-      render: (html) => {
-        html.closest(".app").css({
-          height: "auto",
-          maxHeight: "600px",
-          display: "flex",
-          flexDirection: "column"
-        });
-      },
       title: "Treasure Generator",
       content: `
-        <form style="display: flex; gap: 25px; height: 100%;">
-          <div style="flex: 0.6;">
+        <form style="display: flex; gap: 25px;">
+          <div style="flex: 1;">
             <div class="form-group">
-              <label for="treasureBudget">Budget:</label>
-              <input type="number" id="treasureBudget" name="treasureBudget" min="1" value="1">
+              <label>Budget:</label>
+              <input type="number" id="treasureBudget" value="1" min="1"/>
             </div>
             <div class="form-group">
-              <label for="highestPCLevel">PC Level:</label>
-              <select id="highestPCLevel" name="highestPCLevel">
+              <label>PC Level:</label>
+              <select id="highestPCLevel">
                 <option value="500">5+</option>
                 <option value="1000">10+</option>
                 <option value="1500">20+</option>
@@ -179,119 +244,59 @@ Hooks.once("ready", () => {
               </select>
             </div>
             <div class="form-group">
-              <label for="origin">Origin:</label>
-              <select id="origin" name="origin">
-                ${Object.keys(originTables).map((o) => `<option value="${o}">${o}</option>`).join("")}
+              <label>Origin:</label>
+              <select id="origin">
+                ${Object.keys(originTables).map(o => `<option value="${o}">${o}</option>`).join("")}
               </select>
             </div>
             <div class="form-group">
-              <label for="nature">Nature:</label>
-              <select id="nature" name="nature">
-                ${Object.keys(natureTables).map((n) => `<option value="${n}">${n}</option>`).join("")}
+              <label>Nature:</label>
+              <select id="nature">
+                ${Object.keys(natureTables).map(n => `<option value="${n}">${n}</option>`).join("")}
               </select>
             </div>
           </div>
           <div style="flex: 1;">
-            <div class="form-group" style="display: flex; flex-wrap: wrap; gap: 10px;">
-              <div style="flex: 1; min-width: 100px;">
-                <label><input type="checkbox" id="includeWeapons"> Weapons</label><br>
-                <label><input type="checkbox" id="includeArmor"> Armor</label><br>
-                <label><input type="checkbox" id="includeAccessories"> Accessories</label><br>
-              </div>
-              <div style="flex: 1; min-width: 100px;">
-                <label><input type="checkbox" id="includeSupplies"> Supplies</label><br>
-                <label><input type="checkbox" id="includeIngredients"> Ingredients</label><br>
-                <label><input type="checkbox" id="includeMaterials"> Materials</label><br>
-              </div>
-            </div>
+            <label><input type="checkbox" id="includeWeapons"> Weapons</label><br>
+            <label><input type="checkbox" id="includeArmor"> Armor</label><br>
+            <label><input type="checkbox" id="includeAccessories"> Accessories</label><br>
+            <label><input type="checkbox" id="includeSupplies"> Supplies</label><br>
+            <label><input type="checkbox" id="includeIngredients"> Ingredients</label><br>
+            <label><input type="checkbox" id="includeMaterials"> Materials</label>
           </div>
         </form>
       `,
       buttons: {
         ok: {
-          label: "OK",
+          label: "Roll Loot",
           callback: (html) => {
             const budget = parseInt(html.find("#treasureBudget").val());
             const maxVal = parseInt(html.find("#highestPCLevel").val());
             const origin = html.find("#origin").val();
             const nature = html.find("#nature").val();
 
-            const include = {
-              weapon: html.find("#includeWeapons").is(":checked"),
-              armor: html.find("#includeArmor").is(":checked"),
-              accessory: html.find("#includeAccessories").is(":checked"),
-              material: html.find("#includeMaterials").is(":checked"),
-              ingredient: html.find("#includeIngredients").is(":checked"),
-              supplies: html.find("#includeSupplies").is(":checked")
-            };
+            const includeWeapons = html.find("#includeWeapons").is(":checked");
+            const includeArmor = html.find("#includeArmor").is(":checked");
+            const includeAccessories = html.find("#includeAccessories").is(":checked");
+            const includeSupplies = html.find("#includeSupplies").is(":checked");
+            const includeIngredients = html.find("#includeIngredients").is(":checked");
+            const includeMaterials = html.find("#includeMaterials").is(":checked");
 
-            let remaining = budget;
-            let items = [];
-            let failed = 0;
-            let ingredientsRolled = 0;
-            let inventoryPoints = include.supplies ? Math.floor(Math.random() * 4) + 1 : 0;
-
-            const maxTries = 10;
-
-            while (remaining > 0 && items.length < 4 && failed < maxTries) {
-              let possible = [];
-              if (include.weapon) possible.push("Weapon");
-              if (include.armor) possible.push("Armor");
-              if (include.accessory) possible.push("Accessory");
-              if (include.material) possible.push("Material");
-              if (include.ingredient && ingredientsRolled < 3) possible.push("Ingredient");
-
-              if (!possible.length) break;
-
-              const type = getRandom(possible);
-              let result = null;
-
-              switch (type) {
-                case "Weapon":
-                  for (let i = 0; i < 5; i++) {
-                    result = rollWeapon(weaponList, weaponQualities, weaponElements);
-                    if (result && result.value <= remaining && result.value <= maxVal) break;
-                  }
-                  break;
-
-                case "Armor":
-                  for (let i = 0; i < 5; i++) {
-                    result = rollArmor(armorList, armorQualities);
-                    if (result && result.value <= remaining && result.value <= maxVal) break;
-                  }
-                  break;
-
-                case "Accessory":
-                  for (let i = 0; i < 5; i++) {
-                    result = rollAccessory(accessoryNames, accessoryQualities);
-                    if (result && result.value <= remaining && result.value <= maxVal) break;
-                  }
-                  break;
-
-                case "Material":
-                  result = rollMaterial(nature, origin, maxVal, remaining, natureTables, originTables, detailTables, detailDescriptions);
-                  break;
-
-                case "Ingredient":
-                  result = rollIngredient(nature, origin, remaining, natureTables, originTables, tasteWords);
-                  if (result) ingredientsRolled++;
-                  break;
-              }
-
-              if (!result || result.value > remaining || result.value > maxVal) {
-                failed++;
-                continue;
-              }
-
-              items.push(result);
-              remaining -= result.value;
-            }
-
-            showTreasureResultsDialog(items, inventoryPoints, remaining);
+            Hooks.call("lookfarShowTreasureRollDialog", {
+              budget,
+              maxVal,
+              origin,
+              nature,
+              includeWeapons,
+              includeArmor,
+              includeAccessories,
+              includeSupplies,
+              includeIngredients,
+              includeMaterials
+            });
           }
         }
-      },
-      default: "ok"
+      }
     }).render(true);
   });
 });
