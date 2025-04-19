@@ -28,10 +28,10 @@
   "detailTables": {
     "Agility": ["Elastic", "Glazed", "Grim", "Oily", "Polished", "Scrawny", "Sharp", "Slender", "Slippery", "Small"],
     "Power": ["Bloated", "Broken", "Chipped", "Colossal", "Fermented", "Heavy", "Monstrous", "Serrated", "Sharp", "Thick"],
-    "Protection": ["Ancient", "Curly", "Hardened", "Holy", "Regal", "Rough", "Rubbery", "Scaly", "Silky", "Tough"],
-    "Recovery": ["Aromatic", "Bitter", "Fragrant", "Fresh", "Juicy", "Pure", "Scarred", "Smooth", "Sweet"],
-    "Sabotage": ["Corrosive", "Dazzling", "Echoing", "Eerie", "Cursed", "Hooked", "Barbed", "Nauseating", "Rusty", "Sticky"],
-    "Support": ["Carved", "Fairy", "Glowing", "Resonating", "Iridescent", "Lucky", "Magical", "Soft", "Warm"]
+    "Protection": ["Ancient", "Curly", "Hardened", "Blessed", "Rough", "Rubbery", "Scaly", "Silky", "Tough"],
+    "Recovery": ["Aromatic", "Fragrant", "Fresh", "Juicy", "Pure", "Scarred", "Smooth", "Glossy"],
+    "Sabotage": ["Corrosive", "Dazzling", "Eerie", "Cursed", "Hooked", "Barbed", "Nauseating", "Rusty", "Sticky"],
+    "Support": ["Carved", "Glowing", "Resonating", "Iridescent", "Lucky", "Magical", "Soft", "Warm"]
   },
   "detailDescriptions": {
     "Agility": "can be used to create items that enhance agility or precision.",
@@ -138,10 +138,7 @@
     { "name": "Spell Up", "value": 2000 },
     { "name": "Weapon Up", "value": 2000 }
   ],
-  "accessoryNames": [
-    "Boot", "Ring", "Cape", "Cloak", "Helm", "Hat", "Scarf", "Bracers", "Gloves",
-    "Boots", "Necklace", "Charm"
-  ],
+  "accessoryNames": ["Ring", "Cape", "Cloak", "Helm", "Hat", "Scarf", "Bracers", "Gloves", "Boots", "Necklace", "Charm", "Earrings", "Pendant"],
   "accessoryQualities": [
     { "name": "Anti-Slow", "value": 500 },
     { "name": "Anti-Daze", "value": 500 },
