@@ -43,6 +43,7 @@ function rollWeapon(weapons, weaponQualities, elements) {
     const q = getRandom(weaponQualities);
     quality = q.name;
     value += q.value;
+    name = `${quality} ${name}`;
   }
 
   return { name, value, quality };
@@ -58,6 +59,7 @@ function rollArmor(armors, armorQualities) {
     const q = getRandom(armorQualities);
     quality = q.name;
     value += q.value;
+    name = `${quality} ${name}`;
   }
 
   return { name, value, quality };
