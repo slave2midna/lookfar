@@ -21,30 +21,43 @@ function rollMaterial(nature, origin, maxVal, budget, detailTables, originTables
 }
 
 function rollWeapon(weapons, weaponQualities, elements) {
-  let base = getRandom(weapons);
-  let name = base.name;
+  const base = getRandom(weapons);
+  let nameParts = [];
   let value = base.value;
 
+  let quality = "None";
+  let hasPlusOne = false;
+
+  // Apply +1 bonus
   if (Math.random() < 0.5) {
-    name = "+1 " + name;
+    hasPlusOne = true;
     value += 100;
   }
 
+  // Apply element
   if (Math.random() < 0.5) {
     const element = getRandom(elements);
-    name = name.includes("+1")
-      ? `+1 ${element} ${name.split(" ")[1]}`
-      : `${element} ${name}`;
+    nameParts.push(element);
     value += 100;
   }
 
-  let quality = "None";
+  // Apply quality
   if (Math.random() < 0.5) {
     const q = getRandom(weaponQualities);
     quality = q.name;
+    nameParts.push(quality);
     value += q.value;
-    name = `${quality} ${name}`;
   }
+
+  // Always add base name last
+  nameParts.push(base.name);
+
+  // If +1 was rolled, prefix it
+  if (hasPlusOne) {
+    nameParts.unshift("+1");
+  }
+
+  const name = nameParts.join(" ");
 
   return { name, value, quality };
 }
