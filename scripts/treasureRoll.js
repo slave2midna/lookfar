@@ -110,16 +110,17 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 
 // Helper to render results in a dialog with Keep/Reroll
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
+  const speaker = ChatMessage.getSpeaker(); // Needed for proper UUID context
+
   const anchors = await Promise.all(items.map(async (data) => {
-    let type = "loot"; // fallback default
+    let type = "loot"; // fallback
     let description = "";
 
-    // Type detection
     if ("detail" in data) {
-      type = "treasure"; // Material
+      type = "treasure";
       description = data.detail;
     } else if ("taste" in data) {
-      type = "classFeature"; // Ingredient
+      type = "classFeature";
       description = data.taste;
     } else if ("quality" in data) {
       const isWeapon = dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name));
@@ -141,13 +142,6 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       }
     }
 
-    // Fallback to a known working type if something goes wrong
-    const validTypes = ["weapon", "armor", "accessory", "treasure", "classFeature"];
-    if (!validTypes.includes(type)) {
-      console.warn(`Unknown item type '${type}' — defaulting to 'loot'`);
-      type = "loot";
-    }
-
     const item = new Item({
       name: data.name,
       type,
@@ -158,10 +152,13 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       img: "icons/svg/gem.svg"
     });
 
-    return `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor()}</div>`;
+    // Assign parent so the UUID resolves properly
+    item.parent = speaker; 
+
+    // Render an anchor tag with full context
+    return `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor({ relative: false })}</div>`;
   }));
 
-  // Construct dialog content
   let html = anchors.join("\n");
 
   if (inventoryPoints > 0) {
