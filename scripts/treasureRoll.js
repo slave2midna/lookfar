@@ -1,4 +1,5 @@
 import { dataLoader } from "./dataLoader.js";
+const getOrCreateCacheFolder = dataLoader.getOrCreateCacheFolder;
 
 // Utility
 function getRandom(arr) {
@@ -111,8 +112,10 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 
 // Helper to render results in a dialog with Keep/Reroll
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
-  const tempItems = items.map((data) => {
-    let type = "loot";
+  const cacheFolder = await dataLoader.getOrCreateCacheFolder();
+
+  const tempItems = await Promise.all(items.map(async (data) => {
+    let type = null;
     let itemData;
 
     if ("taste" in data) {
@@ -194,17 +197,36 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       };
     }
 
-    return new Item(itemData, { temporary: true });
-  });
+    // Skip unsupported items
+    if (!type || !itemData) return null;
 
-  // Create display HTML
-  let html = tempItems.map(item => {
+    // Check if item already exists in the cache
+    const cached = game.items.find(i =>
+      i.name === itemData.name &&
+      i.type === itemData.type &&
+      i.folder?.id === cacheFolder.id &&
+      i.system?.cost?.value === itemData.system.cost?.value
+    );
+
+    if (cached) return cached;
+
+    // Otherwise, create new cached item
+    return await Item.create(itemData, { folder: cacheFolder.id });
+  }));
+
+  // Filter out any nulls (unsupported types)
+  const finalItems = tempItems.filter(Boolean);
+
+  // Build HTML
+  let html = finalItems.map(item => {
     const cost = item.system.cost?.value ?? 0;
     const desc = item.system.description || "";
     return `
       <div style="text-align: center; margin-bottom: 0.75em;">
         <img src="${item.img}" width="32" height="32" style="vertical-align: middle; margin-right: 6px;">
-        <strong>${item.name}</strong><br>
+        <a class="content-link" draggable="true" data-uuid="${item.uuid}">
+          <strong>${item.name}</strong>
+        </a><br>
         <small><em>${desc}</em></small><br>
         <small>Value: ${cost} G</small>
       </div>
