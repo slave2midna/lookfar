@@ -150,39 +150,63 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           description: data.detail
         }
       };
-    } else if (dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name))) {
+    } else if (dataLoader.treasureData.weaponList.some(w => data.name.endsWith(w.name))) {
       type = "weapon";
+      const baseWeapon = dataLoader.treasureData.weaponList.find(w => data.name.endsWith(w.name));
+      const qualityObj = dataLoader.treasureData.weaponQualities.find(q => q.name === data.quality);
+      const description = qualityObj ? qualityObj.description : `A weapon of ${data.quality || "unknown"} quality.`;
+
       itemData = {
         name: data.name,
         type,
         img: "icons/svg/sword.svg",
         folder: cacheFolder.id,
         system: {
-          category: { value: "" },
-          hand: { value: "" },
-          type: { value: "" },
+          category: { value: baseWeapon?.category || "" },
+          hand: { value: baseWeapon?.hand || "" },
+          type: { value: baseWeapon?.type || "" },
+          attrA: { value: baseWeapon?.attrA || "" },
+          attrB: { value: baseWeapon?.attrB || "" },
+          accuracy: { value: baseWeapon?.accuracy ?? 0 },
+          targets: { value: baseWeapon?.targets || "" },
+          element: { value: baseWeapon?.element || "" },
+          damage: { value: baseWeapon?.damage ?? 0 },
+          isMartial: { value: baseWeapon?.isMartial || "no" },
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
           summary: { value: "" },
-          description: `A weapon of ${data.quality || "unknown"} quality.`
+          description
         }
       };
-    } else if (dataLoader.treasureData.armorList.some(a => data.name.includes(a.name))) {
+    } else if (dataLoader.treasureData.armorList.some(a => data.name.endsWith(a.name))) {
       type = "armor";
+      const baseArmor = dataLoader.treasureData.armorList.find(a => data.name.endsWith(a.name));
+      const qualityObj = dataLoader.treasureData.armorQualities.find(q => q.name === data.quality);
+      const description = qualityObj ? qualityObj.description : `Armor of ${data.quality || "unknown"} quality.`;
+
       itemData = {
         name: data.name,
         type,
         img: "icons/svg/shield.svg",
         folder: cacheFolder.id,
         system: {
+          def: { value: baseArmor?.def ?? 0 },
+          mdef: { value: baseArmor?.mdef ?? 0 },
+          init: { value: baseArmor?.init ?? 0 },
+          defAttr: { value: baseArmor?.defAttr || "" },
+          mdefAttr: { value: baseArmor?.mdefAttr || "" },
+          isMartial: { value: baseArmor?.isMartial || "no" },
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
           summary: { value: "" },
-          description: `Armor of ${data.quality || "unknown"} quality.`
+          description
         }
       };
     } else if (dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc))) {
       type = "accessory";
+      const qualityObj = dataLoader.treasureData.accessoryQualities.find(q => q.name === data.quality);
+      const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
+
       itemData = {
         name: data.name,
         type,
@@ -192,7 +216,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
           summary: { value: "" },
-          description: `Accessory of ${data.quality || "unknown"} quality.`
+          description
         }
       };
     }
@@ -258,7 +282,6 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
 
   dialog.render(true);
 
-  // ✅ Use this hook to bind interactivity after the dialog appears
   Hooks.once("renderDialog", (_app, html) => {
     html.find("a.content-link").on("click", async function (event) {
       event.preventDefault();
