@@ -60,7 +60,7 @@
     { "name": "Greatsword", "value": 200, "category": "Sword", "hand": "Two-handed", "type": "Melee", "attrA": "DEX", "attrB": "MIG", "accuracy": 1, "targets": "DEF", "element": "Physical", "damage": 10, "isMartial": "yes" },
     { "name": "Katana", "value": 200, "category": "Sword", "hand": "Two-handed", "type": "Melee", "attrA": "DEX", "attrB": "INS", "accuracy": 1, "targets": "DEF", "element": "Physical", "damage": 10, "isMartial": "yes" },
     { "name": "Rapier", "value": 200, "category": "Sword", "hand": "One-handed", "type": "Melee", "attrA": "DEX", "attrB": "INS", "accuracy": 1, "targets": "DEF", "element": "Physical", "damage": 6, "isMartial": "yes" },
-    { "name": "Shuriken", "value": 150, "category": "Thrown", "hand": "Two-handed", "type": "Ranged", "attrA": "DEX", "attrB": "INS", "accuracy": 0, "targets": "DEF", "element": "Physical", "damage": 4, "isMartial": "no" },
+    { "name": "Shuriken", "value": 150, "category": "Thrown", "hand": "Two-handed", "type": "Ranged", "attrA": "DEX", "attrB": "INS", "accuracy": 0, "targets": "DEF", "element": "Physical", "damage": 4, "isMartial": "no" }
   ],
   "weaponQualities": [
     { "name": "Thin", "value": 500, "description": "grants immunity to the slow status." },
