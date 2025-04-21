@@ -124,8 +124,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         system: {
           subtype: { value: "Ingredient" },
           cost: { value: data.value },
-          quantity: { value: 1 },
-          taste: { value: data.taste.replace("Taste: ", "") },
+          quantity: { value: data.quantity },
+          taste: { value: data.taste },
           summary: { value: "" },
           description: data.taste
         }
