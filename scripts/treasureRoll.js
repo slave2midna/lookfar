@@ -110,10 +110,10 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 
 // Helper to render results in a dialog with Keep/Reroll
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
-  const itemDocs = await Promise.all(items.map(async (data) => {
+  const itemDocs = items.map((data) => {
     let type = "loot"; // fallback default
     let description = "";
-    
+
     if ("detail" in data) {
       type = "treasure"; // Material
       description = data.detail;
@@ -121,7 +121,6 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       type = "classFeature"; // Ingredient
       description = data.taste;
     } else if ("quality" in data) {
-      // Decide between weapon, armor, or accessory
       const isWeapon = dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name));
       const isArmor = dataLoader.treasureData.armorList.some(a => data.name.includes(a.name));
       const isAccessory = dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc));
@@ -141,22 +140,20 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       }
     }
 
-    const item = await Item.implementation.create({
+    return new Item({
       name: data.name,
       type,
       system: {
         description: { value: description },
         price: data.value
       },
-      img: "icons/commodities/treasure/gem-rough-red.webp" // Placeholder image
-    }, { temporary: true });
-
-    return item;
-  }));
+      img: "icons/commodities/treasure/gem-rough-red.webp"
+    });
+  });
 
   let html = ``;
   for (const item of itemDocs) {
-    html += `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor()}</div>`;
+    html += `<div style="text-align: center; margin-bottom: 0.5em;">${item.link}</div>`;
   }
 
   if (inventoryPoints > 0) {
