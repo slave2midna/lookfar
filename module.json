@@ -47,6 +47,11 @@
     "lang": "fr",
     "name": "Français",
     "path": "lang/fr.json"
+  },
+  {
+    "lang": "pt-br",
+    "name": "Português (Brasil)",
+    "path": "lang/pt_br.json"
   }
 ],
   "url": "#{URL}#",
