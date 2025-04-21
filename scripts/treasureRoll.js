@@ -114,11 +114,12 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
     let type = "loot"; // fallback default
     let description = "";
 
+    // Type detection
     if ("detail" in data) {
-      type = "treasure";
+      type = "treasure"; // Material
       description = data.detail;
     } else if ("taste" in data) {
-      type = "classFeature";
+      type = "classFeature"; // Ingredient
       description = data.taste;
     } else if ("quality" in data) {
       const isWeapon = dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name));
@@ -140,7 +141,14 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       }
     }
 
-    const tempItem = new Item({
+    // Fallback to a known working type if something goes wrong
+    const validTypes = ["weapon", "armor", "accessory", "treasure", "classFeature"];
+    if (!validTypes.includes(type)) {
+      console.warn(`Unknown item type '${type}' — defaulting to 'loot'`);
+      type = "loot";
+    }
+
+    const item = new Item({
       name: data.name,
       type,
       system: {
@@ -150,10 +158,11 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       img: "icons/svg/gem.svg"
     });
 
-    return `<div style="text-align: center; margin-bottom: 0.5em;">${await tempItem.toAnchor()}</div>`;
+    return `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor()}</div>`;
   }));
 
-  let html = anchors.join("");
+  // Construct dialog content
+  let html = anchors.join("\n");
 
   if (inventoryPoints > 0) {
     html += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
