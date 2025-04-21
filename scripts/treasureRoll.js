@@ -147,13 +147,14 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         description: { value: description },
         price: data.value
       },
-      img: "icons/commodities/treasure/gem-rough-red.webp"
+      img: "icons/svg/gem.svg" // Guaranteed to display in all Foundry setups
     });
   });
 
+  // Generate HTML
   let html = ``;
   for (const item of itemDocs) {
-    html += `<div style="text-align: center; margin-bottom: 0.5em;">${item.link}</div>`;
+    html += `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor()}</div>`;
   }
 
   if (inventoryPoints > 0) {
