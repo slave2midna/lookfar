@@ -102,9 +102,10 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
   if (total > budget) return null;
 
   return {
-    name: `${taste} ${originWord} ${natureWord} x${quantity}`,
+    name: `${taste} ${originWord} ${natureWord}`,
     value: total,
-    taste: `Taste: ${taste}`
+    taste: `Taste: ${taste}`,
+    quantity: quantity,
   };
 }
 
