@@ -44,4 +44,48 @@ export const dataLoader = {
       console.error("Failed to load treasure.json:", error);
     }
   },
+
+  // 🔁 Folder Caching Utility
+  async getOrCreateCacheFolder() {
+    const folderName = "Lookfar Loot Cache";
+    let folder = game.folders.find(f =>
+      f.name === folderName &&
+      f.type === "Item" &&
+      f.flags?.lookfar?.system === "loot-cache"
+    );
+
+    if (!folder) {
+      folder = await Folder.create({
+        name: folderName,
+        type: "Item",
+        sorting: "a",
+        parent: null,
+        color: "#999999",
+        flags: {
+          lookfar: {
+            system: "loot-cache",
+            hidden: true
+          }
+        }
+      });
+      console.log("[Lookfar] Created loot cache folder:", folder.name);
+    }
+
+    return folder;
+  },
+
+  // 🧹 Clear the Folder (Used on Startup or via Macro)
+  async clearCacheFolder() {
+    const folder = await this.getOrCreateCacheFolder();
+    const items = game.items.filter(i => i.folder?.id === folder.id);
+    for (let item of items) {
+      await item.delete();
+    }
+    console.log(`[Lookfar] Cleared ${items.length} cached items from "${folder.name}".`);
+  }
 };
+
+// 🧼 Auto-Clear Cache on World Load
+Hooks.once("ready", async () => {
+  await dataLoader.clearCacheFolder();
+});
