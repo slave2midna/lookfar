@@ -109,27 +109,54 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 }
 
 // Helper to render results in a dialog with Keep/Reroll
-function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
-  let html = ``;
-  for (const item of items) {
-    html += `<div style="text-align: center;"><strong>${item.name}</strong> (Value: ${item.value})<br>`;
+async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
+  const itemDocs = await Promise.all(items.map(async (data) => {
+    let type = "loot"; // fallback default
+    let description = "";
+    
+    if ("detail" in data) {
+      type = "treasure"; // Material
+      description = data.detail;
+    } else if ("taste" in data) {
+      type = "classFeature"; // Ingredient
+      description = data.taste;
+    } else if ("quality" in data) {
+      // Decide between weapon, armor, or accessory
+      const isWeapon = dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name));
+      const isArmor = dataLoader.treasureData.armorList.some(a => data.name.includes(a.name));
+      const isAccessory = dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc));
 
-    if (item.detail) {
-      html += `<em>${item.detail}</em><br>`;
-    } else if (item.taste) {
-      html += `<em>${item.taste}</em><br>`;
-    } else if (item.quality !== "None") {
-      const allQualities = [
-        ...dataLoader.treasureData.weaponQualities,
-        ...dataLoader.treasureData.armorQualities,
-        ...dataLoader.treasureData.accessoryQualities
-      ];
-      const qualityObj = allQualities.find(q => q.name === item.quality);
-      const description = qualityObj?.description || item.quality;
-      html += `<em>Quality: ${description}</em><br>`;
+      if (isWeapon) type = "weapon";
+      else if (isArmor) type = "armor";
+      else if (isAccessory) type = "accessory";
+
+      if (data.quality !== "None") {
+        const allQualities = [
+          ...dataLoader.treasureData.weaponQualities,
+          ...dataLoader.treasureData.armorQualities,
+          ...dataLoader.treasureData.accessoryQualities
+        ];
+        const qualityObj = allQualities.find(q => q.name === data.quality);
+        description = `Quality: ${qualityObj?.description || data.quality}`;
+      }
     }
 
-    html += `</div><br>`;
+    const item = await Item.implementation.create({
+      name: data.name,
+      type,
+      system: {
+        description: { value: description },
+        price: data.value
+      },
+      img: "icons/commodities/treasure/gem-rough-red.webp" // Placeholder image
+    }, { temporary: true });
+
+    return item;
+  }));
+
+  let html = ``;
+  for (const item of itemDocs) {
+    html += `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor()}</div>`;
   }
 
   if (inventoryPoints > 0) {
@@ -153,7 +180,7 @@ function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
       },
       reroll: {
         label: "Reroll",
-        callback: () => Hooks.call("lookfarShowTreasureRollDialog", config) // Pass stored config
+        callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
       }
     }
   }).render(true);
