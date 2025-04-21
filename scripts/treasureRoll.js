@@ -110,15 +110,15 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 
 // Helper to render results in a dialog with Keep/Reroll
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
-  const itemDocs = items.map((data) => {
+  const anchors = await Promise.all(items.map(async (data) => {
     let type = "loot"; // fallback default
     let description = "";
 
     if ("detail" in data) {
-      type = "treasure"; // Material
+      type = "treasure";
       description = data.detail;
     } else if ("taste" in data) {
-      type = "classFeature"; // Ingredient
+      type = "classFeature";
       description = data.taste;
     } else if ("quality" in data) {
       const isWeapon = dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name));
@@ -140,22 +140,20 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       }
     }
 
-    return new Item({
+    const tempItem = new Item({
       name: data.name,
       type,
       system: {
         description: { value: description },
         price: data.value
       },
-      img: "icons/svg/gem.svg" // Guaranteed to display in all Foundry setups
+      img: "icons/svg/gem.svg"
     });
-  });
 
-  // Generate HTML
-  let html = ``;
-  for (const item of itemDocs) {
-    html += `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor()}</div>`;
-  }
+    return `<div style="text-align: center; margin-bottom: 0.5em;">${await tempItem.toAnchor()}</div>`;
+  }));
+
+  let html = anchors.join("");
 
   if (inventoryPoints > 0) {
     html += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
