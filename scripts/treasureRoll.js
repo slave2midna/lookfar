@@ -119,12 +119,12 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
     let itemData;
 
     if ("taste" in data) {
-      // Ingredient (classFeature)
       type = "classFeature";
       itemData = {
         name: data.name,
         type,
         img: "icons/svg/acid.svg",
+        folder: cacheFolder.id,
         system: {
           subtype: { value: "Ingredient" },
           cost: { value: data.value },
@@ -135,12 +135,12 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         }
       };
     } else if ("detail" in data) {
-      // Material (treasure)
       type = "treasure";
       itemData = {
         name: data.name,
         type,
         img: "icons/svg/gem.svg",
+        folder: cacheFolder.id,
         system: {
           subtype: { value: "Material" },
           cost: { value: data.value },
@@ -151,12 +151,12 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         }
       };
     } else if (dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name))) {
-      // Weapon
       type = "weapon";
       itemData = {
         name: data.name,
         type,
         img: "icons/svg/sword.svg",
+        folder: cacheFolder.id,
         system: {
           category: { value: "" },
           hand: { value: "" },
@@ -168,12 +168,12 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         }
       };
     } else if (dataLoader.treasureData.armorList.some(a => data.name.includes(a.name))) {
-      // Armor
       type = "armor";
       itemData = {
         name: data.name,
         type,
         img: "icons/svg/shield.svg",
+        folder: cacheFolder.id,
         system: {
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
@@ -182,12 +182,12 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         }
       };
     } else if (dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc))) {
-      // Accessory
       type = "accessory";
       itemData = {
         name: data.name,
         type,
         img: "icons/svg/mystery-man.svg",
+        folder: cacheFolder.id,
         system: {
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
@@ -197,10 +197,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       };
     }
 
-    // Skip unsupported items
     if (!type || !itemData) return null;
 
-    // Check if item already exists in the cache
     const cached = game.items.find(i =>
       i.name === itemData.name &&
       i.type === itemData.type &&
@@ -210,14 +208,11 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
 
     if (cached) return cached;
 
-    // Otherwise, create new cached item
-    return await Item.create(itemData, { folder: cacheFolder.id });
+    return await Item.create(itemData);
   }));
 
-  // Filter out any nulls (unsupported types)
   const finalItems = tempItems.filter(Boolean);
 
-  // Build HTML
   let html = finalItems.map(item => {
     const cost = item.system.cost?.value ?? 0;
     const desc = item.system.description || "";
