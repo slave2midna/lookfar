@@ -110,51 +110,105 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 
 // Helper to render results in a dialog with Keep/Reroll
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
-  const anchors = await Promise.all(items.map(async (data) => {
-    let type = "loot"; // fallback default
-    let description = "";
+  const tempItems = items.map((data) => {
+    let type = "loot";
+    let itemData;
 
-    if ("detail" in data) {
-      type = "treasure";
-      description = data.detail;
-    } else if ("taste" in data) {
+    if ("taste" in data) {
+      // Ingredient (classFeature)
       type = "classFeature";
-      description = data.taste;
-    } else if ("quality" in data) {
-      const isWeapon = dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name));
-      const isArmor = dataLoader.treasureData.armorList.some(a => data.name.includes(a.name));
-      const isAccessory = dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc));
-
-      if (isWeapon) type = "weapon";
-      else if (isArmor) type = "armor";
-      else if (isAccessory) type = "accessory";
-
-      if (data.quality !== "None") {
-        const allQualities = [
-          ...dataLoader.treasureData.weaponQualities,
-          ...dataLoader.treasureData.armorQualities,
-          ...dataLoader.treasureData.accessoryQualities
-        ];
-        const qualityObj = allQualities.find(q => q.name === data.quality);
-        description = `Quality: ${qualityObj?.description || data.quality}`;
-      }
+      itemData = {
+        name: data.name,
+        type,
+        img: "icons/svg/acid.svg",
+        system: {
+          subtype: { value: "Ingredient" },
+          cost: { value: data.value },
+          quantity: { value: 1 },
+          taste: { value: data.taste.replace("Taste: ", "") },
+          summary: { value: "" },
+          description: data.taste
+        }
+      };
+    } else if ("detail" in data) {
+      // Material (treasure)
+      type = "treasure";
+      itemData = {
+        name: data.name,
+        type,
+        img: "icons/svg/gem.svg",
+        system: {
+          subtype: { value: "Material" },
+          cost: { value: data.value },
+          quantity: { value: 1 },
+          origin: { value: "" },
+          summary: { value: "" },
+          description: data.detail
+        }
+      };
+    } else if (dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name))) {
+      // Weapon
+      type = "weapon";
+      itemData = {
+        name: data.name,
+        type,
+        img: "icons/svg/sword.svg",
+        system: {
+          category: { value: "" },
+          hand: { value: "" },
+          type: { value: "" },
+          quality: { value: data.quality || "No quality" },
+          cost: { value: data.value },
+          summary: { value: "" },
+          description: `A weapon of ${data.quality || "unknown"} quality.`
+        }
+      };
+    } else if (dataLoader.treasureData.armorList.some(a => data.name.includes(a.name))) {
+      // Armor
+      type = "armor";
+      itemData = {
+        name: data.name,
+        type,
+        img: "icons/svg/shield.svg",
+        system: {
+          quality: { value: data.quality || "No quality" },
+          cost: { value: data.value },
+          summary: { value: "" },
+          description: `Armor of ${data.quality || "unknown"} quality.`
+        }
+      };
+    } else if (dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc))) {
+      // Accessory
+      type = "accessory";
+      itemData = {
+        name: data.name,
+        type,
+        img: "icons/svg/mystery-man.svg",
+        system: {
+          quality: { value: data.quality || "No quality" },
+          cost: { value: data.value },
+          summary: { value: "" },
+          description: `Accessory of ${data.quality || "unknown"} quality.`
+        }
+      };
     }
 
-    const item = await Item.create({
-      name: data.name,
-      type,
-      system: {
-        description: { value: description },
-        price: data.value
-      },
-      img: "icons/svg/gem.svg"
-    }, { temporary: true });
+    return new Item(itemData, { temporary: true });
+  });
 
-    // ✅ This will now generate a full anchor tag with a real UUID
-    return `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor()}</div>`;
-  }));
-
-  let html = anchors.join("\n");
+  // Create display HTML
+  let html = tempItems.map(item => {
+    const cost = item.system.cost?.value ?? 0;
+    const desc = item.system.description || "";
+    return `
+      <div style="text-align: center; margin-bottom: 0.75em;">
+        <img src="${item.img}" width="32" height="32" style="vertical-align: middle; margin-right: 6px;">
+        <strong>${item.name}</strong><br>
+        <small><em>${desc}</em></small><br>
+        <small>Value: ${cost} G</small>
+      </div>
+    `;
+  }).join("\n");
 
   if (inventoryPoints > 0) {
     html += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
