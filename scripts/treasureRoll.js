@@ -110,17 +110,15 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 
 // Helper to render results in a dialog with Keep/Reroll
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
-  const speaker = ChatMessage.getSpeaker();
-
   const anchors = await Promise.all(items.map(async (data) => {
     let type = "loot"; // fallback default
     let description = "";
 
     if ("detail" in data) {
-      type = "treasure"; // Material
+      type = "treasure";
       description = data.detail;
     } else if ("taste" in data) {
-      type = "classFeature"; // Ingredient
+      type = "classFeature";
       description = data.taste;
     } else if ("quality" in data) {
       const isWeapon = dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name));
@@ -142,7 +140,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       }
     }
 
-    const item = new Item({
+    const item = await Item.create({
       name: data.name,
       type,
       system: {
@@ -150,11 +148,10 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         price: data.value
       },
       img: "icons/svg/gem.svg"
-    });
+    }, { temporary: true });
 
-    // ✅ Use `relativeTo` to allow linking without assigning `parent`
-    const anchor = await item.toAnchor({ relativeTo: speaker });
-    return `<div style="text-align: center; margin-bottom: 0.5em;">${anchor}</div>`;
+    // ✅ This will now generate a full anchor tag with a real UUID
+    return `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor()}</div>`;
   }));
 
   let html = anchors.join("\n");
