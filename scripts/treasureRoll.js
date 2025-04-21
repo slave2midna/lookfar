@@ -213,7 +213,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
 
   const finalItems = tempItems.filter(Boolean);
 
-  let html = finalItems.map(item => {
+  // Generate HTML string for the item display
+  let htmlContent = finalItems.map(item => {
     const cost = item.system.cost?.value ?? 0;
     const desc = item.system.description || "";
     return `
@@ -229,10 +230,13 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
   }).join("\n");
 
   if (inventoryPoints > 0) {
-    html += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
+    htmlContent += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
   }
 
-  html += `<strong>Remaining Budget:</strong> ${budget}<br>`;
+  htmlContent += `<strong>Remaining Budget:</strong> ${budget}<br>`;
+
+  // ✅ Enrich HTML so links are interactive
+  const html = await TextEditor.enrichHTML(htmlContent, { async: true });
 
   new Dialog({
     title: "Treasure Results",
