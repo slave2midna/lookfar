@@ -110,17 +110,17 @@ function rollIngredient(nature, origin, budget, tasteWords, natureTables, origin
 
 // Helper to render results in a dialog with Keep/Reroll
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
-  const speaker = ChatMessage.getSpeaker(); // Needed for proper UUID context
+  const speaker = ChatMessage.getSpeaker();
 
   const anchors = await Promise.all(items.map(async (data) => {
-    let type = "loot"; // fallback
+    let type = "loot"; // fallback default
     let description = "";
 
     if ("detail" in data) {
-      type = "treasure";
+      type = "treasure"; // Material
       description = data.detail;
     } else if ("taste" in data) {
-      type = "classFeature";
+      type = "classFeature"; // Ingredient
       description = data.taste;
     } else if ("quality" in data) {
       const isWeapon = dataLoader.treasureData.weaponList.some(w => data.name.includes(w.name));
@@ -152,11 +152,9 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       img: "icons/svg/gem.svg"
     });
 
-    // Assign parent so the UUID resolves properly
-    item.parent = speaker; 
-
-    // Render an anchor tag with full context
-    return `<div style="text-align: center; margin-bottom: 0.5em;">${await item.toAnchor({ relative: false })}</div>`;
+    // ✅ Use `relativeTo` to allow linking without assigning `parent`
+    const anchor = await item.toAnchor({ relativeTo: speaker });
+    return `<div style="text-align: center; margin-bottom: 0.5em;">${anchor}</div>`;
   }));
 
   let html = anchors.join("\n");
