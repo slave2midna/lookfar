@@ -234,22 +234,19 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
 
   htmlContent += `<strong>Remaining Budget:</strong> ${budget}<br>`;
 
-  // Enrich HTML to activate Foundry UUID links
-  const html = await TextEditor.enrichHTML(htmlContent, { async: true });
+  const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
 
-  // Render dialog
-  new Dialog({
+  const dialog = new Dialog({
     title: "Treasure Results",
-    content: html,
+    content: enrichedHtml,
     buttons: {
       keep: {
         label: "Keep",
         callback: async () => {
           await ChatMessage.create({
-            content: html,
+            content: enrichedHtml,
             speaker: { alias: "Treasure Result" }
           });
-          // No manual activation needed
         }
       },
       reroll: {
@@ -257,7 +254,20 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
       }
     }
-  }).render(true);
+  });
+
+  dialog.render(true).then(() => {
+    // ✅ Activate clickable links in dialog manually
+    dialog.element.find("a.content-link").each((i, el) => {
+      el.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const uuid = el.dataset.uuid;
+        if (!uuid) return;
+        const doc = await fromUuid(uuid);
+        if (doc?.sheet) doc.sheet.render(true);
+      });
+    });
+  });
 }
 
 // Hook Setup
