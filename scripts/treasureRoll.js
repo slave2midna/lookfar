@@ -256,16 +256,16 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
     }
   });
 
-  dialog.render(true).then(() => {
-    // ✅ Activate clickable links in dialog manually
-    dialog.element.find("a.content-link").each((i, el) => {
-      el.addEventListener("click", async (event) => {
-        event.preventDefault();
-        const uuid = el.dataset.uuid;
-        if (!uuid) return;
-        const doc = await fromUuid(uuid);
-        if (doc?.sheet) doc.sheet.render(true);
-      });
+  dialog.render(true);
+
+  // ✅ Use this hook to bind interactivity after the dialog appears
+  Hooks.once("renderDialog", (_app, html) => {
+    html.find("a.content-link").on("click", async function (event) {
+      event.preventDefault();
+      const uuid = $(this).data("uuid");
+      if (!uuid) return;
+      const doc = await fromUuid(uuid);
+      if (doc?.sheet) doc.sheet.render(true);
     });
   });
 }
