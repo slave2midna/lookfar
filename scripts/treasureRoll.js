@@ -174,10 +174,10 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           damageType: { value: baseWeapon?.element || "" },
           damage: { value: baseWeapon?.damage ?? 0 },
           isMartial: { value: baseWeapon?.isMartial ?? false },
-          quality: { value: data.quality || "No quality" },
+          quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "HMBRW" },
-          summary: { value: "a randomly generated weapon." },
+          summary: { value: " a randomly generated weapon." },
           description: { value: "a randomly generated weapon." }
         }
       };
