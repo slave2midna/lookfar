@@ -163,19 +163,22 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         folder: cacheFolder.id,
         system: {
           category: { value: baseWeapon?.category || "" },
-          hand: { value: baseWeapon?.hand || "" },
+          hands: { value: baseWeapon?.hand || "" },
           type: { value: baseWeapon?.type || "" },
-          attrA: { value: baseWeapon?.attrA || "" },
-          attrB: { value: baseWeapon?.attrB || "" },
+          attributes: {
+            primary: { value: baseWeapon?.attrA || "" },
+            secondary: { value: baseWeapon?.attrB || "" }
+          },
           accuracy: { value: baseWeapon?.accuracy ?? 0 },
-          targets: { value: baseWeapon?.targets || "" },
-          element: { value: baseWeapon?.element || "" },
+          defense: { value: baseWeapon?.targets || "" },
+          damageType: { value: baseWeapon?.element || "" },
           damage: { value: baseWeapon?.damage ?? 0 },
-          isMartial: { value: baseWeapon?.isMartial || "no" },
+          isMartial: { value: baseWeapon?.isMartial ?? false },
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
-          summary: { value: "" },
-          description
+          source: { value: "HMBRW" },
+          summary: { value: "a randomly generated weapon." },
+          description: { value: "a randomly generated weapon." }
         }
       };
     } else if (dataLoader.treasureData.armorList.some(a => data.name.endsWith(a.name))) {
