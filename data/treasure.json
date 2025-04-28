@@ -108,7 +108,7 @@
     { "name": "Cold", "damageType": "ice" },
     { "name": "Stone", "damageType": "earth" },
     { "name": "Electric", "damageType": "bolt" },
-    { "name": "Windy", "damageType": "air" },
+    { "name": "Energy", "damageType": "air" },
     { "name": "Cursed", "damageType": "dark" },
     { "name": "Holy", "damageType": "light" },
     { "name": "Poisoned", "damageType": "poison" }
