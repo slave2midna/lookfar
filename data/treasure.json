@@ -103,7 +103,16 @@
     { "name": "Horrifying", "value": 1500, "description": "targets suffers shaken on hit." },
     { "name": "Debilitating", "value": 1500, "description": "targets suffers weak on hit." }
   ],
-  "weaponElements": ["Flaming", "Cold", "Stone", "Electric", "Windy", "Cursed", "Holy", "Poisoned"],
+  "weaponElements": [
+    { "name": "Flaming", "damageType": "fire" },
+    { "name": "Cold", "damageType": "ice" },
+    { "name": "Stone", "damageType": "earth" },
+    { "name": "Electric", "damageType": "bolt" },
+    { "name": "Windy", "damageType": "air" },
+    { "name": "Cursed", "damageType": "dark" },
+    { "name": "Holy", "damageType": "light" },
+    { "name": "Poisoned", "damageType": "poison" }
+  ],
   "armorList": [
     { "name": "Silk Shirt", "value": 100, "defAttr": "DEX", "def": 0, "mdefAttr": "INS", "mdef": 2, "init": -1, "isMartial": "no" },
     { "name": "Travel Garb", "value": 100, "defAttr": "DEX", "def": 1, "mdefAttr": "INS", "mdef": 1, "init": -1, "isMartial": "no" },
