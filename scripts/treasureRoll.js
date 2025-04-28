@@ -172,7 +172,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           },
           accuracy: { value: baseWeapon?.accuracy ?? 0 },
           defense: baseWeapon?.defense || "",
-          damageType: { value: baseWeapon?.element || "" },
+          damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
           damage: { value: baseWeapon?.damage ?? 0 },
           isMartial: { value: baseWeapon?.isMartial ?? false },
           quality: { value: qualityObj?.description || "No quality" },
