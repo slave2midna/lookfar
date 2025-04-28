@@ -178,7 +178,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           source: { value: "HMBRW" },
           summary: { value: " a randomly generated weapon." },
-          description: { value: "a randomly generated weapon." }
+          description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}`
         }
       };
     } else if (dataLoader.treasureData.armorList.some(a => data.name.endsWith(a.name))) {
