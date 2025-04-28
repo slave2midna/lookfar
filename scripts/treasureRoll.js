@@ -61,7 +61,7 @@ function rollWeapon(weapons, weaponQualities, elements) {
 
   const name = nameParts.join(" ");
 
-  return { name, value, quality, element: appliedElement };
+  return { name, value, quality, element: appliedElement, hasPlusOne };
 }
 
 function rollArmor(armors, armorQualities) {
@@ -170,7 +170,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
             primary: { value: baseWeapon?.attrA || "" },
             secondary: { value: baseWeapon?.attrB || "" }
           },
-          accuracy: { value: baseWeapon?.accuracy ?? 0 },
+          accuracy: { value: (baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0) },
           defense: baseWeapon?.defense || "",
           damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
           damage: { value: baseWeapon?.damage ?? 0 },
