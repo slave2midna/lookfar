@@ -1,1 +1,78 @@
-
+{
+  "broadaxe": [
+    "modules/lookfar/assets/icons/weapons/broadaxe/broadaxe1.png",
+    "modules/lookfar/assets/icons/weapons/broadaxe/broadaxe2.png"
+  ],
+  "longsword": [
+    "modules/lookfar/assets/icons/weapons/longsword/shortsword1.png",
+    "modules/lookfar/assets/icons/weapons/longsword/shortsword2.png"
+  ],
+  "greatsword": [
+    "modules/lookfar/assets/icons/weapons/greatsword/greatsword1.png",
+    "modules/lookfar/assets/icons/weapons/greatsword/greatsword2.png"
+  ],
+  "shortbow": [
+    "modules/lookfar/assets/icons/weapons/shortbow/longbow1.png",
+    "modules/lookfar/assets/icons/weapons/shortbow/longbow2.png"
+  ],
+  "hammer": [
+    "modules/lookfar/assets/icons/weapons/hammer/warhammer1.png",
+    "modules/lookfar/assets/icons/weapons/hammer/warhammer2.png"
+  ],
+  "staff": [
+    "modules/lookfar/assets/icons/weapons/staff/arcanestaff1.png",
+    "modules/lookfar/assets/icons/weapons/staff/arcanestaff2.png"
+  ],
+  "dagger": [
+    "modules/lookfar/assets/icons/weapons/dagger/dagger1.png",
+    "modules/lookfar/assets/icons/weapons/dagger/dagger2.png"
+  ],
+  "rapier": [
+    "modules/lookfar/assets/icons/weapons/rapier/rapier1.png",
+    "modules/lookfar/assets/icons/weapons/rapier/rapier2.png"
+  ],
+  "whip": [
+    "modules/lookfar/assets/icons/weapons/flail/flail1.png",
+    "modules/lookfar/assets/icons/weapons/flail/flail2.png"
+  ],
+  "tome": [
+    "modules/lookfar/assets/icons/weapons/mace/mace1.png",
+    "modules/lookfar/assets/icons/weapons/mace/mace2.png"
+  ],
+  "katana": [
+    "modules/lookfar/assets/icons/weapons/katana/katana1.png",
+    "modules/lookfar/assets/icons/weapons/katana/katana2.png"
+  ],
+  "crossbow": [
+    "modules/lookfar/assets/icons/weapons/crossbow/crossbow1.png",
+    "modules/lookfar/assets/icons/weapons/crossbow/crossbow2.png"
+  ],
+  "rifle": [
+    "modules/lookfar/assets/icons/weapons/rifle/crossbow1.png",
+    "modules/lookfar/assets/icons/weapons/rifle/crossbow2.png"
+  ],
+  "pistol": [
+    "modules/lookfar/assets/icons/weapons/pistol/crossbow1.png",
+    "modules/lookfar/assets/icons/weapons/pistol/crossbow2.png"
+  ],
+  "heavyspear": [
+    "modules/lookfar/assets/icons/weapons/heavyspear/crossbow1.png",
+    "modules/lookfar/assets/icons/weapons/heavyspear/crossbow2.png"
+  ],
+  "lightspear": [
+    "modules/lookfar/assets/icons/weapons/lightspear/crossbow1.png",
+    "modules/lookfar/assets/icons/weapons/lightspear/crossbow2.png"
+  ],
+  "waraxe": [
+    "modules/lookfar/assets/icons/weapons/waraxe/crossbow1.png",
+    "modules/lookfar/assets/icons/weapons/waraxe/crossbow2.png"
+  ],
+  "knuckle": [
+    "modules/lookfar/assets/icons/weapons/knuckle/crossbow1.png",
+    "modules/lookfar/assets/icons/weapons/knuckle/crossbow2.png"
+  ],
+  "thrown": [
+    "modules/lookfar/assets/icons/weapons/thrown/crossbow1.png",
+    "modules/lookfar/assets/icons/weapons/thrown/crossbow2.png"
+  ]
+}
