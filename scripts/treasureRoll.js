@@ -28,6 +28,7 @@ function rollWeapon(weapons, weaponQualities, elements) {
 
   let quality = "None";
   let hasPlusOne = false;
+  let appliedElement = null;
 
   // Apply +1 bonus
   if (Math.random() < 0.5) {
@@ -37,8 +38,8 @@ function rollWeapon(weapons, weaponQualities, elements) {
 
   // Apply element
   if (Math.random() < 0.5) {
-    const element = getRandom(elements);
-    nameParts.push(element);
+    appliedElement = getRandom(elements);
+    nameParts.push(appliedElement.name);
     value += 100;
   }
 
@@ -60,7 +61,7 @@ function rollWeapon(weapons, weaponQualities, elements) {
 
   const name = nameParts.join(" ");
 
-  return { name, value, quality };
+  return { name, value, quality, element: appliedElement };
 }
 
 function rollArmor(armors, armorQualities) {
