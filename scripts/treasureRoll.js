@@ -154,10 +154,15 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       const qualityObj = dataLoader.treasureData.weaponQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `A weapon of ${data.quality || "unknown"} quality.`;
 
+      // Normalizes base weapon name for icon manifest to pull icons
+      const weaponKey = baseWeapon.name.toLowerCase().replace(/\s+/g, '');
+      const iconList = dataLoader.iconManifest?.[weaponKey];
+      const img = iconList ? iconList[Math.floor(Math.random() * iconList.length)] : "icons/svg/sword.svg";
+
       itemData = {
         name: data.name,
         type,
-        img: "icons/svg/sword.svg",
+        img,
         folder: cacheFolder.id,
         system: {
           category: { value: baseWeapon?.category || "" },
