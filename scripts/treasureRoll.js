@@ -207,9 +207,9 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           description: `A full set of ${baseArmor?.isMartial || "unknown"} armor that ${qualityObj?.description || "has no special properties."}`
         }
       };
-    } else if (dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc))) {
+    } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.includes(acc))) {
       type = "accessory";
-      const baseAccessory = dataLoader.treasureData.accessoryNames.find(a => data.name.endsWith(a.name));
+      const baseAccessory = dataLoader.treasureData.accessoryList.find(a => data.name.endsWith(a.name));
       const qualityObj = dataLoader.treasureData.accessoryQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
 
@@ -316,7 +316,7 @@ Hooks.once("ready", () => {
       weaponElements,
       armorList,
       armorQualities,
-      accessoryNames,
+      accessoryList,
       accessoryQualities,
       tasteWords
     } = dataLoader.treasureData;
@@ -366,7 +366,7 @@ Hooks.once("ready", () => {
             item = rollArmor(armorList, armorQualities);
             break;
           case "Accessory":
-            item = rollAccessory(accessoryNames, accessoryQualities);
+            item = rollAccessory(accessoryList, accessoryQualities);
             break;
           case "Material":
             item = rollMaterial(nature, origin, maxVal, remainingBudget, detailTables, originTables, natureTables, detailDescriptions);
