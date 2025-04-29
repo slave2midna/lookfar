@@ -202,25 +202,31 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           isMartial: { value: baseArmor?.isMartial ?? false },
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
-          summary: { value: "" },
-          description: "A randomly generated armor piece."
+          source: { value: "HMBRW" },
+          summary: { value: " a randomly generated armor." },
+          description: `A full set of ${baseArmor?.isMartial || "unknown"} armor that ${qualityObj?.description || "has no special properties."}`
         }
       };
     } else if (dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc))) {
       type = "accessory";
+      const baseAccessory = dataLoader.treasureData.accessoryNames.find(a => data.name.endsWith(a.name));
       const qualityObj = dataLoader.treasureData.accessoryQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
 
       itemData = {
         name: data.name,
         type,
-        img: "icons/svg/mystery-man.svg",
+        img: "icons/svg/shield.svg",
         folder: cacheFolder.id,
         system: {
+          def: { value: baseAccessory?.def ?? 0 },
+          mdef: { value: baseAccessory?.mdef ?? 0 },
+          init: { value: baseAccessory?.init ?? 0 },
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
-          summary: { value: "" },
-          description
+          source: { value: "HMBRW" },
+          summary: { value: " a randomly generated accessory." },
+          description: "a randomly generated accessory."
         }
       };
     }
