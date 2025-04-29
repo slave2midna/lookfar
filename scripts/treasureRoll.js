@@ -207,16 +207,16 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           description: `A full set of ${baseArmor?.isMartial || "unknown"} armor that ${qualityObj?.description || "has no special properties."}`
         }
       };
-    } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.includes(acc))) {
+    } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
       type = "accessory";
-      const baseAccessory = dataLoader.treasureData.accessoryList.find(a => data.name.endsWith(a.name));
+      const baseAccessory = dataLoader.treasureData.accessoryList.find(acc => data.name.endsWith(acc.name));
       const qualityObj = dataLoader.treasureData.accessoryQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
 
       itemData = {
         name: data.name,
         type,
-        img: "icons/svg/shield.svg",
+        img: "icons/svg/necklace.svg",
         folder: cacheFolder.id,
         system: {
           def: { value: baseAccessory?.def ?? 0 },
@@ -225,8 +225,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
           source: { value: "HMBRW" },
-          summary: { value: " a randomly generated accessory." },
-          description: "a randomly generated accessory."
+          summary: { value: "a randomly generated accessory." },
+          description: "A randomly generated accessory."
         }
       };
     }
