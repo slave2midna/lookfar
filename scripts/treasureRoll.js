@@ -196,16 +196,14 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         img: "icons/svg/shield.svg",
         folder: cacheFolder.id,
         system: {
-          def: { value: baseArmor?.def ?? 0 },
-          mdef: { value: baseArmor?.mdef ?? 0 },
+          def: { attribute: baseArmor?.def?.attribute || "dex", value: baseArmor?.def?.value ?? 0 },
+          mdef: { attribute: baseArmor?.mdef?.attribute || "ins", value: baseArmor?.mdef?.value ?? 0 },
           init: { value: baseArmor?.init ?? 0 },
-          defAttr: { value: baseArmor?.defAttr || "" },
-          mdefAttr: { value: baseArmor?.mdefAttr || "" },
-          isMartial: { value: baseArmor?.isMartial || "no" },
+          isMartial: { value: baseArmor?.isMartial ?? false },
           quality: { value: data.quality || "No quality" },
           cost: { value: data.value },
           summary: { value: "" },
-          description
+          description: "A randomly generated armor piece."
         }
       };
     } else if (dataLoader.treasureData.accessoryNames.some(acc => data.name.includes(acc))) {
