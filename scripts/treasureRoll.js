@@ -196,8 +196,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         img: "icons/svg/shield.svg",
         folder: cacheFolder.id,
         system: {
-          def: { attribute: baseArmor?.def?.attribute || "dex", value: baseArmor?.def?.value ?? 0 },
-          mdef: { attribute: baseArmor?.mdef?.attribute || "ins", value: baseArmor?.mdef?.value ?? 0 },
+          def: { attribute: baseArmor?.defAttr || "dex", value: baseArmor?.def ?? 0 },
+          mdef: { attribute: baseArmor?.mdefAttr || "ins", value: baseArmor?.mdef ?? 0 },
           init: { value: baseArmor?.init ?? 0 },
           isMartial: { value: baseArmor?.isMartial ?? false },
           quality: { value: data.quality || "No quality" },
