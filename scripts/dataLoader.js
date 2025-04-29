@@ -3,6 +3,7 @@ export const dataLoader = {
   discoveryData: {},
   keywordData: {},
   treasureData: {},
+  iconManifest: {},
 
   async loadData() {
     // Load dangers.json (threats & danger sources)
@@ -42,6 +43,15 @@ export const dataLoader = {
       console.log("Treasure Data:", this.treasureData);
     } catch (error) {
       console.error("Failed to load treasure.json:", error);
+    }
+
+    // Load icons.json (weapon icon manifest)
+    try {
+      const iconsResponse = await fetch("/modules/lookfar/data/icons.json");
+      this.iconManifest = await iconsResponse.json();
+      console.log("Icon Manifest:", this.iconManifest);
+    } catch (error) {
+      console.error("Failed to load icons.json:", error);
     }
   },
 
