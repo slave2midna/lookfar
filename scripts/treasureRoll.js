@@ -230,7 +230,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       itemData = {
         name: data.name,
         type,
-        img: "icons/svg/necklace.svg",
+        img: "icons/svg/item-bag.svg",
         folder: cacheFolder.id,
         system: {
           def: { value: baseAccessory?.def ?? 0 },
