@@ -78,12 +78,26 @@ function rollArmor(armors, armorQualities) {
 }
 
 function rollAccessory(accessories, accessoryQualities) {
-  const type = getRandom(accessories);
-  const quality = getRandom(accessoryQualities);
+  const base = getRandom(accessories); // full accessory object: { name, def, mdef, init, value }
+  let nameParts = [];
+  let value = base.value ?? 0;
+  let quality = "None";
+
+  // 50% chance to apply a quality
+  if (Math.random() < 0.5) {
+    const q = getRandom(accessoryQualities);
+    quality = q.name;
+    nameParts.push(quality);
+    value += q.value;
+  }
+
+  nameParts.push(base.name);
+  const name = nameParts.join(" ");
+
   return {
-    name: `${quality.name} ${type}`,
-    value: quality.value,
-    quality: quality.name
+    name,
+    value,
+    quality
   };
 }
 
