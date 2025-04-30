@@ -223,7 +223,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           source: { value: "LOOKFAR" },
           summary: { value: " a randomly generated armor." },
           description: `A full set of armor that ${qualityObj?.description || "has no special properties."}\n` +
-            `DEF: ${baseArmor?.def ?? 0} | MDEF: ${baseArmor?.mdef ?? 0} | INIT: ${baseArmor?.init ?? 0}`;
+            `DEF: ${baseArmor?.def ?? 0} | MDEF: ${baseArmor?.mdef ?? 0} | INIT: ${baseArmor?.init ?? 0}`
         }
       };
     } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
