@@ -250,7 +250,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`,
-          description: ``A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
+          description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
     }
