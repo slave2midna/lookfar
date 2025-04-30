@@ -22,40 +22,39 @@ function rollMaterial(nature, origin, maxVal, budget, detailTables, originTables
 }
 
 function rollWeapon(weapons, weaponQualities, elements) {
-  const base = getRandom(weapons);
-  let value = base.value;
-
-  let quality = "None";
-  let hasPlusOne = false;
-  let appliedElement = null;
-
+  let base, quality = "None", hasPlusOne = false, appliedElement = null;
   let nameParts = [];
+  let value = 0;
 
-  // Apply +1 bonus
-  if (Math.random() < 0.5) {
-    hasPlusOne = true;
-    nameParts.push("+1");
-    value += 100;
-  }
+  do {
+    base = getRandom(weapons);
+    nameParts = [];
+    value = base.value;
 
-  // Apply quality
-  if (Math.random() < 0.5) {
-    const q = getRandom(weaponQualities);
-    quality = q.name;
-    nameParts.push(quality);
-    value += q.value;
-  }
+    hasPlusOne = Math.random() < 0.5;
+    appliedElement = Math.random() < 0.5 ? getRandom(elements) : null;
+    const q = Math.random() < 0.5 ? getRandom(weaponQualities) : null;
+    quality = q?.name ?? "None";
 
-  // Apply element
-  if (Math.random() < 0.5) {
-    appliedElement = getRandom(elements);
-    nameParts.push(appliedElement.name);
-    value += 100;
-  }
+    if (hasPlusOne) {
+      nameParts.push("+1");
+      value += 100;
+    }
 
-  // Always add base name last
+    if (quality !== "None") {
+      nameParts.push(quality);
+      value += q.value;
+    }
+
+    if (appliedElement) {
+      nameParts.push(appliedElement.name);
+      value += 100;
+    }
+
+  } while (!hasPlusOne && quality === "None" && !appliedElement);  // reroll base if no upgrades
+
+  // Add base name last
   nameParts.push(base.name);
-
   const name = nameParts.join(" ");
 
   return { name, value, quality, element: appliedElement, hasPlusOne };
