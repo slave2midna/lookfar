@@ -34,12 +34,12 @@
     "Support": ["Carved", "Glowing", "Resonating", "Iridescent", "Lucky", "Magical", "Soft", "Warm"]
   },
   "detailDescriptions": {
-    "Agility": "can be used to create items that enhance agility or precision.",
-    "Power": "can be used to create powerful or damaging items.",
-    "Protection": "can be used to create protective items.",
-    "Recovery": "can be used to create recovery items.",
-    "Sabotage": "can be used to create debilitating items.",
-    "Support": "can be used to create support or utility items."
+    "Agility": "A material used to create items that enhance agility or precision.",
+    "Power": "A material used to create powerful or damaging items.",
+    "Protection": "A material used to create protective items.",
+    "Recovery": "A material used to create recovery items.",
+    "Sabotage": "A material used to create debilitating items.",
+    "Support": "A material used to create support or utility items."
   },
   "weaponList": [
     { "name": "Staff", "value": 100, "category": "arcane", "hand": "two-handed", "type": "melee", "attrA": "wlp", "attrB": "wlp", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6, "isMartial": "false" },
