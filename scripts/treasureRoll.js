@@ -140,7 +140,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         img: "icons/svg/acid.svg",
         folder: cacheFolder.id,
         system: {
-          subtype: { value: "Ingredient" },
+          subtype: { value: "ingredient" },
           cost: { value: data.value },
           quantity: { value: data.quantity },
           taste: { value: data.taste },
@@ -156,7 +156,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         img: "icons/svg/gem.svg",
         folder: cacheFolder.id,
         system: {
-          subtype: { value: "Material" },
+          subtype: { value: "material" },
           cost: { value: data.value },
           quantity: { value: 1 },
           origin: { value: "" },
