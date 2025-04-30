@@ -202,10 +202,15 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       const qualityObj = dataLoader.treasureData.armorQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Armor of ${data.quality || "unknown"} quality.`;
 
+      // Use "martial" or "nonmartial" icons based on isMartial string
+      const armorKey = baseArmor?.isMartial === "true" ? "martial" : "nonmartial";
+      const iconList = dataLoader.iconManifest?.[armorKey];
+      const img = iconList ? iconList[Math.floor(Math.random() * iconList.length)] : "icons/svg/shield.svg";
+      
       itemData = {
         name: data.name,
         type,
-        img: "icons/svg/shield.svg",
+        img,
         folder: cacheFolder.id,
         system: {
           def: { attribute: baseArmor?.defAttr || "dex", value: baseArmor?.def ?? 0 },
