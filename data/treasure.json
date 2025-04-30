@@ -1,5 +1,5 @@
 {
-  "natureTables": {
+  "natureKeywords": {
     "Anthropod": ["Antenna", "Carapace", "Gland", "Horn", "Leg", "Mandible", "Pincer", "Shell", "Stinger", "Web"],
     "Bird": ["Bone", "Cranium", "Crest", "Egg", "Feather", "Membrane", "Sac", "Talon", "Tendon", "Wattle"],
     "Fish": ["Bone", "Cartilage", "Crest", "Eggs", "Fin", "Gland", "Sac", "Scale", "Spine", "Teeth"],
@@ -13,7 +13,7 @@
     "Mineral": ["Block", "Charcoal", "Cystal", "Dust", "Fragment", "Gem", "Limestone", "Rock", "Salt", "Shard", "Stele", "Stone"],
     "Plant": ["Algae", "Bark", "Berry", "Bramble", "Branch", "Flower", "Fruit", "Leaf", "Moss", "Petal", "Root", "Thorn", "Fiber"]
   },
-  "originTables": {
+  "originKeywords": {
     "Aerial": ["Cerulean", "Dry", "Emerald", "Green", "Hollow", "Light", "Wind", "Air"],
     "Thunderous": ["Amber", "Conductive", "Static", "Magnetic", "Thundering", "Yellow", "Electric"],
     "Paradox": ["Amethyst", "Astral", "Colorless", "Fragile", "Ruined", "Spectral", "Dark", "Black"],
@@ -25,21 +25,13 @@
     "Aquatic": ["Blue", "Coral", "Deepwater", "Sapphire", "Thin", "Wet"],
     "Mechanical": ["Steam", "Electric", "Motor", "Fuel"]
   },
-  "detailTables": {
+  "detailKeywords": {
     "Agility": ["Elastic", "Glazed", "Grim", "Oily", "Polished", "Scrawny", "Sharp", "Slender", "Slippery", "Small"],
     "Power": ["Bloated", "Broken", "Chipped", "Colossal", "Fermented", "Heavy", "Monstrous", "Serrated", "Sharp", "Thick"],
     "Protection": ["Ancient", "Curly", "Hardened", "Blessed", "Rough", "Rubbery", "Scaly", "Silky", "Tough"],
     "Recovery": ["Aromatic", "Fragrant", "Fresh", "Juicy", "Purified", "Scarred", "Smooth", "Glossy"],
     "Sabotage": ["Corrosive", "Dazzling", "Eerie", "Cursed", "Hooked", "Barbed", "Nauseating", "Rusty", "Sticky"],
     "Support": ["Carved", "Glowing", "Resonating", "Iridescent", "Lucky", "Magical", "Soft", "Warm"]
-  },
-  "detailDescriptions": {
-    "Agility": "A material used to create items that enhance agility or precision.",
-    "Power": "A material used to create powerful or damaging items.",
-    "Protection": "A material used to create protective items.",
-    "Recovery": "A material used to create recovery items.",
-    "Sabotage": "A material used to create debilitating items.",
-    "Support": "A material used to create support or utility items."
   },
   "weaponList": [
     { "name": "Staff", "value": 100, "category": "arcane", "hand": "two-handed", "type": "melee", "attrA": "wlp", "attrB": "wlp", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6, "isMartial": "false" },
