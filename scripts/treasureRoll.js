@@ -216,7 +216,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           source: { value: "HMBRW" },
           summary: { value: " a randomly generated armor." },
-          description: `A full set of ${baseArmor?.isMartial || "unknown"} armor that ${qualityObj?.description || "has no special properties."}`
+          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}`
         }
       };
     } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
