@@ -198,7 +198,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           source: { value: "LOOKFAR" },
           summary: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}`,
           description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}<br>` + 
-            `<b>ACC:</b> ${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> <b>DMG:</b> ${baseWeapon?.damage ?? 0} <strong>|</strong> <b>Type:</b> ${data.element?.damageType || baseWeapon?.element || "physical"}`
+            `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> <b>DMG:</b> HR+${baseWeapon?.damage ?? 0} <strong>|</strong> <b>Type:</b> ${(data.element?.damageType || baseWeapon?.element || "physical").charAt(0).toUpperCase()}${(data.element?.damageType || baseWeapon?.element || "physical").slice(1)}`
         }
       };
     } else if (dataLoader.treasureData.armorList.some(a => data.name.endsWith(a.name))) {
