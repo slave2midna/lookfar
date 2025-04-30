@@ -27,10 +27,10 @@
   },
   "detailKeywords": {
     "Agility": ["Elastic", "Glazed", "Grim", "Oily", "Polished", "Scrawny", "Sharp", "Slender", "Slippery", "Small"],
-    "Power": ["Bloated", "Broken", "Chipped", "Colossal", "Fermented", "Heavy", "Monstrous", "Serrated", "Sharp", "Thick"],
-    "Protection": ["Ancient", "Curly", "Hardened", "Blessed", "Rough", "Rubbery", "Scaly", "Silky", "Tough"],
+    "Powerful": ["Bloated", "Broken", "Chipped", "Colossal", "Fermented", "Heavy", "Monstrous", "Serrated", "Sharp", "Thick"],
+    "Protective": ["Ancient", "Curly", "Hardened", "Blessed", "Rough", "Rubbery", "Scaly", "Silky", "Tough"],
     "Recovery": ["Aromatic", "Fragrant", "Fresh", "Juicy", "Purified", "Scarred", "Smooth", "Glossy"],
-    "Sabotage": ["Corrosive", "Dazzling", "Eerie", "Cursed", "Hooked", "Barbed", "Nauseating", "Rusty", "Sticky"],
+    "Debilitating": ["Corrosive", "Dazzling", "Eerie", "Cursed", "Hooked", "Barbed", "Nauseating", "Rusty", "Sticky"],
     "Support": ["Carved", "Glowing", "Resonating", "Iridescent", "Lucky", "Magical", "Soft", "Warm"]
   },
   "weaponList": [
