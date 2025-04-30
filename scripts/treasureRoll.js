@@ -193,7 +193,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}`,
-          description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}\n` + 
+          description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}<br>` + 
             `ACC: ${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} | DMG: ${baseWeapon?.damage ?? 0} | Element: ${data.element?.damageType || baseWeapon?.element || "physical"}`
         }
       };
@@ -222,7 +222,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: { value: " a randomly generated armor." },
-          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}\n` +
+          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}<br>` +
             `DEF: ${baseArmor?.def ?? 0} | MDEF: ${baseArmor?.mdef ?? 0} | INIT: ${baseArmor?.init ?? 0}`
         }
       };
@@ -249,8 +249,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: `A ${baseName.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`,
-          description: `A ${baseName.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
+          summary: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`,
+          description: ``A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
     }
