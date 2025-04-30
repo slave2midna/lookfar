@@ -191,7 +191,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           isMartial: { value: baseWeapon?.isMartial ?? false },
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
-          source: { value: "HMBRW" },
+          source: { value: "LOOKFAR" },
           summary: { value: " a randomly generated weapon." },
           description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}`
         }
@@ -219,9 +219,9 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           isMartial: { value: baseArmor?.isMartial ?? false },
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
-          source: { value: "HMBRW" },
+          source: { value: "LOOKFAR" },
           summary: { value: " a randomly generated armor." },
-          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}`
+          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}\n` + `DEF: ${baseArmor?.def ?? 0} | MDEF: ${baseArmor?.mdef ?? 0} | INIT: ${baseArmor?.init ?? 0}`;
         }
       };
     } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
@@ -246,9 +246,9 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           init: { value: baseAccessory?.init ?? 0 },
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
-          source: { value: "HMBRW" },
+          source: { value: "LOOKFAR" },
           summary: { value: "a randomly generated accessory." },
-          description: "A randomly generated accessory."
+          description: `A ${baseName.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
     }
