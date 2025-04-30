@@ -1,26 +1,38 @@
 import { dataLoader } from "./dataLoader.js";
 const getOrCreateCacheFolder = dataLoader.getOrCreateCacheFolder;
 
-// Utility
+// Loot Generation Utility
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// Loot Generation Functions
-function rollMaterial(nature, origin, maxVal, budget, detailTables, originTables, natureTables, detailDescriptions) {
-  if (!natureTables[nature] || budget < 50) return null;
+// Material Generation
+function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywords, natureKeywords) {
+  if (!natureKeywords[nature] || budget < 50) return null;
 
-  const detailKeys = Object.keys(detailTables);
-  const detailType = getRandom(detailKeys);
-  const name = `${getRandom(detailTables[detailType])} ${getRandom(originTables[origin])} ${getRandom(natureTables[nature])}`;
-  const detail = detailDescriptions[detailType];
+  const detailKeys = Object.keys(detailKeywords);
+  const detailKey = getRandom(detailKeys);
+  const detail = getRandom(detailKeywords[detailKey]);
+
+  const originWord = getRandom(originKeywords[origin]);
+  const natureWord = getRandom(natureKeywords[nature]);
+  const name = `${detail} ${originWord} ${natureWord}`;
+
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
 
   if (value > budget) return null;
-  return { name, value, detail };
+
+  return {
+    name,
+    value,
+    detail,
+    nature,
+    origin
+  };
 }
 
+// Weapon Generation
 function rollWeapon(weapons, weaponQualities, elements) {
   let base, quality = "None", hasPlusOne = false, appliedElement = null;
   let nameParts = [];
@@ -60,6 +72,7 @@ function rollWeapon(weapons, weaponQualities, elements) {
   return { name, value, quality, element: appliedElement, hasPlusOne };
 }
 
+// Armor Generation
 function rollArmor(armor, armorQualities) {
   const base = getRandom(armor);
   let nameParts = [];
@@ -103,12 +116,12 @@ function rollAccessory(accessories, accessoryQualities) {
   };
 }
 
-function rollIngredient(nature, origin, budget, tasteWords, natureTables, originTables) {
-  if (!natureTables[nature] || budget < 10) return null;
+function rollIngredient(nature, origin, budget, tasteWords, natureKeywords, originKeywords) {
+  if (!natureKeywords[nature] || budget < 10) return null;
 
   const taste = getRandom(tasteWords);
-  const originWord = getRandom(originTables[origin]);
-  const natureWord = getRandom(natureTables[nature]);
+  const originWord = getRandom(originKeywords[origin]);
+  const natureWord = getRandom(natureKeywords[nature]);
 
   const quantity = Math.floor(Math.random() * 3) + 1;
   const unitValue = taste === "Distinct" ? 20 : 10;
@@ -152,16 +165,16 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       type = "treasure";
       itemData = {
         name: data.name,
-        type,
+        type: "treasure",
         img: "icons/svg/gem.svg",
         folder: cacheFolder.id,
         system: {
           subtype: { value: "material" },
           cost: { value: data.value },
           quantity: { value: 1 },
-          origin: { value: "" },
-          summary: { value: "" },
-          description: data.detail
+          origin: { value: data.origin },
+          summary: { value: `${data.detail}` },
+          description: `A ${data.nature} material of a(n) ${data.origin} origin.<br>` + `It can be used to craft ${data.detailType.toLowerCase()}-enhancing items.`
         }
       };
     } else if (dataLoader.treasureData.weaponList.some(w => data.name.endsWith(w.name))) {
@@ -335,9 +348,9 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
     const {
-      natureTables,
-      originTables,
-      detailTables,
+      natureKeywords,
+      originKeywords,
+      detailKeywords,
       detailDescriptions,
       weaponList,
       weaponQualities,
@@ -397,10 +410,10 @@ Hooks.once("ready", () => {
             item = rollAccessory(accessoryList, accessoryQualities);
             break;
           case "Material":
-            item = rollMaterial(nature, origin, maxVal, remainingBudget, detailTables, originTables, natureTables, detailDescriptions);
+            item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords, natureKeywords, detailDescriptions);
             break;
           case "Ingredient":
-            item = rollIngredient(nature, origin, remainingBudget, tasteWords, natureTables, originTables);
+            item = rollIngredient(nature, origin, remainingBudget, tasteWords, natureKeywords, originKeywords);
             ingredientCount++;
             break;
         }
@@ -446,13 +459,13 @@ Hooks.once("ready", () => {
             <div class="form-group">
               <label>Origin:</label>
               <select id="origin">
-                ${Object.keys(originTables).map(o => `<option value="${o}">${o}</option>`).join("")}
+                ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
               </select>
             </div>
             <div class="form-group">
               <label>Nature:</label>
               <select id="nature">
-                ${Object.keys(natureTables).map(n => `<option value="${n}">${n}</option>`).join("")}
+                ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
               </select>
             </div>
           </div>
