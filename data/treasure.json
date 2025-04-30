@@ -106,14 +106,14 @@
     { "name": "Poisoned", "damageType": "poison" }
   ],
   "armorList": [
-    { "name": "Silk Shirt", "value": 100, "defAttr": "dex", "def": 0, "mdefAttr": "ins", "mdef": 2, "init": -1, "isMartial": "false" },
-    { "name": "Travel Garb", "value": 100, "defAttr": "dex", "def": 1, "mdefAttr": "ins", "mdef": 1, "init": -1, "isMartial": "false" },
-    { "name": "Combat Tunic", "value": 150, "defAttr": "dex", "def": 1, "mdefAttr": "ins", "mdef": 1, "init": 0, "isMartial": "false" },
-    { "name": "Sage Robe", "value": 200, "defAttr": "dex", "def": 1, "mdefAttr": "ins", "mdef": 2, "init": -2, "isMartial": "false" },
-    { "name": "Brigandine", "value": 150, "defAttr": "", "def": 10, "mdefAttr": "ins", "mdef": 0, "init": -2, "isMartial": "true" },
-    { "name": "Bronze Plate", "value": 200, "defAttr": "", "def": 11, "mdefAttr": "ins", "mdef": 0, "init": -3, "isMartial": "true" },
-    { "name": "Runic Plate", "value": 250, "defAttr": "", "def": 11, "mdefAttr": "ins", "mdef": 1, "init": -3, "isMartial": "true" },
-    { "name": "Steel Plate", "value": 300, "defAttr": "", "def": 12, "mdefAttr": "ins", "mdef": 0, "init": -4, "isMartial": "true" },
+    { "name": "Shirt", "value": 100, "defAttr": "dex", "def": 0, "mdefAttr": "ins", "mdef": 2, "init": -1, "isMartial": "false" },
+    { "name": "Garb", "value": 100, "defAttr": "dex", "def": 1, "mdefAttr": "ins", "mdef": 1, "init": -1, "isMartial": "false" },
+    { "name": "Tunic", "value": 150, "defAttr": "dex", "def": 1, "mdefAttr": "ins", "mdef": 1, "init": 0, "isMartial": "false" },
+    { "name": "Robe", "value": 200, "defAttr": "dex", "def": 1, "mdefAttr": "ins", "mdef": 2, "init": -2, "isMartial": "false" },
+    { "name": "Cuirass", "value": 150, "defAttr": "", "def": 10, "mdefAttr": "ins", "mdef": 0, "init": -2, "isMartial": "true" },
+    { "name": "Chain", "value": 200, "defAttr": "", "def": 11, "mdefAttr": "ins", "mdef": 0, "init": -3, "isMartial": "true" },
+    { "name": "Scale", "value": 250, "defAttr": "", "def": 11, "mdefAttr": "ins", "mdef": 1, "init": -3, "isMartial": "true" },
+    { "name": "Plate", "value": 300, "defAttr": "", "def": 12, "mdefAttr": "ins", "mdef": 0, "init": -4, "isMartial": "true" },
     { "name": "Buckler", "value": 100, "def": 0, "mdef": 0, "init": 0, "isMartial": "false" },
     { "name": "Shield", "value": 150, "def": 2, "mdef": 2, "init": 0, "isMartial": "true" }
   ],
