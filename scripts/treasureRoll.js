@@ -10,13 +10,11 @@ function getRandom(arr) {
 function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywords, natureKeywords) {
   if (!natureKeywords[nature] || budget < 50) return null;
 
-  const detailKeys = Object.keys(detailKeywords);
-  const detailKey = getRandom(detailKeys);
-  const detail = getRandom(detailKeywords[detailKey]);
-
-  const originWord = getRandom(originKeywords[origin]);
-  const natureWord = getRandom(natureKeywords[nature]);
-  const name = `${detail} ${originWord} ${natureWord}`;
+  const detail = getRandom(Object.keys(detailKeywords));         // e.g. "Power"
+  const detailWord = getRandom(detailKeywords[detail]);          // e.g. "Serrated"
+  const originWord = getRandom(originKeywords[origin]);          // e.g. "Wind"
+  const natureWord = getRandom(natureKeywords[nature]);          // e.g. "Plate"
+  const name = `${detailWord} ${originWord} ${natureWord}`;      // → "Serrated Wind Plate"
 
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
