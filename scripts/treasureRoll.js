@@ -193,8 +193,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}`,
-          description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}<br>` + 
-            `ACC: ${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} | DMG: ${baseWeapon?.damage ?? 0} | Element: ${data.element?.damageType || baseWeapon?.element || "physical"}`
+          description: description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}<br>` + 
+            `<b>ACC:</b> ${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> <b>DMG:</b> ${baseWeapon?.damage ?? 0} <strong>|</strong> <b>Type:</b> ${data.element?.damageType || baseWeapon?.element || "physical"}`
         }
       };
     } else if (dataLoader.treasureData.armorList.some(a => data.name.endsWith(a.name))) {
@@ -223,7 +223,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           source: { value: "LOOKFAR" },
           summary: { value: " a randomly generated armor." },
           description: `A full set of armor that ${qualityObj?.description || "has no special properties."}<br>` +
-            `DEF: ${baseArmor?.def ?? 0} | MDEF: ${baseArmor?.mdef ?? 0} | INIT: ${baseArmor?.init ?? 0}`
+            `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} | <b>INIT:</b> ${baseArmor?.init ?? 0}`
         }
       };
     } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
@@ -280,8 +280,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         <a class="content-link" draggable="true" data-uuid="${item.uuid}">
           <strong>${item.name}</strong>
         </a><br>
-        <small><em>${desc}</em></small><br>
-        <small>Value: ${cost} G</small>
+        <small>${desc}</small><br>
+        <small>Value: ${cost} z</small>
       </div>
     `;
   }).join("\n");
