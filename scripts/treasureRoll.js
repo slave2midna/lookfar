@@ -172,7 +172,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quantity: { value: 1 },
           origin: { value: data.origin },
           summary: { value: `${data.detail}` },
-          description: `A ${data.nature} material of a(n) ${data.origin} origin.<br>` + `It can be used to craft ${data.detail.toLowerCase()}-enhancing items.`
+          description: `A(n) <b>${data.nature.toLowerCase()}</b> material of a(n) <b>${data.origin.toLowerCase()}</b> origin.<br>` + 
+            `It can be used to craft <b>${data.detail.toLowerCase()}</b> items.`
         }
       };
     } else if (dataLoader.treasureData.weaponList.some(w => data.name.endsWith(w.name))) {
