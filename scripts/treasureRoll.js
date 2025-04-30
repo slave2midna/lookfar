@@ -192,8 +192,9 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: " a randomly generated weapon." },
-          description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}`
+          summary: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}`,
+          description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}\n` + 
+            `ACC: ${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} | DMG: ${baseWeapon?.damage ?? 0} | Element: ${data.element?.damageType || baseWeapon?.element || "physical"}`
         }
       };
     } else if (dataLoader.treasureData.armorList.some(a => data.name.endsWith(a.name))) {
@@ -221,7 +222,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: { value: " a randomly generated armor." },
-          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}\n` + `DEF: ${baseArmor?.def ?? 0} | MDEF: ${baseArmor?.mdef ?? 0} | INIT: ${baseArmor?.init ?? 0}`;
+          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}\n` +
+            `DEF: ${baseArmor?.def ?? 0} | MDEF: ${baseArmor?.mdef ?? 0} | INIT: ${baseArmor?.init ?? 0}`;
         }
       };
     } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
@@ -247,7 +249,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: "a randomly generated accessory." },
+          summary: `A ${baseName.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`,
           description: `A ${baseName.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
