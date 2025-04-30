@@ -225,10 +225,15 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       const qualityObj = dataLoader.treasureData.accessoryQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
 
+      // Normalizes base accessory name for icon manifest to pull icons
+      const baseNameKey = baseAccessory.name.toLowerCase().replace(/\s+/g, '');
+      const iconList = dataLoader.iconManifest?.[baseNameKey];
+      const img = iconList ? iconList[Math.floor(Math.random() * iconList.length)] : "icons/svg/item-bag.svg";
+
       itemData = {
         name: data.name,
         type,
-        img: "icons/svg/item-bag.svg",
+        img,
         folder: cacheFolder.id,
         system: {
           def: { value: baseAccessory?.def ?? 0 },
