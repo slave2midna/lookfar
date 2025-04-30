@@ -60,20 +60,25 @@ function rollWeapon(weapons, weaponQualities, elements) {
   return { name, value, quality, element: appliedElement, hasPlusOne };
 }
 
-function rollArmor(armors, armorQualities) {
-  const base = getRandom(armors);
-  let name = base.name;
+function rollArmor(armor, armorQualities) {
+  const base = getRandom(armor);
+  let nameParts = [];
   let value = base.value;
-
   let quality = "None";
-  if (Math.random() < 0.5) {
-    const q = getRandom(armorQualities);
-    quality = q.name;
-    value += q.value;
-    name = `${quality} ${name}`;
-  }
 
-  return { name, value, quality };
+  const q = getRandom(armorQualities); // Always apply quality
+  quality = q.name;
+  nameParts.push(quality);
+  value += q.value;
+
+  nameParts.push(base.name);
+  const name = nameParts.join(" ");
+
+  return {
+    name,
+    value,
+    quality
+  };
 }
 
 function rollAccessory(accessories, accessoryQualities) {
