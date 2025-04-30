@@ -61,7 +61,7 @@ function rollWeapon(weapons, weaponQualities, elements) {
       value += 100;
     }
 
-  } while (!hasPlusOne && quality === "None" && !appliedElement);  // reroll base if no upgrades
+  } while (!hasPlusOne && quality === "None" && !appliedElement);  // reroll if no upgrades
 
   // Add base name last
   nameParts.push(base.name);
@@ -77,7 +77,7 @@ function rollArmor(armor, armorQualities) {
   let value = base.value;
   let quality = "None";
 
-  const q = getRandom(armorQualities); // Always apply quality
+  const q = getRandom(armorQualities);
   quality = q.name;
   nameParts.push(quality);
   value += q.value;
@@ -92,13 +92,14 @@ function rollArmor(armor, armorQualities) {
   };
 }
 
+// Accessory Generation
 function rollAccessory(accessories, accessoryQualities) {
-  const base = getRandom(accessories); // full accessory object: { name, def, mdef, init, value }
+  const base = getRandom(accessories);
   let nameParts = [];
   let value = base.value ?? 0;
   let quality = "None";
 
-  // Apply a quality
+  
   const q = getRandom(accessoryQualities);
   quality = q.name;
   nameParts.push(quality);
@@ -114,6 +115,7 @@ function rollAccessory(accessories, accessoryQualities) {
   };
 }
 
+// Ingredient Generation
 function rollIngredient(nature, origin, budget, tasteWords, natureKeywords, originKeywords) {
   if (!natureKeywords[nature] || budget < 10) return null;
 
@@ -135,7 +137,7 @@ function rollIngredient(nature, origin, budget, tasteWords, natureKeywords, orig
   };
 }
 
-// Helper to render results in a dialog with Keep/Reroll
+// Results render function
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
   const cacheFolder = await dataLoader.getOrCreateCacheFolder();
 
@@ -151,12 +153,13 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         img: "icons/svg/acid.svg",
         folder: cacheFolder.id,
         system: {
-          subtype: { value: "ingredient" },
-          cost: { value: data.value },
-          quantity: { value: data.quantity },
-          taste: { value: data.taste },
+          featureType: "projectfu.ingredient",
+          cost: { value: data.value ?? null },
+          quantity: { value: data.quantity ?? 1 },
+          taste: data.taste || "",
+          source: "",
           summary: { value: "" },
-          description: data.taste
+          description: `An ingredient with a ${data.taste} taste.`
         }
       };
     } else if ("detail" in data) {
