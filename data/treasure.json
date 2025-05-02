@@ -14,24 +14,24 @@
     "Plant": ["Algae", "Branch", "Flower", "Leaf", "Weed", "Petal", "Root", "Vine", "Fibers", "Seeds", "Ivy", "Tulip", "Maple", "Pine", "Sunflower", "Sapling", "Cotton", "Bud", "Clover", "Fern"]
   },
   "originKeywords": {
-    "Aerial": ["Airy", "Dry", "Hollow", "White", "Green", "Light", "Air", "Wind"],
-    "Thunderous": ["Conductive", "Static", "Magnetic", "Yellow", "Electric", "Bolt"],
-    "Paradox": ["Astral", "Colorless", "Fragile", "Ruined", "Spectral", "Dark", "Black"],
-    "Terrestrial": ["Carved", "Fossilized", "Iron", "Sandy", "Brown", "Beige", "Earth"],
-    "Ardent": ["Blazing", "Explosive", "Incendiary", "Ruby", "Scarlet", "Warm", "Hot", "Fire"],
-    "Glacial": ["Arctic", "Azure", "Crystaline", "Freezing", "Frosty", "Pale", "Cold", "Ice"],
-    "Spiritual": ["Etherial", "Opaline", "Royal", "Shining", "Silver", "Transparent", "Light"],
-    "Corrupted": ["Corrosive", "Infected", "Speckled", "Streaked", "Toxic", "Violet", "Green", "Poison"],
-    "Aquatic": ["Blue", "Coral", "Deepwater", "Thin", "Wet", "Water", "Aqua"],
-    "Mechanical": ["Steam", "Electric", "Grey", "Metallic", ]
+    "Aerial": ["Airy", "Dry", "Hollow", "Light", "Wind", "Breezy", "Drifting", "Feathered", "Whistling", "Soaring"],
+    "Thunderous": ["Conductive", "Static", "Magnetic", "Electric", "Bolt", "Thundering", "Crackling", "Surging", "Ionic", "Resonant"],
+    "Paradox": ["Astral", "Fractured", "Unstable", "Glitching", "Timeless", "Mirrorborn", "Dimensional", "Looped", "Entropic", "Unreal"],
+    "Terrestrial": ["Carved", "Fossilized", "Iron", "Sandy", "Earth", "Buried", "Rooted", "Sedimentary", "Quarried", "Earthen"],
+    "Ardent": ["Blazing", "Explosive", "Incendiary", "Hot", "Searing", "Molten", "Smoldering", "Ashen", "Burning", "Scorched"],
+    "Glacial": ["Crystalline", "Freezing", "Frosty", "Cold", "Frigid", "Glassy", "Encased", "Frozen", "Still", "Icy"],
+    "Spiritual": ["Ethereal", "Sanctified", "Echoing", "Haunting", "Dreamwoven", "Luminous", "Blessed", "Hallowed", "Transcendent", "Otherworldly"],
+    "Corrupted": ["Corrosive", "Infected", "Speckled", "Streaked", "Toxic", "Blighted", "Warped", "Decayed", "Defiled", "Mutated"],
+    "Aquatic": ["Submerged", "Deepwater", "Soaked", "Barnacled", "Tidal", "Swamped", "Flooded", "Marshy", "Dripping", "Undersea"],
+    "Mechanical": ["Steam", "Cogged", "Automated", "Wired", "Clockwork", "Gearworked", "Bolted", "Linked", "Powered", "Machined"]
   },
   "detailKeywords": {
-    "Agility": ["Elastic", "Glazed", "Grim", "Oily", "Polished", "Scrawny", "Sharp", "Slender", "Slippery", "Small"],
-    "Powerful": ["Bloated", "Broken", "Chipped", "Colossal", "Fermented", "Heavy", "Monstrous", "Serrated", "Sharp", "Thick"],
-    "Protective": ["Ancient", "Curly", "Hardened", "Blessed", "Rough", "Rubbery", "Scaly", "Silky", "Tough"],
-    "Recovery": ["Aromatic", "Fragrant", "Fresh", "Juicy", "Purified", "Scarred", "Smooth", "Glossy"],
-    "Debilitating": ["Corrosive", "Dazzling", "Eerie", "Cursed", "Hooked", "Barbed", "Nauseating", "Rusty", "Sticky"],
-    "Support": ["Carved", "Glowing", "Resonating", "Iridescent", "Lucky", "Magical", "Soft", "Warm"]
+    "Agility": ["Elastic", "Sharp", "Slender", "Slippery", "Quickened", "Reflexive", "Flickering", "Spry", "Nimble", "Responsive"],
+    "Powerful": ["Crushing", "Brutal", "Hefty", "Overcharged", "Serrated", "Forceful", "Driven", "Colossal", "Pounding", "Wrecking"],
+    "Protective": ["Reinforced", "Plated", "Runed", "Shielded", "Hardened", "Tough", "Defensive", "Layered", "Fortified", "Wardbound"],
+    "Recovery": ["Restorative", "Steady", "Healed", "Mended", "Balanced", "Repaired", "Stabilizing", "Refreshed", "Renewing", "Regenerative"],
+    "Debilitating": ["Invasive", "Draining", "Hexed", "Venomed", "Slowing", "Withering", "Cursed", "Blinding", "Sapping", "Paralyzing"],
+    "Support": ["Amplifying", "Channeled", "Linked", "Echoed", "Guiding", "Resonating", "Anchored", "Projecting", "Boosted", "Infused"]
   },
   "weaponList": [
     { "name": "Staff", "value": 100, "category": "arcane", "hand": "two-handed", "type": "melee", "attrA": "wlp", "attrB": "wlp", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6, "isMartial": "false" },
