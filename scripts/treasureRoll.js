@@ -164,10 +164,16 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
       };
     } else if ("detail" in data) {
       type = "treasure";
+
+      // Load material icon from icon manifest based on nature keyword
+      const materialKey = data.nature?.toLowerCase();
+      const materialIcons = dataLoader.iconManifest?.[materialKey];
+      const img = materialIcons ? materialIcons[Math.floor(Math.random() * materialIcons.length)] : "icons/svg/gem.svg";
+      
       itemData = {
         name: data.name,
         type: "treasure",
-        img: "icons/svg/gem.svg",
+        img,
         folder: cacheFolder.id,
         system: {
           subtype: { value: "material" },
