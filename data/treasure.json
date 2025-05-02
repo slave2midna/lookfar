@@ -8,10 +8,10 @@
     "Reptile": ["Bone", "Claw", "Cranium", "Crest", "Egg", "Fang", "Gland", "Scale", "Spine", "Tail"],
     "Fungus": ["Boletus", "Hen", "Honeyshroom", "Morel", "Mucilage", "Mushroom", "Oyster", "Truffle"],
     "Incorporeal": ["Ash", "Bubble", "Essence", "Gas", "Mirage", "Smoke", "Strand", "Vapor"],
-    "Liquid": ["Clot", "Drop", "Extract", "Fluid", "Ichor", "Oil", "Reagent", "Sludge"],
+    "Liquid": ["Clot", "Drop", "Extract", "Fluid", "Ichor", "Oil", "Reagent", "Sludge", "Blood"],
     "Artificial": ["Chain", "Core", "Gear", "Lens", "Plate", "Propeller", "String", "Scrap", "Spring", "Valve"],
-    "Mineral": ["Block", "Charcoal", "Cystal", "Fragments", "Rock", "Shards", "Stele", "Stone"],
-    "Plant": ["Algae", "Bark", "Bramble", "Branch", "Flower", "Leaf", "Moss", "Petal", "Root", "Thorn", "Fiber", "Seeds"]
+    "Mineral": ["Block", "Charcoal", "Cystal", "Fragments", "Rock", "Shards", "Stele", "Stone", "Ore"],
+    "Plant": ["Algae", "Branch", "Flower", "Leaf", "Weed", "Petal", "Root", "Vine", "Fibers", "Seeds", "Ivy", "Tulip", "Maple", "Pine", "Sunflower", "Sapling", "Cotton", "Bud", "Clover", "Fern"]
   },
   "originKeywords": {
     "Aerial": ["Cerulean", "Dry", "Emerald", "Green", "Hollow", "Light", "Wind", "Air"],
