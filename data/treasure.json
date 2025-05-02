@@ -6,7 +6,7 @@
     "Mammal": ["Claw", "Cranium", "Fang", "Fur", "Horn", "Rib", "Tail", "Vertebra", "Hide"],
     "Mollusk": ["Antenna", "Gland", "Membrane", "Sac", "Scale", "Shell", "Slime", "Stinger", "Tentacle", "Pearl"],
     "Reptile": ["Bone", "Claw", "Cranium", "Crest", "Egg", "Fang", "Gland", "Scale", "Spine", "Tail"],
-    "Fungus": ["Boletus", "Hen", "Morel", "Mucilage", "Oyster", "Truffle", "Mycelium", "Spore"],
+    "Fungus": ["Slime", "Mucilage", "Mold", "Mildew", "Rust", "Smut", "Mycelium", "Spore"],
     "Incorporeal": ["Ash", "Bubble", "Essence", "Gas", "Mirage", "Smoke", "Strand", "Vapor"],
     "Liquid": ["Clot", "Drop", "Extract", "Fluid", "Ichor", "Oil", "Reagent", "Sludge", "Blood"],
     "Artificial": ["Chain", "Core", "Gear", "Lens", "Plate", "Propeller", "String", "Scrap", "Spring", "Valve"],
