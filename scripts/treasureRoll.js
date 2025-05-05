@@ -160,7 +160,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           data: {
             cost: data.value ?? null,
             quantity: data.quantity ?? 1,
-            taste: ((data.taste || "")).toLowerCase(),
+            taste: data.taste || "",
             description: `An ingredient with a ${data.taste} taste.`
           },
           featureType: "projectfu.ingredient",
@@ -305,7 +305,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
   const finalItems = tempItems.filter(Boolean);
 
   let htmlContent = finalItems.map(item => {
-    const cost = item.system.cost?.value ?? 0;
+    const cost = typeof item.system.cost === "object" ? item.system.cost?.value ?? 0 : item.system.cost ?? 0;
     const desc = item.system.description || "";
     return `
       <div style="text-align: center; margin-bottom: 0.75em;">
