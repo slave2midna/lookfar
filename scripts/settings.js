@@ -21,6 +21,24 @@ export const LookfarSettings = {
       type: Boolean,
       default: false,
     });
+
+    game.settings.register("lookfar", "useVariantTravelRules", {
+      name: "Use Variant Travel Rules",
+      hint: "Placeholder setting: Toggles alternative travel mechanics (currently unused).",
+      scope: "world",
+      config: true,
+      default: false,
+      type: Boolean
+    });
+
+    game.settings.register("lookfar", "useVariantDamageRules", {
+      name: "Use Variant Damage Rules",
+      hint: "Placeholder setting: Enables alternate damage rules (currently unused).",
+      scope: "world",
+      config: true,
+      default: false,
+      type: Boolean
+    });
   },
 
   registerDynamicRollTableSettings() {
