@@ -452,7 +452,7 @@ Hooks.once("ready", () => {
       content: `
         <form style="display: flex; gap: 10px; width: 100%; flex-wrap: nowrap;">
   <!-- Column 1: Inputs -->
-  <div style="flex: 1; min-width: 120px;">
+  <div style="width: 120px;">
     <div class="form-group">
       <label>Budget:</label>
       <input type="number" id="treasureBudget" value="1" min="1" />
@@ -490,7 +490,7 @@ Hooks.once("ready", () => {
   </div>
 
   <!-- Column 2: Checkboxes A -->
-  <div style="flex: 1; min-width: 90px; padding-top: 0.5em;">
+  <div style="width: 100px; padding-top: 0.5em;">
     <label><input type="checkbox" id="includeWeapons"> Weapons</label><br>
     <label><input type="checkbox" id="includeArmor"> Armor</label><br>
     <label><input type="checkbox" id="includeAccessories"> Accessories</label><br>
@@ -498,7 +498,7 @@ Hooks.once("ready", () => {
   </div>
 
   <!-- Column 3: Checkboxes B -->
-  <div style="flex: 1; min-width: 90px; padding-top: 0.5em;">
+  <div style="width: 100px; padding-top: 0.5em;">
     <label><input type="checkbox" id="includeIngredients"> Ingredients</label><br>
     <label><input type="checkbox" id="includeMaterials"> Materials</label><br>
     <label><input type="checkbox" id="includeModules"> Modules</label><br>
