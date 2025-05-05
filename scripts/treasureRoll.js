@@ -367,15 +367,14 @@ Hooks.once("ready", () => {
       natureKeywords,
       originKeywords,
       detailKeywords,
-      detailDescriptions,
+      tasteKeywords,
       weaponList,
       weaponQualities,
       weaponElements,
       armorList,
       armorQualities,
       accessoryList,
-      accessoryQualities,
-      tasteWords
+      accessoryQualities
     } = dataLoader.treasureData;
 
     if (rerollConfig) {
