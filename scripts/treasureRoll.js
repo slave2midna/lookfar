@@ -160,7 +160,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           data: {
             cost: data.value ?? null,
             quantity: data.quantity ?? 1,
-            taste: data.taste || "",
+            taste: (data.taste || "").toLowerCase(),
             description: `An ingredient with a ${data.taste} taste.`
           },
           featureType: "projectfu.ingredient",
