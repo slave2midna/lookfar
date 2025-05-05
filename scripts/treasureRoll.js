@@ -428,7 +428,7 @@ Hooks.once("ready", () => {
             item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords, natureKeywords, detailDescriptions);
             break;
           case "Ingredient":
-            item = rollIngredient(nature, origin, remainingBudget, tasteWords, natureKeywords, originKeywords);
+            item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords, originKeywords);
             ingredientCount++;
             break;
         }
