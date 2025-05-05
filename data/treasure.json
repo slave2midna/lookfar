@@ -39,7 +39,6 @@
   "Sweet": ["Sugary", "Honeyed", "Syrupy", "Candy-like", "Nectarous", "Saccharine", "Luscious", "Caramelized", "Fruity", "Rich"],
   "Salty": ["Briny", "Savory", "Pickled", "Cured", "Mineral", "Zingy", "Piquant", "Aged", "Smoky", "Oceanic"],
   "Umami": ["Meaty", "Brothy", "Rich", "Mushroomy", "Hearty", "Deep", "Robust", "Soy-like", "Mellow", "Full-bodied"],
-  "Distinct": ["Peculiar", "Unusual", "Uncanny", "Exotic", "Unique", "Wild", "Rare", "Complex", "Mystifying", "Intriguing"]
   },
   "weaponList": [
     { "name": "Staff", "value": 100, "category": "arcane", "hand": "two-handed", "type": "melee", "attrA": "wlp", "attrB": "wlp", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6, "isMartial": "false" },
