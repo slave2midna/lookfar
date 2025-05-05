@@ -157,13 +157,15 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
         img: "icons/svg/acid.svg",
         folder: cacheFolder.id,
         system: {
+          data: {
+            cost: data.value ?? null,
+            quantity: data.quantity ?? 1,
+            taste: data.taste || "",
+            description: `An ingredient with a ${data.taste} taste.`
+          },
           featureType: "projectfu.ingredient",
-          cost: { value: data.value ?? null },
-          quantity: { value: data.quantity ?? 1 },
-          taste: data.taste || "",
-          source: "",
-          summary: { value: "" },
-          description: `An ingredient with a ${data.taste} taste.`
+          summary: { value: "An ingredient with a ${data.taste} taste." },
+          source: "LOOKFAR"
         }
       };
     } else if ("detail" in data) {
