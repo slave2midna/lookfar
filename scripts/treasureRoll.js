@@ -454,12 +454,12 @@ Hooks.once("ready", () => {
             <!-- Column 1: Form Inputs -->
           <div style="width: 180px;">
             <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-              <label for="treasureBudget" style="width: 60px; margin-right: 0.1em;">Budget:</label>
+              <label for="treasureBudget" style="width: 60px;">Budget:</label>
               <input type="number" id="treasureBudget" value="1" min="1" style="width: 110px; box-sizing: border-box;" />
             </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="highestPCLevel" style="width: 60px; margin-right: 0.1em;">Level:</label>
+    <label for="highestPCLevel" style="width: 60px;">Level:</label>
     <select id="highestPCLevel" style="width: 110px; box-sizing: border-box;">
       <option value="500">5+</option>
       <option value="1000">10+</option>
@@ -470,14 +470,14 @@ Hooks.once("ready", () => {
   </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="origin" style="width: 60px; margin-right: 0.1em;">Origin:</label>
+    <label for="origin" style="width: 60px;">Origin:</label>
     <select id="origin" style="width: 110px; box-sizing: border-box;">
       ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
     </select>
   </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="nature" style="width: 60px; margin-right: 0.1em;">Nature:</label>
+    <label for="nature" style="width: 60px;">Nature:</label>
     <select id="nature" style="width: 110px; box-sizing: border-box;">
       ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
     </select>
