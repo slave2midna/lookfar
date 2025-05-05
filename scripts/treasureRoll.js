@@ -305,10 +305,12 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
   const finalItems = tempItems.filter(Boolean);
 
   let htmlContent = finalItems.map(item => {
-    let cost = 0;
-      if (item.system.cost?.value != null) cost = item.system.cost.value;
-      else if (item.system.data?.cost?.value != null) cost = item.system.data.cost.value;
-      else if (item.system.data?.cost != null) cost = item.system.data.cost;
+  const cost = 
+  item.system.cost?.value ?? 
+  item.system.data?.cost ?? 
+  item.system.data?.cost?.value ?? 
+  item.system.data?.value ?? 
+  0;
   const desc = item.system.description || "";
     return `
       <div style="text-align: center; margin-bottom: 0.75em;">
