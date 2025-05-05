@@ -116,24 +116,28 @@ function rollAccessory(accessories, accessoryQualities) {
 }
 
 // Ingredient Generation
-function rollIngredient(nature, origin, budget, tasteWords, natureKeywords, originKeywords) {
+function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywords, originKeywords) {
   if (!natureKeywords[nature] || budget < 10) return null;
 
-  const taste = getRandom(tasteWords);
-  const originWord = getRandom(originKeywords[origin]);
-  const natureWord = getRandom(natureKeywords[nature]);
+  const taste = getRandom(Object.keys(tasteKeywords));              // e.g. "Sour"
+  const tasteWord = getRandom(tasteKeywords[taste]);                // e.g. "Tart"
+  const originWord = getRandom(originKeywords[origin]);             // e.g. "Wind"
+  const natureWord = getRandom(natureKeywords[nature]);             // e.g. "Petal"
+  const name = `${tasteWord} ${originWord} ${natureWord}`;          // → "Tart Wind Petal"
 
   const quantity = Math.floor(Math.random() * 3) + 1;
-  const unitValue = taste === "Distinct" ? 20 : 10;
+  const unitValue = (taste === "Distinct") ? 20 : 10;
   const total = unitValue * quantity;
 
   if (total > budget) return null;
 
   return {
-    name: `${taste} ${originWord} ${natureWord}`,
+    name,
     value: total,
-    taste: `Taste: ${taste}`,
-    quantity: quantity,
+    taste,
+    quantity,
+    origin,
+    nature
   };
 }
 
