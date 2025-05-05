@@ -455,12 +455,12 @@ Hooks.once("ready", () => {
 <div style="width: 150px;">
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
     <label for="treasureBudget" style="width: 60px; margin-right: 0.5em;">Budget:</label>
-    <input type="number" id="treasureBudget" value="1" min="1" style="width: 80px; height: 22px; box-sizing: border-box;" />
+    <input type="number" id="treasureBudget" value="1" min="1" style="width: 90px; height: 22px; box-sizing: border-box;" />
   </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
     <label for="highestPCLevel" style="width: 60px; margin-right: 0.5em;">Level:</label>
-    <select id="highestPCLevel" style="width: 80px; height: 22px; box-sizing: border-box;">
+    <select id="highestPCLevel" style="width: 90px; height: 22px; box-sizing: border-box;">
       <option value="500">5+</option>
       <option value="1000">10+</option>
       <option value="1500">20+</option>
@@ -471,25 +471,15 @@ Hooks.once("ready", () => {
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
     <label for="origin" style="width: 60px; margin-right: 0.5em;">Origin:</label>
-    <select id="origin" style="width: 80px; height: 22px; box-sizing: border-box;">
+    <select id="origin" style="width: 90px; height: 22px; box-sizing: border-box;">
       ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
     </select>
   </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
     <label for="nature" style="width: 60px; margin-right: 0.5em;">Nature:</label>
-    <select id="nature" style="width: 80px; height: 22px; box-sizing: border-box;">
+    <select id="nature" style="width: 90px; height: 22px; box-sizing: border-box;">
       ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
-    </select>
-  </div>
-
-  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="genre" style="width: 60px; margin-right: 0.5em;">Genre:</label>
-    <select id="genre" style="width: 80px; height: 22px; box-sizing: border-box;">
-      <option value="high">High</option>
-      <option value="tech">Tech</option>
-      <option value="natural">Natural</option>
-      <option value="mixed">Mixed</option>
     </select>
   </div>
 </div>
