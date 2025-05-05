@@ -478,14 +478,28 @@ Hooks.once("ready", () => {
                 ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
               </select>
             </div>
+            <div class="form-group">
+              <label for="genre">Genre:</label>
+              <select id="genre" name="genre">
+                <option value="high">High Fantasy</option>
+                <option value="tech">Tech Fantasy</option>
+                <option value="natural">Natural Fantasy</option>
+              </select>
+            </div>
           </div>
-          <div style="flex: 1;">
-            <label><input type="checkbox" id="includeWeapons"> Weapons</label><br>
-            <label><input type="checkbox" id="includeArmor"> Armor</label><br>
-            <label><input type="checkbox" id="includeAccessories"> Accessories</label><br>
-            <label><input type="checkbox" id="includeSupplies"> Supplies</label><br>
-            <label><input type="checkbox" id="includeIngredients"> Ingredients</label><br>
-            <label><input type="checkbox" id="includeMaterials"> Materials</label>
+          <div style="display: flex; gap: 1em; margin-bottom: 1em;">
+            <div style="flex: 1;">
+              <label><input type="checkbox" id="includeWeapons"> Weapons</label><br>
+              <label><input type="checkbox" id="includeArmor"> Armor</label><br>
+              <label><input type="checkbox" id="includeAccessories"> Accessories</label><br>
+              <label><input type="checkbox" id="includeSupplies"> Supplies</label>
+            </div>
+            <div style="flex: 1;">
+              <label><input type="checkbox" id="includeIngredients"> Ingredients</label><br>
+              <label><input type="checkbox" id="includeMaterials"> Materials</label><br>
+              <label><input type="checkbox" id="includeModules"> Modules</label><br>
+              <label><input type="checkbox" id="includeTreasure"> Treasure</label>
+            </div>
           </div>
         </form>
       `,
