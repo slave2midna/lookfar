@@ -450,17 +450,17 @@ Hooks.once("ready", () => {
     new Dialog({
       title: "Treasure Generator",
       content: `
-        <form style="display: flex; width: 100%; flex-wrap: nowrap; font-family: sans-serif; gap: 5px;">
+        <form style="display: flex; width: 100%; flex-wrap: nowrap; gap: 5px;">
             <!-- Column 1: Form Inputs -->
-<div style="width: 150px;">
-  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="treasureBudget" style="width: 50px; margin-right: 0.1em;">Budget:</label>
-    <input type="number" id="treasureBudget" value="1" min="1" style="width: 100px; height: 22px; box-sizing: border-box;" />
-  </div>
+          <div style="width: 180px;">
+            <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+              <label for="treasureBudget" style="width: 60px; margin-right: 0.1em;">Budget:</label>
+              <input type="number" id="treasureBudget" value="1" min="1" style="width: 110px; box-sizing: border-box;" />
+            </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="highestPCLevel" style="width: 50px; margin-right: 0.1em;">Level:</label>
-    <select id="highestPCLevel" style="width: 100px; height: 22px; box-sizing: border-box;">
+    <label for="highestPCLevel" style="width: 60px; margin-right: 0.1em;">Level:</label>
+    <select id="highestPCLevel" style="width: 110px; box-sizing: border-box;">
       <option value="500">5+</option>
       <option value="1000">10+</option>
       <option value="1500">20+</option>
@@ -470,15 +470,15 @@ Hooks.once("ready", () => {
   </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="origin" style="width: 50px; margin-right: 0.1em;">Origin:</label>
-    <select id="origin" style="width: 100px; height: 22px; box-sizing: border-box;">
+    <label for="origin" style="width: 60px; margin-right: 0.1em;">Origin:</label>
+    <select id="origin" style="width: 110px; box-sizing: border-box;">
       ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
     </select>
   </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="nature" style="width: 50px; margin-right: 0.1em;">Nature:</label>
-    <select id="nature" style="width: 100px; height: 22px; box-sizing: border-box;">
+    <label for="nature" style="width: 60px; margin-right: 0.1em;">Nature:</label>
+    <select id="nature" style="width: 110px; box-sizing: border-box;">
       ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
     </select>
   </div>
