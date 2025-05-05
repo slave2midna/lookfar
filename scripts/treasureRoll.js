@@ -452,47 +452,47 @@ Hooks.once("ready", () => {
       content: `
         <form style="display: flex; width: 100%; flex-wrap: nowrap; font-family: sans-serif; gap: 5px;">
             <!-- Column 1: Form Inputs -->
-            <div style="width: 150px;">
-              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-                <label style="width: 60px; margin-right: 0.5em;">Budget:</label>
-                <input type="number" id="treasureBudget" value="1" min="1" style="flex: 1; max-width: 80px; height: 22px; box-sizing: border-box;" />
-              </div>
+<div style="width: 150px;">
+  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+    <label for="treasureBudget" style="width: 60px; margin-right: 0.5em;">Budget:</label>
+    <input type="number" id="treasureBudget" value="1" min="1" style="width: 80px; height: 22px; box-sizing: border-box;" />
+  </div>
 
-              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-                <label style="width: 60px; margin-right: 0.5em;">Level:</label>
-                <select id="highestPCLevel" style="flex: 1; max-width: 80px; height: 22px; box-sizing: border-box;">
-                  <option value="500">5+</option>
-                  <option value="1000">10+</option>
-                  <option value="1500">20+</option>
-                  <option value="2000">30+</option>
-                  <option value="999999">40+</option>
-                </select>
-              </div>
+  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+    <label for="highestPCLevel" style="width: 60px; margin-right: 0.5em;">Level:</label>
+    <select id="highestPCLevel" style="width: 80px; height: 22px; box-sizing: border-box;">
+      <option value="500">5+</option>
+      <option value="1000">10+</option>
+      <option value="1500">20+</option>
+      <option value="2000">30+</option>
+      <option value="999999">40+</option>
+    </select>
+  </div>
 
-              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-                <label style="width: 60px; margin-right: 0.5em;">Origin:</label>
-                <select id="origin" style="flex: 1; max-width: 80px; height: 22px; box-sizing: border-box;">
-                  ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
-                </select>
-              </div>
+  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+    <label for="origin" style="width: 60px; margin-right: 0.5em;">Origin:</label>
+    <select id="origin" style="width: 80px; height: 22px; box-sizing: border-box;">
+      ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
+    </select>
+  </div>
 
-              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-                <label style="width: 60px; margin-right: 0.5em;">Nature:</label>
-                <select id="nature" style="flex: 1; max-width: 80px; height: 22px; box-sizing: border-box;">
-                  ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
-                </select>
-              </div>
+  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+    <label for="nature" style="width: 60px; margin-right: 0.5em;">Nature:</label>
+    <select id="nature" style="width: 80px; height: 22px; box-sizing: border-box;">
+      ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
+    </select>
+  </div>
 
-              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-                <label style="width: 60px; margin-right: 0.5em;">Genre:</label>
-                <select id="genre" name="genre" style="flex: 1; max-width: 80px; height: 22px; box-sizing: border-box;">
-                  <option value="high">High</option>
-                  <option value="tech">Tech</option>
-                  <option value="natural">Natural</option>
-                  <option value="mixed">Mixed</option>
-                </select>
-              </div>
-            </div>
+  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+    <label for="genre" style="width: 60px; margin-right: 0.5em;">Genre:</label>
+    <select id="genre" style="width: 80px; height: 22px; box-sizing: border-box;">
+      <option value="high">High</option>
+      <option value="tech">Tech</option>
+      <option value="natural">Natural</option>
+      <option value="mixed">Mixed</option>
+    </select>
+  </div>
+</div>
 
             <!-- Column 2: Checkboxes A -->
             <div style="width: 115px;" class="checkbox-group">
