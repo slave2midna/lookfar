@@ -450,61 +450,61 @@ Hooks.once("ready", () => {
     new Dialog({
       title: "Treasure Generator",
       content: `
-        <form style="display: flex; gap: 25px; flex-wrap: wrap; align-items: flex-start;">
-            <!-- Column 1: Inputs -->
-            <div style="flex: 1 1 250px; min-width: 250px;">
-              <div class="form-group">
-                <label>Budget:</label>
-                <input type="number" id="treasureBudget" value="1" min="1" />
-              </div>
-              <div class="form-group">
-                <label>PC Level:</label>
-                <select id="highestPCLevel">
-                  <option value="500">5+</option>
-                  <option value="1000">10+</option>
-                  <option value="1500">20+</option>
-                  <option value="2000">30+</option>
-                  <option value="999999">40+</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Origin:</label>
-                <select id="origin">
-                  ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Nature:</label>
-                <select id="nature">
-                  ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="genre">Genre:</label>
-                <select id="genre" name="genre">
-                  <option value="high">High Fantasy</option>
-                  <option value="tech">Tech Fantasy</option>
-                  <option value="natural">Natural Fantasy</option>
-                </select>
-              </div>
-            </div>
+        <form style="display: flex; gap: 25px; flex-wrap: nowrap; width: 750px;">
+  <!-- Column 1 -->
+  <div style="flex: 1;">
+    <div class="form-group">
+      <label>Budget:</label>
+      <input type="number" id="treasureBudget" value="1" min="1" />
+    </div>
+    <div class="form-group">
+      <label>PC Level:</label>
+      <select id="highestPCLevel">
+        <option value="500">5+</option>
+        <option value="1000">10+</option>
+        <option value="1500">20+</option>
+        <option value="2000">30+</option>
+        <option value="999999">40+</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Origin:</label>
+      <select id="origin">
+        ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Nature:</label>
+      <select id="nature">
+        ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="genre">Genre:</label>
+      <select id="genre" name="genre">
+        <option value="high">High Fantasy</option>
+        <option value="tech">Tech Fantasy</option>
+        <option value="natural">Natural Fantasy</option>
+      </select>
+    </div>
+  </div>
 
-            <!-- Column 2: Checkboxes Group A -->
-            <div style="flex: 1 1 250px; min-width: 250px; margin-top: 0.5em;">
-              <label><input type="checkbox" id="includeWeapons"> Weapons</label><br>
-              <label><input type="checkbox" id="includeArmor"> Armor</label><br>
-              <label><input type="checkbox" id="includeAccessories"> Accessories</label><br>
-              <label><input type="checkbox" id="includeSupplies"> Supplies</label>
-            </div>
+  <!-- Column 2 -->
+  <div style="flex: 1; padding-top: 0.5em;">
+    <label><input type="checkbox" id="includeWeapons"> Weapons</label><br>
+    <label><input type="checkbox" id="includeArmor"> Armor</label><br>
+    <label><input type="checkbox" id="includeAccessories"> Accessories</label><br>
+    <label><input type="checkbox" id="includeSupplies"> Supplies</label>
+  </div>
 
-            <!-- Column 3: Checkboxes Group B -->
-            <div style="flex: 1 1 250px; min-width: 250px; margin-top: 0.5em;">
-              <label><input type="checkbox" id="includeIngredients"> Ingredients</label><br>
-              <label><input type="checkbox" id="includeMaterials"> Materials</label><br>
-              <label><input type="checkbox" id="includeModules"> Modules</label><br>
-              <label><input type="checkbox" id="includeTreasure"> Treasure</label>
-            </div>
-          </form>
+  <!-- Column 3 -->
+  <div style="flex: 1; padding-top: 0.5em;">
+    <label><input type="checkbox" id="includeIngredients"> Ingredients</label><br>
+    <label><input type="checkbox" id="includeMaterials"> Materials</label><br>
+    <label><input type="checkbox" id="includeModules"> Modules</label><br>
+    <label><input type="checkbox" id="includeTreasure"> Treasure</label>
+  </div>
+</form>
       `,
       buttons: {
         ok: {
