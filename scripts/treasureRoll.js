@@ -305,8 +305,11 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
   const finalItems = tempItems.filter(Boolean);
 
   let htmlContent = finalItems.map(item => {
-    const cost = typeof item.system.cost === "object" ? item.system.cost?.value ?? 0 : item.system.cost ?? 0;
-    const desc = item.system.description || "";
+    let cost = 0;
+      if (item.system.cost?.value != null) cost = item.system.cost.value;
+      else if (item.system.data?.cost?.value != null) cost = item.system.data.cost.value;
+      else if (item.system.data?.cost != null) cost = item.system.data.cost;
+  const desc = item.system.description || "";
     return `
       <div style="text-align: center; margin-bottom: 0.75em;">
         <img src="${item.img}" width="32" height="32" style="vertical-align: middle; margin-right: 6px;">
