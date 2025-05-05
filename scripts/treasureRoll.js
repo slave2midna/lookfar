@@ -450,9 +450,9 @@ Hooks.once("ready", () => {
     new Dialog({
       title: "Treasure Generator",
       content: `
-        <form style="display: flex; gap: 25px; flex-wrap: nowrap; width: 750px;">
-  <!-- Column 1 -->
-  <div style="flex: 1;">
+        <form style="display: flex; gap: 10px; width: 100%; flex-wrap: nowrap;">
+  <!-- Column 1: Inputs -->
+  <div style="flex: 1; min-width: 180px;">
     <div class="form-group">
       <label>Budget:</label>
       <input type="number" id="treasureBudget" value="1" min="1" />
@@ -489,16 +489,16 @@ Hooks.once("ready", () => {
     </div>
   </div>
 
-  <!-- Column 2 -->
-  <div style="flex: 1; padding-top: 0.5em;">
+  <!-- Column 2: Checkboxes A -->
+  <div style="flex: 1; min-width: 180px; padding-top: 0.5em;">
     <label><input type="checkbox" id="includeWeapons"> Weapons</label><br>
     <label><input type="checkbox" id="includeArmor"> Armor</label><br>
     <label><input type="checkbox" id="includeAccessories"> Accessories</label><br>
     <label><input type="checkbox" id="includeSupplies"> Supplies</label>
   </div>
 
-  <!-- Column 3 -->
-  <div style="flex: 1; padding-top: 0.5em;">
+  <!-- Column 3: Checkboxes B -->
+  <div style="flex: 1; min-width: 180px; padding-top: 0.5em;">
     <label><input type="checkbox" id="includeIngredients"> Ingredients</label><br>
     <label><input type="checkbox" id="includeMaterials"> Materials</label><br>
     <label><input type="checkbox" id="includeModules"> Modules</label><br>
