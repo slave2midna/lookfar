@@ -161,10 +161,10 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
             cost: data.value ?? null,
             quantity: data.quantity ?? 1,
             taste: data.taste || "",
-            description: `An ingredient that tastes ${data.taste}.`
+            description: `An ingredient that tastes <b>${data.taste}</b>.`
           },
           featureType: "projectfu.ingredient",
-          summary: { value: `An ingredient that tastes <b>${data.taste}</b>.` },
+          summary: { value: `An ingredient that tastes ${data.taste}.` },
           source: "LOOKFAR"
         }
       };
