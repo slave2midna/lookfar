@@ -1,6 +1,6 @@
 {
   "natureKeywords": {
-    "parts": {
+    "material": {
       "Anthropod": ["Carapace", "Mandible", "Pincer", "Shell", "Stinger"],
       "Bird": ["Feather", "Talon", "Beak", "Claw"],
       "Fish": ["Fin", "Scales", "Spine", "Teeth"],
@@ -14,7 +14,7 @@
       "Mineral": ["Shards", "Stone", "Ore", "Crystal"],
       "Plant": ["Branch", "Vine", "Bark", "Fibers"]
     },
-    "food": {
+    "ingredient": {
       "Anthropod": ["Sac", "Blood"],
       "Bird": ["Egg", "Fat"],
       "Fish": ["Meat", "Liver", "Eyes"],
@@ -30,24 +30,38 @@
     }
   },
   "originKeywords": {
-    "Aerial": ["Airy", "Dry", "Hollow", "Light", "Wind", "Breezy", "Drifting", "Feathered", "Whistling", "Soaring"],
-    "Thunderous": ["Conductive", "Static", "Magnetic", "Electric", "Bolt", "Thundering", "Crackling", "Surging", "Ionic", "Resonant"],
-    "Paradox": ["Astral", "Fractured", "Unstable", "Glitching", "Timeless", "Mirrorborn", "Dimensional", "Looped", "Entropic", "Unreal"],
-    "Terrestrial": ["Carved", "Fossilized", "Iron", "Sandy", "Earth", "Buried", "Rooted", "Sedimentary", "Quarried", "Earthen"],
-    "Ardent": ["Blazing", "Explosive", "Incendiary", "Hot", "Searing", "Molten", "Smoldering", "Ashen", "Burning", "Scorched"],
-    "Glacial": ["Crystalline", "Freezing", "Frosty", "Cold", "Frigid", "Glassy", "Encased", "Frozen", "Still", "Icy"],
-    "Spiritual": ["Ethereal", "Sanctified", "Echoing", "Haunting", "Dreamwoven", "Luminous", "Blessed", "Hallowed", "Transcendent", "Otherworldly"],
-    "Corrupted": ["Corrosive", "Infected", "Speckled", "Streaked", "Toxic", "Blighted", "Warped", "Decayed", "Defiled", "Mutated"],
-    "Aquatic": ["Submerged", "Deepwater", "Soaked", "Barnacled", "Tidal", "Swamped", "Flooded", "Marshy", "Dripping", "Undersea"],
-    "Mechanical": ["Steam", "Cogged", "Automated", "Wired", "Clockwork", "Gearworked", "Bolted", "Linked", "Powered", "Machined"]
+    "material": {
+      "Aerial": ["Light", "Hollow", "Windborne", "Feathered", "Drifting"],
+      "Thunderous": ["Conductive", "Magnetic", "Charged", "Ionic", "Crackling"],
+      "Paradox": ["Fractured", "Glitched", "Timeless", "Looped", "Entropic"],
+      "Terrestrial": ["Fossilized", "Quarried", "Sedimentary", "Ironbound", "Earthen"],
+      "Ardent": ["Blazing", "Molten", "Smoldering", "Scorched", "Embered"],
+      "Glacial": ["Crystalline", "Frozen", "Encased", "Glassy", "Still"],
+      "Spiritual": ["Sanctified", "Echoing", "Hallowed", "Woven", "Otherbound"],
+      "Corrupted": ["Warped", "Blighted", "Decayed", "Toxic", "Speckled"],
+      "Aquatic": ["Barnacled", "Soaked", "Flooded", "Tidal", "Marshbound"],
+      "Mechanical": ["Cogged", "Bolted", "Clockwork", "Forged", "Powered"]
+    },
+    "ingredient": {
+      "Aerial": ["Breezy", "Airy", "Whistling", "Effervescent", "Lifted"],
+      "Thunderous": ["Zesty", "Buzzing", "Surging", "Spiced", "Tingling"],
+      "Paradox": ["Unstable", "Dreamlike", "Unreal", "Glitchy", "Fractaline"],
+      "Terrestrial": ["Rooted", "Earthy", "Dusty", "Mineral", "Clay-rich"],
+      "Ardent": ["Searing", "Spicy", "Peppered", "Smoky", "Heated"],
+      "Glacial": ["Chilled", "Icy", "Crisp", "Frosted", "Refreshing"],
+      "Spiritual": ["Luminous", "Blessed", "Transcendent", "Warding", "Ethereal"],
+      "Corrupted": ["Tainted", "Sour", "Rotten", "Venomed", "Mottled"],
+      "Aquatic": ["Briny", "Oceanic", "Salted", "Watery", "Slippery"],
+      "Mechanical": ["Metallic", "Oiled", "Infused", "Tinged", "Twirled"]
+    }
   },
   "detailKeywords": {
-    "Agility": ["Elastic", "Sharp", "Slender", "Slippery", "Quickened", "Reflexive", "Flickering", "Spry", "Nimble", "Responsive"],
-    "Powerful": ["Crushing", "Brutal", "Hefty", "Overcharged", "Serrated", "Forceful", "Driven", "Colossal", "Pounding", "Wrecking"],
-    "Protective": ["Reinforced", "Plated", "Runed", "Shielded", "Hardened", "Tough", "Defensive", "Layered", "Fortified", "Wardbound"],
-    "Recovery": ["Restorative", "Steady", "Healed", "Mended", "Balanced", "Repaired", "Stabilizing", "Refreshed", "Renewing", "Regenerative"],
-    "Debilitating": ["Invasive", "Draining", "Hexed", "Venomed", "Slowing", "Withering", "Cursed", "Blinding", "Sapping", "Paralyzing"],
-    "Support": ["Amplifying", "Channeled", "Linked", "Echoed", "Guiding", "Resonating", "Anchored", "Projecting", "Boosted", "Infused"]
+    "agility": ["Elastic", "Sharp", "Slender", "Slippery", "Quickened", "Reflexive", "Flickering", "Spry", "Nimble", "Responsive"],
+    "powerful": ["Crushing", "Brutal", "Hefty", "Overcharged", "Serrated", "Forceful", "Driven", "Colossal", "Pounding", "Wrecking"],
+    "protective": ["Reinforced", "Plated", "Runed", "Shielded", "Hardened", "Tough", "Defensive", "Layered", "Fortified", "Wardbound"],
+    "recovery": ["Restorative", "Steady", "Healed", "Mended", "Balanced", "Repaired", "Stabilizing", "Refreshed", "Renewing", "Regenerative"],
+    "debilitating": ["Invasive", "Draining", "Hexed", "Venomed", "Slowing", "Withering", "Cursed", "Blinding", "Sapping", "Paralyzing"],
+    "support": ["Amplifying", "Channeled", "Linked", "Echoed", "Guiding", "Resonating", "Anchored", "Projecting", "Boosted", "Infused"]
   },
   "tasteKeywords": {
   "bitter": ["Astringent", "Harsh", "Tannic", "Sharp", "Acrid", "Dry", "Medicinal", "Pungent", "Bracing", "Earthy"],
