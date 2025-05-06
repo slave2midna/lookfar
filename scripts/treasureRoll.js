@@ -7,14 +7,14 @@ function getRandom(arr) {
 }
 
 // Material Generation
-function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywords, natureKeywords) {
-  if (!natureKeywords[nature] || budget < 50) return null;
+function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywordsMaterial, natureKeywordsMaterial) {
+  if (!natureKeywordsMaterial[nature] || budget < 50) return null;
 
-  const detail = getRandom(Object.keys(detailKeywords));         // e.g. "Power"
-  const detailWord = getRandom(detailKeywords[detail]);          // e.g. "Serrated"
-  const originWord = getRandom(originKeywords[origin]);          // e.g. "Wind"
-  const natureWord = getRandom(natureKeywords[nature]);          // e.g. "Plate"
-  const name = `${detailWord} ${originWord} ${natureWord}`;      // → "Serrated Wind Plate"
+  const detail = getRandom(Object.keys(detailKeywords));               // e.g. "Power"
+  const detailWord = getRandom(detailKeywords[detail]);                // e.g. "Serrated"
+  const originWord = getRandom(originKeywordsMaterial[origin]);        // e.g. "Molten"
+  const natureWord = getRandom(natureKeywordsMaterial[nature]);        // e.g. "Shell"
+  const name = `${detailWord} ${originWord} ${natureWord}`;            // → "Serrated Molten Shell"
 
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
@@ -31,14 +31,14 @@ function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeyw
 }
 
 // Ingredient Generation
-function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywords, originKeywords) {
-  if (!natureKeywords[nature] || budget < 10) return null;
+function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIngredient, originKeywordsIngredient) {
+  if (!natureKeywordsIngredient[nature] || budget < 10) return null;
 
-  const taste = getRandom(Object.keys(tasteKeywords));              // e.g. "Sour"
-  const tasteWord = getRandom(tasteKeywords[taste]);                // e.g. "Tart"
-  const originWord = getRandom(originKeywords[origin]);             // e.g. "Wind"
-  const natureWord = getRandom(natureKeywords[nature]);             // e.g. "Petal"
-  const name = `${tasteWord} ${originWord} ${natureWord}`;          // → "Tart Wind Petal"
+  const taste = getRandom(Object.keys(tasteKeywords));                   // e.g. "Sour"
+  const tasteWord = getRandom(tasteKeywords[taste]);                     // e.g. "Tart"
+  const originWord = getRandom(originKeywordsIngredient[origin]);       // e.g. "Watery"
+  const natureWord = getRandom(natureKeywordsIngredient[nature]);       // e.g. "Petal"
+  const name = `${tasteWord} ${originWord} ${natureWord}`;              // → "Tart Watery Petal"
 
   const quantity = Math.floor(Math.random() * 3) + 1;
   const unitValue = (taste === "Distinct") ? 20 : 10;
@@ -190,7 +190,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           source: { value: "LOOKFAR" },
           summary: { value: `${data.nature} material of ${data.origin.toLowerCase()} origin.` },
           description: `<b>${data.nature}</b> material of <b>${data.origin.toLowerCase()}</b> origin.<br>` + 
-            `It can be used to craft <b>${data.detail.toLowerCase()}</b> items.`
+            `It can be used to craft <b>${data.detail}</b> items.`
         }
       };
     } else if (dataLoader.treasureData.weaponList.some(w => data.name.endsWith(w.name))) {
