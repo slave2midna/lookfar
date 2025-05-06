@@ -7,26 +7,26 @@
       "Mammal": ["Bone", "Claw", "Horn", "Hide", "Skull"],
       "Mollusk": ["Shell", "Pearl", "Tentacle"],
       "Reptile": ["Claw", "Scales", "Tail", "Bone"],
-      "Fungus": ["Spore", "Mildew", "Mold"],
-      "Incorporeal": ["Essence", "Vapor", "Ash"],
-      "Liquid": ["Oil", "Sludge", "Ichor"],
-      "Artificial": ["Gear", "Plate", "Spring", "Cable", "Wires"],
-      "Mineral": ["Shards", "Stone", "Ore", "Crystal"],
-      "Plant": ["Branch", "Vine", "Bark", "Fibers"]
+      "Fungus": ["Spore", "Cap", "Veil", "Stem"],
+      "Incorporeal": ["Essence", "Vapor", "Ash", "Shade"],
+      "Liquid": ["Oil", "Sludge", "Ichor", "Resin"],
+      "Artificial": ["Gear", "Plate", "Spring", "Cable", "Wire"],
+      "Mineral": ["Shard", "Stone", "Ore", "Crystal"],
+      "Plant": ["Branch", "Vine", "Bark", "Fiber", "Reed"]
     },
     "ingredient": {
-      "Anthropod": ["Sac", "Blood"],
-      "Bird": ["Egg", "Fat"],
-      "Fish": ["Meat", "Liver", "Eyes"],
-      "Mammal": ["Meat", "Fat", "Organ", "Blood"],
-      "Mollusk": ["Mucus", "Meat", "Extract"],
-      "Reptile": ["Blood", "Organ", "Fat"],
-      "Fungus": ["Mushroom", "Mucilage"],
-      "Incorporeal": ["Mist", "Ectoplasm"],
-      "Liquid": ["Extract", "Drop", "Fluid", "Reagent"],
-      "Artificial": ["Syrup", "Oil"], 
-      "Mineral": ["Salt", "Charcoal", "Dust"],
-      "Plant": ["Leaf", "Petal", "Bud", "Seed", "Fruit", "Sap", "Root"]
+      "Anthropod": ["Meat", "Sac", "Shell", "Leg"],
+      "Bird": ["Egg", "Fat", "Feather", "Heart"],
+      "Fish": ["Meat", "Liver", "Oil", "Gill"],
+      "Mammal": ["Meat", "Fat", "Organ", "Milk"],
+      "Mollusk": ["Meat", "Extract", "Gland", "Ink"],
+      "Reptile": ["Meat", "Blood", "Fat", "Egg"],
+      "Fungus": ["Mushroom", "Spore", "Flesh", "Gills"],
+      "Incorporeal": ["Mist", "Ectoplasm", "Wisp", "Ghostsap"],
+      "Liquid": ["Fluid", "Reagent", "Syrup", "Slime"],
+      "Artificial": ["Gel", "Solution", "Oil", "Tonic"],
+      "Mineral": ["Salt", "Dust", "Grain", "Char"],
+      "Plant": ["Leaf", "Petal", "Bud", "Fruit", "Sap", "Root", "Stem"]
     }
   },
   "originKeywords": {
@@ -43,16 +43,16 @@
       "Mechanical": ["Cogged", "Bolted", "Clockwork", "Forged", "Powered"]
     },
     "ingredient": {
-      "Aerial": ["Breezy", "Airy", "Whistling", "Effervescent", "Lifted"],
-      "Thunderous": ["Zesty", "Buzzing", "Surging", "Spiced", "Tingling"],
-      "Paradox": ["Unstable", "Dreamlike", "Unreal", "Glitchy", "Fractaline"],
-      "Terrestrial": ["Rooted", "Earthy", "Dusty", "Mineral", "Clay-rich"],
-      "Ardent": ["Searing", "Spicy", "Peppered", "Smoky", "Heated"],
-      "Glacial": ["Chilled", "Icy", "Crisp", "Frosted", "Refreshing"],
-      "Spiritual": ["Luminous", "Blessed", "Transcendent", "Warding", "Ethereal"],
-      "Corrupted": ["Tainted", "Sour", "Rotten", "Venomed", "Mottled"],
-      "Aquatic": ["Briny", "Oceanic", "Salted", "Watery", "Slippery"],
-      "Mechanical": ["Metallic", "Oiled", "Infused", "Tinged", "Twirled"]
+      "Aerial": ["Feathery", "Light", "Whorled", "Lifted", "Vaporous"],
+      "Thunderous": ["Crackled", "Striped", "Buzzing", "Ionic", "Twined"],
+      "Paradox": ["Flickering", "Glitched", "Echoed", "Fractaline", "Phase-touched"],
+      "Terrestrial": ["Dusty", "Earthen", "Grainy", "Burrowed", "Pebbled"],
+      "Ardent": ["Smoldered", "Charred", "Blistered", "Glowing", "Ashen"],
+      "Glacial": ["Frosted", "Frozen", "Hoarfrost", "Paled", "Glass-coated"],
+      "Spiritual": ["Haloed", "Ghostly", "Shimmering", "Warded", "Pale-lit"],
+      "Corrupted": ["Mottled", "Streaked", "Decayed", "Blotched", "Warped"],
+      "Aquatic": ["Dripping", "Brine-wet", "Algae-veined", "Rippled", "Scaled"],
+      "Mechanical": ["Plated", "Engraved", "Oiled", "Wired", "Etched"]
     }
   },
   "detailKeywords": {
