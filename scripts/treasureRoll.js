@@ -188,7 +188,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quantity: { value: 1 },
           origin: { value: data.origin },
           source: { value: "LOOKFAR" },
-          summary: { value: `${data.nature.} material of ${data.origin.toLowerCase()} origin.` },
+          summary: { value: `${data.nature} material of ${data.origin.toLowerCase()} origin.` },
           description: `<b>${data.nature}</b> material of <b>${data.origin.toLowerCase()}</b> origin.<br>` + 
             `It can be used to craft <b>${data.detail.toLowerCase()}</b> items.`
         }
