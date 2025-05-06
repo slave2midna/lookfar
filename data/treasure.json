@@ -1,17 +1,33 @@
 {
   "natureKeywords": {
-    "Anthropod": ["Carapace", "Mandible", "Pincer", "Shell", "Stinger", "Sac"],
-    "Bird": ["Bone", "Skull", "Feather", "Talon"],
-    "Fish": ["Bone", "Cartilage", "Fin", "Scales", "Spine", "Teeth"],
-    "Mammal": ["Bone", "Claw", "Skull", "Fang", "Fur", "Horn", "Rib", "Tail", "Hide", "Blood"],
-    "Mollusk": ["Antenna", "Gland", "Shell", "Mucus", "Tentacle", "Pearl"],
-    "Reptile": ["Bone", "Claw", "Skull", "Gland", "Scales", "Spine", "Tail"],
-    "Fungus": ["Mucilage", "Mold", "Spore", "Mildew"],
-    "Incorporeal": ["Ash", "Essence", "Vapor"],
-    "Liquid": ["Clot", "Drop", "Extract", "Fluid", "Ichor", "Oil", "Reagent", "Sludge", "Blood"],
-    "Artificial": ["Core", "Gear", "Lens", "Plate", "Propeller", "Wires", "Cable", "Battery", "Scrap", "Spring", "Valve", "Fuel", "Motor"],
-    "Mineral": ["Block", "Charcoal", "Cystal", "Dust", "Fragments", "Rock", "Shards", "Stele", "Stone", "Ore"],
-    "Plant": ["Algae", "Branch", "Flower", "Leaf", "Weed", "Petal", "Root", "Vine", "Fibers", "Seeds", "Ivy", "Tulip", "Maple", "Pine", "Sunflower", "Sapling", "Cotton", "Bud", "Clover", "Fern"]
+    "parts": {
+      "Anthropod": ["Carapace", "Mandible", "Pincer", "Shell", "Stinger"],
+      "Bird": ["Feather", "Talon", "Beak", "Claw"],
+      "Fish": ["Fin", "Scales", "Spine", "Teeth"],
+      "Mammal": ["Bone", "Claw", "Horn", "Hide", "Skull"],
+      "Mollusk": ["Shell", "Pearl", "Tentacle"],
+      "Reptile": ["Claw", "Scales", "Tail", "Bone"],
+      "Fungus": ["Spore", "Mildew", "Mold"],
+      "Incorporeal": ["Essence", "Vapor", "Ash"],
+      "Liquid": ["Oil", "Sludge", "Ichor"],
+      "Artificial": ["Gear", "Plate", "Spring", "Cable", "Wires"],
+      "Mineral": ["Shards", "Stone", "Ore", "Crystal"],
+      "Plant": ["Branch", "Vine", "Bark", "Fibers"]
+    },
+    "food": {
+      "Anthropod": ["Sac", "Blood"],
+      "Bird": ["Egg", "Fat"],
+      "Fish": ["Meat", "Liver", "Eyes"],
+      "Mammal": ["Meat", "Fat", "Organ", "Blood"],
+      "Mollusk": ["Mucus", "Meat", "Extract"],
+      "Reptile": ["Blood", "Organ", "Fat"],
+      "Fungus": ["Mushroom", "Mucilage"],
+      "Incorporeal": ["Mist", "Ectoplasm"],
+      "Liquid": ["Extract", "Drop", "Fluid", "Reagent"],
+      "Artificial": ["Syrup", "Oil"], 
+      "Mineral": ["Salt", "Charcoal", "Dust"],
+      "Plant": ["Leaf", "Petal", "Bud", "Seed", "Fruit", "Sap", "Root"]
+    }
   },
   "originKeywords": {
     "Aerial": ["Airy", "Dry", "Hollow", "Light", "Wind", "Breezy", "Drifting", "Feathered", "Whistling", "Soaring"],
