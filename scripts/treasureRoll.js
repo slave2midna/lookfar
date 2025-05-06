@@ -161,10 +161,10 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
             cost: data.value ?? null,
             quantity: data.quantity ?? 1,
             taste: data.taste || "",
-            description: `An ingredient with a ${data.taste} taste.`
+            description: `An ingredient that tastes ${data.taste}.`
           },
           featureType: "projectfu.ingredient",
-          summary: { value: `An ingredient with a ${data.taste} taste.` },
+          summary: { value: `An ingredient that tastes <b>${data.taste}</b>.` },
           source: "LOOKFAR"
         }
       };
@@ -188,8 +188,8 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quantity: { value: 1 },
           origin: { value: data.origin },
           source: { value: "LOOKFAR" },
-          summary: { value: `A(n) <b>${data.nature.toLowerCase()}</b> material of a(n) <b>${data.origin.toLowerCase()}</b> origin.` },
-          description: `A(n) <b>${data.nature.toLowerCase()}</b> material of a(n) <b>${data.origin.toLowerCase()}</b> origin.<br>` + 
+          summary: { value: `${data.nature.} material of ${data.origin.toLowerCase()} origin.` },
+          description: `<b>${data.nature}</b> material of <b>${data.origin.toLowerCase()}</b> origin.<br>` + 
             `It can be used to craft <b>${data.detail.toLowerCase()}</b> items.`
         }
       };
@@ -305,18 +305,24 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
   const finalItems = tempItems.filter(Boolean);
 
   let htmlContent = finalItems.map(item => {
-  const cost = 
+  const cost = // listing all potential cost values
   item.system.cost?.value ?? 
   item.system.data?.cost ?? 
   item.system.data?.cost?.value ?? 
   item.system.data?.value ?? 
   0;
   const desc = item.system.description || "";
+  const quantity = item.system.quantity?.value ?? 1;
+
+  // Format quantity in result for classFeature/ingredient or items that use it.
+  const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
+  const quantitySuffix = isIngredient && quantity > 1 ? ` x${quantity}` : "";
+    
     return `
       <div style="text-align: center; margin-bottom: 0.75em;">
         <img src="${item.img}" width="32" height="32" style="vertical-align: middle; margin-right: 6px;">
         <a class="content-link" draggable="true" data-uuid="${item.uuid}">
-          <strong>${item.name}</strong>
+          <strong>${item.name}${quantitySuffix}</strong>
         </a><br>
         <small>${desc}</small><br>
         <small>Value: ${cost} z</small>
