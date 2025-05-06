@@ -468,7 +468,8 @@ Hooks.once("ready", () => {
         includeAccessories,
         includeSupplies,
         includeIngredients,
-        includeMaterials
+        includeMaterials,
+        includeTreasure
       } = rerollConfig;
 
       let remainingBudget = budget;
@@ -608,6 +609,7 @@ Hooks.once("ready", () => {
             const includeSupplies = html.find("#includeSupplies").is(":checked");
             const includeIngredients = html.find("#includeIngredients").is(":checked");
             const includeMaterials = html.find("#includeMaterials").is(":checked");
+            const includeTreasure = html.find("#includeTreasure").is(":checked");
 
             Hooks.call("lookfarShowTreasureRollDialog", {
               budget,
@@ -619,7 +621,8 @@ Hooks.once("ready", () => {
               includeAccessories,
               includeSupplies,
               includeIngredients,
-              includeMaterials
+              includeMaterials,
+              includeTreasure
             });
           }
         }
