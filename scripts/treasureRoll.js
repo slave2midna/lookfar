@@ -164,7 +164,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
             description: `An ingredient with a ${data.taste} taste.`
           },
           featureType: "projectfu.ingredient",
-          summary: { value: "An ingredient with a ${data.taste} taste." },
+          summary: { value: `An ingredient with a ${data.taste} taste.` },
           source: "LOOKFAR"
         }
       };
@@ -188,7 +188,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quantity: { value: 1 },
           origin: { value: data.origin },
           source: { value: "LOOKFAR" },
-          summary: { value: `${data.detail}` },
+          summary: { value: `A(n) <b>${data.nature.toLowerCase()}</b> material of a(n) <b>${data.origin.toLowerCase()}</b> origin.` },
           description: `A(n) <b>${data.nature.toLowerCase()}</b> material of a(n) <b>${data.origin.toLowerCase()}</b> origin.<br>` + 
             `It can be used to craft <b>${data.detail.toLowerCase()}</b> items.`
         }
@@ -225,9 +225,9 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}`,
+          summary: { value: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}` },
           description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}<br>` + 
-            `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> <b>DMG:</b> HR+${baseWeapon?.damage ?? 0} <strong>|</strong> <b>Type:</b> ${(data.element?.damageType || baseWeapon?.element || "physical").charAt(0).toUpperCase()}${(data.element?.damageType || baseWeapon?.element || "physical").slice(1)}`
+            `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> <b>DMG:</b> HR+${baseWeapon?.damage ?? 0} <strong>|</strong> <b>ELE:</b> ${(data.element?.damageType || baseWeapon?.element || "physical").charAt(0).toUpperCase()}${(data.element?.damageType || baseWeapon?.element || "physical").slice(1)}`
         }
       };
     } else if (dataLoader.treasureData.armorList.some(a => data.name.endsWith(a.name))) {
@@ -254,7 +254,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: " a randomly generated armor." },
+          summary: { value: `A full set of armor that ${qualityObj?.description || "has no special properties."}` },
           description: `A full set of armor that ${qualityObj?.description || "has no special properties."}<br>` +
             `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} | <b>INIT:</b> ${baseArmor?.init ?? 0}`
         }
@@ -282,7 +282,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`,
+          summary: { value: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}` },
           description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
