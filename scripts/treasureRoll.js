@@ -488,14 +488,14 @@ Hooks.once("ready", () => {
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
     <label for="origin" style="width: 70px;">Origin:</label>
     <select id="origin" style="width: 110px; box-sizing: border-box;">
-      ${Object.keys(originKeywords).map(o => `<option value="${o}">${o}</option>`).join("")}
+      ${Object.keys(originKeywords.material).map(o => `<option value="${o}">${o}</option>`).join("")}
     </select>
   </div>
 
   <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
     <label for="nature" style="width: 70px;">Nature:</label>
     <select id="nature" style="width: 110px; box-sizing: border-box;">
-      ${Object.keys(natureKeywords).map(n => `<option value="${n}">${n}</option>`).join("")}
+      ${Object.keys(natureKeywords.material).map(n => `<option value="${n}">${n}</option>`).join("")}
     </select>
   </div>
 </div>
