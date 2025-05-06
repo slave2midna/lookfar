@@ -141,6 +141,53 @@ function rollAccessory(accessories, accessoryQualities) {
   };
 }
 
+// Treasure Generation
+function rollTreasure(type, budget = 100) {
+  const result = {
+    name: null,
+    value: 0,
+    type
+  };
+
+  switch (type.toLowerCase()) {
+    case "coins": {
+      const value = Math.floor(Math.random() * budget) + 10;
+      result.name = "A coin pouch";
+      result.value = Math.min(value, budget);
+      break;
+    }
+
+    case "gems": {
+      const value = Math.floor(Math.random() * (budget / 2)) + 50;
+      result.name = "A precious gem";
+      result.value = Math.min(value, budget);
+      break;
+    }
+
+    case "scrolls": {
+      const pack = game.packs.get("projectfu.spells");
+      if (!pack?.index?.size) {
+        ui.notifications.error("Compendium 'projectfu.spells' not found or empty.");
+        return null;
+      }
+
+      const entries = Array.from(pack.index.values());
+      const randomEntry = entries[Math.floor(Math.random() * entries.length)];
+      const spellName = randomEntry?.name ?? "Unknown Spell";
+
+      result.name = `Scroll of ${spellName}`;
+      result.value = Math.min(100, budget);
+      break;
+    }
+
+    default:
+      ui.notifications.warn(`Unknown treasure type: ${type}`);
+      return null;
+  }
+
+  return result;
+}
+
 // Results render function
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
   const cacheFolder = await dataLoader.getOrCreateCacheFolder();
@@ -286,7 +333,29 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
-    }
+    }//else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
+      //type = "accessory";
+      //const baseAccessory = dataLoader.treasureData.accessoryList.find(acc => data.name.endsWith(acc.name));
+      //const qualityObj = dataLoader.treasureData.accessoryQualities.find(q => q.name === data.quality);
+      //const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
+
+      //itemData = {
+        //name: data.name,
+        //type,
+        //img,
+        //folder: cacheFolder.id,
+        //system: {
+          //def: { value: baseAccessory?.def ?? 0 },
+          //mdef: { value: baseAccessory?.mdef ?? 0 },
+          //init: { value: baseAccessory?.init ?? 0 },
+          //quality: { value: qualityObj?.description || "No quality" },
+          //cost: { value: data.value },
+          //source: { value: "LOOKFAR" },
+          //summary: { value: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}` },
+          //description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
+        //}
+      //};
+    //}
 
     if (!type || !itemData) return null;
 
@@ -419,6 +488,7 @@ Hooks.once("ready", () => {
         if (includeAccessories) itemTypes.push("Accessory");
         if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
         if (includeMaterials) itemTypes.push("Material");
+        if (includeTreasure) itemTypes.push("Treasure");
 
         if (itemTypes.length === 0) break;
 
@@ -442,6 +512,12 @@ Hooks.once("ready", () => {
             item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient);
             ingredientCount++;
             break;
+          case "Treasure": {
+            const subtypes = ["coins", "gems", "scrolls"];
+            const subtype = getRandom(subtypes);
+            item = rollTreasure(subtype, value);
+            break;
+          }
         }
 
         if (!item || item.value > remainingBudget || item.value > maxVal) {
