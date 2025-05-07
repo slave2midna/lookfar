@@ -142,7 +142,7 @@ function rollAccessory(accessories, accessoryQualities) {
 }
 
 // Results render function
-async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
+async function renderTreasureResultDialog(items, budget, config) {
   const cacheFolder = await dataLoader.getOrCreateCacheFolder();
 
   const tempItems = await Promise.all(items.map(async (data) => {
@@ -453,12 +453,12 @@ Hooks.once("ready", () => {
         remainingBudget -= item.value;
       }
 
-      if (items.length === 0 && inventoryPoints === 0) {
+      if (items.length === 0) {
         ui.notifications.warn("No loot generated.");
         return;
       }
 
-      renderTreasureResultDialog(items, remainingBudget, inventoryPoints, rerollConfig);
+      renderTreasureResultDialog(items, remainingBudget, rerollConfig);
       return;
     }
 
@@ -468,7 +468,7 @@ Hooks.once("ready", () => {
       content: `
         <form style="display: flex; width: 100%; flex-wrap: nowrap; gap: 5px;">
             <!-- Column 1: Form Inputs -->
-          <div style="width: 180px;">
+            <div style="width: 180px;">
             <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
               <label for="treasureBudget" style="width: 70px;">Budget:</label>
               <input type="number" id="treasureBudget" value="1" min="1" style="width: 110px; box-sizing: border-box;" />
