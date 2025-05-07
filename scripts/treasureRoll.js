@@ -324,7 +324,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           quantity: { value: 1 },
           source: { value: "LOOKFAR" },
-          summary: { value: `An engram of the ${spellName} spell, written in a mystical cipher.` },
+          summary: { value: `An engram of the ${data.spellName} spell, written in a mystical cipher.` },
           description: `
             <p style="text-align: justify">This magic scroll bears the engram of the spell @UUID[${data.uuid}]{${data.spellName}}, written in a mystical cipher.</p>
             <p style="text-align: justify">Like all magic scrolls, if the spell is one that can be cast by a <strong>class you have levels in</strong>, you can read the scroll and cast its spell without paying its MP cost. Otherwise, the scroll is unintelligible.</p>
