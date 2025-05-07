@@ -367,7 +367,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
 
   // Conditionally use summary or description based on item type/subtype
   let desc = "";
-  if (item.type === "treasure" && item.name.startsWith("Scroll of")) {
+  if (item.type === "treasure" && item.name.startsWith("Magic Scroll")) {
     desc = item.system.summary?.value || "";
   } else {
     desc = item.system.description || "";
