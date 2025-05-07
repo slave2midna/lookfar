@@ -156,7 +156,7 @@ function rollTreasure(budget = 100) {
   const value = Math.min(100, budget);
 
   return {
-    name: `Scroll of ${spellName}`,
+    name: `Magic Scroll of ${spellName}`,
     value,
     type: "treasure",
     subtype: "scroll",
@@ -324,9 +324,9 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           quantity: { value: 1 },
           source: { value: "LOOKFAR" },
-          summary: { value: "A magical scroll." },
+          summary: { value: `An engram of the ${spellName} spell, written in a mystical cipher. },
           description: `
-            <p style="text-align: justify">A magic scroll bears the engram of the <strong>Spiritist</strong> spell @UUID[${data.uuid}]{${data.spellName}}, written in a mystical cipher.</p>
+            <p style="text-align: justify">This magic scroll bears the engram of the spell @UUID[${data.uuid}]{${data.spellName}}, written in a mystical cipher.</p>
             <p style="text-align: justify">Like all magic scrolls, if the spell is one that can be cast by a <strong>class you have levels in</strong>, you can read the scroll and cast its spell without paying its MP cost. Otherwise, the scroll is unintelligible.</p>
             <ul>
                 <li><p style="text-align: justify">Casting the spell by reading the scroll requires the spell’s normal casting rules.</p></li>
