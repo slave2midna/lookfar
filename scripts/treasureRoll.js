@@ -487,7 +487,6 @@ Hooks.once("ready", () => {
             item = rollTreasure(value);
             break;
           }
-        }
 
         if (!item || item.value > remainingBudget || item.value > maxVal) {
           failedAttempts++;
