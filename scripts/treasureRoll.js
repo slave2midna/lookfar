@@ -324,7 +324,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           cost: { value: data.value },
           quantity: { value: 1 },
           source: { value: "LOOKFAR" },
-          summary: { value: `An engram of the ${spellName} spell, written in a mystical cipher. },
+          summary: { value: `An engram of the ${spellName} spell, written in a mystical cipher.` },
           description: `
             <p style="text-align: justify">This magic scroll bears the engram of the spell @UUID[${data.uuid}]{${data.spellName}}, written in a mystical cipher.</p>
             <p style="text-align: justify">Like all magic scrolls, if the spell is one that can be cast by a <strong>class you have levels in</strong>, you can read the scroll and cast its spell without paying its MP cost. Otherwise, the scroll is unintelligible.</p>
@@ -354,30 +354,36 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
   const finalItems = tempItems.filter(Boolean);
 
   let htmlContent = finalItems.map(item => {
-  const cost = // listing all potential cost values
-  item.system.cost?.value ?? 
-  item.system.data?.cost ?? 
-  item.system.data?.cost?.value ?? 
-  item.system.data?.value ?? 
-  0;
-  const desc = item.system.description || "";
-  const quantity = item.system.quantity?.value ?? 1;
+  const cost =
+    item.system.cost?.value ??
+    item.system.data?.cost ??
+    item.system.data?.cost?.value ??
+    item.system.data?.value ??
+    0;
 
-  // Format quantity in result for classFeature/ingredient or items that use it.
+  const quantity = item.system.quantity?.value ?? 1;
   const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
   const quantitySuffix = isIngredient && quantity > 1 ? ` x${quantity}` : "";
-    
-    return `
-      <div style="text-align: center; margin-bottom: 0.75em;">
-        <img src="${item.img}" width="32" height="32" style="vertical-align: middle; margin-right: 6px;">
-        <a class="content-link" draggable="true" data-uuid="${item.uuid}">
-          <strong>${item.name}${quantitySuffix}</strong>
-        </a><br>
-        <small>${desc}</small><br>
-        <small>Value: ${cost} z</small>
-      </div>
-    `;
-  }).join("\n");
+
+  // Conditionally use summary or description based on item type/subtype
+  let desc = "";
+  if (item.type === "treasure" && item.name.startsWith("Scroll of")) {
+    desc = item.system.summary?.value || "";
+  } else {
+    desc = item.system.description || "";
+  }
+
+  return `
+    <div style="text-align: center; margin-bottom: 0.75em;">
+      <img src="${item.img}" width="32" height="32" style="vertical-align: middle; margin-right: 6px;">
+      <a class="content-link" draggable="true" data-uuid="${item.uuid}">
+        <strong>${item.name}${quantitySuffix}</strong>
+      </a><br>
+      <small>${desc}</small><br>
+      <small>Value: ${cost} z</small>
+    </div>
+  `;
+}).join("\n");
 
   if (inventoryPoints > 0) {
     htmlContent += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
