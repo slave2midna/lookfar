@@ -142,50 +142,24 @@ function rollAccessory(accessories, accessoryQualities) {
 }
 
 // Treasure Generation
-function rollTreasure(type, budget = 100) {
-  const result = {
-    name: null,
-    value: 0,
-    type
-  };
-
-  switch (type.toLowerCase()) {
-    case "coins": {
-      const value = Math.floor(Math.random() * budget) + 10;
-      result.name = "A coin pouch";
-      result.value = Math.min(value, budget);
-      break;
-    }
-
-    case "gems": {
-      const value = Math.floor(Math.random() * (budget / 2)) + 50;
-      result.name = "A precious gem";
-      result.value = Math.min(value, budget);
-      break;
-    }
-
-    case "scrolls": {
-      const pack = game.packs.get("projectfu.spells");
-      if (!pack?.index?.size) {
-        ui.notifications.error("Compendium 'projectfu.spells' not found or empty.");
-        return null;
-      }
-
-      const entries = Array.from(pack.index.values());
-      const randomEntry = entries[Math.floor(Math.random() * entries.length)];
-      const spellName = randomEntry?.name ?? "Unknown Spell";
-
-      result.name = `Scroll of ${spellName}`;
-      result.value = Math.min(100, budget);
-      break;
-    }
-
-    default:
-      ui.notifications.warn(`Unknown treasure type: ${type}`);
-      return null;
+function rollTreasure(budget = 100) {
+  const pack = game.packs.get("projectfu.spells");
+  if (!pack?.index?.size) {
+    ui.notifications.error("Compendium 'projectfu.spells' not found or empty.");
+    return null;
   }
 
-  return result;
+  const entries = Array.from(pack.index.values());
+  const randomEntry = getRandom(entries);
+  const spellName = randomEntry?.name ?? "Unknown Spell";
+  const value = Math.min(100, budget);
+
+  return {
+    name: `Scroll of ${spellName}`,
+    value,
+    type: "treasure",
+    subtype: "scroll"
+  };
 }
 
 // Results render function
@@ -333,29 +307,25 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
-    }//else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
-      //type = "accessory";
-      //const baseAccessory = dataLoader.treasureData.accessoryList.find(acc => data.name.endsWith(acc.name));
-      //const qualityObj = dataLoader.treasureData.accessoryQualities.find(q => q.name === data.quality);
-      //const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
+    } else if (data.subtype === "scroll") {
+      type = "treasure";
+      const img = "icons/sundries/scrolls/scroll-bound-blue.webp"; // Or from manifest later
 
-      //itemData = {
-        //name: data.name,
-        //type,
-        //img,
-        //folder: cacheFolder.id,
-        //system: {
-          //def: { value: baseAccessory?.def ?? 0 },
-          //mdef: { value: baseAccessory?.mdef ?? 0 },
-          //init: { value: baseAccessory?.init ?? 0 },
-          //quality: { value: qualityObj?.description || "No quality" },
-          //cost: { value: data.value },
-          //source: { value: "LOOKFAR" },
-          //summary: { value: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}` },
-          //description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
-        //}
-      //};
-    //}
+      itemData = {
+        name: data.name,
+        type,
+        img,
+        folder: cacheFolder.id,
+        system: {
+          subtype: { value: "treasure" },
+          cost: { value: data.value },
+          quantity: { value: 1 },
+          source: { value: "LOOKFAR" },
+          summary: { value: "A magical scroll." },
+          description: "A magic scroll"
+        }
+      };
+    }
 
     if (!type || !itemData) return null;
 
@@ -513,10 +483,8 @@ Hooks.once("ready", () => {
             item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient);
             ingredientCount++;
             break;
-          case "Treasure": {
-            const subtypes = ["coins", "gems", "scrolls"];
-            const subtype = getRandom(subtypes);
-            item = rollTreasure(subtype, value);
+          case "Treasure":
+            item = rollTreasure(value);
             break;
           }
         }
