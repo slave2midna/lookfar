@@ -141,30 +141,6 @@ function rollAccessory(accessories, accessoryQualities) {
   };
 }
 
-// Treasure Generation
-function rollTreasure(budget = 100) {
-  const pack = game.packs.get("projectfu.spells");
-  if (!pack?.index?.size) {
-    ui.notifications.error("Compendium 'projectfu.spells' not found or empty.");
-    return null;
-  }
-
-  const entries = Array.from(pack.index.values()).filter(entry => entry.type === "spell");
-  const randomEntry = getRandom(entries);
-  const spellName = randomEntry?.name ?? "Unknown Spell";
-  const uuid = `Compendium.projectfu.spells.${randomEntry._id}`;
-  const value = Math.min(100, budget);
-
-  return {
-    name: `Magic Scroll of ${spellName}`,
-    value,
-    type: "treasure",
-    subtype: "scroll",
-    spellName,
-    uuid
-  };
-}
-
 // Results render function
 async function renderTreasureResultDialog(items, budget, inventoryPoints, config) {
   const cacheFolder = await dataLoader.getOrCreateCacheFolder();
@@ -310,32 +286,7 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
-    } else if (data.subtype === "scroll") {
-      type = "treasure";
-      const img = "icons/sundries/scrolls/scroll-bound-blue.webp"; // Or from manifest later
-
-      itemData = {
-        name: data.name,
-        type,
-        img,
-        folder: cacheFolder.id,
-        system: {
-          subtype: { value: "treasure" },
-          cost: { value: data.value },
-          quantity: { value: 1 },
-          source: { value: "LOOKFAR" },
-          summary: { value: `An engram of the ${data.spellName} spell, written in a mystical cipher.` },
-          description: `
-            <p style="text-align: justify">This magic scroll bears the engram of the spell @UUID[${data.uuid}]{${data.spellName}}, written in a mystical cipher.</p>
-            <p style="text-align: justify">Like all magic scrolls, if the spell is one that can be cast by a <strong>class you have levels in</strong>, you can read the scroll and cast its spell without paying its MP cost. Otherwise, the scroll is unintelligible.</p>
-            <ul>
-                <li><p style="text-align: justify">Casting the spell by reading the scroll requires the spell’s normal casting rules.</p></li>
-                <li><p style="text-align: justify">Once the spell is cast, the words on the scroll fade, and it crumbles to dust.</p></li>
-            </ul>
-          `
-        }
-      };
-    }
+    } 
 
     if (!type || !itemData) return null;
 
@@ -384,10 +335,6 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
     </div>
   `;
 }).join("\n");
-
-  if (inventoryPoints > 0) {
-    htmlContent += `<strong>Recovered Inventory Points:</strong> ${inventoryPoints}<br>`;
-  }
 
   htmlContent += `<strong>Remaining Budget:</strong> ${budget}<br>`;
 
@@ -452,14 +399,11 @@ Hooks.once("ready", () => {
         includeWeapons,
         includeArmor,
         includeAccessories,
-        includeSupplies,
         includeIngredients,
-        includeMaterials,
-        includeTreasure
+        includeMaterials
       } = rerollConfig;
 
       let remainingBudget = budget;
-      let inventoryPoints = includeSupplies ? Math.floor(Math.random() * 4) + 1 : 0;
       let items = [];
       let ingredientCount = 0;
       let failedAttempts = 0;
@@ -475,7 +419,6 @@ Hooks.once("ready", () => {
         if (includeAccessories) itemTypes.push("Accessory");
         if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
         if (includeMaterials) itemTypes.push("Material");
-        if (includeTreasure) itemTypes.push("Treasure");
 
         if (itemTypes.length === 0) break;
 
@@ -498,9 +441,6 @@ Hooks.once("ready", () => {
           case "Ingredient":
             item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient);
             ingredientCount++;
-            break;
-          case "Treasure":
-            item = rollTreasure(value);
             break;
           }
 
@@ -565,15 +505,15 @@ Hooks.once("ready", () => {
               <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeWeapons"> Weapons</label>
               <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeArmor"> Armor</label>
               <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeAccessories"> Accessories</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeModules"> Modules</label>
+              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeMaterials"> Materials</label>
             </div>
 
             <!-- Column 3: Checkboxes B -->
             <div style="width: 115px;" class="checkbox-group">
+              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeWpnModules"> Wpn. Modules</label>
+              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeArmModules"> Arm. Modules</label>
+              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeSupModules"> Sup. Modules</label>
               <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeIngredients"> Ingredients</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeMaterials"> Materials</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeSupplies"> Supplies</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeTreasure"> Treasure</label>
             </div>
           </form>
       `,
@@ -589,10 +529,8 @@ Hooks.once("ready", () => {
             const includeWeapons = html.find("#includeWeapons").is(":checked");
             const includeArmor = html.find("#includeArmor").is(":checked");
             const includeAccessories = html.find("#includeAccessories").is(":checked");
-            const includeSupplies = html.find("#includeSupplies").is(":checked");
             const includeIngredients = html.find("#includeIngredients").is(":checked");
             const includeMaterials = html.find("#includeMaterials").is(":checked");
-            const includeTreasure = html.find("#includeTreasure").is(":checked");
 
             Hooks.call("lookfarShowTreasureRollDialog", {
               budget,
@@ -602,10 +540,8 @@ Hooks.once("ready", () => {
               includeWeapons,
               includeArmor,
               includeAccessories,
-              includeSupplies,
               includeIngredients,
-              includeMaterials,
-              includeTreasure
+              includeMaterials
             });
           }
         }
