@@ -152,13 +152,16 @@ function rollTreasure(budget = 100) {
   const entries = Array.from(pack.index.values());
   const randomEntry = getRandom(entries);
   const spellName = randomEntry?.name ?? "Unknown Spell";
+  const uuid = `Compendium.projectfu.spells.${randomEntry._id}`;
   const value = Math.min(100, budget);
 
   return {
     name: `Scroll of ${spellName}`,
     value,
     type: "treasure",
-    subtype: "scroll"
+    subtype: "scroll",
+    spellName,
+    uuid
   };
 }
 
@@ -322,7 +325,14 @@ async function renderTreasureResultDialog(items, budget, inventoryPoints, config
           quantity: { value: 1 },
           source: { value: "LOOKFAR" },
           summary: { value: "A magical scroll." },
-          description: "A magic scroll"
+          description: `
+            <p style="text-align: justify">A magic scroll bears the engram of the <strong>Spiritist</strong> spell @UUID[${data.uuid}]{${data.spellName}}, written in a mystical cipher.</p>
+            <p style="text-align: justify">Like all magic scrolls, if the spell is one that can be cast by a <strong>class you have levels in</strong>, you can read the scroll and cast its spell without paying its MP cost. Otherwise, the scroll is unintelligible.</p>
+            <ul>
+                <li><p style="text-align: justify">Casting the spell by reading the scroll requires the spell’s normal casting rules.</p></li>
+                <li><p style="text-align: justify">Once the spell is cast, the words on the scroll fade, and it crumbles to dust.</p></li>
+            </ul>
+          `
         }
       };
     }
