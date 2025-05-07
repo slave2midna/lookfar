@@ -149,7 +149,7 @@ function rollTreasure(budget = 100) {
     return null;
   }
 
-  const entries = Array.from(pack.index.values());
+  const entries = Array.from(pack.index.values()).filter(entry => entry.type === "spell");
   const randomEntry = getRandom(entries);
   const spellName = randomEntry?.name ?? "Unknown Spell";
   const uuid = `Compendium.projectfu.spells.${randomEntry._id}`;
