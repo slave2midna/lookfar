@@ -505,15 +505,15 @@ Hooks.once("ready", () => {
               <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeWeapons"> Weapons</label>
               <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeArmor"> Armor</label>
               <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeAccessories"> Accessories</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeMaterials"> Materials</label>
+              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeShields"> Shields</label>
             </div>
 
             <!-- Column 3: Checkboxes B -->
             <div style="width: 115px;" class="checkbox-group">
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeWpnModules"> Wpn. Modules</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeArmModules"> Arm. Modules</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeSupModules"> Sup. Modules</label>
+              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeMaterials"> Materials</label>
               <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeIngredients"> Ingredients</label>
+              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeModules"> Modules</label>
+              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeRolltable"> Rolltable</label>
             </div>
           </form>
       `,
