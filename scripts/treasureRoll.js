@@ -467,55 +467,60 @@ Hooks.once("ready", () => {
       title: "Treasure Generator",
       content: `
         <form style="display: flex; width: 100%; flex-wrap: nowrap; gap: 5px;">
-            <!-- Column 1: Form Inputs -->
+    
+	          <!-- Column 1: Form Inputs -->
             <div style="width: 180px;">
-            <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-              <label for="treasureBudget" style="width: 70px;">Budget:</label>
-              <input type="number" id="treasureBudget" value="1" min="1" style="width: 110px; box-sizing: border-box;" />
+	              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+		                <label for="treasureBudget" style="width: 70px;">Budget:</label>
+		                <input type="number" id="treasureBudget" value="1" min="1" style="width: 110px; box-sizing: border-box;" /> </div>
+	              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+		                <label for="highestPCLevel" style="width: 70px;">Level:</label>
+		                <select id="highestPCLevel" style="width: 110px; box-sizing: border-box;">
+			                  <option value="500">5+</option>
+			                  <option value="1000">10+</option>
+			                  <option value="1500">20+</option>
+			                  <option value="2000">30+</option>
+			                  <option value="999999">40+</option>
+		                </select>
+	              </div>
+	              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+		                <label for="origin" style="width: 70px;">Origin:</label>
+		                <select id="origin" style="width: 110px; box-sizing: border-box;">
+			                  <option value="Any" selected>Any</option> ${Object.keys(originKeywords.material).map(o => `
+			                  <option value="${o}">${o}</option>`).join("")} </select>
+	              </div>
+	              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
+		                <label for="nature" style="width: 70px;">Nature:</label>
+		                <select id="nature" style="width: 110px; box-sizing: border-box;">
+			                  <option value="Any" selected>Any</option> ${Object.keys(natureKeywords.material).map(n => `
+			                  <option value="${n}">${n}</option>`).join("")} </select>
+	              </div>
             </div>
-
-  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="highestPCLevel" style="width: 70px;">Level:</label>
-    <select id="highestPCLevel" style="width: 110px; box-sizing: border-box;">
-      <option value="500">5+</option>
-      <option value="1000">10+</option>
-      <option value="1500">20+</option>
-      <option value="2000">30+</option>
-      <option value="999999">40+</option>
-    </select>
-  </div>
-
-  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="origin" style="width: 70px;">Origin:</label>
-    <select id="origin" style="width: 110px; box-sizing: border-box;">
-      ${Object.keys(originKeywords.material).map(o => `<option value="${o}">${o}</option>`).join("")}
-    </select>
-  </div>
-
-  <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-    <label for="nature" style="width: 70px;">Nature:</label>
-    <select id="nature" style="width: 110px; box-sizing: border-box;">
-      ${Object.keys(natureKeywords.material).map(n => `<option value="${n}">${n}</option>`).join("")}
-    </select>
-  </div>
-</div>
-
-            <!-- Column 2: Checkboxes A -->
-            <div style="width: 115px;" class="checkbox-group">
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeWeapons"> Weapons</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeArmor"> Armor</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeAccessories"> Accessories</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeShields"> Shields</label>
-            </div>
-
-            <!-- Column 3: Checkboxes B -->
-            <div style="width: 115px;" class="checkbox-group">
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeMaterials"> Materials</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeIngredients"> Ingredients</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeModules"> Modules</label>
-              <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;"><input type="checkbox" id="includeRolltable"> Rolltable</label>
-            </div>
-          </form>
+	
+          	<!-- Column 2: Checkboxes A -->
+          	<div style="width: 115px;" class="checkbox-group">
+          		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
+	          		    <input type="checkbox" id="includeWeapons"> Weapons </label>
+	          	  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
+		          	    <input type="checkbox" id="includeArmor"> Armor </label>
+		            <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
+			              <input type="checkbox" id="includeAccessories"> Accessories </label>
+		          <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
+			            <input type="checkbox" id="includeShields"> Shields </label>
+	          </div>
+	
+	          <!-- Column 3: Checkboxes B -->
+          	<div style="width: 115px;" class="checkbox-group">
+          		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
+        		  	    <input type="checkbox" id="includeMaterials"> Materials </label>
+          		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
+          			    <input type="checkbox" id="includeIngredients"> Ingredients </label>
+          		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
+          			    <input type="checkbox" id="includeModules"> Modules </label>
+	          	  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
+			              <input type="checkbox" id="includeRolltable"> Rolltable </label>
+	          </div>
+        </form>
       `,
       buttons: {
         ok: {
@@ -523,8 +528,8 @@ Hooks.once("ready", () => {
           callback: (html) => {
             const budget = parseInt(html.find("#treasureBudget").val());
             const maxVal = parseInt(html.find("#highestPCLevel").val());
-            const origin = html.find("#origin").val();
-            const nature = html.find("#nature").val();
+            const finalOrigin = origin === "Any" ? getRandom(Object.keys(originKeywords.material)) : origin;
+            const finalNature = nature === "Any" ? getRandom(Object.keys(natureKeywords.material)) : nature;
 
             const includeWeapons = html.find("#includeWeapons").is(":checked");
             const includeArmor = html.find("#includeArmor").is(":checked");
@@ -535,8 +540,8 @@ Hooks.once("ready", () => {
             Hooks.call("lookfarShowTreasureRollDialog", {
               budget,
               maxVal,
-              origin,
-              nature,
+              origin: finalOrigin,
+              nature: finalNature,
               includeWeapons,
               includeArmor,
               includeAccessories,
