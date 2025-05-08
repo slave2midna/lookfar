@@ -64,17 +64,17 @@
     "support": ["Amplifying", "Channeled", "Linked", "Echoed", "Guiding", "Resonating", "Anchored", "Projecting", "Boosted", "Infused"]
   },
   "tasteKeywords": {
-  "bitter": ["Astringent", "Harsh", "Tannic", "Sharp", "Acrid", "Dry", "Medicinal", "Pungent", "Bracing", "Earthy"],
-  "sour": ["Tart", "Tangy", "Zesty", "Citrusy", "Acidic", "Lip-puckering", "Vinegary", "Fermented", "Biting", "Crisp"],
-  "sweet": ["Sugary", "Honeyed", "Syrupy", "Candy-like", "Nectarous", "Saccharine", "Luscious", "Caramelized", "Fruity", "Rich"],
-  "salty": ["Briny", "Savory", "Pickled", "Cured", "Mineral", "Zingy", "Piquant", "Aged", "Smoky", "Oceanic"],
-  "umami": ["Meaty", "Brothy", "Rich", "Mushroomy", "Hearty", "Deep", "Robust", "Soy-like", "Mellow", "Full-bodied"]
+    "bitter": ["Astringent", "Harsh", "Tannic", "Sharp", "Acrid", "Dry", "Medicinal", "Pungent", "Bracing", "Earthy"],
+    "sour": ["Tart", "Tangy", "Zesty", "Citrusy", "Acidic", "Lip-puckering", "Vinegary", "Fermented", "Biting", "Crisp"],
+    "sweet": ["Sugary", "Honeyed", "Syrupy", "Candy-like", "Nectarous", "Saccharine", "Luscious", "Caramelized", "Fruity", "Rich"],
+    "salty": ["Briny", "Savory", "Pickled", "Cured", "Mineral", "Zingy", "Piquant", "Aged", "Smoky", "Oceanic"],
+    "umami": ["Meaty", "Brothy", "Rich", "Mushroomy", "Hearty", "Deep", "Robust", "Soy-like", "Mellow", "Full-bodied"]
   },
   "weaponList": [
     { "name": "Staff", "value": 100, "category": "arcane", "hand": "two-handed", "type": "melee", "attrA": "wlp", "attrB": "wlp", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6, "isMartial": "false" },
     { "name": "Tome", "value": 100, "category": "arcane", "hand": "two-handed", "type": "melee", "attrA": "ins", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6, "isMartial": "false" },
     { "name": "Crossbow", "value": 150, "category": "bow", "hand": "two-handed", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 8, "isMartial": "false" },
-    { "name": "Shortbow", "value": 200, "category": "bow", "hand": "two-handed", "type": "ranged", "attrA": "dex", "attrB": "dex", "accuracy": 0, "defense": "def", "element": "physical", "damage": 8, "isMartial": "false" },
+    { "name": "Bow", "value": 200, "category": "bow", "hand": "two-handed", "type": "ranged", "attrA": "dex", "attrB": "dex", "accuracy": 0, "defense": "def", "element": "physical", "damage": 8, "isMartial": "false" },
     { "name": "Knuckle", "value": 150, "category": "brawling", "hand": "one-handed", "type": "melee", "attrA": "dex", "attrB": "mig", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6, "isMartial": "false" },
     { "name": "Dagger", "value": 150, "category": "dagger", "hand": "one-handed", "type": "melee", "attrA": "dex", "attrB": "mig", "accuracy": 0, "defense": "def", "element": "physical", "damage": 4, "isMartial": "false" },
     { "name": "Pistol", "value": 250, "category": "firearm", "hand": "one-handed", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 8, "isMartial": "false" },
@@ -90,6 +90,24 @@
     { "name": "Katana", "value": 200, "category": "sword", "hand": "two-handed", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 1, "defense": "def", "element": "physical", "damage": 10, "isMartial": "true" },
     { "name": "Rapier", "value": 200, "category": "sword", "hand": "one-handed", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 1, "defense": "def", "element": "physical", "damage": 6, "isMartial": "true" },
     { "name": "Shuriken", "value": 150, "category": "thrown", "hand": "two-handed", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 4, "isMartial": "false" }
+  ],
+  "weaponModules": [
+    { "name": "Rod", "value": 500, "category": "arcane", "type": "melee", "attrA": "dex", "attrB": "wlp", "accuracy": 0, "defense": "def", "element": "physical", "damage": 8 },
+    { "name": "Axe", "value": 500, "category": "heavy", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 12 },
+    { "name": "Blade", "value": 500, "category": "dagger", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6 },
+    { "name": "Bow", "value": 500, "category": "bow", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 6 },
+    { "name": "Cannon", "value": 500, "category": "firearm", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 14 },
+    { "name": "Claw", "value": 500, "category": "brawling", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 1, "defense": "def", "element": "physical", "damage": 8 },
+    { "name": "Claymore", "value": 500, "category": "sword", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 1, "defense": "def", "element": "physical", "damage": 14 },
+    { "name": "Funnels", "value": 500, "category": "arcane", "type": "melee", "attrA": "dex", "attrB": "wlp", "accuracy": 0, "defense": "def", "element": "physical", "damage": 12 },
+    { "name": "Flail", "value": 500, "category": "flail", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 10 },
+    { "name": "Torch", "value": 500, "category": "firearm", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 8 },
+    { "name": "Machine Gun", "value": 500, "category": "firearm", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 10 },
+    { "name": "Rifle", "value": 500, "category": "firearm", "type": "ranged", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 10 },
+    { "name": "Scythe", "value": 500, "category": "heavy", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 16 },
+    { "name": "Spear", "value": 500, "category": "spear", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 0, "defense": "def", "element": "physical", "damage": 10 },
+    { "name": "Sword", "value": 500, "category": "sword", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 1, "defense": "def", "element": "physical", "damage": 8 },
+    { "name": "Trident", "value": 500, "category": "spear", "type": "melee", "attrA": "dex", "attrB": "ins", "accuracy": 1, "defense": "def", "element": "physical", "damage": 14 }
   ],
   "weaponQualities": [
     { "name": "Thin", "value": 500, "description": "grants immunity to the slow status." },
@@ -153,6 +171,12 @@
     { "name": "Plate", "value": 300, "defAttr": "", "def": 12, "mdefAttr": "ins", "mdef": 0, "init": -4, "isMartial": "true" },
     { "name": "Buckler", "value": 100, "def": 0, "mdef": 0, "init": 0, "isMartial": "false" },
     { "name": "Shield", "value": 150, "def": 2, "mdef": 2, "init": 0, "isMartial": "true" }
+  ],
+  "armorModules": [
+    { "name": "Weave", "value": 500, "defAttr": "dex", "def": 2, "mdefAttr": "ins", "mdef": 1, "isMartial": "false" },
+    { "name": "Armor", "value": 500, "defAttr": "", "def": 12, "mdefAttr": "", "mdef": 8, "isMartial": "true" },
+    { "name": "Shielding", "value": 500, "defAttr": "", "def": 10, "mdefAttr": "", "mdef": 11, "isMartial": "true" },
+    { "name": "Plating", "value": 500, "defAttr": "", "def": 11, "mdefAttr": "", "mdef": 10, "isMartial": "true" }
   ],
   "armorQualities": [
     { "name": "Light", "value": 500, "description": "grants immunity to the slow status." },
