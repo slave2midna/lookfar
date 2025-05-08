@@ -152,20 +152,20 @@
       { "name": "Debilitating", "value": 1500, "description": "causes weak on hit." }
     ],
     "Aerial": [
-      { "name": "Windcut", "value": 600, "description": "deals 5 extra damage during the first round of a conflict." },
+      { "name": "Whirlwind", "value": 600, "description": "deals 5 extra damage during the first round of a conflict." },
       { "name": "Finesse", "value": 600, "description": "this weapon is in your off-hand, you may use two-weapon fighting with it regardless of its category." },
       { "name": "Switch", "value": 800, "description": "when you hit one or more creatures, you may immediately perform the Equipment action for free." },
-      { "name": "Polarized", "value": 900, "description": "grants immunity to damage dealt by flying creatures." },
+      { "name": "Skybreaker", "value": 900, "description": "grants immunity to damage dealt by flying creatures." },
       { "name": "Polarized", "value": 1000, "description": "when you cast a spell that targets a creature (not special) who is suffering from slow, that spell’s total MP cost is halved." },
-      { "name": "Polarized", "value": 1200, "description": "when you deal damage to a creature outside of your turn during a conflict, you deal 5 extra damage that creature." }
+      { "name": "Slipstream", "value": 1200, "description": "when you deal damage to a creature outside of your turn during a conflict, you deal 5 extra damage that creature." }
     ],
     "Thunderous": [
-      { "name": "Voltswitch", "value": 600, "description": "when you use a spell or skill to deal bolt damage to a creature, one ally you can see may take their turn (if that haven't) immediately after yours." },
-      { "name": "Impact", "value": 800, "description": "when damge dealt by this weapon causes one or more enemies to enter crisis, every enemy present in the scene suffers dazed." },
-      { "name": "Thunderbrand", "value": 1000, "description": "grants【half your level in the Elementalist Class】as extra damage to your Cataclysm Skill." },
-      { "name": "Thunderbrand", "value": 1000, "description": "when you use the Encourage Skill, the target recovers extra HP equal to【half your level】" },
-      { "name": "Thunderbrand", "value": 1200, "description": "after a creature hits you with a melee attack, you deal 5 bolt damage to that creature." },
-      { "name": "Thunderbrand", "value": 1500, "description": "when you deal damage with this weapon if at least one target is shaken, each target loses 20 Mind Points." },
+      { "name": "Arcspike", "value": 600, "description": "when you use a spell or skill to deal bolt damage to a creature, one ally you can see may take their turn (if that haven't) immediately after yours." },
+      { "name": "Shockwave", "value": 800, "description": "when damge dealt by this weapon causes one or more enemies to enter crisis, every enemy present in the scene suffers dazed." },
+      { "name": "Livewire", "value": 1000, "description": "grants【half your level in the Elementalist Class】as extra damage to your Cataclysm Skill." },
+      { "name": "Conductor’s", "value": 1000, "description": "when you use the Encourage Skill, the target recovers extra HP equal to【half your level】" },
+      { "name": "Jolted", "value": 1200, "description": "after a creature hits you with a melee attack, you deal 5 bolt damage to that creature." },
+      { "name": "Overcharge", "value": 1500, "description": "when you deal damage with this weapon if at least one target is shaken, each target loses 20 Mind Points." },
     ],
     "Paradox": [
       { "name": "Temporal", "value": 600, "description": "deals 5 extra damage as long as you have exactly one other weapon equipped of a different category." },
@@ -184,12 +184,12 @@
       { "name": "Affliction", "value": 1800, "description": "Your with weapons belonging to the heavy and/or spear Categories deal 5 extra damage." }
     ],
     "Ardent": [
-      { "name": "Temporal", "value": 600, "description": "deals 5 extra damage as long as you have exactly one other weapon equipped of a different category." },
-      { "name": "Anomalous", "value": 800, "description": "grants you the effects of the Mirror spell at the beginning of any conflict scene." },
-      { "name": "Binding", "value": 1000, "description": "when you hit 2 targets with this weapon, you may tether them. when either loses HP due to damage they are Vulnerable to, the other loses 5 HP." },
-      { "name": "Binding", "value": 1200, "description": "when you score a critical success on a Magic Check for an offensive spell, that spell deals 5 extra damage." },
-      { "name": "Affliction", "value": 1500, "description": "when an enemy in the scene heals from one or more status effects, roll a d8. That enemy suffers a status effect based on the number rolled: 1-2 dazed, 3-4 shaken, 5-6 slow, 7-8 weak." },
-      { "name": "Faded", "value": 1800, "description": "causes enemies hit by this weapon to fade. If a fading enemy would recover HP, instead they recover no HP and stop fading." }
+      { "name": "Temporal", "value": 500, "description": "reduces that MP of the Bladestorm Skill by half when using this weapon." },
+      { "name": "Anomalous", "value": 600, "description": "when you attack using the Shadow Strike Skill you may have the attack deal fire damage instead of dark damage." },
+      { "name": "Binding", "value": 600, "description": "deals 1 extra damage for every status effect you are suffering from." },
+      { "name": "Binding", "value": 800, "description": "when you invoke a Bond during a Check, you recover 5 Mind Points." },
+      { "name": "Affliction", "value": 1300, "description": "when you hit a creatures, that creature can't perform the Spell action during their next turn." },
+      { "name": "Faded", "value": 1800, "description": "Your attacks with weapons belonging to the bow and/or sword Categories deal 5 extra damage." }
     ],
     "Glacial": [
       { "name": "Temporal", "value": 600, "description": "deals 5 extra damage as long as you have exactly one other weapon equipped of a different category." },
