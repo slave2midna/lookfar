@@ -216,20 +216,20 @@
       { "name": "Wraith", "value": 1500, "description": "when you Counterattack with this weapon and hit the target, that target suffers the poisoned status effect." }
     ],
     "Aquatic": [
-      { "name": "Temporal", "value": 600, "description": "deals 5 extra damage as long as you have exactly one other weapon equipped of a different category." },
-      { "name": "Anomalous", "value": 800, "description": "grants you the effects of the Mirror spell at the beginning of any conflict scene." },
-      { "name": "Binding", "value": 1000, "description": "when you hit 2 targets with this weapon, you may tether them. when either loses HP due to damage they are Vulnerable to, the other loses 5 HP." },
-      { "name": "Binding", "value": 1200, "description": "when you score a critical success on a Magic Check for an offensive spell, that spell deals 5 extra damage." },
-      { "name": "Affliction", "value": 1500, "description": "when an enemy in the scene heals from one or more status effects, roll a d8. That enemy suffers a status effect based on the number rolled: 1-2 dazed, 3-4 shaken, 5-6 slow, 7-8 weak." },
-      { "name": "Faded", "value": 1800, "description": "causes enemies hit by this weapon to fade. If a fading enemy would recover HP, instead they recover no HP and stop fading." }
+      { "name": "Coral", "value": 600, "description": "when you reduce an enemy to 0 HP, you may treat your DEX as being one die size higher until the end of your next turn." },
+      { "name": "Barnacled", "value": 800, "description": "treats defense score with this weapon treat the Defense score of each target as being equal to their current Might die size." },
+      { "name": "Maleable", "value": 1000, "description": "when you cast and resolve an offensive spell, you recover an amount of HP equal to the HR of the Magic Check." },
+      { "name": "Maleable", "value": 1000, "description": "prevents attacks with this weapon from triggering counterattacks other reactive Skills." },
+      { "name": "Affliction", "value": 1200, "description": "when an enemy in the scene heals from one or more status effects, roll a d8. That enemy suffers a status effect based on the number rolled: 1-2 dazed, 3-4 shaken, 5-6 slow, 7-8 weak." },
+      { "name": "Faded", "value": 1500, "description": "when you hit a creature during a single scene, you may reduce the damage of the next attack made against you by the HR of the last recorded hit." }
     ],
     "Mechanical": [
       { "name": "Temporal", "value": 600, "description": "deals 5 extra damage as long as you have exactly one other weapon equipped of a different category." },
       { "name": "Anomalous", "value": 800, "description": "grants you the effects of the Mirror spell at the beginning of any conflict scene." },
       { "name": "Binding", "value": 1000, "description": "when you hit 2 targets with this weapon, you may tether them. when either loses HP due to damage they are Vulnerable to, the other loses 5 HP." },
-      { "name": "Binding", "value": 1200, "description": "when you score a critical success on a Magic Check for an offensive spell, that spell deals 5 extra damage." },
+      { "name": "Binding", "value": 1200, "description": "when you cause and ally to regain HP, if they are fullly healed they also recover 5 Mind Points." },
       { "name": "Affliction", "value": 1500, "description": "when an enemy in the scene heals from one or more status effects, roll a d8. That enemy suffers a status effect based on the number rolled: 1-2 dazed, 3-4 shaken, 5-6 slow, 7-8 weak." },
-      { "name": "Faded", "value": 1800, "description": "causes enemies hit by this weapon to fade. If a fading enemy would recover HP, instead they recover no HP and stop fading." }
+      { "name": "Faded", "value": 1500, "description": "when you hit a creature during a single scene, you may reduce the damage of the next attack made against you by the HR of the last recorded hit." },
     ]
   },
   "weaponElements": [
