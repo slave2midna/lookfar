@@ -230,29 +230,24 @@ async function handleRoll(selectedDifficulty, html) {
   let roll = new Roll(selectedDifficulty);
   await roll.evaluate({ async: true });
 
-  // Render and create the roll chat message
-  await roll.render().then((rollHTML) => {
-    let chatData = {
-      user: game.userId,
-      speaker: { alias: game.i18n.localize("LOOKFAR.Chat.Alias.Roll") },
-      content: rollHTML,
-      type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-      rolls: [roll],
-    };
-    return ChatMessage.create(chatData).then((chatMessage) => {
-      if (game.dice3d) {
-        return new Promise((resolve) => {
-          let hookId = Hooks.on("diceSoNiceRollComplete", (messageId) => {
-            if (messageId === chatMessage.id) {
-              Hooks.off("diceSoNiceRollComplete", hookId);
-              resolve(chatMessage);
-            }
-          });
-        });
+  // Post the roll to chat (v13 method)
+const speaker = ChatMessage.getSpeaker({ alias: game.i18n.localize("LOOKFAR.Chat.Alias.Roll") });
+const chatMessage = await roll.toMessage(
+  { speaker, user: game.user.id, flavor: null },
+  { rollMode: game.settings.get("core", "rollMode") }
+);
+
+// Dice So Nice wait
+if (game.dice3d) {
+  await new Promise((resolve) => {
+    const hookId = Hooks.on("diceSoNiceRollComplete", (messageId) => {
+      if (messageId === chatMessage.id) {
+        Hooks.off("diceSoNiceRollComplete", hookId);
+        resolve();
       }
-      return chatMessage;
     });
   });
+}
 
   // Determine the group level set by the GM
   const groupLevel = html.find("#groupLevel").val();
@@ -427,7 +422,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
     const rollTable = game.tables.get(dangerSourceTableId);
     if (rollTable) {
       console.log(`Rolling on the Danger Source Roll Table: ${rollTable.name}`);
-      const rollResult = await rollTable.roll();  // Add await here
+      const rollResult = await rollTable.draw();  // Add await here
       if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
         sourceText = rollResult.results[0].text; // Use the roll result text as the source
       }
@@ -451,7 +446,7 @@ if (threatTableId && threatTableId !== "default") {
   const rollTable = game.tables.get(threatTableId);
   if (rollTable) {
     console.log(`Rolling on the Danger Threat Roll Table: ${rollTable.name}`);
-    const rollResult = await rollTable.roll();
+    const rollResult = await rollTable.draw();
     if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
       result = rollResult.results[0].text;
     }
@@ -618,7 +613,7 @@ async function generateDiscovery() {
     const rollTable = game.tables.get(effectTableId);
     if (rollTable) {
       console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
-      const rollResult = await rollTable.roll();
+      const rollResult = await rollTable.draw();
       if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
         effectText = rollResult.results[0].text;
       }
@@ -639,7 +634,7 @@ async function generateDiscovery() {
     const rollTable = game.tables.get(sourceTableId);
     if (rollTable) {
       console.log(`Rolling on the Discovery Source Roll Table: ${rollTable.name}`);
-      const rollResult = await rollTable.roll();
+      const rollResult = await rollTable.draw();
       if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
         sourceText = rollResult.results[0].text;
       }
@@ -670,3 +665,5 @@ async function generateDiscovery() {
   ${generateKeywords()}
 `;
 }
+
+
