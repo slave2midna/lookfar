@@ -4,13 +4,16 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
       name: 'LOOKFAR.Button.TravelCheck.Name',
       icon: 'fa-solid fa-person-hiking',
       onClick: () => Hooks.call('lookfarShowTravelCheckDialog'),
-      sort: Number.MAX_SAFE_INTEGER // if FU sorts, this is effectively "last"
+      __lookfar: true,
+      sort: Number.MAX_SAFE_INTEGER
     }
   ];
 
-  // mutate in place (FU expects this)
   for (const t of lookfarTools) tools.push(t);
 
-  // optional: if FU uses your current ordering and not its own sort, you're already last
-  // Do NOT return a new array; FU ignores it.
+  // Force Lookfar items to the end, keep relative order of others
+  const others = tools.filter(t => !t.__lookfar);
+  const ours   = tools.filter(t =>  t.__lookfar);
+  tools.length = 0;              // mutate the same array object
+  tools.push(...others, ...ours);
 });
