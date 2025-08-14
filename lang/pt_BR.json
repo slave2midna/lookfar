@@ -45,10 +45,10 @@
       "TravelCheck": {
         "Title": "Teste de Viagem",
         "ThreatLevel": "Nível de Ameaça",
-        "Wayfaring": "Itinerante",
+        "Wayfaring": "Viajante",
         "PartyLevel": "Nível do Grupo:",
         "TreasureHunting": "Caça ao Tesouro",
-        "WellTraveled": "Bem-viajado"
+        "WellTraveled": "Viajante Experiente"
       },
       "TravelResult": {
         "Title": "Resultado da Viagem",
