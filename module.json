@@ -4,11 +4,12 @@
   "description": "A collection of tools and resources to assist GMs with running a Fabula Ultima campaign.",
   "version": "#{VERSION}#",
   "library": false,
+
   "compatibility": {
-    "minimum": 12,
-    "verified": 12,
-    "maximum": 12
+    "minimum": "13",
+    "verified": "13.341"
   },
+
   "authors": [
     {
       "name": "why Cookie Rocket",
@@ -19,6 +20,7 @@
       "url": "https://github.com/slave2midna"
     }
   ],
+
   "relationships": {
     "systems": [
       {
@@ -32,38 +34,43 @@
     ],
     "requires": []
   },
+
   "esmodules": [
     "scripts/init.js"
   ],
   "scripts": [],
   "styles": [],
+
   "languages": [
-  {
-    "lang": "en",
-    "name": "English",
-    "path": "lang/en.json"
-  },
-  {
-    "lang": "fr",
-    "name": "Français",
-    "path": "lang/fr.json"
-  },
-  {
-    "lang": "pt-BR",
-    "name": "Português (Brasil)",
-    "path": "lang/pt_BR.json"
-  }
-],
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "fr",
+      "name": "Français",
+      "path": "lang/fr.json"
+    },
+    {
+      "lang": "pt-BR",
+      "name": "Português (Brasil)",
+      "path": "lang/pt_BR.json"
+    }
+  ],
+
   "url": "#{URL}#",
   "manifest": "#{MANIFEST}#",
   "download": "#{DOWNLOAD}#",
   "license": "MIT License",
   "readme": "README.md",
+
   "media": [
     {
       "type": "icon",
       "url": "https://avatars2.githubusercontent.com/u/71292812?s=400&u=ccdb4eeb7abf551ca8f314e5a9bfd0479a4d3d41&v=4"
     }
   ],
+
   "socket": true
 }
