@@ -359,10 +359,10 @@ async function renderTreasureResultDialog(items, budget, config) {
       	    // If item is already permanent (not in the cache), just skip
       	    if (!item.folder || item.folder.id !== cacheFolder.id) return item;
 
-      	    const itemData = duplicate(item.toObject());
-      	    itemData.folder = null; // Remove folder assignment
-
-      	    return await Item.create(itemData);
+      	    const itemData = foundry.utils.duplicate(item.toObject());
+			itemData.folder = null; // Remove folder assignment
+			  
+			return await Item.create(itemData);
     	  }));
 
     	  // Then send the result message to chat
