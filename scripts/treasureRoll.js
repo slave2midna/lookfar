@@ -51,8 +51,8 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
     value: total,
     taste,
     quantity,
-    origin,
-    nature
+    nature,
+    origin
   };
 }
 
@@ -97,7 +97,14 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
-  return { name, value, quality, element: appliedElement, hasPlusOne };
+  return { 
+	name, 
+	value, 
+	quality, 
+	element: appliedElement, 
+	hasPlusOne,
+    origin
+  };
 }
 
 // Armor Generation
@@ -189,7 +196,8 @@ function rollAccessory(accessories, accessoryQualities, origin) {
   return {
     name,
     value,
-    quality
+    quality,
+	origin
   };
 }
 
