@@ -110,7 +110,7 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
 function rollArmor(armorList, armorQualities, origin) {
   const base = getRandom(armorList);
   let nameParts = [];
-  let value = base.value;
+   = base.value;
   let quality = "None";
 
   // Combine basic qualities with origin-specific qualities
@@ -143,7 +143,7 @@ function rollArmor(armorList, armorQualities, origin) {
 function rollShield(shieldList, shieldQualities, origin) {
   const base = getRandom(shieldList);
   let nameParts = [];
-  let value = base.value ?? 0;
+   = base.value ?? 0;
   let quality = "None";
 
   // Combine basic qualities with origin-specific qualities
@@ -176,7 +176,7 @@ function rollShield(shieldList, shieldQualities, origin) {
 function rollAccessory(accessories, accessoryQualities, origin) {
   const base = getRandom(accessories);
   let nameParts = [];
-  let value = base.value ?? 0;
+   = base.value ?? 0;
   let quality = "None";
 
   // Combine basic qualities with origin-specific qualities
@@ -507,8 +507,6 @@ Hooks.once("ready", () => {
       let maxAttempts = 10;
 
       while (remainingBudget > 0 && items.length < 4 && failedAttempts < maxAttempts) {
-        let value = Math.round((Math.random() * maxVal) / 10) * 10;
-        if (value > remainingBudget) value = remainingBudget;
 
         let itemTypes = [];
         if (includeWeapons) itemTypes.push("Weapon");
