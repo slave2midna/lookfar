@@ -1,5 +1,4 @@
 import { dataLoader } from "./dataLoader.js";
-const getOrCreateCacheFolder = dataLoader.getOrCreateCacheFolder;
 
 // Loot Generation Utility
 function getRandom(arr) {
