@@ -126,27 +126,32 @@ function rollArmor(armorList, armorQualities, origin) {
   return {
     name,
     value,
-    quality
+    quality,
+	origin
   };
 }
 
 // Shield Generation
+// Shield Generation
 function rollShield(shieldList, shieldQualities, origin) {
   const base = getRandom(shieldList);
   let nameParts = [];
-  let value = base.value;
+  let value = base.value ?? 0;
   let quality = "None";
 
+  // Combine basic + origin qualities (if present)
   const qualityPool = [
     ...(shieldQualities.basic || []),
     ...(shieldQualities[origin] || [])
   ];
 
-  const q = getRandom(qualityPool);
-  quality = q.name;
-  nameParts.push(quality);
-
-  value += q.value;
+  // Only pick a quality if the pool has entries
+  const q = qualityPool.length ? getRandom(qualityPool) : null;
+  if (q) {
+    quality = q.name;
+    nameParts.push(quality);
+    value += q.value ?? 0;
+  }
 
   nameParts.push(base.name);
   const name = nameParts.join(" ");
@@ -154,7 +159,8 @@ function rollShield(shieldList, shieldQualities, origin) {
   return {
     name,
     value,
-    quality
+    quality,
+    origin
   };
 }
 
@@ -297,23 +303,28 @@ async function renderTreasureResultDialog(items, budget, config) {
           source: { value: "LOOKFAR" },
           summary: { value: `A full set of armor that ${qualityObj?.description || "has no special properties."}` },
           description: `A full set of armor that ${qualityObj?.description || "has no special properties."}<br>` +
-            `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} | <b>INIT:</b> ${baseArmor?.init ?? 0}`
+            `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseArmor?.init ?? 0}`
         }
       };
 	} else if (dataLoader.treasureData.shieldList.some(s => data.name.endsWith(s.name))) {
-  	  const baseShield = dataLoader.treasureData.shieldList.find(s => data.name.endsWith(s.name));
-      const qualityObj = findQualityByName(dataLoader.treasureData.shieldQualities, data.quality);
+	  type = "shield";
+      const baseShield = dataLoader.treasureData.shieldList.find(s => data.name.endsWith(s.name));
+      const allQualities = [
+    	...(dataLoader.treasureData.shieldQualities.basic || []),
+    	...(dataLoader.treasureData.shieldQualities[data.origin] || [])
+  	  ];
+      const qualityObj = allQualities.find(q => q.name === data.quality);
+	  const description = qualityObj ? qualityObj.description : `Shield of ${data.quality || "unknown"} quality.`;	
       const img = "icons/svg/shield.svg";
-      const type = "armor";
-
+ 
       itemData = {
         name: data.name,
         type,
         img,
         folder: cacheFolder.id,
         system: {
-          def: { attribute: "dex", value: baseShield?.def ?? 0 },
-          mdef: { attribute: "ins", value: baseShield?.mdef ?? 0 },
+          def:  { attribute: baseShield?.defAttr  || "dex", value: baseShield?.def  ?? 0 },
+          mdef: { attribute: baseShield?.mdefAttr || "ins", value: baseShield?.mdef ?? 0 },
           init: { value: baseShield?.init ?? 0 },
           isMartial: { value: baseShield?.isMartial ?? false },
           quality: { value: qualityObj?.description || "No quality" },
@@ -321,8 +332,8 @@ async function renderTreasureResultDialog(items, budget, config) {
           source: { value: "LOOKFAR" },
           summary: { value: `A shield that ${qualityObj?.description || "has no special properties."}` },
           description: `A shield that ${qualityObj?.description || "has no special properties."}<br>` +
-            `<b>DEF:</b> ${baseShield?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseShield?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseShield?.init ?? 0}`
-        }
+        	`<b>DEF:</b> ${baseShield?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseShield?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseShield?.init ?? 0}`
+    	}
       };
     } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
       type = "accessory";
