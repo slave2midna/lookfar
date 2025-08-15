@@ -114,19 +114,21 @@ function rollArmor(armorList, armorQualities, origin) {
   let value = base.value;
   let quality = "None";
 
-  // Combine basic qualities with origin-specific qualities (if they exist)
+  // Combine basic qualities with origin-specific qualities
   const qualityPool = [
     ...(armorQualities.basic || []),
     ...(armorQualities[origin] || [])
   ];
 
   // Pick a random quality from the combined pool
-  const q = getRandom(qualityPool);
-  quality = q.name;
-  nameParts.push(quality);
-  value += q.value;
+  const q = qualityPool.length ? getRandom(qualityPool) : null;
+  if (q) {
+    quality = q.name;
+    nameParts.push(quality);
+    value += q.value ?? 0;
+  }
 
-  // Add base armor name
+  // Name armor
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
@@ -139,20 +141,19 @@ function rollArmor(armorList, armorQualities, origin) {
 }
 
 // Shield Generation
-// Shield Generation
 function rollShield(shieldList, shieldQualities, origin) {
   const base = getRandom(shieldList);
   let nameParts = [];
   let value = base.value ?? 0;
   let quality = "None";
 
-  // Combine basic + origin qualities (if present)
+  // Combine basic qualities with origin-specific qualities
   const qualityPool = [
     ...(shieldQualities.basic || []),
     ...(shieldQualities[origin] || [])
   ];
 
-  // Only pick a quality if the pool has entries
+  // Pick a random quality from the combined pool
   const q = qualityPool.length ? getRandom(qualityPool) : null;
   if (q) {
     quality = q.name;
@@ -160,6 +161,7 @@ function rollShield(shieldList, shieldQualities, origin) {
     value += q.value ?? 0;
   }
 
+  // Name shield
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
@@ -178,18 +180,21 @@ function rollAccessory(accessories, accessoryQualities, origin) {
   let value = base.value ?? 0;
   let quality = "None";
 
-  // Combine basic and origin-specific qualities
-  const baseQualities = accessoryQualities.basic || [];
-  const originQualities = accessoryQualities[origin] || [];
-  const availableQualities = baseQualities.concat(originQualities);
+  // Combine basic qualities with origin-specific qualities
+  const qualityPool = [
+    ...(accessoryQualities.basic || []),
+    ...(accessoryQualities[origin] || [])
+  ];
 
-  // Randomly select a quality
-  const q = getRandom(availableQualities);
-  quality = q.name;
-  nameParts.push(quality);
-  value += q.value;
+  // Pick a random quality from the combined pool
+  const q = qualityPool.length ? getRandom(qualityPool) : null;
+  if (q) {
+    quality = q.name;
+    nameParts.push(quality);
+    value += q.value ?? 0;
+  }
 
-  // Append base accessory name
+  // Name accessory
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
