@@ -89,8 +89,8 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "customTreasureRollTable", {
-      name: "Treasure Roll Table",
-      hint: "set the roll table used for generating custom treasure rolls.",
+      name: "Custom Treasure Roll Table",
+      hint: "Select the Roll Table to use for generating custom treasure.",
       scope: "world",
       config: true,
       type: String,
@@ -119,3 +119,4 @@ export const LookfarSettings = {
     game.settings.settings.get("lookfar.customTreasureRollTable").choices = rollTableChoices;
   }
 };
+
