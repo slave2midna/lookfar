@@ -110,7 +110,7 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
 function rollArmor(armorList, armorQualities, origin, cap) {
   const base = getRandom(armorList);
   let nameParts = [];
-   = base.value;
+  let value = base.value ?? 0;
   let quality = "None";
 
   // Combine basic qualities with origin-specific qualities
@@ -143,7 +143,7 @@ function rollArmor(armorList, armorQualities, origin, cap) {
 function rollShield(shieldList, shieldQualities, origin, cap) {
   const base = getRandom(shieldList);
   let nameParts = [];
-   = base.value ?? 0;
+  let value = base.value ?? 0;
   let quality = "None";
 
   // Combine basic qualities with origin-specific qualities
@@ -176,7 +176,7 @@ function rollShield(shieldList, shieldQualities, origin, cap) {
 function rollAccessory(accessories, accessoryQualities, origin, cap) {
   const base = getRandom(accessories);
   let nameParts = [];
-   = base.value ?? 0;
+  let value = base.value ?? 0;
   let quality = "None";
 
   // Combine basic qualities with origin-specific qualities
