@@ -107,7 +107,7 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
 }
 
 // Armor Generation
-function rollArmor(armorList, armorQualities, origin) {
+function rollArmor(armorList, armorQualities, origin, cap) {
   const base = getRandom(armorList);
   let nameParts = [];
    = base.value;
@@ -119,13 +119,13 @@ function rollArmor(armorList, armorQualities, origin) {
     ...(armorQualities[origin] || [])
   ];
 
-  // Pick a random quality from the combined pool
-  const q = qualityPool.length ? getRandom(qualityPool) : null;
-  if (q) {
-    quality = q.name;
-    nameParts.push(quality);
-    value += q.value ?? 0;
-  }
+  // Pick an affordable quality from the combined pool
+  const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
+	if (!affordable.length) return null;
+	const q = getRandom(affordable);
+	quality = q.name;
+	nameParts.push(quality);
+	value += q.value ?? 0;
 
   // Name armor
   nameParts.push(base.name);
@@ -140,7 +140,7 @@ function rollArmor(armorList, armorQualities, origin) {
 }
 
 // Shield Generation
-function rollShield(shieldList, shieldQualities, origin) {
+function rollShield(shieldList, shieldQualities, origin, cap) {
   const base = getRandom(shieldList);
   let nameParts = [];
    = base.value ?? 0;
@@ -152,13 +152,13 @@ function rollShield(shieldList, shieldQualities, origin) {
     ...(shieldQualities[origin] || [])
   ];
 
-  // Pick a random quality from the combined pool
-  const q = qualityPool.length ? getRandom(qualityPool) : null;
-  if (q) {
-    quality = q.name;
-    nameParts.push(quality);
-    value += q.value ?? 0;
-  }
+  // Pick an affordable quality from the combined pool
+  const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
+	if (!affordable.length) return null;
+	const q = getRandom(affordable);
+	quality = q.name;
+	nameParts.push(quality);
+	value += q.value ?? 0;
 
   // Name shield
   nameParts.push(base.name);
@@ -173,7 +173,7 @@ function rollShield(shieldList, shieldQualities, origin) {
 }
 
 // Accessory Generation
-function rollAccessory(accessories, accessoryQualities, origin) {
+function rollAccessory(accessories, accessoryQualities, origin, cap) {
   const base = getRandom(accessories);
   let nameParts = [];
    = base.value ?? 0;
@@ -185,13 +185,13 @@ function rollAccessory(accessories, accessoryQualities, origin) {
     ...(accessoryQualities[origin] || [])
   ];
 
-  // Pick a random quality from the combined pool
-  const q = qualityPool.length ? getRandom(qualityPool) : null;
-  if (q) {
-    quality = q.name;
-    nameParts.push(quality);
-    value += q.value ?? 0;
-  }
+  // Pick an affordable quality from the combined pool
+  const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
+	if (!affordable.length) return null;
+	const q = getRandom(affordable);
+	quality = q.name;
+	nameParts.push(quality);
+	value += q.value ?? 0;
 
   // Name accessory
   nameParts.push(base.name);
@@ -520,19 +520,20 @@ Hooks.once("ready", () => {
 
         const type = getRandom(itemTypes);
         let item = null;
+		const cap = Math.min(remainingBudget, maxVal);
 
         switch (type) {
           case "Weapon":
             item = rollWeapon(weaponList, weaponQualities, weaponElements, origin);
             break;
           case "Armor":
-            item = rollArmor(armorList, armorQualities, origin);
+            item = rollArmor(armorList, armorQualities, origin, cap);
             break;
 		  case "Shield":
-            item = rollShield(shieldList, shieldQualities, origin);
+            item = rollShield(shieldList, shieldQualities, origin, cap);
             break;
           case "Accessory":
-            item = rollAccessory(accessoryList, accessoryQualities, origin);
+            item = rollAccessory(accessoryList, accessoryQualities, origin, cap);
             break;
           case "Material":
             item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords.material, natureKeywords.material);
