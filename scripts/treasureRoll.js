@@ -130,6 +130,34 @@ function rollArmor(armorList, armorQualities, origin) {
   };
 }
 
+// Shield Generation
+function rollShield(shieldList, shieldQualities, origin) {
+  const base = getRandom(shieldList);
+  let nameParts = [];
+  let value = base.value;
+  let quality = "None";
+
+  const qualityPool = [
+    ...(shieldQualities.basic || []),
+    ...(shieldQualities[origin] || [])
+  ];
+
+  const q = getRandom(qualityPool);
+  quality = q.name;
+  nameParts.push(quality);
+
+  value += q.value;
+
+  nameParts.push(base.name);
+  const name = nameParts.join(" ");
+
+  return {
+    name,
+    value,
+    quality
+  };
+}
+
 // Accessory Generation
 function rollAccessory(accessories, accessoryQualities, origin) {
   const base = getRandom(accessories);
@@ -210,8 +238,8 @@ async function renderTreasureResultDialog(items, budget, config) {
       type = "weapon";
       const baseWeapon = dataLoader.treasureData.weaponList.find(w => data.name.endsWith(w.name));
       const allQualities = [
-  	...(dataLoader.treasureData.weaponQualities.basic || []),
-  	...(dataLoader.treasureData.weaponQualities[data.origin] || [])
+  		...(dataLoader.treasureData.weaponQualities.basic || []),
+  		...(dataLoader.treasureData.weaponQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `A weapon of ${data.quality || "unknown"} quality.`;
@@ -247,8 +275,8 @@ async function renderTreasureResultDialog(items, budget, config) {
       type = "armor";
       const baseArmor = dataLoader.treasureData.armorList.find(a => data.name.endsWith(a.name));
       const allQualities = [
-  	...(dataLoader.treasureData.armorQualities.basic || []),
-  	...(dataLoader.treasureData.armorQualities[data.origin] || [])
+  		...(dataLoader.treasureData.armorQualities.basic || []),
+  		...(dataLoader.treasureData.armorQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Armor of ${data.quality || "unknown"} quality.`;
@@ -272,12 +300,36 @@ async function renderTreasureResultDialog(items, budget, config) {
             `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} | <b>INIT:</b> ${baseArmor?.init ?? 0}`
         }
       };
+	} else if (dataLoader.treasureData.shieldList.some(s => data.name.endsWith(s.name))) {
+  	  const baseShield = dataLoader.treasureData.shieldList.find(s => data.name.endsWith(s.name));
+      const qualityObj = findQualityByName(dataLoader.treasureData.shieldQualities, data.quality);
+      const img = "icons/svg/shield.svg";
+      const type = "armor";
+
+      itemData = {
+        name: data.name,
+        type,
+        img,
+        folder: cacheFolder.id,
+        system: {
+          def: { attribute: "dex", value: baseShield?.def ?? 0 },
+          mdef: { attribute: "ins", value: baseShield?.mdef ?? 0 },
+          init: { value: baseShield?.init ?? 0 },
+          isMartial: { value: baseShield?.isMartial ?? false },
+          quality: { value: qualityObj?.description || "No quality" },
+          cost: { value: data.value },
+          source: { value: "LOOKFAR" },
+          summary: { value: `A shield that ${qualityObj?.description || "has no special properties."}` },
+          description: `A shield that ${qualityObj?.description || "has no special properties."}<br>` +
+            `<b>DEF:</b> ${baseShield?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseShield?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseShield?.init ?? 0}`
+        }
+      };
     } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
       type = "accessory";
       const baseAccessory = dataLoader.treasureData.accessoryList.find(acc => data.name.endsWith(acc.name));
       const allQualities = [
-  	...(dataLoader.treasureData.accessoryQualities.basic || []),
-  	...(dataLoader.treasureData.accessoryQualities[data.origin] || [])
+  		...(dataLoader.treasureData.accessoryQualities.basic || []),
+  		...(dataLoader.treasureData.accessoryQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
@@ -405,8 +457,10 @@ Hooks.once("ready", () => {
       weaponElements,
       armorList,
       armorQualities,
+	  shieldList,
+	  shieldQualities,
       accessoryList,
-      accessoryQualities
+      accessoryQualities,
     } = dataLoader.treasureData;
 
     if (rerollConfig) {
@@ -417,6 +471,7 @@ Hooks.once("ready", () => {
         nature,
         includeWeapons,
         includeArmor,
+		includeShields,
         includeAccessories,
         includeIngredients,
         includeMaterials
@@ -435,6 +490,7 @@ Hooks.once("ready", () => {
         let itemTypes = [];
         if (includeWeapons) itemTypes.push("Weapon");
         if (includeArmor) itemTypes.push("Armor");
+		if (includeShields) itemTypes.push("Shield");
         if (includeAccessories) itemTypes.push("Accessory");
         if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
         if (includeMaterials) itemTypes.push("Material");
@@ -450,6 +506,9 @@ Hooks.once("ready", () => {
             break;
           case "Armor":
             item = rollArmor(armorList, armorQualities, origin);
+            break;
+		  case "Shield":
+            item = rollShield(shieldList, shieldQualities, origin);
             break;
           case "Accessory":
             item = rollAccessory(accessoryList, accessoryQualities, origin);
@@ -570,6 +629,7 @@ Hooks.once("ready", () => {
       const maxVal = parseInt(html.find("#highestPCLevel").val());
       const includeWeapons = html.find("#includeWeapons").is(":checked");
       const includeArmor = html.find("#includeArmor").is(":checked");
+	  const includeShields = html.find("#includeShields").is(":checked");
       const includeAccessories = html.find("#includeAccessories").is(":checked");
       const includeIngredients = html.find("#includeIngredients").is(":checked");
       const includeMaterials = html.find("#includeMaterials").is(":checked");
@@ -592,6 +652,7 @@ Hooks.once("ready", () => {
         nature: selectedNature,
         includeWeapons,
         includeArmor,
+		includeShields,
         includeAccessories,
         includeIngredients,
         includeMaterials
