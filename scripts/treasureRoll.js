@@ -1,4 +1,5 @@
 import { dataLoader } from "./dataLoader.js";
+import { cacheManager } from "./cacheManager.js";
 
 // Loot Generation Utility
 function getRandom(arr) {
@@ -207,7 +208,7 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
 
 // Results render function
 async function renderTreasureResultDialog(items, budget, config) {
-  const cacheFolder = await dataLoader.getOrCreateCacheFolder();
+  const cacheFolder = await cacheManager.getOrCreateCacheFolder();
 
   const tempItems = await Promise.all(items.map(async (data) => {
     let type = null;
