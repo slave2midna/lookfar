@@ -427,26 +427,23 @@ async function renderTreasureResultDialog(items, budget, config) {
     content: enrichedHtml,
     buttons: {
       keep: {
-  	label: "Keep",
-  	callback: async () => {
-    	  // Move all generated items out of the cache folder into the root
-    	  const keptItems = await Promise.all(finalItems.map(async (item) => {
-      	    // If item is already permanent (not in the cache), just skip
-      	    if (!item.folder || item.folder.id !== cacheFolder.id) return item;
+  		label: "Keep",
+  		callback: async () => {
+    		const keptItems = await Promise.all(finalItems.map(async (item) => {
+      		// If it's in the cache folder, just move it out (preserve UUID)
+      		if (item.folder?.id === cacheFolder.id) {
+        		await item.update({ folder: null });
+      		}
+      		return item;
+    		}));
 
-      	    const itemData = foundry.utils.duplicate(item.toObject());
-			itemData.folder = null; // Remove folder assignment
-			  
-			return await Item.create(itemData);
-    	  }));
-
-    	  // Then send the result message to chat
-    	  await ChatMessage.create({
-      	    content: enrichedHtml,
-      	    speaker: { alias: "Treasure Result" }
-    	  });
-  	 }
-	},
+    		// The enrichedHtml already points at the same UUIDs, which now live at root.
+    		await ChatMessage.create({
+      		content: enrichedHtml,
+      		speaker: { alias: "Treasure Result" }
+    		});
+  		}
+		},
       reroll: {
         label: "Reroll",
         callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
