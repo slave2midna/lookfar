@@ -1,0 +1,506 @@
+{
+    "accessoryList":[
+        {
+            "name":"Amulet",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Belt",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Boots",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Cloak",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Earrings",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Glasses",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Gloves",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Hat",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Headset",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Helmet",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Hood",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Mask",
+            "def":0,
+            "mdef":0,
+            "init":0
+        },
+        {
+            "name":"Ring",
+            "def":0,
+            "mdef":0,
+            "init":0
+        }
+    ],
+    "accessoryQualities":{
+        "basic":[
+            {
+                "name":"Light",
+                "value":500,
+                "description":"grants immunity to the slow status."
+            },
+            {
+                "name":"Heavy",
+                "value":500,
+                "description":"grants immunity to the daze status."
+            },
+            {
+                "name":"Sturdy",
+                "value":500,
+                "description":"grants immunity to the shaken status."
+            },
+            {
+                "name":"Strong",
+                "value":500,
+                "description":"grants immunity to the weak status."
+            },
+            {
+                "name":"Flame Resistant",
+                "value":700,
+                "description":"grants resistance to fire damage."
+            },
+            {
+                "name":"Earth Resistant",
+                "value":700,
+                "description":"grants resistance to earth damage."
+            },
+            {
+                "name":"Frost Resistant",
+                "value":700,
+                "description":"grants resistance to ice damage."
+            },
+            {
+                "name":"Wind Resistant",
+                "value":700,
+                "description":"grants resistance to air damage."
+            },
+            {
+                "name":"Shock Resistant",
+                "value":700,
+                "description":"grants resistance to bolt damage."
+            },
+            {
+                "name":"Dark Resistant",
+                "value":700,
+                "description":"grants resistance to dark damage."
+            },
+            {
+                "name":"Light Resistant",
+                "value":700,
+                "description":"grants resistance to light damage."
+            },
+            {
+                "name":"Poison Resistant",
+                "value":700,
+                "description":"grants resistance to poison damage."
+            },
+            {
+                "name":"Gilded",
+                "value":800,
+                "description":"gives +1 to Magic Defense."
+            },
+            {
+                "name":"Studded",
+                "value":800,
+                "description":"gives +1 to Defense."
+            },
+            {
+                "name":"Swordbreakers",
+                "value":1000,
+                "description":"grants resistance to physical damage."
+            },
+            {
+                "name":"Pyromancers",
+                "value":1500,
+                "description":"grants immunity to fire damage."
+            },
+            {
+                "name":"Geomancers",
+                "value":1500,
+                "description":"grants immunity to earth damage."
+            },
+            {
+                "name":"Cryomancers",
+                "value":1500,
+                "description":"grants immunity to ice damage."
+            },
+            {
+                "name":"Aeromancers",
+                "value":1500,
+                "description":"grants immunity to air damage."
+            },
+            {
+                "name":"Electromancers",
+                "value":1500,
+                "description":"grants immunity to bolt damage."
+            },
+            {
+                "name":"Shadowmancers",
+                "value":1500,
+                "description":"grants immunity to dark damage."
+            },
+            {
+                "name":"Photomancers",
+                "value":1500,
+                "description":"grants immunity to light damage."
+            },
+            {
+                "name":"Poisoners",
+                "value":1500,
+                "description":"grants immunity to poison damage."
+            },
+            {
+                "name":"Shielded",
+                "value":2000,
+                "description":"gives +1 to Defense & Magic Defense."
+            },
+            {
+                "name":"Physicians",
+                "value":2000,
+                "description":"grants immunity to all status effects."
+            },
+            {
+                "name":"Ruby",
+                "value":300,
+                "description":"makes all damage you deal fire."
+            },
+            {
+                "name":"Emerald",
+                "value":300,
+                "description":"makes all damage you deal earth."
+            },
+            {
+                "name":"Sapphire",
+                "value":300,
+                "description":"makes all damage you deal ice."
+            },
+            {
+                "name":"Quartz",
+                "value":300,
+                "description":"makes all damage you deal air."
+            },
+            {
+                "name":"Topaz",
+                "value":300,
+                "description":"makes all damage you deal bolt."
+            },
+            {
+                "name":"Onyx",
+                "value":300,
+                "description":"makes all damage you deal dark."
+            },
+            {
+                "name":"Opal",
+                "value":300,
+                "description":"makes all damage you deal light."
+            },
+            {
+                "name":"Amethyst",
+                "value":300,
+                "description":"makes all damage you deal poison."
+            },
+            {
+                "name":"Rookies",
+                "value":500,
+                "description":"gives +4 to your initiative."
+            },
+            {
+                "name":"Marksmans",
+                "value":1000,
+                "description":"gives +1 to accuracy checks."
+            },
+            {
+                "name":"Magicians",
+                "value":1000,
+                "description":"gives +1 to magic checks."
+            },
+            {
+                "name":"Defenders",
+                "value":1000,
+                "description":"when you recover HP, recover 5 extra."
+            },
+            {
+                "name":"Clerics",
+                "value":1500,
+                "description":"makes healing spells restore 5 extra HP."
+            },
+            {
+                "name":"Sorcerers",
+                "value":2000,
+                "description":"makes damaging spells deal 5 extra damage."
+            },
+            {
+                "name":"Fighters",
+                "value":2000,
+                "description":"makes melee attacks deal 5 extra damage."
+            },
+            {
+                "name":"Rangers",
+                "value":2000,
+                "description":"makes ranged attacks deal 5 extra damage."
+            }
+        ],
+        "Aerial":[
+            {
+                "name":"Whirlwind",
+                "value":600,
+                "description":"deals 5 extra damage during the first round of a conflict."
+            },
+            {
+                "name":"Skybreaker",
+                "value":900,
+                "description":"grants immunity to damage dealt by flying creatures."
+            },
+            {
+                "name":"Polarized",
+                "value":1000,
+                "description":"when you cast a spell that targets a creature (not special) who is suffering from slow, that spell’s total MP cost is halved."
+            },
+            {
+                "name":"Slipstream",
+                "value":1200,
+                "description":"when you deal damage to a creature outside of your turn during a conflict, you deal 5 extra damage that creature."
+            }
+        ],
+        "Thunderous":[
+            {
+                "name":"Spiked",
+                "value":600,
+                "description":"when you use a spell or skill to deal bolt damage to a creature, one ally you can see may take their turn (if that haven't) immediately after yours."
+            },
+            {
+                "name":"Livewire",
+                "value":1000,
+                "description":"grants【half your level in the Elementalist Class】as extra damage to your Cataclysm Skill."
+            },
+            {
+                "name":"Conductor’s",
+                "value":1000,
+                "description":"when you use the Encourage Skill, the target recovers extra HP equal to【half your level】"
+            },
+            {
+                "name":"Jolted",
+                "value":1200,
+                "description":"after a creature hits you with a melee attack, you deal 5 bolt damage to that creature."
+            }
+        ],
+        "Paradox":[
+            {
+                "name":"Anomalous",
+                "value":800,
+                "description":"grants you the effects of the Mirror spell at the beginning of any conflict scene."
+            },
+            {
+                "name":"Distorted",
+                "value":1200,
+                "description":"when you score a critical success on a Magic Check for an offensive spell, that spell deals 5 extra damage."
+            },
+            {
+                "name":"Echoing",
+                "value":1500,
+                "description":"when an enemy in the scene heals from one or more status effects, roll a d8. That enemy suffers a status effect based on the number rolled: 1-2 dazed, 3-4 shaken, 5-6 slow, 7-8 weak."
+            }
+        ],
+        "Terrestrial":[
+            {
+                "name":"Earthward",
+                "value":600,
+                "description":"grants resistance to damage caused by environmental hazards."
+            },
+            {
+                "name":"Deeproot",
+                "value":800,
+                "description":"when you recover HP, if you are in Crisis, you recover 5 additional HP."
+            },
+            {
+                "name":"Blooming",
+                "value":1000,
+                "description":"when you heal an ally during a conflict, they gain resistance to physical damage till the start of your next turn."
+            },
+            {
+                "name":"Runestone",
+                "value":1500,
+                "description":"gives a +2 bonus to Magic Checks you perform for Elementalism Rituals, as long as it has a total MP cost equal to or lower than 60."
+            },
+            {
+                "name":"Spinebreaker",
+                "value":1800,
+                "description":"Your with weapons belonging to the heavy and/or spear Categories deal 5 extra damage."
+            }
+        ],
+        "Ardent":[
+            {
+                "name":"Dancing",
+                "value":500,
+                "description":"reduces that MP of the Bladestorm Skill by half when using this weapon."
+            },
+            {
+                "name":"Bonded",
+                "value":800,
+                "description":"when you invoke a Bond during a Check, you recover 5 Mind Points."
+            },
+            {
+                "name":"Rapidfire",
+                "value":1800,
+                "description":"Your attacks with weapons belonging to the bow and/or sword Categories deal 5 extra damage."
+            }
+        ],
+        "Glacial":[
+            {
+                "name":"Frostbitten",
+                "value":600,
+                "description":"when you enter Crisis for the first time during a conflict, deals 5 ice damage to every enemy present in the scene."
+            },
+            {
+                "name":"Niveous",
+                "value":800,
+                "description":"makes Ice damage you deal ignore Immunities and Resistances."
+            },
+            {
+                "name":"Rimebound",
+                "value":1000,
+                "description":"when you start your turn in a conflict, each creature in the scene suffering from the weak status effect loses 5 HP."
+            },
+            {
+                "name":"Brumal",
+                "value":1000,
+                "description":"gives a +1 bonus to Defense and Magic Defense against attacks and offensive spells enraged creatures."
+            },
+            {
+                "name":"Boreal",
+                "value":1800,
+                "description":"when you deal ice damage to a creature, that creature suffers the slow status effect or loses 10 MP if already slowed."
+            },
+            {
+                "name":"Gelid",
+                "value":1800,
+                "description":"when you deal damage to a creature suffering from the weak status effect, you deal 5 extra damage to that creature."
+            }
+        ],
+        "Spiritual":[
+            {
+                "name":"Anima",
+                "value":600,
+                "description":"when you end your turn, if you are merged with an Arcanum, you may heal from a single status effect of your choice."
+            },
+            {
+                "name":"Auroral",
+                "value":1000,
+                "description":"as long as you are affected by a spell with a duration of “Scene”, all damage you deal ignores Resistances."
+            },
+            {
+                "name":"Vitalis",
+                "value":1000,
+                "description":"when you perform the Guard action and choose to cover an ally, that ally recovers 5 Hit Points."
+            },
+            {
+                "name":"Sylvan",
+                "value":1500,
+                "description":"grants resistance to dark, light, and poison damage."
+            }
+        ],
+        "Corrupted":[
+            {
+                "name":"Psychic",
+                "value":1000,
+                "description":"when you cast an offensive spell, treat the target’s Magic Defense as being equal to their Willpower die size."
+            },
+            {
+                "name":"Withering",
+                "value":1000,
+                "description":"makes Dark and poison damage you deal ignore Immunities and Resistances."
+            },
+            {
+                "name":"Malicious",
+                "value":1000,
+                "description":"when you cast a spell targeting a creature ( not special ) you have a Bond of hatred towards, that spell’s total MP cost is halved."
+            },
+            {
+                "name":"Overlord's",
+                "value":1200,
+                "description":"gives a +1 bonus to Defense and Magic Defense against attacks and offensive spells from shaken creatures."
+            }
+        ],
+        "Aquatic":[
+            {
+                "name":"Coral",
+                "value":600,
+                "description":"when you reduce an enemy to 0 HP, you may treat your DEX as being one die size higher until the end of your next turn."
+            },
+            {
+                "name":"Boreal",
+                "value":1000,
+                "description":"when you cast and resolve an offensive spell, you recover an amount of HP equal to the HR of the Magic Check."
+            },
+            {
+                "name":"Spring",
+                "value":1200,
+                "description":"if you cause one or more allies to recover HP, if that ally has full HP they recover 5 MP."
+            }
+        ],
+        "Mechanical":[
+            {
+                "name":"Thief's",
+                "value":300,
+                "description":"allows you to spend your opportunity to earn 100z."
+            },
+            {
+                "name":"Alchemist's",
+                "value":800,
+                "description":"when you create a potion using Gadget (Alchemy), if at least two dice show the same mumber, your area and effect is chosen freely."
+            },
+            {
+                "name":"Bard's",
+                "value":1200,
+                "description":"when you use the Tavern Talk skill, you earn 200xSL zenit."
+            }
+        ]
+    }
+}
