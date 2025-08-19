@@ -1,824 +1,789 @@
 {
-    "weaponList":[
-        {
-            "name":"Staff",
-            "value":100,
-            "category":"arcane",
-            "hand":"two-handed",
-            "type":"melee",
-            "attrA":"wlp",
-            "attrB":"wlp",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":6,
-            "isMartial":"false"
-        },
-        {
-            "name":"Tome",
-            "value":100,
-            "category":"arcane",
-            "hand":"two-handed",
-            "type":"melee",
-            "attrA":"ins",
-            "attrB":"ins",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":6,
-            "isMartial":"false"
-        },
-        {
-            "name":"Crossbow",
-            "value":150,
-            "category":"bow",
-            "hand":"two-handed",
-            "type":"ranged",
-            "attrA":"dex",
-            "attrB":"ins",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":8,
-            "isMartial":"false"
-        },
-        {
-            "name":"Bow",
-            "value":200,
-            "category":"bow",
-            "hand":"two-handed",
-            "type":"ranged",
-            "attrA":"dex",
-            "attrB":"dex",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":8,
-            "isMartial":"false"
-        },
-        {
-            "name":"Knuckle",
-            "value":150,
-            "category":"brawling",
-            "hand":"one-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"mig",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":6,
-            "isMartial":"false"
-        },
-        {
-            "name":"Dagger",
-            "value":150,
-            "category":"dagger",
-            "hand":"one-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"mig",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":4,
-            "isMartial":"false"
-        },
-        {
-            "name":"Pistol",
-            "value":250,
-            "category":"firearm",
-            "hand":"one-handed",
-            "type":"ranged",
-            "attrA":"dex",
-            "attrB":"ins",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":8,
-            "isMartial":"false"
-        },
-        {
-            "name":"Rifle",
-            "value":300,
-            "category":"firearm",
-            "hand":"two-handed",
-            "type":"ranged",
-            "attrA":"dex",
-            "attrB":"ins",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":12,
-            "isMartial":"false"
-        },
-        {
-            "name":"Whip",
-            "value":150,
-            "category":"flail",
-            "hand":"two-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"dex",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":8,
-            "isMartial":"false"
-        },
-        {
-            "name":"Hammer",
-            "value":200,
-            "category":"heavy",
-            "hand":"one-handed",
-            "type":"melee",
-            "attrA":"mig",
-            "attrB":"mig",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":6,
-            "isMartial":"false"
-        },
-        {
-            "name":"Broadaxe",
-            "value":250,
-            "category":"heavy",
-            "hand":"one-handed",
-            "type":"melee",
-            "attrA":"mig",
-            "attrB":"mig",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":10,
-            "isMartial":"true"
-        },
-        {
-            "name":"Waraxe",
-            "value":250,
-            "category":"heavy",
-            "hand":"two-handed",
-            "type":"melee",
-            "attrA":"mig",
-            "attrB":"mig",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":14,
-            "isMartial":"true"
-        },
-        {
-            "name":"Light Spear",
-            "value":200,
-            "category":"spear",
-            "hand":"one-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"mig",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":8,
-            "isMartial":"true"
-        },
-        {
-            "name":"Heavy Spear",
-            "value":200,
-            "category":"spear",
-            "hand":"two-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"mig",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":12,
-            "isMartial":"true"
-        },
-        {
-            "name":"Longsword",
-            "value":200,
-            "category":"sword",
-            "hand":"one-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"mig",
-            "accuracy":1,
-            "defense":"def",
-            "element":"physical",
-            "damage":6,
-            "isMartial":"true"
-        },
-        {
-            "name":"Greatsword",
-            "value":200,
-            "category":"sword",
-            "hand":"two-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"mig",
-            "accuracy":1,
-            "defense":"def",
-            "element":"physical",
-            "damage":10,
-            "isMartial":"true"
-        },
-        {
-            "name":"Katana",
-            "value":200,
-            "category":"sword",
-            "hand":"two-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"ins",
-            "accuracy":1,
-            "defense":"def",
-            "element":"physical",
-            "damage":10,
-            "isMartial":"true"
-        },
-        {
-            "name":"Rapier",
-            "value":200,
-            "category":"sword",
-            "hand":"one-handed",
-            "type":"melee",
-            "attrA":"dex",
-            "attrB":"ins",
-            "accuracy":1,
-            "defense":"def",
-            "element":"physical",
-            "damage":6,
-            "isMartial":"true"
-        },
-        {
-            "name":"Shuriken",
-            "value":150,
-            "category":"thrown",
-            "hand":"two-handed",
-            "type":"ranged",
-            "attrA":"dex",
-            "attrB":"ins",
-            "accuracy":0,
-            "defense":"def",
-            "element":"physical",
-            "damage":4,
-            "isMartial":"false"
-        }
-    ],
-    "weaponQualities":{
-        "basic":[
-            {
-                "name":"Thin",
-                "value":500,
-                "description":"grants immunity to the slow status."
-            },
-            {
-                "name":"Thick",
-                "value":500,
-                "description":"grants immunity to the daze status."
-            },
-            {
-                "name":"Sturdy",
-                "value":500,
-                "description":"grants immunity to the shaken status."
-            },
-            {
-                "name":"Strong",
-                "value":500,
-                "description":"grants immunity to the weak status."
-            },
-            {
-                "name":"Tempered",
-                "value":700,
-                "description":"grants resistance to fire damage."
-            },
-            {
-                "name":"Cracked",
-                "value":700,
-                "description":"grants resistance to earth damage."
-            },
-            {
-                "name":"Insulated",
-                "value":700,
-                "description":"grants resistance to ice damage."
-            },
-            {
-                "name":"Grated",
-                "value":700,
-                "description":"grants resistance to air damage."
-            },
-            {
-                "name":"Rubber",
-                "value":700,
-                "description":"grants resistance to bolt damage."
-            },
-            {
-                "name":"Sacred",
-                "value":700,
-                "description":"grants resistance to dark damage."
-            },
-            {
-                "name":"Purified",
-                "value":700,
-                "description":"grants resistance to light damage."
-            },
-            {
-                "name":"Alchemists",
-                "value":700,
-                "description":"grants resistance to poison damage."
-            },
-            {
-                "name":"Mythril",
-                "value":800,
-                "description":"gives +1 to Magic Defense."
-            },
-            {
-                "name":"Adamant",
-                "value":800,
-                "description":"gives +1 to Defense."
-            },
-            {
-                "name":"Monks",
-                "value":1000,
-                "description":"grants resistance to physical damage."
-            },
-            {
-                "name":"Flamewalker",
-                "value":1500,
-                "description":"grants immunity to fire damage."
-            },
-            {
-                "name":"Forestwalker",
-                "value":1500,
-                "description":"grants immunity to earth damage."
-            },
-            {
-                "name":"Frostwalker",
-                "value":1500,
-                "description":"grants immunity to ice damage."
-            },
-            {
-                "name":"Windwalker",
-                "value":1500,
-                "description":"grants immunity to air damage."
-            },
-            {
-                "name":"Stormwalker",
-                "value":1500,
-                "description":"grants immunity to bolt damage."
-            },
-            {
-                "name":"Shadowwalker",
-                "value":1500,
-                "description":"grants immunity to dark damage."
-            },
-            {
-                "name":"Sunwalker",
-                "value":1500,
-                "description":"grants immunity to light damage."
-            },
-            {
-                "name":"Poisoners",
-                "value":1500,
-                "description":"grants immunity to poison damage."
-            },
-            {
-                "name":"Shielded",
-                "value":2000,
-                "description":"gives +1 to Defense & Magic Defense."
-            },
-            {
-                "name":"Physicians",
-                "value":2000,
-                "description":"grants immunity to all status effects."
-            },
-            {
-                "name":"Magical",
-                "value":100,
-                "description":"targets Magic Defense instead of Defense."
-            },
-            {
-                "name":"Beast Hunter",
-                "value":300,
-                "description":"deals 5 extra damage to beasts."
-            },
-            {
-                "name":"Construct Hunter",
-                "value":300,
-                "description":"deals 5 extra damage to constructs."
-            },
-            {
-                "name":"Demon Hunter",
-                "value":300,
-                "description":"deals 5 extra damage to demons."
-            },
-            {
-                "name":"Elemental Hunter",
-                "value":300,
-                "description":"deals 5 extra damage to elementals."
-            },
-            {
-                "name":"Monster Hunter",
-                "value":300,
-                "description":"deals 5 extra damage to monsters."
-            },
-            {
-                "name":"Plant Hunter",
-                "value":300,
-                "description":"deals 5 extra damage to plants."
-            },
-            {
-                "name":"Undead Hunter",
-                "value":300,
-                "description":"deals 5 extra damage to undead."
-            },
-            {
-                "name":"Piercing",
-                "value":400,
-                "description":"ignores resistances."
-            },
-            {
-                "name":"Multi",
-                "value":1000,
-                "description":"attacks as if it has Multi(2)"
-            },
-            {
-                "name":"Maiming",
-                "value":1500,
-                "description":"causes slow on hit."
-            },
-            {
-                "name":"Dazzling",
-                "value":1500,
-                "description":"causes daze on hit."
-            },
-            {
-                "name":"Horrifying",
-                "value":1500,
-                "description":"causes shaken on hit."
-            },
-            {
-                "name":"Debilitating",
-                "value":1500,
-                "description":"causes weak on hit."
-            }
-        ],
-        "Aerial":[
-            {
-                "name":"Whirlwind",
-                "value":600,
-                "description":"deals 5 extra damage during the first round of a conflict."
-            },
-            {
-                "name":"Finesse",
-                "value":600,
-                "description":"this weapon is in your off-hand, you may use two-weapon fighting with it regardless of its category."
-            },
-            {
-                "name":"Switch",
-                "value":800,
-                "description":"when you hit one or more creatures, you may immediately perform the Equipment action for free."
-            },
-            {
-                "name":"Skybreaker",
-                "value":900,
-                "description":"grants immunity to damage dealt by flying creatures."
-            },
-            {
-                "name":"Polarized",
-                "value":1000,
-                "description":"when you cast a spell that targets a creature (not special) who is suffering from slow, that spell’s total MP cost is halved."
-            },
-            {
-                "name":"Slipstream",
-                "value":1200,
-                "description":"when you deal damage to a creature outside of your turn during a conflict, you deal 5 extra damage that creature."
-            }
-        ],
-        "Thunderous":[
-            {
-                "name":"Spiked",
-                "value":600,
-                "description":"when you use a spell or skill to deal bolt damage to a creature, one ally you can see may take their turn (if that haven't) immediately after yours."
-            },
-            {
-                "name":"Shockwave",
-                "value":800,
-                "description":"when damge dealt by this weapon causes one or more enemies to enter crisis, every enemy present in the scene suffers dazed."
-            },
-            {
-                "name":"Livewire",
-                "value":1000,
-                "description":"grants【half your level in the Elementalist Class】as extra damage to your Cataclysm Skill."
-            },
-            {
-                "name":"Conductor’s",
-                "value":1000,
-                "description":"when you use the Encourage Skill, the target recovers extra HP equal to【half your level】"
-            },
-            {
-                "name":"Jolted",
-                "value":1200,
-                "description":"after a creature hits you with a melee attack, you deal 5 bolt damage to that creature."
-            },
-            {
-                "name":"Overcharged",
-                "value":1500,
-                "description":"when you deal damage with this weapon if at least one target is shaken, each target loses 20 Mind Points."
-            }
-        ],
-        "Paradox":[
-            {
-                "name":"Temporal",
-                "value":600,
-                "description":"deals 5 extra damage as long as you have exactly one other weapon equipped of a different category."
-            },
-            {
-                "name":"Anomalous",
-                "value":800,
-                "description":"grants you the effects of the Mirror spell at the beginning of any conflict scene."
-            },
-            {
-                "name":"Bound",
-                "value":1000,
-                "description":"when you hit 2 targets with this weapon, you may tether them. when either loses HP due to damage they are Vulnerable to, the other loses 5 HP."
-            },
-            {
-                "name":"Distorted",
-                "value":1200,
-                "description":"when you score a critical success on a Magic Check for an offensive spell, that spell deals 5 extra damage."
-            },
-            {
-                "name":"Echoing",
-                "value":1500,
-                "description":"when an enemy in the scene heals from one or more status effects, roll a d8. That enemy suffers a status effect based on the number rolled: 1-2 dazed, 3-4 shaken, 5-6 slow, 7-8 weak."
-            },
-            {
-                "name":"Faded",
-                "value":1800,
-                "description":"causes enemies hit by this weapon to fade. If a fading enemy would recover HP, instead they recover no HP and stop fading."
-            }
-        ],
-        "Terrestrial":[
-            {
-                "name":"Earthward",
-                "value":600,
-                "description":"grants resistance to damage caused by environmental hazards."
-            },
-            {
-                "name":"Deeproot",
-                "value":800,
-                "description":"when you recover HP, if you are in Crisis, you recover 5 additional HP."
-            },
-            {
-                "name":"Trembling",
-                "value":1000,
-                "description":"when you hit a creatures with this weapon, you recover an amount of Mind Points equal to your HR."
-            },
-            {
-                "name":"Blooming",
-                "value":1000,
-                "description":"when you heal an ally during a conflict, they gain resistance to physical damage till the start of your next turn."
-            },
-            {
-                "name":"Runestone",
-                "value":1500,
-                "description":"gives a +2 bonus to Magic Checks you perform for Elementalism Rituals, as long as it has a total MP cost equal to or lower than 60."
-            },
-            {
-                "name":"Spinebreaker",
-                "value":1800,
-                "description":"Your with weapons belonging to the heavy and/or spear Categories deal 5 extra damage."
-            }
-        ],
-        "Ardent":[
-            {
-                "name":"Dancing",
-                "value":500,
-                "description":"reduces that MP of the Bladestorm Skill by half when using this weapon."
-            },
-            {
-                "name":"Shadowfire",
-                "value":600,
-                "description":"when you attack using the Shadow Strike Skill you may have the attack deal fire damage instead of dark damage."
-            },
-            {
-                "name":"Cauterized",
-                "value":600,
-                "description":"deals 1 extra damage for every status effect you are suffering from."
-            },
-            {
-                "name":"Bonded",
-                "value":800,
-                "description":"when you invoke a Bond during a Check, you recover 5 Mind Points."
-            },
-            {
-                "name":"Silencing",
-                "value":1300,
-                "description":"when you hit a creatures, that creature can't perform the Spell action during their next turn."
-            },
-            {
-                "name":"Rapidfire",
-                "value":1800,
-                "description":"Your attacks with weapons belonging to the bow and/or sword Categories deal 5 extra damage."
-            }
-        ],
-        "Glacial":[
-            {
-                "name":"Frostbitten",
-                "value":600,
-                "description":"when you enter Crisis for the first time during a conflict, deals 5 ice damage to every enemy present in the scene."
-            },
-            {
-                "name":"Niveous",
-                "value":800,
-                "description":"makes Ice damage you deal ignore Immunities and Resistances."
-            },
-            {
-                "name":"Rimebound",
-                "value":1000,
-                "description":"when you start your turn in a conflict, each creature in the scene suffering from the weak status effect loses 5 HP."
-            },
-            {
-                "name":"Brumal",
-                "value":1000,
-                "description":"gives a +1 bonus to Defense and Magic Defense against attacks and offensive spells enraged creatures."
-            },
-            {
-                "name":"Boreal",
-                "value":1800,
-                "description":"when you deal ice damage to a creature, that creature suffers the slow status effect or loses 10 MP if already slowed."
-            },
-            {
-                "name":"Gelid",
-                "value":1800,
-                "description":"when you deal damage to a creature suffering from the weak status effect, you deal 5 extra damage to that creature."
-            }
-        ],
-        "Spiritual":[
-            {
-                "name":"Anima",
-                "value":600,
-                "description":"when you end your turn, if you are merged with an Arcanum, you may heal from a single status effect of your choice."
-            },
-            {
-                "name":"Aetheric",
-                "value":800,
-                "description":"deals 1 extra damage for each Bond of affection you have."
-            },
-            {
-                "name":"Auroral",
-                "value":1000,
-                "description":"as long as you are affected by a spell with a duration of “Scene”, all damage you deal ignores Resistances."
-            },
-            {
-                "name":"Spellbound",
-                "value":1000,
-                "description":"applies all bonuses you would apply to an Accuracy Check when using the Spellblade Skill with this weapon, to your Magic Check instead."
-            },
-            {
-                "name":"Vitalis",
-                "value":1000,
-                "description":"when you perform the Guard action and choose to cover an ally, that ally recovers 5 Hit Points."
-            },
-            {
-                "name":"Sylvan",
-                "value":1500,
-                "description":"grants resistance to dark, light, and poison damage."
-            }
-        ],
-        "Corrupted":[
-            {
-                "name":"Tarnished",
-                "value":600,
-                "description":"when you cast a spell using the Spellblade Skill, any dark damage dealt by the spell ignores Immunities and Resistances."
-            },
-            {
-                "name":"Psychic",
-                "value":1000,
-                "description":"when you cast an offensive spell, treat the target’s Magic Defense as being equal to their Willpower die size."
-            },
-            {
-                "name":"Withering",
-                "value":1000,
-                "description":"makes Dark and poison damage you deal ignore Immunities and Resistances."
-            },
-            {
-                "name":"Malicious",
-                "value":1000,
-                "description":"when you cast a spell targeting a creature ( not special ) you have a Bond of hatred towards, that spell’s total MP cost is halved."
-            },
-            {
-                "name":"Overlord's",
-                "value":1200,
-                "description":"gives a +1 bonus to Defense and Magic Defense against attacks and offensive spells from shaken creatures."
-            },
-            {
-                "name":"Wraith",
-                "value":1500,
-                "description":"when you Counterattack with this weapon and hit the target, that target suffers the poisoned status effect."
-            }
-        ],
-        "Aquatic":[
-            {
-                "name":"Coral",
-                "value":600,
-                "description":"when you reduce an enemy to 0 HP, you may treat your DEX as being one die size higher until the end of your next turn."
-            },
-            {
-                "name":"Barnacled",
-                "value":800,
-                "description":"treats defense score with this weapon treat the Defense score of each target as being equal to their current Might die size."
-            },
-            {
-                "name":"Boreal",
-                "value":1000,
-                "description":"when you cast and resolve an offensive spell, you recover an amount of HP equal to the HR of the Magic Check."
-            },
-            {
-                "name":"Maleable",
-                "value":1000,
-                "description":"prevents attacks with this weapon from triggering counterattacks other reactive Skills."
-            },
-            {
-                "name":"Spring",
-                "value":1200,
-                "description":"if you cause one or more allies to recover HP, if that ally has full HP they recover 5 MP."
-            },
-            {
-                "name":"Misty",
-                "value":1500,
-                "description":"when you hit a creature during a single scene, you may reduce the damage of the next attack made against you by the HR of the last recorded hit."
-            }
-        ],
-        "Mechanical":[
-            {
-                "name":"Thief's",
-                "value":300,
-                "description":"allows you to spend your opportunity to earn 100z."
-            },
-            {
-                "name":"Breaching",
-                "value":600,
-                "description":"when you use the Breach SKill with this weapon, gain a +2 to your accuracy check."
-            },
-            {
-                "name":"Alchemist's",
-                "value":800,
-                "description":"when you create a potion using Gadget (Alchemy), if at least two dice show the same mumber, your area and effect is chosen freely."
-            },
-            {
-                "name":"Magnetic",
-                "value":1000,
-                "description":"deals 5 additional damage to creatures with traits related to metal."
-            },
-            {
-                "name":"Bard's",
-                "value":1200,
-                "description":"when you use the Tavern Talk skill, you earn 200xSL zenit."
-            },
-            {
-                "name":"Energized",
-                "value":1500,
-                "description":"when you hit two or more creatures in a single turn with this weapon, it becomes charged."
-            }
-        ]
+  "weaponList": [
+    {
+      "name": "Staff",
+      "value": 100,
+      "category": "arcane",
+      "hand": "two-handed",
+      "type": "melee",
+      "attrA": "wlp",
+      "attrB": "wlp",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 6,
+      "isMartial": "false"
     },
-    "weaponElements":[
-        {
-            "name":"Flaming",
-            "damageType":"fire"
-        },
-        {
-            "name":"Cold",
-            "damageType":"ice"
-        },
-        {
-            "name":"Stone",
-            "damageType":"earth"
-        },
-        {
-            "name":"Electric",
-            "damageType":"bolt"
-        },
-        {
-            "name":"Energy",
-            "damageType":"air"
-        },
-        {
-            "name":"Cursed",
-            "damageType":"dark"
-        },
-        {
-            "name":"Holy",
-            "damageType":"light"
-        },
-        {
-            "name":"Poisoned",
-            "damageType":"poison"
-        }
+    {
+      "name": "Tome",
+      "value": 100,
+      "category": "arcane",
+      "hand": "two-handed",
+      "type": "melee",
+      "attrA": "ins",
+      "attrB": "ins",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 6,
+      "isMartial": "false"
+    },
+    {
+      "name": "Crossbow",
+      "value": 150,
+      "category": "bow",
+      "hand": "two-handed",
+      "type": "ranged",
+      "attrA": "dex",
+      "attrB": "ins",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 8,
+      "isMartial": "false"
+    },
+    {
+      "name": "Bow",
+      "value": 200,
+      "category": "bow",
+      "hand": "two-handed",
+      "type": "ranged",
+      "attrA": "dex",
+      "attrB": "dex",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 8,
+      "isMartial": "false"
+    },
+    {
+      "name": "Knuckle",
+      "value": 150,
+      "category": "brawling",
+      "hand": "one-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "mig",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 6,
+      "isMartial": "false"
+    },
+    {
+      "name": "Dagger",
+      "value": 150,
+      "category": "dagger",
+      "hand": "one-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "mig",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 4,
+      "isMartial": "false"
+    },
+    {
+      "name": "Pistol",
+      "value": 250,
+      "category": "firearm",
+      "hand": "one-handed",
+      "type": "ranged",
+      "attrA": "dex",
+      "attrB": "ins",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 8,
+      "isMartial": "false"
+    },
+    {
+      "name": "Rifle",
+      "value": 300,
+      "category": "firearm",
+      "hand": "two-handed",
+      "type": "ranged",
+      "attrA": "dex",
+      "attrB": "ins",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 12,
+      "isMartial": "false"
+    },
+    {
+      "name": "Whip",
+      "value": 150,
+      "category": "flail",
+      "hand": "two-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "dex",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 8,
+      "isMartial": "false"
+    },
+    {
+      "name": "Hammer",
+      "value": 200,
+      "category": "heavy",
+      "hand": "one-handed",
+      "type": "melee",
+      "attrA": "mig",
+      "attrB": "mig",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 6,
+      "isMartial": "false"
+    },
+    {
+      "name": "Broadaxe",
+      "value": 250,
+      "category": "heavy",
+      "hand": "one-handed",
+      "type": "melee",
+      "attrA": "mig",
+      "attrB": "mig",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 10,
+      "isMartial": "true"
+    },
+    {
+      "name": "Waraxe",
+      "value": 250,
+      "category": "heavy",
+      "hand": "two-handed",
+      "type": "melee",
+      "attrA": "mig",
+      "attrB": "mig",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 14,
+      "isMartial": "true"
+    },
+    {
+      "name": "Light Spear",
+      "value": 200,
+      "category": "spear",
+      "hand": "one-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "mig",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 8,
+      "isMartial": "true"
+    },
+    {
+      "name": "Heavy Spear",
+      "value": 200,
+      "category": "spear",
+      "hand": "two-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "mig",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 12,
+      "isMartial": "true"
+    },
+    {
+      "name": "Longsword",
+      "value": 200,
+      "category": "sword",
+      "hand": "one-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "mig",
+      "accuracy": 1,
+      "defense": "def",
+      "element": "physical",
+      "damage": 6,
+      "isMartial": "true"
+    },
+    {
+      "name": "Greatsword",
+      "value": 200,
+      "category": "sword",
+      "hand": "two-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "mig",
+      "accuracy": 1,
+      "defense": "def",
+      "element": "physical",
+      "damage": 10,
+      "isMartial": "true"
+    },
+    {
+      "name": "Katana",
+      "value": 200,
+      "category": "sword",
+      "hand": "two-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "ins",
+      "accuracy": 1,
+      "defense": "def",
+      "element": "physical",
+      "damage": 10,
+      "isMartial": "true"
+    },
+    {
+      "name": "Rapier",
+      "value": 200,
+      "category": "sword",
+      "hand": "one-handed",
+      "type": "melee",
+      "attrA": "dex",
+      "attrB": "ins",
+      "accuracy": 1,
+      "defense": "def",
+      "element": "physical",
+      "damage": 6,
+      "isMartial": "true"
+    },
+    {
+      "name": "Shuriken",
+      "value": 150,
+      "category": "thrown",
+      "hand": "two-handed",
+      "type": "ranged",
+      "attrA": "dex",
+      "attrB": "ins",
+      "accuracy": 0,
+      "defense": "def",
+      "element": "physical",
+      "damage": 4,
+      "isMartial": "false"
+    }
+  ],
+  "weaponQualities": {
+    "basic": [
+      {
+        "name": "Thin",
+        "value": 500,
+        "description": "grants immunity to the slow status."
+      },
+      {
+        "name": "Thick",
+        "value": 500,
+        "description": "grants immunity to the daze status."
+      },
+      {
+        "name": "Sturdy",
+        "value": 500,
+        "description": "grants immunity to the shaken status."
+      },
+      {
+        "name": "Strong",
+        "value": 500,
+        "description": "grants immunity to the weak status."
+      },
+      {
+        "name": "Tempered",
+        "value": 700,
+        "description": "grants resistance to fire damage."
+      },
+      {
+        "name": "Cracked",
+        "value": 700,
+        "description": "grants resistance to earth damage."
+      },
+      {
+        "name": "Insulated",
+        "value": 700,
+        "description": "grants resistance to ice damage."
+      },
+      {
+        "name": "Grated",
+        "value": 700,
+        "description": "grants resistance to air damage."
+      },
+      {
+        "name": "Rubber",
+        "value": 700,
+        "description": "grants resistance to bolt damage."
+      },
+      {
+        "name": "Sacred",
+        "value": 700,
+        "description": "grants resistance to dark damage."
+      },
+      {
+        "name": "Purified",
+        "value": 700,
+        "description": "grants resistance to light damage."
+      },
+      {
+        "name": "Alchemists",
+        "value": 700,
+        "description": "grants resistance to poison damage."
+      },
+      {
+        "name": "Mythril",
+        "value": 800,
+        "description": "gives +1 to Magic Defense."
+      },
+      {
+        "name": "Adamant",
+        "value": 800,
+        "description": "gives +1 to Defense."
+      },
+      {
+        "name": "Monks",
+        "value": 1000,
+        "description": "grants resistance to physical damage."
+      },
+      {
+        "name": "Flamewalker",
+        "value": 1500,
+        "description": "grants immunity to fire damage."
+      },
+      {
+        "name": "Forestwalker",
+        "value": 1500,
+        "description": "grants immunity to earth damage."
+      },
+      {
+        "name": "Frostwalker",
+        "value": 1500,
+        "description": "grants immunity to ice damage."
+      },
+      {
+        "name": "Windwalker",
+        "value": 1500,
+        "description": "grants immunity to air damage."
+      },
+      {
+        "name": "Stormwalker",
+        "value": 1500,
+        "description": "grants immunity to bolt damage."
+      },
+      {
+        "name": "Shadowwalker",
+        "value": 1500,
+        "description": "grants immunity to dark damage."
+      },
+      {
+        "name": "Sunwalker",
+        "value": 1500,
+        "description": "grants immunity to light damage."
+      },
+      {
+        "name": "Poisoners",
+        "value": 1500,
+        "description": "grants immunity to poison damage."
+      },
+      {
+        "name": "Shielded",
+        "value": 2000,
+        "description": "gives +1 to Defense & Magic Defense."
+      },
+      {
+        "name": "Physicians",
+        "value": 2000,
+        "description": "grants immunity to all status effects."
+      },
+      {
+        "name": "Magical",
+        "value": 100,
+        "description": "targets Magic Defense instead of Defense."
+      },
+      {
+        "name": "Beast Hunter",
+        "value": 300,
+        "description": "deals 5 extra damage to beasts."
+      },
+      {
+        "name": "Construct Hunter",
+        "value": 300,
+        "description": "deals 5 extra damage to constructs."
+      },
+      {
+        "name": "Demon Hunter",
+        "value": 300,
+        "description": "deals 5 extra damage to demons."
+      },
+      {
+        "name": "Elemental Hunter",
+        "value": 300,
+        "description": "deals 5 extra damage to elementals."
+      },
+      {
+        "name": "Monster Hunter",
+        "value": 300,
+        "description": "deals 5 extra damage to monsters."
+      },
+      {
+        "name": "Plant Hunter",
+        "value": 300,
+        "description": "deals 5 extra damage to plants."
+      },
+      {
+        "name": "Undead Hunter",
+        "value": 300,
+        "description": "deals 5 extra damage to undead."
+      },
+      {
+        "name": "Piercing",
+        "value": 400,
+        "description": "ignores resistances."
+      },
+      {
+        "name": "Multi",
+        "value": 1000,
+        "description": "attacks as if it has Multi(2)"
+      },
+      {
+        "name": "Maiming",
+        "value": 1500,
+        "description": "causes slow on hit."
+      },
+      {
+        "name": "Dazzling",
+        "value": 1500,
+        "description": "causes daze on hit."
+      },
+      {
+        "name": "Horrifying",
+        "value": 1500,
+        "description": "causes shaken on hit."
+      },
+      {
+        "name": "Debilitating",
+        "value": 1500,
+        "description": "causes weak on hit."
+      }
+    ],
+    "Aerial": [
+      {
+        "name": "Whirlwind",
+        "value": 600,
+        "description": "deals 5 extra damage during the first round of a conflict."
+      },
+      {
+        "name": "Finesse",
+        "value": 600,
+        "description": "this weapon is in your off-hand, you may use two-weapon fighting with it regardless of its category."
+      },
+      {
+        "name": "Switch",
+        "value": 800,
+        "description": "when you hit one or more creatures, you may immediately perform the Equipment action for free."
+      },
+      {
+        "name": "Skybreaker",
+        "value": 900,
+        "description": "grants immunity to damage dealt by flying creatures."
+      },
+      {
+        "name": "Polarized",
+        "value": 1000,
+        "description": "when you cast a spell that targets a creature (not special) who is suffering from slow, that spell’s total MP cost is halved."
+      },
+      {
+        "name": "Slipstream",
+        "value": 1200,
+        "description": "when you deal damage to a creature outside of your turn during a conflict, you deal 5 extra damage that creature."
+      }
+    ],
+    "Thunderous": [
+      {
+        "name": "Spiked",
+        "value": 600,
+        "description": "when you use a spell or skill to deal bolt damage to a creature, one ally you can see may take their turn (if that haven't) immediately after yours."
+      },
+      {
+        "name": "Shockwave",
+        "value": 800,
+        "description": "when damge dealt by this weapon causes one or more enemies to enter crisis, every enemy present in the scene suffers dazed."
+      },
+      {
+        "name": "Livewire",
+        "value": 1000,
+        "description": "grants【half your level in the Elementalist Class】as extra damage to your Cataclysm Skill."
+      },
+      {
+        "name": "Conductor’s",
+        "value": 1000,
+        "description": "when you use the Encourage Skill, the target recovers extra HP equal to【half your level】"
+      },
+      {
+        "name": "Jolted",
+        "value": 1200,
+        "description": "after a creature hits you with a melee attack, you deal 5 bolt damage to that creature."
+      },
+      {
+        "name": "Overcharged",
+        "value": 1500,
+        "description": "when you deal damage with this weapon if at least one target is shaken, each target loses 20 Mind Points."
+      }
+    ],
+    "Paradox": [
+      {
+        "name": "Temporal",
+        "value": 600,
+        "description": "deals 5 extra damage as long as you have exactly one other weapon equipped of a different category."
+      },
+      {
+        "name": "Anomalous",
+        "value": 800,
+        "description": "grants you the effects of the Mirror spell at the beginning of any conflict scene."
+      },
+      {
+        "name": "Bound",
+        "value": 1000,
+        "description": "when you hit 2 targets with this weapon, you may tether them. when either loses HP due to damage they are Vulnerable to, the other loses 5 HP."
+      },
+      {
+        "name": "Distorted",
+        "value": 1200,
+        "description": "when you score a critical success on a Magic Check for an offensive spell, that spell deals 5 extra damage."
+      },
+      {
+        "name": "Echoing",
+        "value": 1500,
+        "description": "when an enemy in the scene heals from one or more status effects, roll a d8. That enemy suffers a status effect based on the number rolled: 1-2 dazed, 3-4 shaken, 5-6 slow, 7-8 weak."
+      },
+      {
+        "name": "Faded",
+        "value": 1800,
+        "description": "causes enemies hit by this weapon to fade. If a fading enemy would recover HP, instead they recover no HP and stop fading."
+      }
+    ],
+    "Terrestrial": [
+      {
+        "name": "Earthward",
+        "value": 600,
+        "description": "grants resistance to damage caused by environmental hazards."
+      },
+      {
+        "name": "Deeproot",
+        "value": 800,
+        "description": "when you recover HP, if you are in Crisis, you recover 5 additional HP."
+      },
+      {
+        "name": "Trembling",
+        "value": 1000,
+        "description": "when you hit a creatures with this weapon, you recover an amount of Mind Points equal to your HR."
+      },
+      {
+        "name": "Blooming",
+        "value": 1000,
+        "description": "when you heal an ally during a conflict, they gain resistance to physical damage till the start of your next turn."
+      },
+      {
+        "name": "Runestone",
+        "value": 1500,
+        "description": "gives a +2 bonus to Magic Checks you perform for Elementalism Rituals, as long as it has a total MP cost equal to or lower than 60."
+      },
+      {
+        "name": "Spinebreaker",
+        "value": 1800,
+        "description": "Your with weapons belonging to the heavy and/or spear Categories deal 5 extra damage."
+      }
+    ],
+    "Ardent": [
+      {
+        "name": "Dancing",
+        "value": 500,
+        "description": "reduces that MP of the Bladestorm Skill by half when using this weapon."
+      },
+      {
+        "name": "Shadowfire",
+        "value": 600,
+        "description": "when you attack using the Shadow Strike Skill you may have the attack deal fire damage instead of dark damage."
+      },
+      {
+        "name": "Cauterized",
+        "value": 600,
+        "description": "deals 1 extra damage for every status effect you are suffering from."
+      },
+      {
+        "name": "Bonded",
+        "value": 800,
+        "description": "when you invoke a Bond during a Check, you recover 5 Mind Points."
+      },
+      {
+        "name": "Silencing",
+        "value": 1300,
+        "description": "when you hit a creatures, that creature can't perform the Spell action during their next turn."
+      },
+      {
+        "name": "Rapidfire",
+        "value": 1800,
+        "description": "Your attacks with weapons belonging to the bow and/or sword Categories deal 5 extra damage."
+      }
+    ],
+    "Glacial": [
+      {
+        "name": "Frostbitten",
+        "value": 600,
+        "description": "when you enter Crisis for the first time during a conflict, deals 5 ice damage to every enemy present in the scene."
+      },
+      {
+        "name": "Niveous",
+        "value": 800,
+        "description": "makes Ice damage you deal ignore Immunities and Resistances."
+      },
+      {
+        "name": "Rimebound",
+        "value": 1000,
+        "description": "when you start your turn in a conflict, each creature in the scene suffering from the weak status effect loses 5 HP."
+      },
+      {
+        "name": "Brumal",
+        "value": 1000,
+        "description": "gives a +1 bonus to Defense and Magic Defense against attacks and offensive spells enraged creatures."
+      },
+      {
+        "name": "Boreal",
+        "value": 1800,
+        "description": "when you deal ice damage to a creature, that creature suffers the slow status effect or loses 10 MP if already slowed."
+      },
+      {
+        "name": "Gelid",
+        "value": 1800,
+        "description": "when you deal damage to a creature suffering from the weak status effect, you deal 5 extra damage to that creature."
+      }
+    ],
+    "Spiritual": [
+      {
+        "name": "Anima",
+        "value": 600,
+        "description": "when you end your turn, if you are merged with an Arcanum, you may heal from a single status effect of your choice."
+      },
+      {
+        "name": "Aetheric",
+        "value": 800,
+        "description": "deals 1 extra damage for each Bond of affection you have."
+      },
+      {
+        "name": "Auroral",
+        "value": 1000,
+        "description": "as long as you are affected by a spell with a duration of “Scene”, all damage you deal ignores Resistances."
+      },
+      {
+        "name": "Spellbound",
+        "value": 1000,
+        "description": "applies all bonuses you would apply to an Accuracy Check when using the Spellblade Skill with this weapon, to your Magic Check instead."
+      },
+      {
+        "name": "Vitalis",
+        "value": 1000,
+        "description": "when you perform the Guard action and choose to cover an ally, that ally recovers 5 Hit Points."
+      },
+      {
+        "name": "Sylvan",
+        "value": 1500,
+        "description": "grants resistance to dark, light, and poison damage."
+      }
+    ],
+    "Corrupted": [
+      {
+        "name": "Tarnished",
+        "value": 600,
+        "description": "when you cast a spell using the Spellblade Skill, any dark damage dealt by the spell ignores Immunities and Resistances."
+      },
+      {
+        "name": "Psychic",
+        "value": 1000,
+        "description": "when you cast an offensive spell, treat the target’s Magic Defense as being equal to their Willpower die size."
+      },
+      {
+        "name": "Withering",
+        "value": 1000,
+        "description": "makes Dark and poison damage you deal ignore Immunities and Resistances."
+      },
+      {
+        "name": "Malicious",
+        "value": 1000,
+        "description": "when you cast a spell targeting a creature ( not special ) you have a Bond of hatred towards, that spell’s total MP cost is halved."
+      },
+      {
+        "name": "Overlord's",
+        "value": 1200,
+        "description": "gives a +1 bonus to Defense and Magic Defense against attacks and offensive spells from shaken creatures."
+      },
+      {
+        "name": "Wraith",
+        "value": 1500,
+        "description": "when you Counterattack with this weapon and hit the target, that target suffers the poisoned status effect."
+      }
+    ],
+    "Aquatic": [
+      {
+        "name": "Coral",
+        "value": 600,
+        "description": "when you reduce an enemy to 0 HP, you may treat your DEX as being one die size higher until the end of your next turn."
+      },
+      {
+        "name": "Barnacled",
+        "value": 800,
+        "description": "treats defense score with this weapon treat the Defense score of each target as being equal to their current Might die size."
+      },
+      {
+        "name": "Boreal",
+        "value": 1000,
+        "description": "when you cast and resolve an offensive spell, you recover an amount of HP equal to the HR of the Magic Check."
+      },
+      {
+        "name": "Maleable",
+        "value": 1000,
+        "description": "prevents attacks with this weapon from triggering counterattacks other reactive Skills."
+      },
+      {
+        "name": "Spring",
+        "value": 1200,
+        "description": "if you cause one or more allies to recover HP, if that ally has full HP they recover 5 MP."
+      },
+      {
+        "name": "Misty",
+        "value": 1500,
+        "description": "when you hit a creature during a single scene, you may reduce the damage of the next attack made against you by the HR of the last recorded hit."
+      }
+    ],
+    "Mechanical": [
+      {
+        "name": "Thief's",
+        "value": 300,
+        "description": "allows you to spend your opportunity to earn 100z."
+      },
+      {
+        "name": "Breaching",
+        "value": 600,
+        "description": "when you use the Breach SKill with this weapon, gain a +2 to your accuracy check."
+      },
+      {
+        "name": "Alchemist's",
+        "value": 800,
+        "description": "when you create a potion using Gadget (Alchemy), if at least two dice show the same mumber, your area and effect is chosen freely."
+      },
+      {
+        "name": "Magnetic",
+        "value": 1000,
+        "description": "deals 5 additional damage to creatures with traits related to metal."
+      },
+      {
+        "name": "Bard's",
+        "value": 1200,
+        "description": "when you use the Tavern Talk skill, you earn 200xSL zenit."
+      },
+      {
+        "name": "Energized",
+        "value": 1500,
+        "description": "when you hit two or more creatures in a single turn with this weapon, it becomes charged."
+      }
     ]
-
+  }
 }
