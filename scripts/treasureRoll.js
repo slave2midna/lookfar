@@ -482,8 +482,10 @@ Hooks.once("ready", () => {
 	const { shieldList,  shieldQualities }   = dataLoader.shieldsData;
 	const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
 
-	// TEMP - keep using weaponElements from the legacy treasure.json (unchanged)
-	const { weaponElements } = dataLoader.treasureData;
+	// builds weapon element using element keywords
+	const elementKeywords = dataLoader.keywordData.element || {};
+	const weaponElements = Object.entries(elementKeywords)
+  	.flatMap(([damageType, names]) => names.map(name => ({ name, damageType })));
 
     if (rerollConfig) {
       const {
