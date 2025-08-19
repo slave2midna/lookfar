@@ -348,12 +348,12 @@ async function renderTreasureResultDialog(items, budget, config) {
         	`<b>DEF:</b> ${baseShield?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseShield?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseShield?.init ?? 0}`
     	}
       };
-    } else if (dataLoader.accesoriesData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
+    } else if (dataLoader.accessoriesData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
       type = "accessory";
-      const baseAccessory = dataLoader.accesoriesData.accessoryList.find(acc => data.name.endsWith(acc.name));
+      const baseAccessory = dataLoader.accessoriesData.accessoryList.find(acc => data.name.endsWith(acc.name));
       const allQualities = [
-  		...(dataLoader.accesoriesData.accessoryQualities.basic || []),
-  		...(dataLoader.accesoriesData.accessoryQualities[data.origin] || [])
+  		...(dataLoader.accessoriesData.accessoryQualities.basic || []),
+  		...(dataLoader.accessoriesData.accessoryQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
