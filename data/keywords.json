@@ -643,5 +643,39 @@
       "Mellow",
       "Full-bodied"
     ]
+  },
+  "element":{
+    "fire":[
+      "Flaming",
+      "Fire"
+    ],
+    "ice":[
+      "Cold",
+      "Ice"
+    ],
+    "earth":[
+      "Stone",
+      "Earth"
+    ],
+    "bolt":[
+      "Electric",
+      "Bolt"
+    ],
+    "air":[
+      "Energy",
+      "Wind"
+    ],
+    "dark":[
+      "Cursed",
+      "Dark"
+    ],
+    "light":[
+      "Holy",
+      "Light"
+    ],
+    "poison":[
+      "Toxic",
+      "Poison"
+    ]
   }
 }
