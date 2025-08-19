@@ -253,12 +253,12 @@ async function renderTreasureResultDialog(items, budget, config) {
             `It can be used to craft <b>${data.detail}</b> items.`
         }
       };
-    } else if (dataLoader.treasureData.weaponList.some(w => data.name.endsWith(w.name))) {
+    } else if (dataLoader.weaponsData.weaponList.some(w => data.name.endsWith(w.name))) {
       type = "weapon";
-      const baseWeapon = dataLoader.treasureData.weaponList.find(w => data.name.endsWith(w.name));
+      const baseWeapon = dataLoader.weaponsData.weaponList.find(w => data.name.endsWith(w.name));
       const allQualities = [
-  		...(dataLoader.treasureData.weaponQualities.basic || []),
-  		...(dataLoader.treasureData.weaponQualities[data.origin] || [])
+  		...(dataLoader.weaponsData.weaponQualities.basic || []),
+  		...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `A weapon of ${data.quality || "unknown"} quality.`;
@@ -290,12 +290,12 @@ async function renderTreasureResultDialog(items, budget, config) {
             `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> <b>DMG:</b> HR+${baseWeapon?.damage ?? 0} <strong>|</strong> <b>ELE:</b> ${(data.element?.damageType || baseWeapon?.element || "physical").charAt(0).toUpperCase()}${(data.element?.damageType || baseWeapon?.element || "physical").slice(1)}`
         }
       };
-    } else if (dataLoader.treasureData.armorList.some(a => data.name.endsWith(a.name))) {
+    } else if (dataLoader.armorData.armorList.some(a => data.name.endsWith(a.name))) {
       type = "armor";
-      const baseArmor = dataLoader.treasureData.armorList.find(a => data.name.endsWith(a.name));
+      const baseArmor = dataLoader.armorData.armorList.find(a => data.name.endsWith(a.name));
       const allQualities = [
-  		...(dataLoader.treasureData.armorQualities.basic || []),
-  		...(dataLoader.treasureData.armorQualities[data.origin] || [])
+  		...(dataLoader.armorData.armorQualities.basic || []),
+  		...(dataLoader.armorData.armorQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Armor of ${data.quality || "unknown"} quality.`;
@@ -319,12 +319,12 @@ async function renderTreasureResultDialog(items, budget, config) {
             `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseArmor?.init ?? 0}`
         }
       };
-	} else if (dataLoader.treasureData.shieldList.some(s => data.name.endsWith(s.name))) {
+	} else if (dataLoader.shieldData.shieldList.some(s => data.name.endsWith(s.name))) {
 	  type = "shield";
-      const baseShield = dataLoader.treasureData.shieldList.find(s => data.name.endsWith(s.name));
+      const baseShield = dataLoader.shieldData.shieldList.find(s => data.name.endsWith(s.name));
       const allQualities = [
-    	...(dataLoader.treasureData.shieldQualities.basic || []),
-    	...(dataLoader.treasureData.shieldQualities[data.origin] || [])
+    	...(dataLoader.shieldData.shieldQualities.basic || []),
+    	...(dataLoader.shieldData.shieldQualities[data.origin] || [])
   	  ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
 	  const description = qualityObj ? qualityObj.description : `Shield of ${data.quality || "unknown"} quality.`;	
@@ -348,12 +348,12 @@ async function renderTreasureResultDialog(items, budget, config) {
         	`<b>DEF:</b> ${baseShield?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseShield?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseShield?.init ?? 0}`
     	}
       };
-    } else if (dataLoader.treasureData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
+    } else if (dataLoader.accesoriesData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
       type = "accessory";
-      const baseAccessory = dataLoader.treasureData.accessoryList.find(acc => data.name.endsWith(acc.name));
+      const baseAccessory = dataLoader.accesoriesData.accessoryList.find(acc => data.name.endsWith(acc.name));
       const allQualities = [
-  		...(dataLoader.treasureData.accessoryQualities.basic || []),
-  		...(dataLoader.treasureData.accessoryQualities[data.origin] || [])
+  		...(dataLoader.accesoriesData.accessoryQualities.basic || []),
+  		...(dataLoader.accesoriesData.accessoryQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
@@ -468,21 +468,22 @@ async function renderTreasureResultDialog(items, budget, config) {
 // Hook Setup
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
-    const {
-      natureKeywords,
-      originKeywords,
-      detailKeywords,
-      tasteKeywords,
-      weaponList,
-      weaponQualities,
-      weaponElements,
-      armorList,
-      armorQualities,
-	  shieldList,
-	  shieldQualities,
-      accessoryList,
-      accessoryQualities,
-    } = dataLoader.treasureData;
+    // keywords 
+	const {
+  		origin: originKeywords,
+  		nature: natureKeywords,
+  		detail: detailKeywords,
+  		taste: tasteKeywords
+	} = dataLoader.keywordData;
+
+	// gear lists & qualities
+	const { weaponList,  weaponQualities }   = dataLoader.weaponsData;
+	const { armorList,   armorQualities }    = dataLoader.armorData;
+	const { shieldList,  shieldQualities }   = dataLoader.shieldsData;
+	const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
+
+	// TEMP - keep using weaponElements from the legacy treasure.json (unchanged)
+	const { weaponElements } = dataLoader.treasureData;
 
     if (rerollConfig) {
       const {
