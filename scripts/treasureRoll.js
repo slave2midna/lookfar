@@ -319,12 +319,12 @@ async function renderTreasureResultDialog(items, budget, config) {
             `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseArmor?.init ?? 0}`
         }
       };
-	} else if (dataLoader.shieldData.shieldList.some(s => data.name.endsWith(s.name))) {
+	} else if (dataLoader.shieldsData.shieldList.some(s => data.name.endsWith(s.name))) {
 	  type = "shield";
-      const baseShield = dataLoader.shieldData.shieldList.find(s => data.name.endsWith(s.name));
+      const baseShield = dataLoader.shieldsData.shieldList.find(s => data.name.endsWith(s.name));
       const allQualities = [
-    	...(dataLoader.shieldData.shieldQualities.basic || []),
-    	...(dataLoader.shieldData.shieldQualities[data.origin] || [])
+    	...(dataLoader.shieldsData.shieldQualities.basic || []),
+    	...(dataLoader.shieldsData.shieldQualities[data.origin] || [])
   	  ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
 	  const description = qualityObj ? qualityObj.description : `Shield of ${data.quality || "unknown"} quality.`;	
