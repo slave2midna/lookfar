@@ -206,6 +206,12 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
   };
 }
 
+// Module Generation
+// function rollModule()
+
+// Custom Treasure Generation
+// fuction rollCustom()
+
 // Results render function
 async function renderTreasureResultDialog(items, budget, config) {
   const cacheFolder = await cacheManager.getOrCreateCacheFolder();
@@ -640,7 +646,7 @@ Hooks.once("ready", () => {
           		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
           			    <input type="checkbox" id="includeModules"> Modules </label>
 	          	  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-			              <input type="checkbox" id="includeRolltable"> Rolltable </label>
+			              <input type="checkbox" id="includeCustom"> Custom </label>
 	          </div>
         </form>
       `,
