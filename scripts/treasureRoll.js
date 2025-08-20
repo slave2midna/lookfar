@@ -486,7 +486,13 @@ async function renderTreasureResultDialog(items, budget, config) {
   const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
   const quantitySuffix = isIngredient && quantity > 1 ? ` x${quantity}` : "";
 
-  let desc = item.system.description || "";
+  // let desc = item.system.description || ""; ( old, no longer using )
+  let desc =
+    item.system?.summary?.value ??
+    item.system?.summary ??
+    item.system?.data?.summary?.value ??
+    item.system?.data?.summary ??
+    "";
 
   return `
     <div style="text-align: center; margin-bottom: 0.75em;">
