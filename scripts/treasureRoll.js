@@ -310,7 +310,6 @@ async function renderTreasureResultDialog(items, budget, config) {
   		...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const description = qualityObj ? qualityObj.description : `A weapon of ${data.quality || "unknown"} quality.`;
       const img = "icons/svg/sword.svg";
 
       itemData = {
@@ -347,7 +346,6 @@ async function renderTreasureResultDialog(items, budget, config) {
   		...(dataLoader.armorData.armorQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const description = qualityObj ? qualityObj.description : `Armor of ${data.quality || "unknown"} quality.`;
       const img = "icons/svg/statue.svg";
       
       itemData = {
@@ -376,7 +374,6 @@ async function renderTreasureResultDialog(items, budget, config) {
     	...(dataLoader.shieldsData.shieldQualities[data.origin] || [])
   	  ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-	  const description = qualityObj ? qualityObj.description : `Shield of ${data.quality || "unknown"} quality.`;	
       const img = "icons/svg/shield.svg";
  
       itemData = {
@@ -405,7 +402,6 @@ async function renderTreasureResultDialog(items, budget, config) {
   		...(dataLoader.accessoriesData.accessoryQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const description = qualityObj ? qualityObj.description : `Accessory of ${data.quality || "unknown"} quality.`;
       const img = "icons/svg/stoned.svg";
 
       itemData = {
@@ -512,89 +508,60 @@ async function renderTreasureResultDialog(items, budget, config) {
 // Hook Setup
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
-  +  (async () => {
-	  
+  (async () => {
     // keywords 
-	const {
-  		origin: originKeywords,
-  		nature: natureKeywords,
-  		detail: detailKeywords,
-  		taste: tasteKeywords
-	} = dataLoader.keywordData;
+    const { origin: originKeywords, nature: natureKeywords, detail: detailKeywords, taste: tasteKeywords } = dataLoader.keywordData;
 
-	// gear lists & qualities
-	const { weaponList,  weaponQualities }   = dataLoader.weaponsData;
-	const { armorList,   armorQualities }    = dataLoader.armorData;
-	const { shieldList,  shieldQualities }   = dataLoader.shieldsData;
-	const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
+    // gear lists & qualities
+    const { weaponList, weaponQualities } = dataLoader.weaponsData;
+    const { armorList, armorQualities } = dataLoader.armorData;
+    const { shieldList, shieldQualities } = dataLoader.shieldsData;
+    const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
 
-	// builds weapon element using element keywords
-	const elementKeywords = dataLoader.keywordData.element || {};
-	const weaponElements = Object.entries(elementKeywords)
-  	.flatMap(([damageType, names]) => names.map(name => ({ name, damageType })));
+    // builds weapon element using element keywords
+    const elementKeywords = dataLoader.keywordData.element || {};
+    const weaponElements = Object.entries(elementKeywords)
+      .flatMap(([damageType, names]) => names.map(name => ({ name, damageType })));
 
     if (rerollConfig) {
       const {
-        budget,
-        maxVal,
-        origin,
-        nature,
-        includeWeapons,
-        includeArmor,
-		includeShields,
-        includeAccessories,
-        includeIngredients,
-        includeMaterials,
-		includeCustom
+        budget, maxVal, origin, nature,
+        includeWeapons, includeArmor, includeShields,
+        includeAccessories, includeIngredients, includeMaterials,
+        includeCustom
       } = rerollConfig;
 
       let remainingBudget = budget;
       let items = [];
       let ingredientCount = 0;
       let failedAttempts = 0;
-      let maxAttempts = 10;
+      const maxAttempts = 10; // const (tiny cleanup)
 
       while (remainingBudget > 0 && items.length < 4 && failedAttempts < maxAttempts) {
-
         let itemTypes = [];
         if (includeWeapons) itemTypes.push("Weapon");
         if (includeArmor) itemTypes.push("Armor");
-		if (includeShields) itemTypes.push("Shield");
+        if (includeShields) itemTypes.push("Shield");
         if (includeAccessories) itemTypes.push("Accessory");
         if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
         if (includeMaterials) itemTypes.push("Material");
-		if (includeCustom)   itemTypes.push("Custom");
+        if (includeCustom)   itemTypes.push("Custom");
 
         if (itemTypes.length === 0) break;
 
         const type = getRandom(itemTypes);
         let item = null;
-		const cap = Math.min(remainingBudget, maxVal);
+        const cap = Math.min(remainingBudget, maxVal);
 
         switch (type) {
-          case "Weapon":
-            item = rollWeapon(weaponList, weaponQualities, weaponElements, origin);
-            break;
-          case "Armor":
-            item = rollArmor(armorList, armorQualities, origin, cap);
-            break;
-		  case "Shield":
-            item = rollShield(shieldList, shieldQualities, origin, cap);
-            break;
-          case "Accessory":
-            item = rollAccessory(accessoryList, accessoryQualities, origin, cap);
-            break;
-          case "Material":
-            item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords.material, natureKeywords.material);
-            break;
-          case "Ingredient":
-            item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient);
-            ingredientCount++;
-            break;
-		  case "Custom":
-            item = await rollCustom();
-            break;		
-          }
+          case "Weapon":     item = rollWeapon(weaponList, weaponQualities, weaponElements, origin); break;
+          case "Armor":      item = rollArmor(armorList, armorQualities, origin, cap); break;
+          case "Shield":     item = rollShield(shieldList, shieldQualities, origin, cap); break;
+          case "Accessory":  item = rollAccessory(accessoryList, accessoryQualities, origin, cap); break;
+          case "Material":   item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords.material, natureKeywords.material); break;
+          case "Ingredient": item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient); ingredientCount++; break;
+          case "Custom":     item = await rollCustom(); break;
+        }
 
         if (!item || item.value > remainingBudget || item.value > maxVal) {
           failedAttempts++;
@@ -613,7 +580,6 @@ Hooks.once("ready", () => {
       renderTreasureResultDialog(items, remainingBudget, rerollConfig);
       return;
     }
-})();
 	  
     // If not a reroll, render the main form
     new Dialog({
@@ -738,5 +704,5 @@ Hooks.once("ready", () => {
   }
 }
     }).render(true);
-  });
+  })();
 });
