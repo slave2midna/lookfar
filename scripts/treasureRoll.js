@@ -263,6 +263,25 @@ async function renderTreasureResultDialog(items, budget, config) {
     let type = null;
     let itemData;
 
+ // Handle items drawn from a Roll Table (Custom)
+  if (data.fromTable && data.uuid) {
+    const src = await fromUuid(data.uuid);
+    if (!src || src.documentName !== "Item") return null;
+
+    // Deduplicate in cache by name + cost
+    const existing = game.items.find(i =>
+      i.folder?.id === cacheFolder.id &&
+      i.name === src.name &&
+      getItemCost(i.system) === getItemCost(src.system)
+    );
+    if (existing) return existing;
+
+    const toCreate = foundry.utils.duplicate(src.toObject());
+    delete toCreate._id;
+    toCreate.folder = cacheFolder.id;
+    return await Item.create(toCreate);
+  }	  
+
     if ("taste" in data) {
       type = "classFeature";
       itemData = {
