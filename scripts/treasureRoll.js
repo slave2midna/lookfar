@@ -6,6 +6,15 @@ function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Normalize cost across different schemas
+function getItemCost(sys) {
+  return sys?.cost?.value ??
+         sys?.data?.cost ??
+         sys?.data?.cost?.value ??
+         sys?.data?.value ??
+         0;
+}
+
 // Material Generation
 function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywordsMaterial, natureKeywordsMaterial) {
   if (!natureKeywordsMaterial[nature] || budget < 50) return null;
@@ -420,11 +429,11 @@ async function renderTreasureResultDialog(items, budget, config) {
     if (!type || !itemData) return null;
 
     const cached = game.items.find(i =>
-      i.name === itemData.name &&
-      i.type === itemData.type &&
-      i.folder?.id === cacheFolder.id &&
-      i.system?.cost?.value === itemData.system.cost?.value
-    );
+  	  i.name === itemData.name &&
+  	  i.type === itemData.type &&
+  	  i.folder?.id === cacheFolder.id &&
+  	  getItemCost(i.system) === getItemCost(itemData.system)
+	);
 
     if (cached) return cached;
 
@@ -434,12 +443,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   const finalItems = tempItems.filter(Boolean);
 
   let htmlContent = finalItems.map(item => {
-  const cost =
-    item.system.cost?.value ??
-    item.system.data?.cost ??
-    item.system.data?.cost?.value ??
-    item.system.data?.value ??
-    0;
+  const cost = getItemCost(item.system);
 
   const quantity = item.system.quantity?.value ?? 1;
   const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
