@@ -512,6 +512,8 @@ async function renderTreasureResultDialog(items, budget, config) {
 // Hook Setup
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
+  +  (async () => {
+	  
     // keywords 
 	const {
   		origin: originKeywords,
@@ -542,7 +544,8 @@ Hooks.once("ready", () => {
 		includeShields,
         includeAccessories,
         includeIngredients,
-        includeMaterials
+        includeMaterials,
+		includeCustom
       } = rerollConfig;
 
       let remainingBudget = budget;
@@ -560,6 +563,7 @@ Hooks.once("ready", () => {
         if (includeAccessories) itemTypes.push("Accessory");
         if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
         if (includeMaterials) itemTypes.push("Material");
+		if (includeCustom)   itemTypes.push("Custom");
 
         if (itemTypes.length === 0) break;
 
@@ -587,6 +591,9 @@ Hooks.once("ready", () => {
             item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient);
             ingredientCount++;
             break;
+		  case "Custom":
+            item = await rollCustom();
+            break;		
           }
 
         if (!item || item.value > remainingBudget || item.value > maxVal) {
@@ -606,7 +613,8 @@ Hooks.once("ready", () => {
       renderTreasureResultDialog(items, remainingBudget, rerollConfig);
       return;
     }
-
+})();
+	  
     // If not a reroll, render the main form
     new Dialog({
       title: "Treasure Generator",
@@ -700,6 +708,7 @@ Hooks.once("ready", () => {
       const includeAccessories = html.find("#includeAccessories").is(":checked");
       const includeIngredients = html.find("#includeIngredients").is(":checked");
       const includeMaterials = html.find("#includeMaterials").is(":checked");
+	  const includeCustom   = html.find("#includeCustom").is(":checked");	
 
       let selectedOrigin = html.find("#origin").val();
       let selectedNature = html.find("#nature").val();
@@ -722,7 +731,8 @@ Hooks.once("ready", () => {
 		includeShields,
         includeAccessories,
         includeIngredients,
-        includeMaterials
+        includeMaterials,
+		includeCustom  
       });
     }
   }
