@@ -237,24 +237,46 @@ async function rollCustom() {
   if (!result) return null;
 
   let doc = null;
-  if (typeof result.getDocument === "function") {
+
+  // 1) If the result exposes a UUID, resolve that first (covers compendium & world)
+  const directUuid = result.documentUuid || result.uuid;
+  if (!doc && directUuid) {
+    try { doc = await fromUuid(directUuid); } catch {}
+  }
+
+  // 2) Foundry’s helper (often resolves both world & compendium)
+  if (!doc && typeof result.getDocument === "function") {
     try { doc = await result.getDocument(); } catch {}
   }
+
+  // 3) Explicit compendium fallback: result.pack like "systemOrModule.packName"
+  if (!doc && result.pack && result.documentId) {
+    const pack = game.packs?.get(result.pack) || game.packs?.get(`world.${result.pack}`);
+    if (pack) {
+      try { doc = await pack.getDocument(result.documentId); } catch {}
+    }
+    // Also try a UUID form for good measure
+    if (!doc) {
+      const compUuid = `Compendium.${result.pack}.${result.documentId}`;
+      try { doc = await fromUuid(compUuid); } catch {}
+    }
+  }
+
+  // 4) World fallback (non-compendium)
   if (!doc && result.documentCollection && result.documentId) {
     try { doc = await fromUuid(`${result.documentCollection}.${result.documentId}`); } catch {}
   }
+
   if (!doc || doc.documentName !== "Item") return null;
 
   const cost = getItemCost(doc.system);
-
-  return { 
-	fromTable: true, 
-	name: doc.name, 
-	value: cost, 
-	uuid: doc.uuid 
+  return {
+    fromTable: true,
+    name: doc.name,
+    value: cost,
+    uuid: doc.uuid
   };
 }
-
 // Results render function
 async function renderTreasureResultDialog(items, budget, config) {
   const cacheFolder = await cacheManager.getOrCreateCacheFolder();
