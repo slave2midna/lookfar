@@ -705,4 +705,5 @@ Hooks.once("ready", () => {
 }
     }).render(true);
   })();
+ });
 });
