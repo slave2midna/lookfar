@@ -210,7 +210,41 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
 // function rollModule()
 
 // Custom Treasure Generation
-// fuction rollCustom()
+async function rollCustom() {
+  const tableId = game.settings.get("lookfar", "customTreasureRollTable");
+  if (!tableId || tableId === "default") {
+    ui.notifications?.warn("No Custom Treasure Roll Table selected in settings.");
+    return null;
+  }
+
+  const table = game.tables?.get(tableId);
+  if (!table) {
+    ui.notifications?.warn("Selected Custom Treasure Roll Table not found.");
+    return null;
+  }
+
+  const draw = await table.draw({ displayChat: false });
+  const result = draw?.results?.[0];
+  if (!result) return null;
+
+  let doc = null;
+  if (typeof result.getDocument === "function") {
+    try { doc = await result.getDocument(); } catch {}
+  }
+  if (!doc && result.documentCollection && result.documentId) {
+    try { doc = await fromUuid(`${result.documentCollection}.${result.documentId}`); } catch {}
+  }
+  if (!doc || doc.documentName !== "Item") return null;
+
+  const cost = getItemCost(doc.system);
+
+  return { 
+	fromTable: true, 
+	name: doc.name, 
+	value: cost, 
+	uuid: doc.uuid 
+  };
+}
 
 // Results render function
 async function renderTreasureResultDialog(items, budget, config) {
