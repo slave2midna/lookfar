@@ -83,40 +83,40 @@
     ],
     "armorModules":[
         {
-            "name":"Weave",
-            "value":500,
-            "defAttr":"dex",
-            "def":2,
-            "mdefAttr":"ins",
-            "mdef":1,
-            "isMartial":"false"
+            "name": "Weave",
+            "value": 500,
+            "defAttr": "dex",
+            "def": 2,
+            "mdefAttr": "ins",
+            "mdef": 1,
+            "isMartial": "false"
         },
         {
-            "name":"Armor",
-            "value":500,
-            "defAttr":"",
-            "def":12,
-            "mdefAttr":"",
-            "mdef":8,
-            "isMartial":"true"
+            "name": "Armor",
+            "value": 500,
+            "defAttr": "",
+            "def": 12,
+            "mdefAttr": "",
+            "mdef": 8,
+            "isMartial": "true"
         },
         {
-            "name":"Shielding",
-            "value":500,
-            "defAttr":"",
-            "def":10,
-            "mdefAttr":"",
-            "mdef":11,
-            "isMartial":"true"
+            "name": "Shielding",
+            "value": 500,
+            "defAttr": "",
+            "def": 10,
+            "mdefAttr": "",
+            "mdef": 11,
+            "isMartial": "true"
         },
         {
             "name":"Plating",
-            "value":500,
-            "defAttr":"",
-            "def":11,
-            "mdefAttr":"",
-            "mdef":10,
-            "isMartial":"true"
+            "value": 500,
+            "defAttr": "",
+            "def": 11,
+            "mdefAttr": "",
+            "mdef": 10,
+            "isMartial": "true"
         }
     ],
     "armorQualities":{
@@ -483,4 +483,5 @@
             }
         ]
     }
+
 }
