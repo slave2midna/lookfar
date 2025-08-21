@@ -708,6 +708,30 @@ Hooks.once("ready", () => {
 			              <input type="checkbox" id="includeCustom"> Custom </label>
 	          </div>
         </form>
+		<!-- Reference table Begins -->
+<div style="margin-top:8px;">
+  <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center;" border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th rowspan="2">Level</th>
+        <th rowspan="2">Max<br>Value</th>
+        <th colspan="3">Budget</th>
+      </tr>
+      <tr>
+        <th>2 PCs</th>
+        <th>3 PCs</th>
+        <th>4 PCs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>5+</td><td>500</td><td>500</td><td>750</td><td>1000</td></tr>
+      <tr><td>10+</td><td>1000</td><td>800</td><td>1200</td><td>1800</td></tr>
+      <tr><td>20+</td><td>1500</td><td>1000</td><td>1500</td><td>2000</td></tr>
+      <tr><td>30+</td><td>2000</td><td>1600</td><td>2400</td><td>3200</td></tr>
+      <tr><td>40+</td><td>any</td><td>2000</td><td>3000</td><td>4000</td></tr>
+    </tbody>
+  </table>
+</div>
       `,
       buttons: {
   ok: {
