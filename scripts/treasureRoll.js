@@ -504,33 +504,50 @@ async function renderTreasureResultDialog(items, budget, config) {
         }
       };
     } else if ("moduleType" in data) {
+  // Render a Project FU Module as a classFeature
   type = "classFeature";
 
   const s = data.stats || {};
+  const isArmor = data.moduleType === "armor";
+  const toBool = (v) => (typeof v === "string" ? v.toLowerCase() === "true" : !!v);
 
-  // Build a compact summary; show useful stats when we have them
-  const parts = [];
-  const addNum = (label, v) => {
+  // ---- Build a neat, compact summary line ----
+  const stats = [];
+  const pushStat = (label, v) => {
     const n = Number(v);
-    if (!Number.isNaN(n) && n !== 0) parts.push(`${label} ${n > 0 ? "+" : ""}${n}`);
+    if (!Number.isNaN(n) && n !== 0) stats.push(`<b>${label}</b> ${n > 0 ? "+" : ""}${n}`);
   };
 
-  if (data.moduleType === "armor") {
-    // try both nested and flat shapes
-    addNum("DEF",  s.defense?.modifier     ?? s.defMod  ?? s.def);
-    addNum("MDEF", s.magicDefense?.modifier?? s.mdefMod ?? s.mdef);
-    addNum("INIT", s.init);
+  if (isArmor) {
+    pushStat("DEF",  s.def ?? s.defense?.modifier);
+    pushStat("MDEF", s.mdef ?? s.magicDefense?.modifier);
   } else {
-    addNum("ACC",  s.accuracy?.modifier    ?? s.modifier ?? s.acc);
-    addNum("DMG",  s.damage?.bonus         ?? s.damageBonus ?? s.dmg);
+    pushStat("ACC",  s.accuracy?.modifier ?? s.modifier ?? s.acc);
+    pushStat("DMG",  s.damage?.bonus      ?? s.damageBonus ?? s.dmg);
   }
 
-  const summaryText =
-    `${data.moduleType === "armor" ? "Armor" : "Weapon"} Module` +
-    (data.quality && data.quality !== "None" ? ` — ${data.quality}` : "") +
-    (parts.length ? ` | ${parts.join(" | ")}` : "");
+  const qualityBadge = (data.quality && data.quality !== "None") ? ` — <em>${data.quality}</em>` : "";
+  // Two clean lines: title+quality, then chips
+  const summaryHtml = [
+    `<b>${isArmor ? "Armor" : "Weapon"} Module</b>${qualityBadge}`,
+    stats.length ? `<span>${stats.join(" • ")}</span>` : ""
+  ].filter(Boolean).join("<br>");
 
-  // Shape the data block exactly how Project FU expects it
+  // ---- Shape data exactly how Project FU expects it ----
+  const armorData = {
+    defense: {
+      attribute: s.defAttr ?? s.defense?.attribute ?? "dex",
+      modifier:  Number(s.def ?? s.defense?.modifier ?? 0)
+    },
+    magicDefense: {
+      attribute: s.mdefAttr ?? s.magicDefense?.attribute ?? "ins",
+      modifier:  Number(s.mdef ?? s.magicDefense?.modifier ?? 0)
+    },
+    martial:     toBool(s.isMartial ?? s.martial ?? false),
+    quality:     s.quality ?? data.quality ?? "",
+    description: s.description ?? ""
+  };
+
   const weaponData = {
     type:     s.type      ?? s.weaponType ?? "",
     category: s.category  ?? "",
@@ -545,42 +562,21 @@ async function renderTreasureResultDialog(items, budget, config) {
       bonus: Number(s.damage?.bonus ?? s.damageBonus ?? 0),
       type:  s.damage?.type ?? s.damageType ?? "physical"
     },
-    quality:     data.quality ?? (s.quality ?? ""),
-    description: s.description ?? ""
-  };
-
-  const armorData = {
-    defense: {
-      attribute: s.defense?.attribute      ?? s.defAttr  ?? "dex",
-      modifier:  Number(s.defense?.modifier ?? s.defMod  ?? 0)
-    },
-    magicDefense: {
-      attribute: s.magicDefense?.attribute      ?? s.mdefAttr ?? "ins",
-      modifier:  Number(s.magicDefense?.modifier ?? s.mdefMod  ?? 0)
-    },
-    martial:     !!(s.martial ?? s.isMartial ?? false),
-    quality:     data.quality ?? (s.quality ?? ""),
+    quality:     s.quality ?? data.quality ?? "",
     description: s.description ?? ""
   };
 
   itemData = {
     name: data.name,
     type,
-    img: s.img ?? "icons/svg/upgrade.svg",  // any safe default
+    img: s.img ?? "icons/svg/upgrade.svg",
     folder: cacheFolder.id,
     system: {
-      // 🔧 The correct sheet selector for Project FU
-      featureType: data.moduleType === "armor" ? "projectfu.armorModule" : "projectfu.weaponModule",
-
-      // your compact line shown in the results/chat
-      summary: { value: summaryText },
-
-      // keep using a simple string here like your ingredient items
+      featureType: isArmor ? "projectfu.armorModule" : "projectfu.weaponModule",
+      summary: { value: summaryHtml }, // <-- this is what shows in your results dialog
       source: "LOOKFAR",
-
-      // put module fields where the system expects them
       data: {
-        ...(data.moduleType === "armor" ? armorData : weaponData),
+        ...(isArmor ? armorData : weaponData),
         cost: data.value ?? null,
         quantity: 1
       }
