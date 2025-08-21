@@ -216,7 +216,49 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
 }
 
 // Module Generation
-// function rollModule()
+function rollModules(weaponModules, armorModules, weaponQualities, armorQualities, origin, cap) {
+  // Pick which kind of module we’re rolling
+  const pools = [];
+  if (Array.isArray(weaponModules) && weaponModules.length) pools.push("weapon");
+  if (Array.isArray(armorModules) && armorModules.length) pools.push("armor");
+  if (!pools.length) return null;
+
+  const moduleType = getRandom(pools);
+  const base = moduleType === "weapon" ? getRandom(weaponModules) : getRandom(armorModules);
+
+  // Base value
+  let value = base?.value ?? 0;
+
+  // Pull qualities from the corresponding pool (basic + origin)
+  const qualities = moduleType === "weapon"
+    ? [ ...(weaponQualities.basic || []), ...(weaponQualities[origin] || []) ]
+    : [ ...(armorQualities.basic  || []), ...(armorQualities[origin]  || []) ];
+
+  // Pick an affordable quality (if any)
+  const affordable = qualities.filter(q => (value + (q.value ?? 0)) <= cap);
+  const q = affordable.length ? getRandom(affordable) : null;
+
+  const qualityName = q?.name ?? "None";
+  value += q?.value ?? 0;
+
+  // Final cap guard
+  if (value > cap) return null;
+
+  // Name it like other gear, but with a clear "Module" suffix
+  const name = `${qualityName !== "None" ? qualityName + " " : ""}${base.name} Module`;
+
+  // Pass along base stats to make rendering easy later
+  const stats = { ...base };
+
+  return {
+    name,
+    value,
+    quality: qualityName,
+    moduleType,   // "weapon" or "armor"
+    origin,
+    stats         // original module stat block (category/def/mdef/etc.)
+  };
+}
 
 // Custom Treasure Generation
 async function rollCustom() {
