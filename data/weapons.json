@@ -279,7 +279,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 8,
-      "complex": false
+      "complex": false,
+      "special": 
     },
     {
       "name": "Axe",
@@ -292,7 +293,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 12,
-      "complex": false
+      "complex": false,
+      "special": ""
     },
     {
       "name": "Blade",
@@ -305,7 +307,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 6,
-      "complex": false
+      "complex": false,
+      "special": ""
     },
     {
       "name": "Bow",
@@ -318,7 +321,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 6,
-      "complex": true
+      "complex": true,
+      "special": "A personal vehicle with this module enabled cannot have any other weapon modules enabled."
     },
     {
       "name": "Cannon",
@@ -331,7 +335,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 14,
-      "complex": true
+      "complex": true,
+      "special": "A personal vehicle with this module enabled cannot have any other weapon modules enabled."
     },
     {
       "name": "Claw",
@@ -344,7 +349,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 8,
-      "complex": false
+      "complex": false,
+      "special": "A personal vehicle with this module can use it to interact with the scene as if it were a free hand."
     },
     {
       "name": "Claymore",
@@ -357,7 +363,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 14,
-      "complex": true
+      "complex": true,
+      "special": "A personal vehicle with this module enabled cannot have any other weapon modules enabled."
     },
     {
       "name": "Esoteric",
@@ -370,7 +377,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 12,
-      "complex": true
+      "complex": true,
+      "special": "A personal vehicle with this module enabled cannot have any other weapon modules enabled."
     },
     {
       "name": "Flail",
@@ -383,7 +391,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 10,
-      "complex": false
+      "complex": false,
+      "special": ""
     },
     {
       "name": "Torch",
@@ -396,7 +405,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 8,
-      "complex": false
+      "complex": false,
+      "special": ""
     },
     {
       "name": "Machine Gun",
@@ -409,7 +419,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 10,
-      "complex": true
+      "complex": true,
+      "Special": "A personal vehicle with this module enabled cannot have any other weapon modules enabled. In addition, you may choose to make two seperate attacks with this weapon with a single action. If you do, each attack loses the multi property and treats their HR as 0."
     },
     {
       "name": "Rifle",
@@ -422,7 +433,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 10,
-      "complex": false
+      "complex": false,
+      "special": ""
     },
     {
       "name": "Scythe",
@@ -435,7 +447,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 16,
-      "complex": true
+      "complex": true,
+      "special": "A personal vehicle with this module enabled cannot have any other weapon modules enabled."
     },
     {
       "name": "Spear",
@@ -448,7 +461,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 10,
-      "complex": false
+      "complex": false,
+      "special": ""
     },
     {
       "name":"Sword",
@@ -461,7 +475,8 @@
       "defense":"def",
       "element":"physical",
       "damage":8,
-      "complex": false
+      "complex": false,
+      "special": ""
     },
     {
       "name": "Trident",
@@ -474,7 +489,8 @@
       "defense": "def",
       "element": "physical",
       "damage": 14,
-      "complex": true
+      "complex": true,
+      "special": "A personal vehicle with this module enabled cannot have any other weapon modules enabled."
     }
   ],
   "weaponQualities": {
@@ -997,5 +1013,6 @@
     ]
   }
 }
+
 
 
