@@ -504,25 +504,25 @@ async function renderTreasureResultDialog(items, budget, config) {
         }
       };
     } else if ("moduleType" in data) {
-      type = "classFeature";
+  type = "classFeature";
 
-      // Build a compact summary; show useful stats when we have them
-      const parts = [];
-      const s = data.stats || {};
-      const addNum = (label, v) => {
-      const n = Number(v);
-        if (!Number.isNaN(n) && n !== 0) parts.push(`${label} ${n > 0 ? "+" : ""}${n}`);
-      };
+  const s = data.stats || {};
 
-       if (data.moduleType === "armor") {
-         addNum("DEF", s.def);
-         addNum("MDEF", s.mdef);
-         addNum("INIT", s.init);
-       } else {
-    // We don't have weapon module samples in the current dataset,
-    // but if your schema has these, they’ll show up cleanly:
-    addNum("ACC", s.accuracy ?? s.acc);
-    addNum("DMG", s.damage ?? s.dmg);
+  // Build a compact summary; show useful stats when we have them
+  const parts = [];
+  const addNum = (label, v) => {
+    const n = Number(v);
+    if (!Number.isNaN(n) && n !== 0) parts.push(`${label} ${n > 0 ? "+" : ""}${n}`);
+  };
+
+  if (data.moduleType === "armor") {
+    // try both nested and flat shapes
+    addNum("DEF",  s.defense?.modifier     ?? s.defMod  ?? s.def);
+    addNum("MDEF", s.magicDefense?.modifier?? s.mdefMod ?? s.mdef);
+    addNum("INIT", s.init);
+  } else {
+    addNum("ACC",  s.accuracy?.modifier    ?? s.modifier ?? s.acc);
+    addNum("DMG",  s.damage?.bonus         ?? s.damageBonus ?? s.dmg);
   }
 
   const summaryText =
@@ -530,19 +530,60 @@ async function renderTreasureResultDialog(items, budget, config) {
     (data.quality && data.quality !== "None" ? ` — ${data.quality}` : "") +
     (parts.length ? ` | ${parts.join(" | ")}` : "");
 
+  // Shape the data block exactly how Project FU expects it
+  const weaponData = {
+    type:     s.type      ?? s.weaponType ?? "",
+    category: s.category  ?? "",
+    complex:  !!(s.complex ?? false),
+    accuracy: {
+      attr1:    s.accuracy?.attr1    ?? s.attr1    ?? "",
+      attr2:    s.accuracy?.attr2    ?? s.attr2    ?? "",
+      defense:  s.accuracy?.defense  ?? s.defense  ?? "",
+      modifier: Number(s.accuracy?.modifier ?? s.modifier ?? 0)
+    },
+    damage: {
+      bonus: Number(s.damage?.bonus ?? s.damageBonus ?? 0),
+      type:  s.damage?.type ?? s.damageType ?? "physical"
+    },
+    quality:     data.quality ?? (s.quality ?? ""),
+    description: s.description ?? ""
+  };
+
+  const armorData = {
+    defense: {
+      attribute: s.defense?.attribute      ?? s.defAttr  ?? "dex",
+      modifier:  Number(s.defense?.modifier ?? s.defMod  ?? 0)
+    },
+    magicDefense: {
+      attribute: s.magicDefense?.attribute      ?? s.mdefAttr ?? "ins",
+      modifier:  Number(s.magicDefense?.modifier ?? s.mdefMod  ?? 0)
+    },
+    martial:     !!(s.martial ?? s.isMartial ?? false),
+    quality:     data.quality ?? (s.quality ?? ""),
+    description: s.description ?? ""
+  };
+
   itemData = {
     name: data.name,
     type,
-    img: "icons/svg/item-bag.svg", // safe default icon
+    img: s.img ?? "icons/svg/upgrade.svg",  // any safe default
     folder: cacheFolder.id,
     system: {
+      // 🔧 The correct sheet selector for Project FU
+      featureType: data.moduleType === "armor" ? "projectfu.armorModule" : "projectfu.weaponModule",
+
+      // your compact line shown in the results/chat
+      summary: { value: summaryText },
+
+      // keep using a simple string here like your ingredient items
+      source: "LOOKFAR",
+
+      // put module fields where the system expects them
       data: {
+        ...(data.moduleType === "armor" ? armorData : weaponData),
         cost: data.value ?? null,
         quantity: 1
-      },
-      featureType: "projectfu.module",
-      summary: { value: summaryText },
-      source: "LOOKFAR"
+      }
     }
   };
 }		
