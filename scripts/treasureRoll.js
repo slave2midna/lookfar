@@ -708,27 +708,68 @@ Hooks.once("ready", () => {
 			              <input type="checkbox" id="includeCustom"> Custom </label>
 	          </div>
         </form>
-		<!-- Reference table Begins -->
+			<!-- Reference table Begins -->
 <div style="margin-top:8px;">
-  <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center;" border="1" cellpadding="8" cellspacing="0">
+  <table
+    style="width:100%; border-collapse:collapse; font-size:12px; text-align:center; border:1px solid #000;"
+    cellspacing="0">
     <thead>
       <tr>
-        <th rowspan="2">Level</th>
-        <th rowspan="2">Max<br>Value</th>
-        <th colspan="3">Budget</th>
+        <th rowspan="2"
+            style="border:1px solid #000 !important; padding:6px 8px; font-weight:600; text-align:center;">
+          Highest PC<br>Level
+        </th>
+        <th rowspan="2"
+            style="border:1px solid #000 !important; padding:6px 8px; font-weight:600; text-align:center;">
+          Max Item<br>Value
+        </th>
+        <th colspan="3"
+            style="border:1px solid #000 !important; padding:6px 8px; font-weight:600; text-align:center;">
+          Recommended Reward Budget
+        </th>
       </tr>
       <tr>
-        <th>2 PCs</th>
-        <th>3 PCs</th>
-        <th>4 PCs</th>
+        <th style="border:1px solid #000 !important; padding:6px 8px; font-weight:600; text-align:center;">2 PCs</th>
+        <th style="border:1px solid #000 !important; padding:6px 8px; font-weight:600; text-align:center;">3 PCs</th>
+        <th style="border:1px solid #000 !important; padding:6px 8px; font-weight:600; text-align:center;">4 PCs</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td>5+</td><td>500</td><td>500</td><td>750</td><td>1000</td></tr>
-      <tr><td>10+</td><td>1000</td><td>800</td><td>1200</td><td>1800</td></tr>
-      <tr><td>20+</td><td>1500</td><td>1000</td><td>1500</td><td>2000</td></tr>
-      <tr><td>30+</td><td>2000</td><td>1600</td><td>2400</td><td>3200</td></tr>
-      <tr><td>40+</td><td>any</td><td>2000</td><td>3000</td><td>4000</td></tr>
+      <tr>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">5+</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">500</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">500</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">750</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">1000</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">10+</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">1000</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">800</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">1200</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">1800</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">20+</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">1500</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">1000</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">1500</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">2000</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">30+</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">2000</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">1600</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">2400</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">3200</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">40+</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">any</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">2000</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">3000</td>
+        <td style="border:1px solid #000 !important; padding:6px 8px;">4000</td>
+      </tr>
     </tbody>
   </table>
 </div>
