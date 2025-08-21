@@ -1,7 +1,7 @@
 import { dataLoader } from "./dataLoader.js";
 import { cacheManager } from "./cacheManager.js";
 
-// Loot Generation Utility
+// Random Generation Utility
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -43,8 +43,8 @@ function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeyw
 function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIngredient, originKeywordsIngredient) {
   if (!natureKeywordsIngredient[nature] || budget < 10) return null;
 
-  const taste = getRandom(Object.keys(tasteKeywords));                   // e.g. "Sour"
-  const tasteWord = getRandom(tasteKeywords[taste]);                     // e.g. "Tart"
+  const taste = getRandom(Object.keys(tasteKeywords));                  // e.g. "Sour"
+  const tasteWord = getRandom(tasteKeywords[taste]);                    // e.g. "Tart"
   const originWord = getRandom(originKeywordsIngredient[origin]);       // e.g. "Watery"
   const natureWord = getRandom(natureKeywordsIngredient[nature]);       // e.g. "Petal"
   const name = `${tasteWord} ${originWord} ${natureWord}`;              // → "Tart Watery Petal"
@@ -217,7 +217,7 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
 
 // Module Generation
 function rollModules(weaponModules, armorModules, weaponQualities, armorQualities, origin, cap) {
-  // Pick which kind of module we’re rolling
+  // Pick which kind of module we’re rolling ( may add radial later )
   const pools = [];
   if (Array.isArray(weaponModules) && weaponModules.length) pools.push("weapon");
   if (Array.isArray(armorModules) && armorModules.length) pools.push("armor");
@@ -229,12 +229,12 @@ function rollModules(weaponModules, armorModules, weaponQualities, armorQualitie
   // Base value
   let value = base?.value ?? 0;
 
-  // Pull qualities from the corresponding pool (basic + origin)
+  // Combine basic qualities with origin-specific qualities
   const qualities = moduleType === "weapon"
     ? [ ...(weaponQualities.basic || []), ...(weaponQualities[origin] || []) ]
     : [ ...(armorQualities.basic  || []), ...(armorQualities[origin]  || []) ];
 
-  // Pick an affordable quality (if any)
+  // Pick an affordable quality from the combined pool
   const affordable = qualities.filter(q => (value + (q.value ?? 0)) <= cap);
   const q = affordable.length ? getRandom(affordable) : null;
 
@@ -503,7 +503,49 @@ async function renderTreasureResultDialog(items, budget, config) {
           description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
-    } 
+    } else if ("moduleType" in data) {
+      type = "classFeature";
+
+      // Build a compact summary; show useful stats when we have them
+      const parts = [];
+      const s = data.stats || {};
+      const addNum = (label, v) => {
+      const n = Number(v);
+        if (!Number.isNaN(n) && n !== 0) parts.push(`${label} ${n > 0 ? "+" : ""}${n}`);
+      };
+
+       if (data.moduleType === "armor") {
+         addNum("DEF", s.def);
+         addNum("MDEF", s.mdef);
+         addNum("INIT", s.init);
+       } else {
+    // We don't have weapon module samples in the current dataset,
+    // but if your schema has these, they’ll show up cleanly:
+    addNum("ACC", s.accuracy ?? s.acc);
+    addNum("DMG", s.damage ?? s.dmg);
+  }
+
+  const summaryText =
+    `${data.moduleType === "armor" ? "Armor" : "Weapon"} Module` +
+    (data.quality && data.quality !== "None" ? ` — ${data.quality}` : "") +
+    (parts.length ? ` | ${parts.join(" | ")}` : "");
+
+  itemData = {
+    name: data.name,
+    type,
+    img: "icons/svg/item-bag.svg", // safe default icon
+    folder: cacheFolder.id,
+    system: {
+      data: {
+        cost: data.value ?? null,
+        quantity: 1
+      },
+      featureType: "projectfu.module",
+      summary: { value: summaryText },
+      source: "LOOKFAR"
+    }
+  };
+}		
 
     if (!type || !itemData) return null;
 
@@ -602,10 +644,14 @@ Hooks.once("ready", () => {
     const { origin: originKeywords, nature: natureKeywords, detail: detailKeywords, taste: tasteKeywords } = dataLoader.keywordData;
 
     // gear lists & qualities
-    const { weaponList, weaponQualities } = dataLoader.weaponsData;
+    const { weaponList, weaponQualities } = dataLoader.weaponsData; 
     const { armorList, armorQualities } = dataLoader.armorData;
     const { shieldList, shieldQualities } = dataLoader.shieldsData;
     const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
+
+	// module loaders
+	const weaponModules = (dataLoader.weaponsData.weaponModules || []);
+    const armorModules  = (dataLoader.armorData.armorModules  || []);
 
     // builds weapon element using element keywords
     const elementKeywords = dataLoader.keywordData.element || {};
@@ -614,9 +660,17 @@ Hooks.once("ready", () => {
 
     if (rerollConfig) {
       const {
-        budget, maxVal, origin, nature,
-        includeWeapons, includeArmor, includeShields,
-        includeAccessories, includeIngredients, includeMaterials,
+        budget, 
+		maxVal, 
+		origin, 
+		nature,
+        includeWeapons, 
+		includeArmor, 
+		includeShields,
+        includeAccessories, 
+		includeIngredients, 
+		includeMaterials,
+		includeModules,  
         includeCustom
       } = rerollConfig;
 
@@ -634,7 +688,9 @@ Hooks.once("ready", () => {
         if (includeAccessories) itemTypes.push("Accessory");
         if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
         if (includeMaterials) itemTypes.push("Material");
-        if (includeCustom)   itemTypes.push("Custom");
+		if (includeModules) itemTypes.push("Module");  
+        if (includeCustom) itemTypes.push("Custom");
+		
 
         if (itemTypes.length === 0) break;
 
@@ -647,6 +703,7 @@ Hooks.once("ready", () => {
           case "Armor":      item = rollArmor(armorList, armorQualities, origin, cap); break;
           case "Shield":     item = rollShield(shieldList, shieldQualities, origin, cap); break;
           case "Accessory":  item = rollAccessory(accessoryList, accessoryQualities, origin, cap); break;
+		  case "Module":     item = rollModules(weaponModules, armorModules, weaponQualities, armorQualities, origin, cap); break;		
           case "Material":   item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords.material, natureKeywords.material); break;
           case "Ingredient": item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient); ingredientCount++; break;
           case "Custom":     item = await rollCustom(); break;
@@ -763,6 +820,7 @@ Hooks.once("ready", () => {
       const includeAccessories = html.find("#includeAccessories").is(":checked");
       const includeIngredients = html.find("#includeIngredients").is(":checked");
       const includeMaterials = html.find("#includeMaterials").is(":checked");
+	  const includeModules = html.find("#includeModules").is(":checked");	
 	  const includeCustom   = html.find("#includeCustom").is(":checked");	
 
       let selectedOrigin = html.find("#origin").val();
@@ -787,6 +845,7 @@ Hooks.once("ready", () => {
         includeAccessories,
         includeIngredients,
         includeMaterials,
+		includeModules,  
 		includeCustom  
       });
     }
