@@ -365,6 +365,79 @@ async function renderTreasureResultDialog(items, budget, config) {
           source: "LOOKFAR"
         }
       };
+	} else if ("moduleType" in data) {
+		
+  type = "classFeature";
+  const s = data.stats || {};
+  const isArmor = data.moduleType === "armor";
+  const toBool = (v) => (typeof v === "string" ? v.toLowerCase() === "true" : !!v);
+
+  const stats = [];
+  const pushStat = (label, v) => {
+    const n = Number(v);
+    if (!Number.isNaN(n) && n !== 0) stats.push(`<b>${label}</b> ${n > 0 ? "+" : ""}${n}`);
+  };
+  if (isArmor) {
+    pushStat("DEF",  s.def ?? s.defense?.modifier);
+    pushStat("MDEF", s.mdef ?? s.magicDefense?.modifier);
+  } else {
+    pushStat("ACC",  s.accuracy?.modifier ?? s.modifier ?? s.acc);
+    pushStat("DMG",  s.damage?.bonus      ?? s.damageBonus ?? s.dmg);
+  }
+  const qualityBadge = (data.quality && data.quality !== "None") ? ` — <em>${data.quality}</em>` : "";
+  const summaryHtml = [
+    `<b>${isArmor ? "Armor" : "Weapon"} Module</b>${qualityBadge}`,
+    stats.length ? `<span>${stats.join(" • ")}</span>` : ""
+  ].filter(Boolean).join("<br>");
+
+  const armorData = {
+    defense: {
+      attribute: s.defAttr ?? s.defense?.attribute ?? "dex",
+      modifier:  Number(s.def ?? s.defense?.modifier ?? 0)
+    },
+    magicDefense: {
+      attribute: s.mdefAttr ?? s.magicDefense?.attribute ?? "ins",
+      modifier:  Number(s.mdef ?? s.magicDefense?.modifier ?? 0)
+    },
+    martial:     toBool(s.isMartial ?? s.martial ?? false),
+    quality:     s.quality ?? data.quality ?? "",
+    description: s.description ?? ""
+  };
+
+  const weaponData = {
+    type:     s.type      ?? s.weaponType ?? "",
+    category: s.category  ?? "",
+    complex:  !!(s.complex ?? false),
+    accuracy: {
+      attr1:    s.accuracy?.attr1    ?? s.attr1    ?? "",
+      attr2:    s.accuracy?.attr2    ?? s.attr2    ?? "",
+      defense:  s.accuracy?.defense  ?? s.defense  ?? "",
+      modifier: Number(s.accuracy?.modifier ?? s.modifier ?? 0)
+    },
+    damage: {
+      bonus: Number(s.damage?.bonus ?? s.damageBonus ?? 0),
+      type:  s.damage?.type ?? s.damageType ?? "physical"
+    },
+    quality:     s.quality ?? data.quality ?? "",
+    description: s.description ?? ""
+  };
+
+  itemData = {
+    name: data.name,
+    type,
+    img: s.img ?? "icons/svg/upgrade.svg",
+    folder: cacheFolder.id,
+    system: {
+      featureType: isArmor ? "projectfu.armorModule" : "projectfu.weaponModule",
+      summary: { value: summaryHtml },
+      source: "LOOKFAR",
+      data: {
+        ...(isArmor ? armorData : weaponData),
+        cost: data.value ?? null,
+        quantity: 1
+      }
+    }
+  };
     } else if ("detail" in data) {
       type = "treasure";
       const img = "icons/svg/item-bag.svg";
@@ -503,86 +576,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
         }
       };
-    } else if ("moduleType" in data) {
-  // Render a Project FU Module as a classFeature
-  type = "classFeature";
-
-  const s = data.stats || {};
-  const isArmor = data.moduleType === "armor";
-  const toBool = (v) => (typeof v === "string" ? v.toLowerCase() === "true" : !!v);
-
-  // ---- Build a neat, compact summary line ----
-  const stats = [];
-  const pushStat = (label, v) => {
-    const n = Number(v);
-    if (!Number.isNaN(n) && n !== 0) stats.push(`<b>${label}</b> ${n > 0 ? "+" : ""}${n}`);
-  };
-
-  if (isArmor) {
-    pushStat("DEF",  s.def ?? s.defense?.modifier);
-    pushStat("MDEF", s.mdef ?? s.magicDefense?.modifier);
-  } else {
-    pushStat("ACC",  s.accuracy?.modifier ?? s.modifier ?? s.acc);
-    pushStat("DMG",  s.damage?.bonus      ?? s.damageBonus ?? s.dmg);
-  }
-
-  const qualityBadge = (data.quality && data.quality !== "None") ? ` — <em>${data.quality}</em>` : "";
-  // Two clean lines: title+quality, then chips
-  const summaryHtml = [
-    `<b>${isArmor ? "Armor" : "Weapon"} Module</b>${qualityBadge}`,
-    stats.length ? `<span>${stats.join(" • ")}</span>` : ""
-  ].filter(Boolean).join("<br>");
-
-  // ---- Shape data exactly how Project FU expects it ----
-  const armorData = {
-    defense: {
-      attribute: s.defAttr ?? s.defense?.attribute ?? "dex",
-      modifier:  Number(s.def ?? s.defense?.modifier ?? 0)
-    },
-    magicDefense: {
-      attribute: s.mdefAttr ?? s.magicDefense?.attribute ?? "ins",
-      modifier:  Number(s.mdef ?? s.magicDefense?.modifier ?? 0)
-    },
-    martial:     toBool(s.isMartial ?? s.martial ?? false),
-    quality:     s.quality ?? data.quality ?? "",
-    description: s.description ?? ""
-  };
-
-  const weaponData = {
-    type:     s.type      ?? s.weaponType ?? "",
-    category: s.category  ?? "",
-    complex:  !!(s.complex ?? false),
-    accuracy: {
-      attr1:    s.accuracy?.attr1    ?? s.attr1    ?? "",
-      attr2:    s.accuracy?.attr2    ?? s.attr2    ?? "",
-      defense:  s.accuracy?.defense  ?? s.defense  ?? "",
-      modifier: Number(s.accuracy?.modifier ?? s.modifier ?? 0)
-    },
-    damage: {
-      bonus: Number(s.damage?.bonus ?? s.damageBonus ?? 0),
-      type:  s.damage?.type ?? s.damageType ?? "physical"
-    },
-    quality:     s.quality ?? data.quality ?? "",
-    description: s.description ?? ""
-  };
-
-  itemData = {
-    name: data.name,
-    type,
-    img: s.img ?? "icons/svg/upgrade.svg",
-    folder: cacheFolder.id,
-    system: {
-      featureType: isArmor ? "projectfu.armorModule" : "projectfu.weaponModule",
-      summary: { value: summaryHtml }, // <-- this is what shows in your results dialog
-      source: "LOOKFAR",
-      data: {
-        ...(isArmor ? armorData : weaponData),
-        cost: data.value ?? null,
-        quantity: 1
-      }
     }
-  };
-}		
 
     if (!type || !itemData) return null;
 
