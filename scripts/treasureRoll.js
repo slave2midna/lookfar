@@ -512,33 +512,22 @@ async function renderTreasureResultDialog(items, budget, config) {
     content: enrichedHtml,
     buttons: {
       keep: {
-  label: "Keep",
-  callback: async () => {
-    // Move items out of cache so they are “final”
-    for (const item of finalItems) {
-      if (item?.folder?.id === cacheFolder.id) {
-        await item.update({ folder: null });
-      }
-    }
+  		label: "Keep",
+  		callback: async () => {
+    	  // Move items out of cache so they are “final”
+    	  for (const item of finalItems) {
+      	  if (item?.folder?.id === cacheFolder.id) {
+        	await item.update({ folder: null });
+      	  }
+    	}
 
-    // Build a simple, clean message (no descriptions, no markdown stripping)
-    const lines = await Promise.all(finalItems.map(async (item) => {
-      const quantity = item.system?.quantity?.value ?? 1;
-      const isIngredient = item.type === "classFeature" && item.system?.featureType === "projectfu.ingredient";
-      const qty = isIngredient && quantity > 1 ? ` x${quantity}` : "";
-      const cost = getItemCost(item.system);
-      const nameMd = `@UUID[${item.uuid}]{${item.name}}${qty}`;
-      return `• ${nameMd} — Value: ${cost} z`;
-    }));
-
-    const chatBody = `${lines.join("<br>")}<br>**Remaining Budget:** ${budget}`;
-
-    await ChatMessage.create({
-      content: chatBody,
-      speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
-    });
-  }
-},
+    	// Post the dialog’s exact HTML to chat (no stripping, no markdown munging)
+    	await ChatMessage.create({
+      	  content: enrichedHtml,
+      	  speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
+    	});
+  	   }
+	 },
       reroll: {
         label: "Reroll",
         callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
