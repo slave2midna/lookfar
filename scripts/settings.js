@@ -8,9 +8,9 @@ export const LookfarSettings = {
       type: String,
       choices: {
         public: game.i18n.localize("LOOKFAR.Settings.ResultVisibility.Choices.Public"),
-        gmOnly: game.i18n.localize("LOOKFAR.Settings.ResultVisibility.Choices.GMOnly"),
+        gmOnly: game.i18n.localize("LOOKFAR.Settings.ResultVisibility.Choices.GMOnly")
       },
-      default: "public",
+      default: "public"
     });
 
     game.settings.register("lookfar", "enableKeywords", {
@@ -19,7 +19,7 @@ export const LookfarSettings = {
       scope: "world",
       config: true,
       type: Boolean,
-      default: false,
+      default: false
     });
 
     game.settings.register("lookfar", "useVariantTravelRules", {
@@ -51,8 +51,7 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
     });
 
     game.settings.register("lookfar", "discoverySourceRollTable", {
@@ -62,8 +61,7 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
     });
 
     game.settings.register("lookfar", "dangerThreatRollTable", {
@@ -73,8 +71,7 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
     });
 
     game.settings.register("lookfar", "dangerSourceRollTable", {
@@ -84,8 +81,7 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
     });
 
     game.settings.register("lookfar", "customTreasureRollTable", {
@@ -95,8 +91,7 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
     });
   },
 
@@ -110,6 +105,7 @@ export const LookfarSettings = {
     return choices;
   },
 
+  // Kept for compatibility; not required for dynamic dropdowns anymore.
   updateRollTableChoices() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
     game.settings.settings.get("lookfar.discoveryEffectRollTable").choices = rollTableChoices;
@@ -120,4 +116,54 @@ export const LookfarSettings = {
   }
 };
 
+/* -------------------------------------------------------------------------- */
+/*  Dynamic population of roll-table selects without needing a page reload.   */
+/*  Guarded to avoid duplicate hook installs across soft module reloads.      */
+/* -------------------------------------------------------------------------- */
 
+if (!globalThis._lookfarSettingsHooksWired) {
+  globalThis._lookfarSettingsHooksWired = true;
+
+  // Rebuild our dropdown options whenever the Settings UI renders
+  Hooks.on("renderSettingsConfig", (app, html) => {
+    if (!html || !html.length) return;
+
+    const keys = [
+      "discoveryEffectRollTable",
+      "discoverySourceRollTable",
+      "dangerThreatRollTable",
+      "dangerSourceRollTable",
+      "customTreasureRollTable"
+    ];
+
+    const choices = LookfarSettings.getRollTableChoices();
+
+    for (const key of keys) {
+      const name = `lookfar.${key}`;
+      const $select = html.find(`select[name="${name}"]`);
+      if (!$select.length) continue;
+
+      const current = game.settings.get("lookfar", key);
+
+      // Rebuild options from live data
+      $select.empty();
+      for (const [value, label] of Object.entries(choices)) {
+        $select.append(new Option(label, value));
+      }
+
+      // Preserve selection if still valid; otherwise default to "default"
+      if (choices[current]) $select.val(current);
+      else $select.val("default");
+    }
+  });
+
+  // If roll tables change while Settings is open, re-render that window to refresh selects
+  const refreshSettingsIfOpen = () => {
+    const win = Object.values(ui.windows).find(w => w instanceof SettingsConfig);
+    if (win) win.render(false); // soft re-render
+  };
+
+  Hooks.on("createRollTable", refreshSettingsIfOpen);
+  Hooks.on("updateRollTable", refreshSettingsIfOpen);
+  Hooks.on("deleteRollTable", refreshSettingsIfOpen);
+}
