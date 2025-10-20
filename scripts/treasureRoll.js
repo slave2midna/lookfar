@@ -282,15 +282,25 @@ async function rollCustom() {
 }
 
 async function createStash(items, cacheFolder) {
-  // 1) Create a new Stash actor (type key you provided is "stash")
-  const stamp = new Date().toLocaleString();
+
+  const allStashes = game.actors.filter(a => a.type === "stash");
+  const re = /^New Stash #(\d+)$/i;
+  let nextNum = 1;
+  for (const a of allStashes) {
+    const m = re.exec(a.name);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      if (!Number.isNaN(n) && n >= nextNum) nextNum = n + 1;
+    }
+  }
+  const stashName = `New Stash #${nextNum}`;
+
   const stash = await CONFIG.Actor.documentClass.create({
-    name: `Stash (${game.user.name} - ${stamp})`,
+    name: stashName,
     type: "stash",
-    img: "icons/svg/item-bag.svg" // optional, replace with system-appropriate icon
+    img: "icons/svg/item-bag.svg"
   });
 
-  // 2) Prepare embedded item data (duplicate, strip _id and folder)
   const embedded = items.map(i => {
     const data = i.toObject();
     delete data._id;
@@ -298,16 +308,13 @@ async function createStash(items, cacheFolder) {
     return data;
   });
 
-  // 3) Create items on the actor in one batch
   await stash.createEmbeddedDocuments("Item", embedded);
 
-  // 4) Remove the temporary cache copies from the world (if they were left in the cache folder)
   const deletions = items
     .filter(i => i?.folder?.id === cacheFolder.id)
     .map(i => i.delete());
   if (deletions.length) await Promise.allSettled(deletions);
 
-  // 5) Open the stash and notify via chat
   stash.sheet?.render(true);
   await ChatMessage.create({
     content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.`,
