@@ -359,7 +359,7 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   // Core description prefix — special if Master
   const prefix = data.isMaster
-    ? `A <b>Masterwork</b> ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`
+    ? `A masterwork ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`
     : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`;
 
   itemData = {
