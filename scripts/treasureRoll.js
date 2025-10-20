@@ -544,6 +544,17 @@ async function renderTreasureResultDialog(items, budget, config) {
     	});
   	   }
 	 },
+    stash: {
+      label: "Stash",
+      callback: () => {
+        Hooks.call("lookfarTreasureStashRequested", {
+          items: finalItems,
+          remainingBudget: budget,
+          config
+        });
+        ui.notifications?.info("Stash coming soon.");
+      }
+    },
       reroll: {
         label: "Reroll",
         callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
