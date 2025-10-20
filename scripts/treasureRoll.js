@@ -536,11 +536,11 @@ async function renderTreasureResultDialog(items, budget, config) {
         "";
 
       // Strip HTML and escape Markdown control chars so modules with Markdown enabled don’t mutate it.
-      const descText = TextEditor
-        .stripHTML(String(rawDesc))
-        .replace(/\s+/g, " ")
-        .replace(/([\`*_~|])/g, "\\$1") // escape common MD specials
-        .trim();
+      const descText = foundry.utils
+    	.stripHTML(String(rawDesc))
+    	.replace(/\s+/g, " ")
+    	.replace(/([`*_~|])/g, "\\$1") // escape common MD specials
+    	.trim();
 
       // Use @UUID so Foundry turns it into a clickable link at render time
       const nameMd = `@UUID[${item.uuid}]{${item.name}}${qty}`;
