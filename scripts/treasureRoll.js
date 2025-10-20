@@ -514,21 +514,23 @@ async function renderTreasureResultDialog(items, budget, config) {
       keep: {
   		label: "Keep",
   		callback: async () => {
-    		const keptItems = await Promise.all(finalItems.map(async (item) => {
-      		// If it's in the cache folder, just move it out (preserve UUID)
-      		if (item.folder?.id === cacheFolder.id) {
-        		await item.update({ folder: null });
+    	  // Move items out of cache so they are “final” in the world
+    	  for (const item of finalItems) {
+      		if (item?.folder?.id === cacheFolder.id) {
+        	  await item.update({ folder: null });
       		}
-      		return item;
-    		}));
+    	  }
 
-    		// The enrichedHtml already points at the same UUIDs, which now live at root.
-    		await ChatMessage.create({
-      		content: enrichedHtml,
-      		speaker: { alias: "Treasure Result" }
-    		});
-  		}
-		},
+    	  // Re-enrich the (raw) htmlContent AFTER the move
+    	  const messageHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
+
+    	  // Post a single chat message with the enriched links
+    	  await ChatMessage.create({
+      		content: messageHtml,
+      		speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
+    	  });
+  	  	 }
+	   },
       reroll: {
         label: "Reroll",
         callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
