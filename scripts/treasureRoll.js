@@ -66,7 +66,7 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
 }
 
 // Weapon Generation
-function rollWeapon(weapons, weaponQualities, elements, origin) {
+function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamageRules = false) {
   let base, quality = "None", hasPlusOne = false, appliedElement = null, isMaster = false;
   let nameParts = [];
   let value = 0;
@@ -83,7 +83,7 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
 
     hasPlusOne = Math.random() < 0.5;
     appliedElement = Math.random() < 0.5 ? getRandom(elements) : null;
-	isMaster = Math.random() < 0.5;  
+    isMaster = useVariantDamageRules ? false : (Math.random() < 0.5); // When variant damage is enabled, Master is disabled entirely
     const q = Math.random() < 0.5 ? getRandom(availableQualities) : null;
     quality = q?.name ?? "None";
 
@@ -102,12 +102,12 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
       value += 100;
     }
 
-	if (isMaster) {
+	if (isMaster && !useVariantDamageRules) {
       nameParts.push("Master");
       value += 200;
     }  
 
-  } while (!hasPlusOne && quality === "None" && !appliedElement && !isMaster);  // ensure at least one feature
+  } while (!hasPlusOne && quality === "None" && !appliedElement && !(isMaster && !useVariantDamageRules));  // ensure at least one feature
 
   nameParts.push(base.name);
   const name = nameParts.join(" ");
@@ -357,8 +357,12 @@ async function renderTreasureResultDialog(items, budget, config) {
   const qualityObj = allQualities.find(q => q.name === data.quality);
   const img = "icons/svg/sword.svg";
 
+  // Handle variant damage
+  const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
+  const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
+
   // Core description prefix — special if Master
-  const prefix = data.isMaster
+  const prefix = (data.isMaster && !variantEnabled)
     ? `A masterwork ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`
     : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`;
 
@@ -378,7 +382,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       accuracy: { value: (baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0) },
       defense: baseWeapon?.defense || "",
       damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
-      damage: { value: (baseWeapon?.damage ?? 0) + (data.isMaster ? 4 : 0) },
+      damage: { value: (baseWeapon?.damage ?? 0) + (variantEnabled ? variantBonus : (data.isMaster ? 4 : 0)) },
       isMartial: { value: baseWeapon?.isMartial ?? false },
       quality: { value: qualityObj?.description || "No quality" },
       cost: { value: data.value },
@@ -389,7 +393,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       description:
         `${prefix} that ${qualityObj?.description || "has no special properties."}<br>` +
         `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> ` +
-        `<b>DMG:</b> HR+${(baseWeapon?.damage ?? 0) + (data.isMaster ? 4 : 0)} <strong>|</strong> ` +
+        `<b>DMG:</b> HR+${(baseWeapon?.damage ?? 0) + (variantEnabled ? variantBonus : (data.isMaster ? 4 : 0))} <strong>|</strong> ` +
         `<b>ELE:</b> ${(data.element?.damageType || baseWeapon?.element || "physical")
           .charAt(0)
           .toUpperCase()}${(data.element?.damageType || baseWeapon?.element || "physical").slice(1)}`
@@ -617,7 +621,7 @@ Hooks.once("ready", () => {
         const cap = Math.min(remainingBudget, maxVal);
 
         switch (type) {
-          case "Weapon":     item = rollWeapon(weaponList, weaponQualities, weaponElements, origin); break;
+          case "Weapon":     item = rollWeapon(weaponList, weaponQualities, weaponElements, origin, game.settings.get("lookfar", "useVariantDamageRules")); break;
           case "Armor":      item = rollArmor(armorList, armorQualities, origin, cap); break;
           case "Shield":     item = rollShield(shieldList, shieldQualities, origin, cap); break;
           case "Accessory":  item = rollAccessory(accessoryList, accessoryQualities, origin, cap); break;	
