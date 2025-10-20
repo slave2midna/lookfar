@@ -476,35 +476,28 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   const finalItems = tempItems.filter(Boolean);
 
+  // Build compact, one-line cards (no leading/trailing whitespace)
   let htmlContent = finalItems.map(item => {
   const cost = getItemCost(item.system);
-
   const quantity = item.system.quantity?.value ?? 1;
   const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
   const quantitySuffix = isIngredient && quantity > 1 ? ` x${quantity}` : "";
 
-  // let desc = item.system.description || ""; ( old, no longer using )
-  let desc =
-    item.system?.summary?.value ??
-    item.system?.summary ??
-    item.system?.data?.summary?.value ??
-    item.system?.data?.summary ??
-    "";
+  const desc =
+      item.system?.summary?.value ??
+      item.system?.summary ??
+      item.system?.data?.summary?.value ??
+      item.system?.data?.summary ??
+      "";
 
-  return `
-    <div style="text-align: center; margin-bottom: 0.75em;">
-      <img src="${item.img}" width="32" height="32" style="display:block; margin:0 auto 6px;">
-      <a class="content-link" data-uuid="${item.uuid}">
-        <strong>${item.name}${quantitySuffix}</strong>
-      </a><br>
-      <small>${desc}</small><br>
-      <small>Value: ${cost} z</small>
-    </div>
-  `;
-}).join("\n");
+  // IMPORTANT: single-line string, no leading/trailing \n or spaces
+  return `<div style="text-align:center;margin-bottom:0.75em"><img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px"><a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br><small>${desc}</small><br><small>Value: ${cost} z</small></div>`;
+  }).join("");  // join with empty string — no newlines between items
 
-  htmlContent += `<strong>Remaining Budget:</strong> ${budget}<br>`;
+  // Also single-line for the footer
+  htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
 
+  // Enrich for the dialog only (unchanged)
   const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
 
   const dialog = new Dialog({
