@@ -521,32 +521,14 @@ async function renderTreasureResultDialog(items, budget, config) {
       }
     }
 
-    // Markdown-friendly body
+    // Build a simple, clean message (no descriptions, no markdown stripping)
     const lines = await Promise.all(finalItems.map(async (item) => {
       const quantity = item.system?.quantity?.value ?? 1;
       const isIngredient = item.type === "classFeature" && item.system?.featureType === "projectfu.ingredient";
       const qty = isIngredient && quantity > 1 ? ` x${quantity}` : "";
       const cost = getItemCost(item.system);
-
-      const rawDesc =
-        item.system?.summary?.value ??
-        item.system?.summary ??
-        item.system?.data?.summary?.value ??
-        item.system?.data?.summary ??
-        "";
-
-      // Strip HTML and escape Markdown control chars so modules with Markdown enabled don’t mutate it.
-      const descText = foundry.utils
-    	.stripHTML(String(rawDesc))
-    	.replace(/\s+/g, " ")
-    	.replace(/([`*_~|])/g, "\\$1") // escape common MD specials
-    	.trim();
-
-      // Use @UUID so Foundry turns it into a clickable link at render time
       const nameMd = `@UUID[${item.uuid}]{${item.name}}${qty}`;
-
-      // Simple, relay-safe line (no <div>, <img>, etc.)
-      return `• ${nameMd} — _${descText}_ — **Value:** ${cost} z`;
+      return `• ${nameMd} — Value: ${cost} z`;
     }));
 
     const chatBody = `${lines.join("<br>")}<br>**Remaining Budget:** ${budget}`;
