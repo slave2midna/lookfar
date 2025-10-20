@@ -723,7 +723,7 @@ Hooks.once("ready", () => {
           		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
           			    <input type="checkbox" id="includeIngredients"> Ingredients </label>
           		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-          			    <input type="checkbox" id="includeModules"> Modules </label>
+          			    <input type="checkbox" id="includeCurrency"> Currency </label>
 	          	  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
 			              <input type="checkbox" id="includeCustom"> Custom </label>
 	          </div>
