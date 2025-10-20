@@ -281,6 +281,42 @@ async function rollCustom() {
   };
 }
 
+async function createStash(items, cacheFolder) {
+  // 1) Create a new Stash actor (type key you provided is "stash")
+  const stamp = new Date().toLocaleString();
+  const stash = await CONFIG.Actor.documentClass.create({
+    name: `Stash (${game.user.name} - ${stamp})`,
+    type: "stash",
+    img: "icons/svg/item-bag.svg" // optional, replace with system-appropriate icon
+  });
+
+  // 2) Prepare embedded item data (duplicate, strip _id and folder)
+  const embedded = items.map(i => {
+    const data = i.toObject();
+    delete data._id;
+    delete data.folder;
+    return data;
+  });
+
+  // 3) Create items on the actor in one batch
+  await stash.createEmbeddedDocuments("Item", embedded);
+
+  // 4) Remove the temporary cache copies from the world (if they were left in the cache folder)
+  const deletions = items
+    .filter(i => i?.folder?.id === cacheFolder.id)
+    .map(i => i.delete());
+  if (deletions.length) await Promise.allSettled(deletions);
+
+  // 5) Open the stash and notify via chat
+  stash.sheet?.render(true);
+  await ChatMessage.create({
+    content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.`,
+    speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
+  });
+
+  return stash;
+}
+
 // Results render function
 async function renderTreasureResultDialog(items, budget, config) {
   const cacheFolder = await cacheManager.getOrCreateCacheFolder();
@@ -546,13 +582,8 @@ async function renderTreasureResultDialog(items, budget, config) {
 	 },
     stash: {
       label: "Stash",
-      callback: () => {
-        Hooks.call("lookfarTreasureStashRequested", {
-          items: finalItems,
-          remainingBudget: budget,
-          config
-        });
-        ui.notifications?.info("Stash coming soon.");
+      callback: async () => {
+        await createStash(finalItems, cacheFolder);
       }
     },
       reroll: {
