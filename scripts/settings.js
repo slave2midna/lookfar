@@ -32,8 +32,8 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "useVariantDamageRules", {
-      name: "Use Variant Damage Rules",
-      hint: "Placeholder setting: Enables alternate damage rules (currently unused).",
+      name: "Use Playtest Damage Rules",
+      hint: "When generating new weapons, damage will be based on new playtest rules.",
       scope: "world",
       config: true,
       default: false,
@@ -119,4 +119,5 @@ export const LookfarSettings = {
     game.settings.settings.get("lookfar.customTreasureRollTable").choices = rollTableChoices;
   }
 };
+
 
