@@ -67,7 +67,7 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
 
 // Weapon Generation
 function rollWeapon(weapons, weaponQualities, elements, origin) {
-  let base, quality = "None", hasPlusOne = false, appliedElement = null;
+  let base, quality = "None", hasPlusOne = false, appliedElement = null, isMaster = false;
   let nameParts = [];
   let value = 0;
 
@@ -83,6 +83,7 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
 
     hasPlusOne = Math.random() < 0.5;
     appliedElement = Math.random() < 0.5 ? getRandom(elements) : null;
+	isMaster = Math.random() < 0.5;  
     const q = Math.random() < 0.5 ? getRandom(availableQualities) : null;
     quality = q?.name ?? "None";
 
@@ -101,7 +102,12 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
       value += 100;
     }
 
-  } while (!hasPlusOne && quality === "None" && !appliedElement);  // ensure at least one feature
+	if (isMaster) {
+      nameParts.push("Master");
+      value += 200;
+    }  
+
+  } while (!hasPlusOne && quality === "None" && !appliedElement && !isMaster);  // ensure at least one feature
 
   nameParts.push(base.name);
   const name = nameParts.join(" ");
@@ -112,6 +118,7 @@ function rollWeapon(weapons, weaponQualities, elements, origin) {
 	quality, 
 	element: appliedElement, 
 	hasPlusOne,
+	isMaster,  
     origin
   };
 }
@@ -341,42 +348,54 @@ async function renderTreasureResultDialog(items, budget, config) {
         }
       };
     } else if (dataLoader.weaponsData.weaponList.some(w => data.name.endsWith(w.name))) {
-      type = "weapon";
-      const baseWeapon = dataLoader.weaponsData.weaponList.find(w => data.name.endsWith(w.name));
-      const allQualities = [
-  		...(dataLoader.weaponsData.weaponQualities.basic || []),
-  		...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
-      ];
-      const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = "icons/svg/sword.svg";
+  type = "weapon";
+  const baseWeapon = dataLoader.weaponsData.weaponList.find(w => data.name.endsWith(w.name));
+  const allQualities = [
+    ...(dataLoader.weaponsData.weaponQualities.basic || []),
+    ...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
+  ];
+  const qualityObj = allQualities.find(q => q.name === data.quality);
+  const img = "icons/svg/sword.svg";
 
-      itemData = {
-        name: data.name,
-        type,
-        img,
-        folder: cacheFolder.id,
-        system: {
-          category: { value: baseWeapon?.category || "" },
-          hands: { value: baseWeapon?.hand || "" },
-          type: { value: baseWeapon?.type || "" },
-          attributes: {
-            primary: { value: baseWeapon?.attrA || "" },
-            secondary: { value: baseWeapon?.attrB || "" }
-          },
-          accuracy: { value: (baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0) },
-          defense: baseWeapon?.defense || "",
-          damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
-          damage: { value: baseWeapon?.damage ?? 0 },
-          isMartial: { value: baseWeapon?.isMartial ?? false },
-          quality: { value: qualityObj?.description || "No quality" },
-          cost: { value: data.value },
-          source: { value: "LOOKFAR" },
-          summary: { value: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}` },
-          description: `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon that ${qualityObj?.description || "has no special properties."}<br>` + 
-            `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> <b>DMG:</b> HR+${baseWeapon?.damage ?? 0} <strong>|</strong> <b>ELE:</b> ${(data.element?.damageType || baseWeapon?.element || "physical").charAt(0).toUpperCase()}${(data.element?.damageType || baseWeapon?.element || "physical").slice(1)}`
-        }
-      };
-    } else if (dataLoader.armorData.armorList.some(a => data.name.endsWith(a.name))) {
+  // Core description prefix — special if Master
+  const prefix = data.isMaster
+    ? `A <b>Masterwork</b> ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`
+    : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`;
+
+  itemData = {
+    name: data.name,
+    type,
+    img,
+    folder: cacheFolder.id,
+    system: {
+      category: { value: baseWeapon?.category || "" },
+      hands: { value: baseWeapon?.hand || "" },
+      type: { value: baseWeapon?.type || "" },
+      attributes: {
+        primary: { value: baseWeapon?.attrA || "" },
+        secondary: { value: baseWeapon?.attrB || "" }
+      },
+      accuracy: { value: (baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0) },
+      defense: baseWeapon?.defense || "",
+      damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
+      damage: { value: (baseWeapon?.damage ?? 0) + (data.isMaster ? 4 : 0) },
+      isMartial: { value: baseWeapon?.isMartial ?? false },
+      quality: { value: qualityObj?.description || "No quality" },
+      cost: { value: data.value },
+      source: { value: "LOOKFAR" },
+      summary: {
+        value: `${prefix} that ${qualityObj?.description || "has no special properties."}`
+      },
+      description:
+        `${prefix} that ${qualityObj?.description || "has no special properties."}<br>` +
+        `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> ` +
+        `<b>DMG:</b> HR+${(baseWeapon?.damage ?? 0) + (data.isMaster ? 4 : 0)} <strong>|</strong> ` +
+        `<b>ELE:</b> ${(data.element?.damageType || baseWeapon?.element || "physical")
+          .charAt(0)
+          .toUpperCase()}${(data.element?.damageType || baseWeapon?.element || "physical").slice(1)}`
+    }
+  };
+} else if (dataLoader.armorData.armorList.some(a => data.name.endsWith(a.name))) {
       type = "armor";
       const baseArmor = dataLoader.armorData.armorList.find(a => data.name.endsWith(a.name));
       const allQualities = [
