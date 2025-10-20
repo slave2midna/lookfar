@@ -141,10 +141,8 @@ if (!globalThis._lookfarSettingsLiveChoices) {
     LookfarSettings.updateRollTableChoices();
   });
 
-  // Any roll table CRUD updates the registry choices, and re-renders Settings if open
   const onTablesChanged = () => {
     LookfarSettings.updateRollTableChoices();
-    // If Settings window is open, re-render it to pick up the updated choices
     const win = Object.values(ui.windows).find(w => w instanceof SettingsConfig);
     if (win) win.render(false);
   };
