@@ -215,51 +215,6 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
   };
 }
 
-// Module Generation
-function rollModules(weaponModules, armorModules, weaponQualities, armorQualities, origin, cap) {
-  // Pick which kind of module we’re rolling ( may add radial later )
-  const pools = [];
-  if (Array.isArray(weaponModules) && weaponModules.length) pools.push("weapon");
-  if (Array.isArray(armorModules) && armorModules.length) pools.push("armor");
-  if (!pools.length) return null;
-
-  const moduleType = getRandom(pools);
-  const base = moduleType === "weapon" ? getRandom(weaponModules) : getRandom(armorModules);
-
-  // Base value
-  let value = base?.value ?? 0;
-
-  // Combine basic qualities with origin-specific qualities
-  const qualities = moduleType === "weapon"
-    ? [ ...(weaponQualities.basic || []), ...(weaponQualities[origin] || []) ]
-    : [ ...(armorQualities.basic  || []), ...(armorQualities[origin]  || []) ];
-
-  // Pick an affordable quality from the combined pool
-  const affordable = qualities.filter(q => (value + (q.value ?? 0)) <= cap);
-  const q = affordable.length ? getRandom(affordable) : null;
-
-  const qualityName = q?.name ?? "None";
-  value += q?.value ?? 0;
-
-  // Final cap guard
-  if (value > cap) return null;
-
-  // Name it like other gear, but with a clear "Module" suffix
-  const name = `${qualityName !== "None" ? qualityName + " " : ""}${base.name} Module`;
-
-  // Pass along base stats to make rendering easy later
-  const stats = { ...base };
-
-  return {
-    name,
-    value,
-    quality: qualityName,
-    moduleType,   // "weapon" or "armor"
-    origin,
-    stats         // original module stat block (category/def/mdef/etc.)
-  };
-}
-
 // Custom Treasure Generation
 async function rollCustom() {
   const tableId = game.settings.get("lookfar", "customTreasureRollTable");
@@ -365,80 +320,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           source: "LOOKFAR"
         }
       };
-	} else if ("moduleType" in data) {
-		
-  type = "classFeature";
-  const s = data.stats || {};
-  const isArmor = data.moduleType === "armor";
-  const toBool = (v) => (typeof v === "string" ? v.toLowerCase() === "true" : !!v);
-
-  const stats = [];
-  const pushStat = (label, v) => {
-    const n = Number(v);
-    if (!Number.isNaN(n) && n !== 0) stats.push(`<b>${label}</b> ${n > 0 ? "+" : ""}${n}`);
-  };
-  if (isArmor) {
-    pushStat("DEF",  s.def ?? s.defense?.modifier);
-    pushStat("MDEF", s.mdef ?? s.magicDefense?.modifier);
-  } else {
-    pushStat("ACC",  s.accuracy?.modifier ?? s.modifier ?? s.acc);
-    pushStat("DMG",  s.damage?.bonus      ?? s.damageBonus ?? s.dmg);
-  }
-  const qualityBadge = (data.quality && data.quality !== "None") ? ` — <em>${data.quality}</em>` : "";
-  const summaryHtml = [
-    `<b>${isArmor ? "Armor" : "Weapon"} Module</b>${qualityBadge}`,
-    stats.length ? `<span>${stats.join(" • ")}</span>` : ""
-  ].filter(Boolean).join("<br>");
-
-  const armorData = {
-    defense: {
-      attribute: s.defAttr ?? s.defense?.attribute ?? "dex",
-      modifier:  Number(s.def ?? s.defense?.modifier ?? 0)
-    },
-    magicDefense: {
-      attribute: s.mdefAttr ?? s.magicDefense?.attribute ?? "ins",
-      modifier:  Number(s.mdef ?? s.magicDefense?.modifier ?? 0)
-    },
-    martial:     toBool(s.isMartial ?? s.martial ?? false),
-    quality:     s.quality ?? data.quality ?? "",
-    description: s.description ?? ""
-  };
-
-  const weaponData = {
-    type:     s.type      ?? s.weaponType ?? "",
-    category: s.category  ?? "",
-    complex:  !!(s.complex ?? false),
-    accuracy: {
-      attr1:    s.accuracy?.attr1    ?? s.attr1    ?? "",
-      attr2:    s.accuracy?.attr2    ?? s.attr2    ?? "",
-      defense:  s.accuracy?.defense  ?? s.defense  ?? "",
-      modifier: Number(s.accuracy?.modifier ?? s.modifier ?? 0)
-    },
-    damage: {
-      bonus: Number(s.damage?.bonus ?? s.damageBonus ?? 0),
-      type:  s.damage?.type ?? s.damageType ?? "physical"
-    },
-    quality:     s.quality ?? data.quality ?? "",
-    description: s.description ?? ""
-  };
-
-  itemData = {
-    name: data.name,
-    type,
-    img: s.img ?? "icons/svg/upgrade.svg",
-    folder: cacheFolder.id,
-    system: {
-      featureType: isArmor ? "projectfu.armorModule" : "projectfu.weaponModule",
-      summary: { value: summaryHtml },
-      source: "LOOKFAR",
-      data: {
-        ...(isArmor ? armorData : weaponData),
-        cost: data.value ?? null,
-        quantity: 1
-      }
-    }
-  };
-    } else if ("detail" in data) {
+	} else if ("detail" in data) {
       type = "treasure";
       const img = "icons/svg/item-bag.svg";
       
@@ -680,10 +562,6 @@ Hooks.once("ready", () => {
     const { shieldList, shieldQualities } = dataLoader.shieldsData;
     const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
 
-	// module loaders
-	const weaponModules = (dataLoader.weaponsData.weaponModules || []);
-    const armorModules  = (dataLoader.armorData.armorModules  || []);
-
     // builds weapon element using element keywords
     const elementKeywords = dataLoader.keywordData.element || {};
     const weaponElements = Object.entries(elementKeywords)
@@ -700,8 +578,7 @@ Hooks.once("ready", () => {
 		includeShields,
         includeAccessories, 
 		includeIngredients, 
-		includeMaterials,
-		includeModules,  
+		includeMaterials, 
         includeCustom
       } = rerollConfig;
 
@@ -718,8 +595,7 @@ Hooks.once("ready", () => {
         if (includeShields) itemTypes.push("Shield");
         if (includeAccessories) itemTypes.push("Accessory");
         if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
-        if (includeMaterials) itemTypes.push("Material");
-		if (includeModules) itemTypes.push("Module");  
+        if (includeMaterials) itemTypes.push("Material"); 
         if (includeCustom) itemTypes.push("Custom");
 		
 
@@ -733,8 +609,7 @@ Hooks.once("ready", () => {
           case "Weapon":     item = rollWeapon(weaponList, weaponQualities, weaponElements, origin); break;
           case "Armor":      item = rollArmor(armorList, armorQualities, origin, cap); break;
           case "Shield":     item = rollShield(shieldList, shieldQualities, origin, cap); break;
-          case "Accessory":  item = rollAccessory(accessoryList, accessoryQualities, origin, cap); break;
-		  case "Module":     item = rollModules(weaponModules, armorModules, weaponQualities, armorQualities, origin, cap); break;		
+          case "Accessory":  item = rollAccessory(accessoryList, accessoryQualities, origin, cap); break;	
           case "Material":   item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords.material, natureKeywords.material); break;
           case "Ingredient": item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient); ingredientCount++; break;
           case "Custom":     item = await rollCustom(); break;
@@ -850,8 +725,7 @@ Hooks.once("ready", () => {
 	  const includeShields = html.find("#includeShields").is(":checked");
       const includeAccessories = html.find("#includeAccessories").is(":checked");
       const includeIngredients = html.find("#includeIngredients").is(":checked");
-      const includeMaterials = html.find("#includeMaterials").is(":checked");
-	  const includeModules = html.find("#includeModules").is(":checked");	
+      const includeMaterials = html.find("#includeMaterials").is(":checked");	
 	  const includeCustom   = html.find("#includeCustom").is(":checked");	
 
       let selectedOrigin = html.find("#origin").val();
@@ -875,8 +749,7 @@ Hooks.once("ready", () => {
 		includeShields,
         includeAccessories,
         includeIngredients,
-        includeMaterials,
-		includeModules,  
+        includeMaterials,  
 		includeCustom  
       });
     }
