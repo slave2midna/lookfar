@@ -494,7 +494,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   return `
     <div style="text-align: center; margin-bottom: 0.75em;">
       <img src="${item.img}" width="32" height="32" style="display:block; margin:0 auto 6px;">
-      <a class="content-link" draggable="true" data-uuid="${item.uuid}">
+      <a class="content-link" data-uuid="${item.uuid}">
         <strong>${item.name}${quantitySuffix}</strong>
       </a><br>
       <small>${desc}</small><br>
@@ -520,13 +520,8 @@ async function renderTreasureResultDialog(items, budget, config) {
         	  await item.update({ folder: null });
       		}
     	  }
-
-    	  // Re-enrich the (raw) htmlContent AFTER the move
-    	  const messageHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
-
-    	  // Post a single chat message with the enriched links
     	  await ChatMessage.create({
-      		content: messageHtml,
+      		content: htmlContent,
       		speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
     	  });
   	  	 }
