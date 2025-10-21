@@ -633,6 +633,7 @@ async function renderTreasureResultDialog(items, budget, config) {
     });
   }
 
+
   const $count = html.find("#itemsCount");
   if ($count.length) {
     const min = Number($count.attr("min")) || 1;
@@ -646,8 +647,9 @@ async function renderTreasureResultDialog(items, budget, config) {
 
     html.find("#itemsPlus").on("click", () => clampSet(Number($count.val()) + 1));
     html.find("#itemsMinus").on("click", () => clampSet(Number($count.val()) - 1));
-  }
-});
+   }
+ });
+}	
 
 // Hook Setup
 Hooks.once("ready", () => {
