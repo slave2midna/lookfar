@@ -231,6 +231,52 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
   };
 }
 
+// Currency Generation
+/**
+ * Generate a single currency line within the available cap.
+ * - Reads the currency display name from the Project FU setting:
+ *   game.settings.get("projectfu", "optionRenameCurrency")
+ * - Chooses a random integer amount up to the current cap (budget & level cap).
+ * - Returns a lightweight object consistent with other generators (has .value).
+ *
+ * @param {number} remainingBudget - How much z you can still spend.
+ * @param {number} maxVal          - Level-based cap from the dialog (highest PC level).
+ * @param {object} [opts]
+ * @param {number} [opts.minAmount=1] - Minimum amount to grant (after rounding).
+ * @param {number} [opts.roundTo=1]   - Rounds the result down to this step (e.g., 10, 50).
+ * @returns {object|null} { isCurrency:true, name, value, img, currencyName }
+ */
+function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = {}) {
+  // Guard rails
+  const safeBudget = Number.isFinite(remainingBudget) ? Math.max(0, Math.floor(remainingBudget)) : 0;
+  const safeMaxVal = Number.isFinite(maxVal) ? Math.max(0, Math.floor(maxVal)) : 0;
+  const cap = Math.min(safeBudget, safeMaxVal || safeBudget);
+
+  if (cap < Math.max(1, minAmount)) return null;
+
+  // Grab the display name the system uses for money (e.g., "Zenit", "Credits", "Coins")
+  const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || "Zenit";
+
+  // Random amount from [minAmount .. cap], then snap down to the desired step
+  const raw = Math.floor(Math.random() * (cap - minAmount + 1)) + minAmount;
+  const step = Math.max(1, Math.floor(roundTo));
+  const amount = Math.max(minAmount, Math.floor(raw / step) * step);
+
+  // Build a clean display name like "240 Credits" or "150 Zenit"
+  const name = `${amount} ${currencyName}`;
+
+  // Use Foundry's built-in coins icon for visual parity with other results
+  const img = "icons/svg/coins.svg";
+
+  return {
+    isCurrency: true,
+    name,
+    value: amount,    // IMPORTANT: this is what the loop subtracts from remainingBudget
+    img,
+    currencyName
+  };
+}
+
 // Custom Treasure Generation
 async function rollCustom() {
   const tableId = game.settings.get("lookfar", "customTreasureRollTable");
@@ -337,7 +383,11 @@ async function createStash(items, cacheFolder) {
 async function renderTreasureResultDialog(items, budget, config) {
   const cacheFolder = await cacheManager.getOrCreateCacheFolder();
 
-  const tempItems = await Promise.all(items.map(async (data) => {
+  // Separate currency lines (no Item docs) from everything else
+  const currencyLines = items.filter(i => i && i.isCurrency);
+  const docInputs = items.filter(i => i && !i.isCurrency);
+
+  const tempItems = await Promise.all(docInputs.map(async (data) => {
     let type = null;
     let itemData;
 
@@ -579,6 +629,17 @@ async function renderTreasureResultDialog(items, budget, config) {
   return `<div style="text-align:center;margin-bottom:0.75em"><img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px"><a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br><small>${desc}</small><br><small>Value: ${cost} z</small></div>`;
   }).join("");  // join with empty string — no newlines between items
 
+  // Append currency lines (no UUID/content-link; just a simple row)
+  if (currencyLines.length) {
+    const rows = currencyLines.map(c =>
+      `<div style="text-align:center;margin-bottom:0.75em">
+         <img src="${c.img || 'icons/svg/coins.svg'}" width="32" height="32" style="display:block;margin:0 auto 6px">
+         <strong>${c.name}</strong>
+       </div>`
+    ).join("");
+    htmlContent += rows;
+  }
+
   // Also single-line for the footer
   htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
 
@@ -665,7 +726,8 @@ Hooks.once("ready", () => {
 		includeShields,
         includeAccessories, 
 		includeIngredients, 
-		includeMaterials, 
+		includeMaterials,
+		includeCurrency,  
         includeCustom
       } = rerollConfig;
 
@@ -682,7 +744,8 @@ Hooks.once("ready", () => {
         if (includeShields) itemTypes.push("Shield");
         if (includeAccessories) itemTypes.push("Accessory");
         if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
-        if (includeMaterials) itemTypes.push("Material"); 
+        if (includeMaterials) itemTypes.push("Material");
+		if (includeCurrency) itemTypes.push("Currency");
         if (includeCustom) itemTypes.push("Custom");
 		
 
@@ -699,6 +762,7 @@ Hooks.once("ready", () => {
           case "Accessory":  item = rollAccessory(accessoryList, accessoryQualities, origin, cap); break;	
           case "Material":   item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords.material, natureKeywords.material); break;
           case "Ingredient": item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient); ingredientCount++; break;
+		  case "Currency":   item = rollCurrency(remainingBudget, maxVal, { roundTo: 10 }); break; // tidy amounts
           case "Custom":     item = await rollCustom(); break;
         }
 
@@ -837,6 +901,7 @@ Hooks.once("ready", () => {
         const includeAccessories = html.find("#includeAccessories").is(":checked");
         const includeIngredients = html.find("#includeIngredients").is(":checked");
         const includeMaterials = html.find("#includeMaterials").is(":checked");
+		const includeCurrency = html.find("#includeCurrency").is(":checked");
         const includeCustom = html.find("#includeCustom").is(":checked");
 
         const selectedOrigin = html.find("#origin").val();
@@ -856,6 +921,7 @@ Hooks.once("ready", () => {
           includeAccessories,
           includeIngredients,
           includeMaterials,
+		  includeCurrency,	
           includeCustom
         });
       }
