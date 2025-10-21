@@ -545,16 +545,26 @@ async function renderTreasureResultDialog(items, budget, config) {
   // Build compact, one-line cards (no leading/trailing whitespace)
   let htmlContent = finalItems.map(item => {
   const cost = getItemCost(item.system);
-  const quantity = item.system.quantity?.value ?? 1;
+
+  // Detect ingredient (classFeature with projectfu.ingredient type)
   const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
-  const quantitySuffix = isIngredient && quantity > 1 ? ` x${quantity}` : "";
+
+  // Correct quantity lookup:
+  // - Ingredients store it at system.data.quantity (a number)
+  // - Other items might store it at system.quantity.value
+  const quantity = isIngredient
+    ? (item.system?.data?.quantity ?? 1)
+    : (item.system?.quantity?.value ?? 1);
+
+  // Only show “x#” if ingredient and more than 1
+  const quantitySuffix = isIngredient && quantity > 1 ? ` x ${quantity}` : "";
 
   const desc =
-      item.system?.summary?.value ??
-      item.system?.summary ??
-      item.system?.data?.summary?.value ??
-      item.system?.data?.summary ??
-      "";
+    item.system?.summary?.value ??
+    item.system?.summary ??
+    item.system?.data?.summary?.value ??
+    item.system?.data?.summary ??
+    "";
 
   // IMPORTANT: single-line string, no leading/trailing \n or spaces
   return `<div style="text-align:center;margin-bottom:0.75em"><img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px"><a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br><small>${desc}</small><br><small>Value: ${cost} z</small></div>`;
