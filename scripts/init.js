@@ -1,6 +1,8 @@
+import "./cacheManager.js";
 import { LookfarSettings } from "./settings.js";
 import { dataLoader } from "./dataLoader.js";
 import "./travelRoll.js";
+import "./treasureRoll.js";
 import "./buttonManager.js";
 
 Hooks.once("init", async () => {
@@ -13,3 +15,5 @@ Hooks.once("init", async () => {
 Hooks.once("ready", () => {
   LookfarSettings.registerDynamicRollTableSettings();
 });
+
+

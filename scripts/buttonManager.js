@@ -1,14 +1,19 @@
 function getLookfarTools() {
   return [
     {
-      // Travel Check
+      // Travel Check Button
       name: 'LOOKFAR.Button.TravelCheck.Name',
       icon: 'fa-solid fa-person-hiking',
       onClick: () => Hooks.call('lookfarShowTravelCheckDialog'),
     },
-
+    {
+      // Treasure Roll Button
+      name: "Treasure Roll",
+      icon: 'fa-solid fa-gem',
+      onClick: () => Hooks.call('lookfarShowTreasureRollDialog'),
+    },
     // {
-    //   // Example placeholder for a future feature
+    //   // Example placeholder for a future button
     //   name: 'LOOKFAR.Button.AnotherFeature.Name',
     //   icon: 'fa-solid fa-compass',
     //   onClick: () => Hooks.call('lookfarShowAnotherFeature'),
@@ -21,3 +26,4 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
   for (const tool of getLookfarTools()) tools.push(tool);
   return tools;
 });
+

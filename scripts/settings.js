@@ -8,9 +8,9 @@ export const LookfarSettings = {
       type: String,
       choices: {
         public: game.i18n.localize("LOOKFAR.Settings.ResultVisibility.Choices.Public"),
-        gmOnly: game.i18n.localize("LOOKFAR.Settings.ResultVisibility.Choices.GMOnly"),
+        gmOnly: game.i18n.localize("LOOKFAR.Settings.ResultVisibility.Choices.GMOnly")
       },
-      default: "public",
+      default: "public"
     });
 
     game.settings.register("lookfar", "enableKeywords", {
@@ -19,11 +19,30 @@ export const LookfarSettings = {
       scope: "world",
       config: true,
       type: Boolean,
+      default: false
+    });
+
+    game.settings.register("lookfar", "useVariantTravelRules", {
+      name: "Use Variant Travel Rules",
+      hint: "Placeholder setting: Toggles alternative travel mechanics (currently unused).",
+      scope: "world",
+      config: true,
       default: false,
+      type: Boolean
+    });
+
+    game.settings.register("lookfar", "useVariantDamageRules", {
+      name: "Use Playtest Damage Rules",
+      hint: "When generating new weapons, damage will be based on new playtest rules.",
+      scope: "world",
+      config: true,
+      default: false,
+      type: Boolean
     });
   },
 
   registerDynamicRollTableSettings() {
+    // Initial choices at registration time (will be kept fresh by hooks below)
     const rollTableChoices = LookfarSettings.getRollTableChoices();
 
     game.settings.register("lookfar", "discoveryEffectRollTable", {
@@ -33,8 +52,7 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
     });
 
     game.settings.register("lookfar", "discoverySourceRollTable", {
@@ -44,8 +62,7 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
     });
 
     game.settings.register("lookfar", "dangerThreatRollTable", {
@@ -55,8 +72,7 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
     });
 
     game.settings.register("lookfar", "dangerSourceRollTable", {
@@ -66,8 +82,17 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: rollTableChoices,
-      default: "default",
-      requiresReload: true
+      default: "default"
+    });
+
+    game.settings.register("lookfar", "customTreasureRollTable", {
+      name: "Custom Treasure Roll Table",
+      hint: "Select the Roll Table to use for generating custom treasure.",
+      scope: "world",
+      config: true,
+      type: String,
+      choices: rollTableChoices,
+      default: "default"
     });
   },
 
@@ -81,11 +106,48 @@ export const LookfarSettings = {
     return choices;
   },
 
+  // Update the registry (game.settings.settings) so future renders pick up new tables
   updateRollTableChoices() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
-    game.settings.settings.get("lookfar.discoveryEffectRollTable").choices = rollTableChoices;
-    game.settings.settings.get("lookfar.discoverySourceRollTable").choices = rollTableChoices;
-    game.settings.settings.get("lookfar.dangerThreatRollTable").choices = rollTableChoices;
-    game.settings.settings.get("lookfar.dangerSourceRollTable").choices = rollTableChoices;
+    const reg = game.settings.settings;
+    // Guard if registry not ready yet
+    if (!reg) return;
+
+    const keys = [
+      "lookfar.discoveryEffectRollTable",
+      "lookfar.discoverySourceRollTable",
+      "lookfar.dangerThreatRollTable",
+      "lookfar.dangerSourceRollTable",
+      "lookfar.customTreasureRollTable"
+    ];
+
+    for (const fullKey of keys) {
+      const setting = reg.get(fullKey);
+      if (setting) setting.choices = rollTableChoices;
+    }
   }
 };
+
+/* -------------------------------------------------------------------------- */
+/*  Live-refresh the settings registry choices and re-render Settings UI.     */
+/*  This avoids page reloads when RollTables are added/renamed/deleted.       */
+/* -------------------------------------------------------------------------- */
+
+if (!globalThis._lookfarSettingsLiveChoices) {
+  globalThis._lookfarSettingsLiveChoices = true;
+
+  // Ensure registry choices are fresh once the world is ready
+  Hooks.once("ready", () => {
+    LookfarSettings.updateRollTableChoices();
+  });
+
+  const onTablesChanged = () => {
+    LookfarSettings.updateRollTableChoices();
+    const win = Object.values(ui.windows).find(w => w instanceof SettingsConfig);
+    if (win) win.render(false);
+  };
+
+  Hooks.on("createRollTable", onTablesChanged);
+  Hooks.on("updateRollTable", onTablesChanged);
+  Hooks.on("deleteRollTable", onTablesChanged);
+}

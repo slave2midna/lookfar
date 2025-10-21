@@ -6,15 +6,17 @@ Hello and welcome to Lookfar! A GM Assistant module for [Foundry VTT](https://fo
 
 Please note that licensed Fabula Ultima content is not provided with this system. As an endeavour of the League of Fabulous Developers, this module adheres to RoosterEma's guidelines and strives to ensure that the core book and supplements remain essential to player and GM experience.
 
-**Note:** This module is a WIP and can change at any time. At the current moment, it requires the Fabula Ultima system. It is actively being tested on Foundry v11, and any issues on v12 are unforseen.
+**Note:** This module is a WIP and can change at any time. At the current moment, it requires the Fabula Ultima system. It is actively being tested on Foundry v13, and any issues on v12 are unforseen.
 
 | Features               |                                                                                                                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Travel Roll Helper** | Adds a travel button to tools UI for Gamemasters to perform Travel Checks, generate dangers and discoveries. Includes a popup with suggestions for improv, located by project FU toolbar. |
+| **Treasure Generator** | Adds a treasure button to tools UI for Gamemasters to generate loot based on party level and reward budget. Loot generated can be kept as items in foundry to be given to players. |
 | **_Customizable Settings_** | Allows GMs to adjust settings like group level and travel roll visibility for group participation in Travel Rolls. |
 | **_Wayfarer Skills_**      | Influences dice rolls for travel checks, based on character traits. Enables text entry to credit Wayfarers in game, highlighting their importance. |
 
 You can call the travel Roll Helper via: `game.lookfar.showTravelCheckDialog();`
+You can call the treasure Roll Helper via: `game.lookfar.showTreasureRollDialog();`
 
 **Manifest URL:** `https://github.com//slave2midna/lookfar/releases/latest/download/module.json`
 
