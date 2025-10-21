@@ -17,42 +17,58 @@ function getItemCost(sys) {
 
 // Material Generation
 function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywordsMaterial, natureKeywordsMaterial) {
-  if (!natureKeywordsMaterial[nature] || budget < 50) return null;
+  // Resolve Random here, against the material subsets you already pass in
+  const effNature = (nature === "Random")
+    ? getRandom(Object.keys(natureKeywordsMaterial || {}))
+    : nature;
 
-  const detail = getRandom(Object.keys(detailKeywords));               // e.g. "Power"
-  const detailWord = getRandom(detailKeywords[detail]);                // e.g. "Serrated"
-  const originWord = getRandom(originKeywordsMaterial[origin]);        // e.g. "Molten"
-  const natureWord = getRandom(natureKeywordsMaterial[nature]);        // e.g. "Shell"
-  const name = `${detailWord} ${originWord} ${natureWord}`;            // → "Serrated Molten Shell"
+  const effOrigin = (origin === "Random")
+    ? getRandom(Object.keys(originKeywordsMaterial || {}))
+    : origin;
+
+  if (!natureKeywordsMaterial[effNature] || budget < 50) return null;
+
+  const detail = getRandom(Object.keys(detailKeywords));           // e.g. "Power"
+  const detailWord = getRandom(detailKeywords[detail]);            // e.g. "Serrated"
+  const originWord = getRandom(originKeywordsMaterial[effOrigin]); // e.g. "Molten"
+  const natureWord = getRandom(natureKeywordsMaterial[effNature]); // e.g. "Shell"
+  const name = `${detailWord} ${originWord} ${natureWord}`;
 
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
-
   if (value > budget) return null;
 
   return {
     name,
     value,
     detail,
-    nature,
-    origin
+    nature: effNature,
+    origin: effOrigin
   };
 }
 
 // Ingredient Generation
 function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIngredient, originKeywordsIngredient) {
-  if (!natureKeywordsIngredient[nature] || budget < 10) return null;
+  // Resolve Random here, against the ingredient subsets you already pass in
+  const effNature = (nature === "Random")
+    ? getRandom(Object.keys(natureKeywordsIngredient || {}))
+    : nature;
 
-  const taste = getRandom(Object.keys(tasteKeywords));                  // e.g. "Sour"
-  const tasteWord = getRandom(tasteKeywords[taste]);                    // e.g. "Tart"
-  const originWord = getRandom(originKeywordsIngredient[origin]);       // e.g. "Watery"
-  const natureWord = getRandom(natureKeywordsIngredient[nature]);       // e.g. "Petal"
-  const name = `${tasteWord} ${originWord} ${natureWord}`;              // → "Tart Watery Petal"
+  const effOrigin = (origin === "Random")
+    ? getRandom(Object.keys(originKeywordsIngredient || {}))
+    : origin;
+
+  if (!natureKeywordsIngredient[effNature] || budget < 10) return null;
+
+  const taste = getRandom(Object.keys(tasteKeywords));                 // e.g. "Sour"
+  const tasteWord = getRandom(tasteKeywords[taste]);                   // e.g. "Tart"
+  const originWord = getRandom(originKeywordsIngredient[effOrigin]);   // e.g. "Watery"
+  const natureWord = getRandom(natureKeywordsIngredient[effNature]);   // e.g. "Petal"
+  const name = `${tasteWord} ${originWord} ${natureWord}`;
 
   const quantity = Math.floor(Math.random() * 3) + 1;
   const unitValue = (taste === "Distinct") ? 20 : 10;
   const total = unitValue * quantity;
-
   if (total > budget) return null;
 
   return {
@@ -60,8 +76,8 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
     value: total,
     taste,
     quantity,
-    nature,
-    origin
+    nature: effNature,
+    origin: effOrigin
   };
 }
 
