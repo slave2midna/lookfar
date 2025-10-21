@@ -622,15 +622,32 @@ async function renderTreasureResultDialog(items, budget, config) {
   dialog.render(true);
 
   Hooks.once("renderDialog", (_app, html) => {
-    html.find("a.content-link").on("click", async function (event) {
+  const links = html.find("a.content-link");
+  if (links.length) {
+    links.on("click", async function (event) {
       event.preventDefault();
       const uuid = $(this).data("uuid");
       if (!uuid) return;
       const doc = await fromUuid(uuid);
       if (doc?.sheet) doc.sheet.render(true);
     });
-  });
-}
+  }
+
+  const $count = html.find("#itemsCount");
+  if ($count.length) {
+    const min = Number($count.attr("min")) || 1;
+    const max = Number($count.attr("max")) || 5;
+
+    const clampSet = (val) => {
+      const n = parseInt(val, 10);
+      const safe = Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
+      $count.val(safe);
+    };
+
+    html.find("#itemsPlus").on("click", () => clampSet(Number($count.val()) + 1));
+    html.find("#itemsMinus").on("click", () => clampSet(Number($count.val()) - 1));
+  }
+});
 
 // Hook Setup
 Hooks.once("ready", () => {
@@ -720,82 +737,107 @@ Hooks.once("ready", () => {
     new Dialog({
       title: "Treasure Generator",
       content: `
-        <form style="display: flex; width: 100%; flex-wrap: nowrap; gap: 5px;">
-    
-	          <!-- Column 1: Form Inputs -->
-            <div style="width: 180px;">
-	              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-		                <label for="treasureBudget" style="width: 70px;">Budget:</label>
-		                <input type="number" id="treasureBudget" value="1" min="1" style="width: 110px; box-sizing: border-box;" /> </div>
-	              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-		                <label for="highestPCLevel" style="width: 70px;">Level:</label>
-		                <select id="highestPCLevel" style="width: 110px; box-sizing: border-box;">
-			                  <option value="500">5+</option>
-			                  <option value="1000">10+</option>
-			                  <option value="1500">20+</option>
-			                  <option value="2000">30+</option>
-			                  <option value="999999">40+</option>
-		                </select>
-	              </div>
-	              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-  				<label for="origin" style="width: 70px;">Origin:</label>
-  				<select id="origin" style="width: 110px; box-sizing: border-box;">
-    					  <option value="Random" selected>Random</option>
-    					  <option value="Aerial">Aerial</option>
-    					  <option value="Thunderous">Thunderous</option>
-    					  <option value="Paradox">Paradox</option>
-    					  <option value="Terrestrial">Terrestrial</option>
-    					  <option value="Ardent">Ardent</option>
-    					  <option value="Glacial">Glacial</option>
-    					  <option value="Spiritual">Spiritual</option>
-    					  <option value="Corrupted">Corrupted</option>
-    					  <option value="Aquatic">Aquatic</option>
-    					  <option value="Mechanical">Mechanical</option>
-  				</select>
-			</div>
-	              <div class="form-group" style="display: flex; align-items: center; margin-bottom: 0.5em;">
-  				<label for="nature" style="width: 70px;">Nature:</label>
-  				<select id="nature" style="width: 110px; box-sizing: border-box;">
-    					  <option value="Random" selected>Random</option>
-    					  <option value="Anthropod">Anthropod</option>
-    					  <option value="Bird">Bird</option>
-    					  <option value="Fish">Fish</option>
-    					  <option value="Mammal">Mammal</option>
-    					  <option value="Mollusk">Mollusk</option>
-    					  <option value="Reptile">Reptile</option>
-    					  <option value="Fungus">Fungus</option>
-    					  <option value="Incorporeal">Incorporeal</option>
-    					  <option value="Liquid">Liquid</option>
-    					  <option value="Artificial">Artificial</option>
-    					  <option value="Mineral">Mineral</option>
-  				</select>
-			</div>
-            </div>
-	
-          	<!-- Column 2: Checkboxes A -->
-          	<div style="width: 115px;" class="checkbox-group">
-          		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-	          		    <input type="checkbox" id="includeWeapons"> Weapons </label>
-	          	  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-		          	    <input type="checkbox" id="includeArmor"> Armor </label>
-		            <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-			              <input type="checkbox" id="includeAccessories"> Accessories </label>
-		          <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-			            <input type="checkbox" id="includeShields"> Shields </label>
-	          </div>
-	
-	          <!-- Column 3: Checkboxes B -->
-          	<div style="width: 115px;" class="checkbox-group">
-          		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-        		  	    <input type="checkbox" id="includeMaterials"> Materials </label>
-          		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-          			    <input type="checkbox" id="includeIngredients"> Ingredients </label>
-          		  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-          			    <input type="checkbox" id="includeCurrency"> Currency </label>
-	          	  <label style="display: block; margin-bottom: 0.5em; white-space: nowrap; vertical-align: middle;">
-			              <input type="checkbox" id="includeCustom"> Custom </label>
-	          </div>
-        </form>
+        <form style="display:flex; width:100%; flex-wrap:nowrap; gap:5px;">
+
+        <!-- Column 1: Form Inputs -->
+        <div style="width:180px;">
+
+         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+           <label for="treasureBudget" style="width:70px;">Budget:</label>
+           <input type="number" id="treasureBudget" value="1" min="1" style="width:110px; box-sizing:border-box;" />
+         </div>
+
+         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+           <label for="highestPCLevel" style="width:70px;">Level:</label>
+           <select id="highestPCLevel" style="width:110px; box-sizing:border-box;">
+             <option value="500">5+</option>
+             <option value="1000">10+</option>
+             <option value="1500">20+</option>
+             <option value="2000">30+</option>
+             <option value="999999">40+</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+          <label for="origin" style="width:70px;">Origin:</label>
+          <select id="origin" style="width:110px; box-sizing:border-box;">
+            <option value="Random" selected>Random</option>
+            <option value="Aerial">Aerial</option>
+            <option value="Thunderous">Thunderous</option>
+            <option value="Paradox">Paradox</option>
+            <option value="Terrestrial">Terrestrial</option>
+            <option value="Ardent">Ardent</option>
+            <option value="Glacial">Glacial</option>
+            <option value="Spiritual">Spiritual</option>
+            <option value="Corrupted">Corrupted</option>
+            <option value="Aquatic">Aquatic</option>
+            <option value="Mechanical">Mechanical</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+          <label for="nature" style="width:70px;">Nature:</label>
+          <select id="nature" style="width:110px; box-sizing:border-box;">
+            <option value="Random" selected>Random</option>
+            <option value="Anthropod">Anthropod</option>
+            <option value="Bird">Bird</option>
+            <option value="Fish">Fish</option>
+            <option value="Mammal">Mammal</option>
+            <option value="Mollusk">Mollusk</option>
+            <option value="Reptile">Reptile</option>
+            <option value="Fungus">Fungus</option>
+            <option value="Incorporeal">Incorporeal</option>
+            <option value="Liquid">Liquid</option>
+            <option value="Artificial">Artificial</option>
+            <option value="Mineral">Mineral</option>
+          </select>
+        </div>
+
+        <!-- New: Items stepper -->
+        <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+          <label for="itemsCount" style="width:70px;">Items:</label>
+          <div style="display:flex; gap:4px; width:110px;">
+            <button type="button" id="itemsMinus" style="width:28px; padding:0 0.25rem;">−</button>
+            <input type="number" id="itemsCount" value="1" min="1" max="5" style="flex:1; box-sizing:border-box; text-align:center;" />
+            <button type="button" id="itemsPlus" style="width:28px; padding:0 0.25rem;">+</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Column 2: Checkboxes A -->
+      <div style="width:115px;" class="checkbox-group">
+        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+          <input type="checkbox" id="includeWeapons"> Weapons
+        </label>
+        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+          <input type="checkbox" id="includeArmor"> Armor
+        </label>
+        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+          <input type="checkbox" id="includeAccessories"> Accessories
+        </label>
+        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+          <input type="checkbox" id="includeShields"> Shields
+        </label>
+      </div>
+
+      <!-- Column 3: Checkboxes B -->
+      <div style="width:115px;" class="checkbox-group">
+        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+          <input type="checkbox" id="includeMaterials"> Materials
+        </label>
+        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+          <input type="checkbox" id="includeIngredients"> Ingredients
+        </label>
+        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+          <input type="checkbox" id="includeCurrency"> Currency
+        </label>
+        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+          <input type="checkbox" id="includeCustom"> Custom
+        </label>
+      </div>
+
+</form>
       `,
       buttons: {
   ok: {
