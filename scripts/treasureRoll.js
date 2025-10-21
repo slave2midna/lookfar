@@ -336,7 +336,7 @@ async function rollCustom() {
   };
 }
 
-async function createStash(items, cacheFolder) {
+async function createStash(items, cacheFolder, currencyTotal = 0) {
 
   const allStashes = game.actors.filter(a => a.type === "stash");
   const re = /^New Stash #(\d+)$/i;
@@ -365,16 +365,26 @@ async function createStash(items, cacheFolder) {
 
   await stash.createEmbeddedDocuments("Item", embedded);
 
+  // Deposit rolled currency into the stash's zenit resource (if any)
+  if (currencyTotal > 0) {
+    const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || "Zenit";
+    const current = foundry.utils.getProperty(stash, "system.resources.zenit.value") ?? 0;
+    await stash.update({ "system.resources.zenit.value": current + currencyTotal });
+  }
+
   const deletions = items
     .filter(i => i?.folder?.id === cacheFolder.id)
     .map(i => i.delete());
   if (deletions.length) await Promise.allSettled(deletions);
 
   stash.sheet?.render(true);
+  const depositNote = currencyTotal > 0
+    ? `<br>Deposited <strong>${currencyTotal}</strong> ${(game.settings.get("projectfu","optionRenameCurrency") || "Zenit")} into the stash.`
+    : "";
   await ChatMessage.create({
-    content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.`,
+    content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.${depositNote}`,
     speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
-  });
+   });
 
   return stash;
 }
@@ -670,7 +680,8 @@ async function renderTreasureResultDialog(items, budget, config) {
     stash: {
       label: "Stash",
       callback: async () => {
-        await createStash(finalItems, cacheFolder);
+        const currencyTotal = (currencyLines || []).reduce((sum, c) => sum + (Number(c?.value) || 0), 0);
+        await createStash(finalItems, cacheFolder, currencyTotal);
       }
     },
       reroll: {
