@@ -17,53 +17,51 @@ function getItemCost(sys) {
 
 // Material Generation
 function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywordsMaterial, natureKeywordsMaterial) {
-  // Resolve Random here, against the material subsets you already pass in
-  const effNature = (nature === "Random")
-    ? getRandom(Object.keys(natureKeywordsMaterial || {}))
+  const localNature = (nature === "Random" || !natureKeywordsMaterial[nature])
+    ? getRandom(Object.keys(natureKeywordsMaterial))
     : nature;
 
-  const effOrigin = (origin === "Random")
-    ? getRandom(Object.keys(originKeywordsMaterial || {}))
+  const localOrigin = (origin === "Random" || !originKeywordsMaterial[origin])
+    ? getRandom(Object.keys(originKeywordsMaterial))
     : origin;
 
-  if (!natureKeywordsMaterial[effNature] || budget < 50) return null;
+  if (!natureKeywordsMaterial[localNature] || budget < 50) return null;
 
-  const detail = getRandom(Object.keys(detailKeywords));           // e.g. "Power"
-  const detailWord = getRandom(detailKeywords[detail]);            // e.g. "Serrated"
-  const originWord = getRandom(originKeywordsMaterial[effOrigin]); // e.g. "Molten"
-  const natureWord = getRandom(natureKeywordsMaterial[effNature]); // e.g. "Shell"
+  const detail = getRandom(Object.keys(detailKeywords));
+  const detailWord = getRandom(detailKeywords[detail]);
+  const originWord = getRandom(originKeywordsMaterial[localOrigin]);
+  const natureWord = getRandom(natureKeywordsMaterial[localNature]);
   const name = `${detailWord} ${originWord} ${natureWord}`;
 
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
   if (value > budget) return null;
 
-  return {
-    name,
-    value,
-    detail,
-    nature: effNature,
-    origin: effOrigin
+  return { 
+	name, 
+	value, 
+	detail, 
+	nature: localNature, 
+	origin: localOrigin
   };
 }
 
 // Ingredient Generation
 function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIngredient, originKeywordsIngredient) {
-  // Resolve Random here, against the ingredient subsets you already pass in
-  const effNature = (nature === "Random")
-    ? getRandom(Object.keys(natureKeywordsIngredient || {}))
+  const localNature = (nature === "Random" || !natureKeywordsIngredient[nature])
+    ? getRandom(Object.keys(natureKeywordsIngredient))
     : nature;
 
-  const effOrigin = (origin === "Random")
-    ? getRandom(Object.keys(originKeywordsIngredient || {}))
+  const localOrigin = (origin === "Random" || !originKeywordsIngredient[origin])
+    ? getRandom(Object.keys(originKeywordsIngredient))
     : origin;
 
-  if (!natureKeywordsIngredient[effNature] || budget < 10) return null;
+  if (!natureKeywordsIngredient[localNature] || budget < 10) return null;
 
-  const taste = getRandom(Object.keys(tasteKeywords));                 // e.g. "Sour"
-  const tasteWord = getRandom(tasteKeywords[taste]);                   // e.g. "Tart"
-  const originWord = getRandom(originKeywordsIngredient[effOrigin]);   // e.g. "Watery"
-  const natureWord = getRandom(natureKeywordsIngredient[effNature]);   // e.g. "Petal"
+  const taste = getRandom(Object.keys(tasteKeywords));
+  const tasteWord = getRandom(tasteKeywords[taste]);
+  const originWord = getRandom(originKeywordsIngredient[localOrigin]);
+  const natureWord = getRandom(natureKeywordsIngredient[localNature]);
   const name = `${tasteWord} ${originWord} ${natureWord}`;
 
   const quantity = Math.floor(Math.random() * 3) + 1;
@@ -71,25 +69,29 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
   const total = unitValue * quantity;
   if (total > budget) return null;
 
-  return {
-    name,
-    value: total,
-    taste,
-    quantity,
-    nature: effNature,
-    origin: effOrigin
+  return { 
+	name, 
+	value: total, 
+	taste, 
+	quantity, 
+	nature: localNature, 
+	origin: localOrigin
   };
 }
 
 // Weapon Generation
 function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamageRules = false) {
+  const originKeys = Object.keys(weaponQualities).filter(k => k !== "basic");
+  const localOrigin = (origin === "Random" || !weaponQualities[origin])
+    ? getRandom(originKeys)
+    : origin;
+
   let base, quality = "None", hasPlusOne = false, appliedElement = null, isMaster = false;
   let nameParts = [];
   let value = 0;
 
-  // Build the combined list of qualities
   const baseQualities = weaponQualities.basic || [];
-  const originQualities = weaponQualities[origin] || [];
+  const originQualities = weaponQualities[localOrigin] || [];
   const availableQualities = baseQualities.concat(originQualities);
 
   do {
@@ -99,31 +101,16 @@ function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamage
 
     hasPlusOne = Math.random() < 0.5;
     appliedElement = Math.random() < 0.5 ? getRandom(elements) : null;
-    isMaster = useVariantDamageRules ? false : (Math.random() < 0.5); // When variant damage is enabled, Master is disabled entirely
+    isMaster = useVariantDamageRules ? false : (Math.random() < 0.5);
     const q = Math.random() < 0.5 ? getRandom(availableQualities) : null;
     quality = q?.name ?? "None";
 
-    if (hasPlusOne) {
-      nameParts.push("+1");
-      value += 100;
-    }
+    if (hasPlusOne) { nameParts.push("+1"); value += 100; }
+    if (quality !== "None") { nameParts.push(quality); value += q.value; }
+    if (appliedElement) { nameParts.push(appliedElement.name); value += 100; }
+    if (isMaster && !useVariantDamageRules) { nameParts.push("Master"); value += 200; }
 
-    if (quality !== "None") {
-      nameParts.push(quality);
-      value += q.value;
-    }
-
-    if (appliedElement) {
-      nameParts.push(appliedElement.name);
-      value += 100;
-    }
-
-	if (isMaster && !useVariantDamageRules) {
-      nameParts.push("Master");
-      value += 200;
-    }  
-
-  } while (!hasPlusOne && quality === "None" && !appliedElement && !(isMaster && !useVariantDamageRules));  // ensure at least one feature
+  } while (!hasPlusOne && quality === "None" && !appliedElement && !(isMaster && !useVariantDamageRules));
 
   nameParts.push(base.name);
   const name = nameParts.join(" ");
@@ -133,108 +120,114 @@ function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamage
 	value, 
 	quality, 
 	element: appliedElement, 
-	hasPlusOne,
-	isMaster,  
-    origin
+	hasPlusOne, 
+	isMaster, 
+	origin: localOrigin
   };
 }
 
 // Armor Generation
 function rollArmor(armorList, armorQualities, origin, cap) {
+  const originKeys = Object.keys(armorQualities).filter(k => k !== "basic");
+  const localOrigin = (origin === "Random" || !armorQualities[origin])
+    ? getRandom(originKeys)
+    : origin;
+
   const base = getRandom(armorList);
   let nameParts = [];
   let value = base.value ?? 0;
   let quality = "None";
 
-  // Combine basic qualities with origin-specific qualities
   const qualityPool = [
     ...(armorQualities.basic || []),
-    ...(armorQualities[origin] || [])
+    ...(armorQualities[localOrigin] || [])
   ];
 
-  // Pick an affordable quality from the combined pool
   const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
-	if (!affordable.length) return null;
-	const q = getRandom(affordable);
-	quality = q.name;
-	nameParts.push(quality);
-	value += q.value ?? 0;
+  if (!affordable.length) return null;
+  const q = getRandom(affordable);
+  quality = q.name;
+  nameParts.push(quality);
+  value += q.value ?? 0;
 
-  // Name armor
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
-  return {
-    name,
-    value,
-    quality,
-	origin
+  return { 
+	name, 
+	value, 
+	quality, 
+	origin: localOrigin
   };
 }
 
 // Shield Generation
 function rollShield(shieldList, shieldQualities, origin, cap) {
+  const originKeys = Object.keys(shieldQualities).filter(k => k !== "basic");
+  const localOrigin = (origin === "Random" || !shieldQualities[origin])
+    ? getRandom(originKeys)
+    : origin;
+
   const base = getRandom(shieldList);
   let nameParts = [];
   let value = base.value ?? 0;
   let quality = "None";
 
-  // Combine basic qualities with origin-specific qualities
   const qualityPool = [
     ...(shieldQualities.basic || []),
-    ...(shieldQualities[origin] || [])
+    ...(shieldQualities[localOrigin] || [])
   ];
 
-  // Pick an affordable quality from the combined pool
   const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
-	if (!affordable.length) return null;
-	const q = getRandom(affordable);
-	quality = q.name;
-	nameParts.push(quality);
-	value += q.value ?? 0;
+  if (!affordable.length) return null;
+  const q = getRandom(affordable);
+  quality = q.name;
+  nameParts.push(quality);
+  value += q.value ?? 0;
 
-  // Name shield
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
-  return {
-    name,
-    value,
-    quality,
-    origin
+  return { 
+	name, 
+	value, 
+	quality, 
+	origin: localOrigin
   };
 }
 
 // Accessory Generation
 function rollAccessory(accessories, accessoryQualities, origin, cap) {
+  const originKeys = Object.keys(accessoryQualities).filter(k => k !== "basic");
+  const localOrigin = (origin === "Random" || !accessoryQualities[origin])
+    ? getRandom(originKeys)
+    : origin;
+
   const base = getRandom(accessories);
   let nameParts = [];
   let value = base.value ?? 0;
   let quality = "None";
 
-  // Combine basic qualities with origin-specific qualities
   const qualityPool = [
     ...(accessoryQualities.basic || []),
-    ...(accessoryQualities[origin] || [])
+    ...(accessoryQualities[localOrigin] || [])
   ];
 
-  // Pick an affordable quality from the combined pool
   const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
-	if (!affordable.length) return null;
-	const q = getRandom(affordable);
-	quality = q.name;
-	nameParts.push(quality);
-	value += q.value ?? 0;
+  if (!affordable.length) return null;
+  const q = getRandom(affordable);
+  quality = q.name;
+  nameParts.push(quality);
+  value += q.value ?? 0;
 
-  // Name accessory
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
-  return {
-    name,
-    value,
-    quality,
-	origin
+  return { 
+	name, 
+	value, 
+	quality, 
+	origin: localOrigin
   };
 }
 
@@ -820,14 +813,6 @@ Hooks.once("ready", () => {
 
       let selectedOrigin = html.find("#origin").val();
       let selectedNature = html.find("#nature").val();
-
-      if (selectedOrigin === "Random") {
-        selectedOrigin = getRandom(Object.keys(originKeywords.material));
-      }
-
-      if (selectedNature === "Random") {
-        selectedNature = getRandom(Object.keys(natureKeywords.material));
-      }
 
       Hooks.call("lookfarShowTreasureRollDialog", {
         budget,
