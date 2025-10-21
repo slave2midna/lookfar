@@ -232,32 +232,17 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
 }
 
 // Currency Generation
-/**
- * Generate a single currency line within the available cap.
- * - Reads the currency display name from the Project FU setting:
- *   game.settings.get("projectfu", "optionRenameCurrency")
- * - Chooses a random integer amount up to the current cap (budget & level cap).
- * - Returns a lightweight object consistent with other generators (has .value).
- *
- * @param {number} remainingBudget - How much z you can still spend.
- * @param {number} maxVal          - Level-based cap from the dialog (highest PC level).
- * @param {object} [opts]
- * @param {number} [opts.minAmount=1] - Minimum amount to grant (after rounding).
- * @param {number} [opts.roundTo=1]   - Rounds the result down to this step (e.g., 10, 50).
- * @returns {object|null} { isCurrency:true, name, value, img, currencyName }
- */
 function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = {}) {
-  // Guard rails
   const safeBudget = Number.isFinite(remainingBudget) ? Math.max(0, Math.floor(remainingBudget)) : 0;
   const safeMaxVal = Number.isFinite(maxVal) ? Math.max(0, Math.floor(maxVal)) : 0;
   const cap = Math.min(safeBudget, safeMaxVal || safeBudget);
 
   if (cap < Math.max(1, minAmount)) return null;
 
-  // Grab the display name the system uses for money (e.g., "Zenit", "Credits", "Coins")
+  // Grab the display name the system uses for money
   const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || "Zenit";
 
-  // Random amount from [minAmount .. cap], then snap down to the desired step
+  // Math Magic!
   const raw = Math.floor(Math.random() * (cap - minAmount + 1)) + minAmount;
   const step = Math.max(1, Math.floor(roundTo));
   const amount = Math.max(minAmount, Math.floor(raw / step) * step);
@@ -265,13 +250,13 @@ function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = 
   // Build a clean display name like "240 Credits" or "150 Zenit"
   const name = `${amount} ${currencyName}`;
 
-  // Use Foundry's built-in coins icon for visual parity with other results
+  // Currency image settings (customizable later)
   const img = "icons/svg/coins.svg";
 
   return {
     isCurrency: true,
     name,
-    value: amount,    // IMPORTANT: this is what the loop subtracts from remainingBudget
+    value: amount, // NOTE: this is what the loop subtracts from remainingBudget
     img,
     currencyName
   };
@@ -297,7 +282,7 @@ async function rollCustom() {
 
   let doc = null;
 
-  // If the result exposes a UUID, resolve that first (covers compendium & world)
+  // If the result exposes a UUID, resolve that first
   const directUuid = result.documentUuid || result.uuid;
   if (!doc && directUuid) {
     try { doc = await fromUuid(directUuid); } catch {}
@@ -336,6 +321,7 @@ async function rollCustom() {
   };
 }
 
+// Stash Creation
 async function createStash(items, cacheFolder, currencyTotal = 0) {
 
   const allStashes = game.actors.filter(a => a.type === "stash");
@@ -365,7 +351,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
 
   await stash.createEmbeddedDocuments("Item", embedded);
 
-  // Deposit rolled currency into the stash's zenit resource (if any)
+  // Deposit rolled currency into the stash's zenit resource
   if (currencyTotal > 0) {
     const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || "Zenit";
     const current = foundry.utils.getProperty(stash, "system.resources.zenit.value") ?? 0;
@@ -393,7 +379,6 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
 async function renderTreasureResultDialog(items, budget, config) {
   const cacheFolder = await cacheManager.getOrCreateCacheFolder();
 
-  // Separate currency lines (no Item docs) from everything else
   const currencyLines = items.filter(i => i && i.isCurrency);
   const docInputs = items.filter(i => i && !i.isCurrency);
 
@@ -401,12 +386,10 @@ async function renderTreasureResultDialog(items, budget, config) {
     let type = null;
     let itemData;
 
- // Handle items drawn from a Roll Table (Custom)
   if (data.fromTable && data.uuid) {
     const src = await fromUuid(data.uuid);
     if (!src || src.documentName !== "Item") return null;
 
-    // Deduplicate in cache by name + cost
     const existing = game.items.find(i =>
       i.folder?.id === cacheFolder.id &&
       i.name === src.name &&
@@ -473,7 +456,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
   const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
-  // Core description prefix — special if Master
+  // Handle master prefix
   const prefix = (data.isMaster && !variantEnabled)
     ? `A masterwork ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`
     : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`;
@@ -611,16 +594,16 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   const finalItems = tempItems.filter(Boolean);
 
-  // Build compact, one-line cards (no leading/trailing whitespace)
+  // Build compact, one-line cards
   let htmlContent = finalItems.map(item => {
   const cost = getItemCost(item.system);
 
-  // Detect ingredient (classFeature with projectfu.ingredient type)
+  // Detect ingredient
   const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
 
   // Correct quantity lookup:
-  // - Ingredients store it at system.data.quantity (a number)
-  // - Other items might store it at system.quantity.value
+  // - Ingredients store it at system.data.quantity
+  // - Other items store it at system.quantity.value
   const quantity = isIngredient
     ? (item.system?.data?.quantity ?? 1)
     : (item.system?.quantity?.value ?? 1);
@@ -635,11 +618,10 @@ async function renderTreasureResultDialog(items, budget, config) {
     item.system?.data?.summary ??
     "";
 
-  // IMPORTANT: single-line string, no leading/trailing \n or spaces
   return `<div style="text-align:center;margin-bottom:0.75em"><img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px"><a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br><small>${desc}</small><br><small>Value: ${cost} z</small></div>`;
   }).join("");  // join with empty string — no newlines between items
 
-  // Append currency lines (no UUID/content-link; just a simple row)
+  // Append currency lines
   if (currencyLines.length) {
     const rows = currencyLines.map(c =>
       `<div style="text-align:center;margin-bottom:0.75em">
@@ -653,7 +635,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   // Also single-line for the footer
   htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
 
-  // Enrich for the dialog only (unchanged)
+  // Enrich for the dialog only
   const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
 
   const dialog = new Dialog({
@@ -663,14 +645,13 @@ async function renderTreasureResultDialog(items, budget, config) {
       keep: {
   		label: "Keep",
   		callback: async () => {
-    	  // Move items out of cache so they are “final”
+    	  // Move items out of cache
     	  for (const item of finalItems) {
       	  if (item?.folder?.id === cacheFolder.id) {
         	await item.update({ folder: null });
       	  }
     	}
 
-    	// Post the dialog’s exact HTML to chat (no stripping, no markdown munging)
     	await ChatMessage.create({
       	  content: enrichedHtml,
       	  speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
@@ -707,20 +688,20 @@ async function renderTreasureResultDialog(items, budget, config) {
  });
 } 
 	
-// Hook Setup
+// Misc. Hooks
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
   (async () => {
-    // keywords 
+    // Keywords 
     const { origin: originKeywords, nature: natureKeywords, detail: detailKeywords, taste: tasteKeywords } = dataLoader.keywordData;
 
-    // gear lists & qualities
+    // Equipment & Qualities
     const { weaponList, weaponQualities } = dataLoader.weaponsData; 
     const { armorList, armorQualities } = dataLoader.armorData;
     const { shieldList, shieldQualities } = dataLoader.shieldsData;
     const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
 
-    // builds weapon element using element keywords
+    // Weapon Elements
     const elementKeywords = dataLoader.keywordData.element || {};
     const weaponElements = Object.entries(elementKeywords)
       .flatMap(([damageType, names]) => names.map(name => ({ name, damageType })));
@@ -795,7 +776,7 @@ Hooks.once("ready", () => {
       return;
     }
 	  
-    // If not a reroll, render the main form
+    // Main Dialog Form
     const genDialog = new Dialog({
       title: "Treasure Generator",
       content: `
