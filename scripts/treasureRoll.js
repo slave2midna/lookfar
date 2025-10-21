@@ -631,26 +631,10 @@ async function renderTreasureResultDialog(items, budget, config) {
       const doc = await fromUuid(uuid);
       if (doc?.sheet) doc.sheet.render(true);
     });
-  }
-
-
-  const $count = html.find("#itemsCount");
-  if ($count.length) {
-    const min = Number($count.attr("min")) || 1;
-    const max = Number($count.attr("max")) || 5;
-
-    const clampSet = (val) => {
-      const n = parseInt(val, 10);
-      const safe = Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
-      $count.val(safe);
-    };
-
-    html.find("#itemsPlus").on("click", () => clampSet(Number($count.val()) + 1));
-    html.find("#itemsMinus").on("click", () => clampSet(Number($count.val()) - 1));
    }
  });
-}	
-
+} 
+	
 // Hook Setup
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
@@ -736,7 +720,7 @@ Hooks.once("ready", () => {
     }
 	  
     // If not a reroll, render the main form
-    new Dialog({
+    const genDialog = new Dialog({
       title: "Treasure Generator",
       content: `
         <form style="display:flex; width:100%; flex-wrap:nowrap; gap:5px;">
@@ -841,40 +825,69 @@ Hooks.once("ready", () => {
 
 </form>
       `,
-      buttons: {
-  ok: {
-    label: "Roll Loot",
-    callback: (html) => {
-      const budget = parseInt(html.find("#treasureBudget").val());
-      const maxVal = parseInt(html.find("#highestPCLevel").val());
-      const includeWeapons = html.find("#includeWeapons").is(":checked");
-      const includeArmor = html.find("#includeArmor").is(":checked");
-	  const includeShields = html.find("#includeShields").is(":checked");
-      const includeAccessories = html.find("#includeAccessories").is(":checked");
-      const includeIngredients = html.find("#includeIngredients").is(":checked");
-      const includeMaterials = html.find("#includeMaterials").is(":checked");	
-	  const includeCustom   = html.find("#includeCustom").is(":checked");	
+       buttons: {
+    ok: {
+      label: "Roll Loot",
+      callback: (html) => {
+        const budget = parseInt(html.find("#treasureBudget").val());
+        const maxVal = parseInt(html.find("#highestPCLevel").val());
+        const includeWeapons = html.find("#includeWeapons").is(":checked");
+        const includeArmor = html.find("#includeArmor").is(":checked");
+        const includeShields = html.find("#includeShields").is(":checked");
+        const includeAccessories = html.find("#includeAccessories").is(":checked");
+        const includeIngredients = html.find("#includeIngredients").is(":checked");
+        const includeMaterials = html.find("#includeMaterials").is(":checked");
+        const includeCustom = html.find("#includeCustom").is(":checked");
 
-      let selectedOrigin = html.find("#origin").val();
-      let selectedNature = html.find("#nature").val();
+        const selectedOrigin = html.find("#origin").val();
+        const selectedNature = html.find("#nature").val();
 
-      Hooks.call("lookfarShowTreasureRollDialog", {
-        budget,
-        maxVal,
-        origin: selectedOrigin,
-        nature: selectedNature,
-        includeWeapons,
-        includeArmor,
-		includeShields,
-        includeAccessories,
-        includeIngredients,
-        includeMaterials,  
-		includeCustom  
-      });
+        Hooks.call("lookfarShowTreasureRollDialog", {
+          budget,
+          maxVal,
+          origin: selectedOrigin,
+          nature: selectedNature,
+          includeWeapons,
+          includeArmor,
+          includeShields,
+          includeAccessories,
+          includeIngredients,
+          includeMaterials,
+          includeCustom
+        });
+      }
     }
   }
-}
-    }).render(true);
+});
+
+// Wire the Items stepper — register BEFORE render; guard by presence of #itemsCount
+Hooks.once("renderDialog", (app, html) => {
+  if (!html.find || !html.find("#itemsCount").length) return; // only the generator form has this
+
+  const $count = html.find("#itemsCount");
+  const min = Number($count.attr("min")) || 1;
+  const max = Number($count.attr("max")) || 5;
+
+  const clampSet = (val) => {
+    const n = parseInt(val, 10);
+    const safe = Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
+    $count.val(safe);
+  };
+
+  html.find("#itemsPlus").on("click", (e) => {
+    e.preventDefault();
+    clampSet(Number($count.val()) + 1);
+  });
+
+  html.find("#itemsMinus").on("click", (e) => {
+    e.preventDefault();
+    clampSet(Number($count.val()) - 1);
+  });
+});
+
+genDialog.render(true);
+
+	  
   })();
  });
 });
