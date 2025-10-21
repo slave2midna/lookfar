@@ -659,6 +659,7 @@ Hooks.once("ready", () => {
 		maxVal, 
 		origin, 
 		nature,
+		itemCount = 1,  
         includeWeapons, 
 		includeArmor, 
 		includeShields,
@@ -674,7 +675,7 @@ Hooks.once("ready", () => {
       let failedAttempts = 0;
       const maxAttempts = 10; // const (tiny cleanup)
 
-      while (remainingBudget > 0 && items.length < 4 && failedAttempts < maxAttempts) {
+      while (remainingBudget > 0 && items.length < itemCount && failedAttempts < maxAttempts) {
         let itemTypes = [];
         if (includeWeapons) itemTypes.push("Weapon");
         if (includeArmor) itemTypes.push("Armor");
@@ -779,13 +780,12 @@ Hooks.once("ready", () => {
           </select>
         </div>
 
-        <!-- New: Items stepper -->
         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-          <label for="itemsCount" style="width:70px;">Items:</label>
+          <label for="itemCount" style="width:70px;">Items:</label>
           <div style="display:flex; gap:4px; width:110px;">
-            <button type="button" id="itemsMinus" style="height:25px; width:35px; padding:0 0.25rem;">−</button>
-            <input type="number" id="itemsCount" value="1" min="1" max="5" readonly style="flex:1; box-sizing:border-box; text-align:center;" />
-            <button type="button" id="itemsPlus" style="height:25px; width:35px; padding:0 0.25rem;">+</button>
+            <button type="button" id="subCount" style="height:25px; width:32px;">−</button>
+            <input type="number" id="itemCount" value="1" min="1" max="5" readonly style="flex:1; box-sizing:border-box; text-align:center;" />
+            <button type="button" id="addCount" style="height:25px; width:32px;">+</button>
           </div>
         </div>
 
@@ -842,11 +842,14 @@ Hooks.once("ready", () => {
         const selectedOrigin = html.find("#origin").val();
         const selectedNature = html.find("#nature").val();
 
+		const itemCount = parseInt(html.find("#itemCount").val(), 10) || 1;
+
         Hooks.call("lookfarShowTreasureRollDialog", {
           budget,
           maxVal,
           origin: selectedOrigin,
           nature: selectedNature,
+		  itemCount,
           includeWeapons,
           includeArmor,
           includeShields,
@@ -862,8 +865,8 @@ Hooks.once("ready", () => {
 
 // Item Stepper Wire
 Hooks.once("renderDialog", (app, html) => {
-  if (!html.find || !html.find("#itemsCount").length) return;
-  const $count = html.find("#itemsCount");
+  if (!html.find || !html.find("#itemCount").length) return;
+  const $count = html.find("#itemCount");
   const min = Number($count.attr("min")) || 1;
   const max = Number($count.attr("max")) || 5;
 
@@ -873,8 +876,8 @@ Hooks.once("renderDialog", (app, html) => {
     $count.val(safe);
   };
 
-  html.find("#itemsPlus").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) + 1); });
-  html.find("#itemsMinus").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) - 1); });
+  html.find("#addCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) + 1); });
+  html.find("#subCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) - 1); });
 
   // prevent wheel changing the number accidentally
   $count.on("wheel", (e) => e.preventDefault());
