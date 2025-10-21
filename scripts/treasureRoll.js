@@ -730,7 +730,7 @@ Hooks.once("ready", () => {
 
          <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
            <label for="treasureBudget" style="width:70px;">Budget:</label>
-           <input type="number" id="treasureBudget" value="1" min="1" style="width:110px; box-sizing:border-box;" />
+           <input type="number" id="itemsCount" value="1" min="1" max="5" readonly style="flex:1; box-sizing:border-box; text-align:center;" />
          </div>
 
          <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
@@ -860,10 +860,9 @@ Hooks.once("ready", () => {
   }
 });
 
-// Wire the Items stepper — register BEFORE render; guard by presence of #itemsCount
+// Item Stepper Wire
 Hooks.once("renderDialog", (app, html) => {
-  if (!html.find || !html.find("#itemsCount").length) return; // only the generator form has this
-
+  if (!html.find || !html.find("#itemsCount").length) return;
   const $count = html.find("#itemsCount");
   const min = Number($count.attr("min")) || 1;
   const max = Number($count.attr("max")) || 5;
@@ -874,15 +873,11 @@ Hooks.once("renderDialog", (app, html) => {
     $count.val(safe);
   };
 
-  html.find("#itemsPlus").on("click", (e) => {
-    e.preventDefault();
-    clampSet(Number($count.val()) + 1);
-  });
+  html.find("#itemsPlus").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) + 1); });
+  html.find("#itemsMinus").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) - 1); });
 
-  html.find("#itemsMinus").on("click", (e) => {
-    e.preventDefault();
-    clampSet(Number($count.val()) - 1);
-  });
+  // prevent wheel changing the number accidentally
+  $count.on("wheel", (e) => e.preventDefault());
 });
 
 genDialog.render(true);
