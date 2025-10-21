@@ -783,9 +783,9 @@ Hooks.once("ready", () => {
         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
           <label for="itemsCount" style="width:70px;">Items:</label>
           <div style="display:flex; gap:4px; width:110px;">
-            <button type="button" id="itemsMinus" style="width:28px; padding:0 0.25rem;">−</button>
+            <button type="button" id="itemsMinus" style="height:30px; width:30px; padding:0 0.25rem;">−</button>
             <input type="number" id="itemsCount" value="1" min="1" max="5" readonly style="flex:1; box-sizing:border-box; text-align:center;" />
-            <button type="button" id="itemsPlus" style="width:28px; padding:0 0.25rem;">+</button>
+            <button type="button" id="itemsPlus" style="height:30px; width:30px; padding:0 0.25rem;">+</button>
           </div>
         </div>
 
