@@ -780,7 +780,7 @@ Hooks.once("ready", () => {
     const genDialog = new Dialog({
       title: "Treasure Generator",
       content: `
-        <form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.25rem; box-sizing:border-box;">
+        <form style="display:flex; width:100%; flex-wrap:nowrap; box-sizing:border-box;">
   <!-- Left Half of Dialog/Column 1 -->
   <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
@@ -849,7 +849,7 @@ Hooks.once("ready", () => {
       </label>
     </div>
     <!-- Two inner columns that share the right half equally -->
-    <div style="display:flex; gap:1rem; min-width:0;">
+    <div style="display:flex; min-width:0;">
       <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
         <label style="display:block; margin-bottom:0.5em;">
           <input type="checkbox" id="includeWeapons"> Weapons </label>
