@@ -594,40 +594,24 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   const finalItems = tempItems.filter(Boolean);
 
- // Build compact, one-line cards
-const itemCards = finalItems.map(item => {
-  const cost = getItemCost(item.system);
+ // Build compact, one-line cards (items)
+const itemCards = finalItems.map(item => { /* ...returns <div>...</div> */ });
 
-  // Detect ingredient
-  const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
+// Build currency tiles in the same style
+const currencyCards = currencyLines.map(c =>
+  `<div style="text-align:center;margin-bottom:0.75em">
+     <img src="${c.img || 'icons/svg/coins.svg'}" width="32" height="32" style="display:block;margin:0 auto 6px">
+     <strong>${c.name}</strong>
+   </div>`
+);
 
-  // Correct quantity lookup
-  const quantity = isIngredient
-    ? (item.system?.data?.quantity ?? 1)
-    : (item.system?.quantity?.value ?? 1);
+// Merge items + currency, then layout
+const allCards = [...itemCards, ...currencyCards];
 
-  const quantitySuffix = isIngredient && quantity > 1 ? ` x ${quantity}` : "";
-
-  const desc =
-    item.system?.summary?.value ??
-    item.system?.summary ??
-    item.system?.data?.summary?.value ??
-    item.system?.data?.summary ??
-    "";
-
-  return `<div style="text-align:center;margin-bottom:0.75em">
-            <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
-            <a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br>
-            <small>${desc}</small><br>
-            <small>Value: ${cost} z</small>
-          </div>`;
-});
-
-// If more than 5 items, render two columns (first 5 left, rest right). Otherwise single column.
 let htmlContent;
-if (itemCards.length > 5) {
-  const left  = itemCards.slice(0, 5).join("");
-  const right = itemCards.slice(5).join("");
+if (allCards.length > 5) {
+  const left  = allCards.slice(0, 5).join("");
+  const right = allCards.slice(5).join("");
   htmlContent = `
     <div style="display:flex; gap:1rem; align-items:flex-start; min-width:0;">
       <div style="flex:1 1 0; min-width:0;">${left}</div>
@@ -635,25 +619,11 @@ if (itemCards.length > 5) {
     </div>
   `;
 } else {
-  htmlContent = itemCards.join("");
-}
-
-// Append currency lines
-if (currencyLines.length) {
-  const rows = currencyLines.map(c =>
-    `<div style="text-align:center;margin-bottom:0.75em">
-       <img src="${c.img || 'icons/svg/coins.svg'}" width="32" height="32" style="display:block;margin:0 auto 6px">
-       <strong>${c.name}</strong>
-     </div>`
-  ).join("");
-  htmlContent += rows;
+  htmlContent = allCards.join("");
 }
 
 // Footer
 htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
-
-  // Enrich for the dialog only
-  const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
 
   const dialog = new Dialog({
     title: "Treasure Results",
