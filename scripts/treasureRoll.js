@@ -849,6 +849,8 @@ Hooks.once("ready", () => {
 
       <!-- Column 2: Checkboxes A -->
       <div style="width:115px;" class="checkbox-group">
+        <!-- Placeholder header for coherence (can be localized/filled later) -->
+        <div style="text-align:right; font-weight:bold; margin-bottom:6px;">More</div>
         <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
           <input type="checkbox" id="includeWeapons"> Weapons
         </label>
@@ -865,6 +867,14 @@ Hooks.once("ready", () => {
 
       <!-- Column 3: Checkboxes B -->
       <div style="width:115px;" class="checkbox-group">
+        <!-- Header with Select All toggle (right aligned) -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+          <div style="font-weight:bold;">Options</div>
+          <label style="white-space:nowrap; font-weight:normal;">
+            <input type="checkbox" id="selectAllLoot" />
+            <small>Select all</small>
+          </label>
+        </div>
         <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
           <input type="checkbox" id="includeMaterials"> Materials
         </label>
@@ -921,7 +931,7 @@ Hooks.once("ready", () => {
   }
 });
 
-// Item Stepper Wire
+// Hook setups
 Hooks.once("renderDialog", (app, html) => {
   if (!html.find || !html.find("#itemCount").length) return;
   const $count = html.find("#itemCount");
@@ -939,6 +949,22 @@ Hooks.once("renderDialog", (app, html) => {
 
   // prevent wheel changing the number accidentally
   $count.on("wheel", (e) => e.preventDefault());
+
+  // Select All wiring
+  const $selectAll = html.find("#selectAllLoot");
+  if ($selectAll.length) {
+    const $boxes = html.find('.checkbox-group input[type="checkbox"]').not("#selectAllLoot");
+
+    $selectAll.on("change", (ev) => {
+      const checked = ev.currentTarget.checked;
+      $boxes.prop("checked", checked);
+    });
+
+    $boxes.on("change", () => {
+      const allChecked = $boxes.toArray().every(b => b.checked);
+      $selectAll.prop("checked", allChecked);
+    });
+  }		
 });
 
 genDialog.render(true);
