@@ -595,7 +595,33 @@ async function renderTreasureResultDialog(items, budget, config) {
   const finalItems = tempItems.filter(Boolean);
 
  // Build compact, one-line cards (items)
-const itemCards = finalItems.map(item => { /* ...returns <div>...</div> */ });
+const itemCards = finalItems.map(item => {
+  const cost = getItemCost(item.system);
+
+  // Detect ingredient
+  const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
+
+  // Correct quantity lookup
+  const quantity = isIngredient
+    ? (item.system?.data?.quantity ?? 1)
+    : (item.system?.quantity?.value ?? 1);
+
+  const quantitySuffix = isIngredient && quantity > 1 ? ` x ${quantity}` : "";
+
+  const desc =
+    item.system?.summary?.value ??
+    item.system?.summary ??
+    item.system?.data?.summary?.value ??
+    item.system?.data?.summary ??
+    "";
+
+  return `<div style="text-align:center;margin-bottom:0.75em">
+            <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
+            <a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br>
+            <small>${desc}</small><br>
+            <small>Value: ${cost} z</small>
+          </div>`;
+});
 
 // Build currency tiles in the same style
 const currencyCards = currencyLines.map(c =>
@@ -624,6 +650,9 @@ if (allCards.length > 5) {
 
 // Footer
 htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
+
+// Enrich for the dialog only
+const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });	
 
   const dialog = new Dialog({
     title: "Treasure Results",
@@ -771,7 +800,7 @@ Hooks.once("ready", () => {
   <!-- Left Half of Dialog/Column 1 -->
   <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="treasureBudget" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Budget:</label>
+      <label for="treasureBudget" style="flex:0 0 35%; max-width:35%; padding-right:0.5em; box-sizing:border-box;">Budget:</label>
       <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 65%; min-width:0; max-width:65%; box-sizing:border-box;" />
     </div>
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
