@@ -783,7 +783,7 @@ Hooks.once("ready", () => {
         <form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.5rem; box-sizing:border-box;">
 
   <!-- Left Half of Dialog/Column 1 -->
-  <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
+  <div id="genOptions" style="flex:1 1 45%; min-width:0; box-sizing:border-box;">
 
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
       <label for="treasureBudget" style="flex:0 0 30%; max-width:30%; padding-right:0.5em; box-sizing:border-box;">Budget:</label>
@@ -848,7 +848,7 @@ Hooks.once("ready", () => {
   </div>
 
   <!-- Right half of Dialog/Column 2 & 3 -->
-  <div id="lootOptions" style="flex:1 1 60%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
+  <div id="lootOptions" style="flex:1 1 55%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
 
     <!-- Merged header -->
     <div style="display:flex; align-items:center; justify-content:flex-end; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
