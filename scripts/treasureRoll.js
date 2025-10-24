@@ -727,7 +727,7 @@ Hooks.once("ready", () => {
       let items = [];
       let ingredientCount = 0;
       let failedAttempts = 0;
-      const maxAttempts = 10; // const (tiny cleanup)
+      const maxAttempts = 50; // infinite loop protection. Increase if needed.
 
       while (remainingBudget > 0 && items.length < itemCount && failedAttempts < maxAttempts) {
         let itemTypes = [];
@@ -834,7 +834,7 @@ Hooks.once("ready", () => {
       <label for="itemCount" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Items:</label>
       <div style="display:flex; align-items:center; gap:0.25rem; flex:1 1 65%; min-width:0;">
         <button type="button" id="subCount" style="height:2em; width:2em;">−</button>
-        <input type="number" id="itemCount" value="1" min="1" max="5" readonly style="flex:1 1 auto; box-sizing:border-box; text-align:center; min-width:0;" />
+        <input type="number" id="itemCount" value="1" min="1" max="10" readonly style="flex:1 1 auto; box-sizing:border-box; text-align:center; min-width:0;" />
         <button type="button" id="addCount" style="height:2em; width:2em;">+</button>
       </div>
     </div>
@@ -919,7 +919,7 @@ Hooks.once("renderDialog", (app, html) => {
   if (!html.find || !html.find("#itemCount").length) return;
   const $count = html.find("#itemCount");
   const min = Number($count.attr("min")) || 1;
-  const max = Number($count.attr("max")) || 5;
+  const max = Number($count.attr("max")) || 10;
 
   const clampSet = (val) => {
     const n = parseInt(val, 10);
