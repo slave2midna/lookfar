@@ -780,19 +780,19 @@ Hooks.once("ready", () => {
     const genDialog = new Dialog({
       title: "Treasure Generator",
       content: `
-        <form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.5rem;">
+        <form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.5rem; box-sizing:border-box;">
 
-  <!-- Column 1: Form Inputs (50%) -->
-  <div id="genOptions" style="flex:0 0 50%;">
+  <!-- Column 1: 50% -->
+  <div id="genOptions" style="flex:1 1 50%; min-width:0; box-sizing:border-box;">
 
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="treasureBudget" style="flex:0 0 30%; max-width:30%; white-space:nowrap; padding-right:0.5em;">Budget:</label>
-      <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 70%; box-sizing:border-box;" />
+      <label for="treasureBudget" style="flex:0 0 30%; max-width:30%; padding-right:0.5em; box-sizing:border-box;">Budget:</label>
+      <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 70%; min-width:0; box-sizing:border-box;" />
     </div>
 
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="highestPCLevel" style="flex:0 0 30%; max-width:30%; white-space:nowrap; padding-right:0.5em;">Level:</label>
-      <select id="highestPCLevel" style="flex:1 1 70%; box-sizing:border-box;">
+      <label for="highestPCLevel" style="flex:0 0 30%; max-width:30%; padding-right:0.5em; box-sizing:border-box;">Level:</label>
+      <select id="highestPCLevel" style="flex:1 1 70%; min-width:0; box-sizing:border-box;">
         <option value="500">5+</option>
         <option value="1000">10+</option>
         <option value="1500">20+</option>
@@ -802,8 +802,8 @@ Hooks.once("ready", () => {
     </div>
 
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="origin" style="flex:0 0 30%; max-width:30%; white-space:nowrap; padding-right:0.5em;">Origin:</label>
-      <select id="origin" style="flex:1 1 70%; box-sizing:border-box;">
+      <label for="origin" style="flex:0 0 30%; max-width:30%; padding-right:0.5em; box-sizing:border-box;">Origin:</label>
+      <select id="origin" style="flex:1 1 70%; min-width:0; box-sizing:border-box;">
         <option value="Random" selected>Random</option>
         <option value="Aerial">Aerial</option>
         <option value="Thunderous">Thunderous</option>
@@ -819,8 +819,8 @@ Hooks.once("ready", () => {
     </div>
 
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="nature" style="flex:0 0 30%; max-width:30%; white-space:nowrap; padding-right:0.5em;">Nature:</label>
-      <select id="nature" style="flex:1 1 70%; box-sizing:border-box;">
+      <label for="nature" style="flex:0 0 30%; max-width:30%; padding-right:0.5em; box-sizing:border-box;">Nature:</label>
+      <select id="nature" style="flex:1 1 70%; min-width:0; box-sizing:border-box;">
         <option value="Random" selected>Random</option>
         <option value="Anthropod">Anthropod</option>
         <option value="Bird">Bird</option>
@@ -837,20 +837,20 @@ Hooks.once("ready", () => {
     </div>
 
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="itemCount" style="flex:0 0 30%; max-width:30%; white-space:nowrap; padding-right:0.5em;">Items:</label>
-      <div style="display:flex; align-items:center; gap:0.25rem; flex:1 1 70%;">
+      <label for="itemCount" style="flex:0 0 30%; max-width:30%; padding-right:0.5em; box-sizing:border-box;">Items:</label>
+      <div style="display:flex; align-items:center; gap:0.25rem; flex:1 1 70%; min-width:0;">
         <button type="button" id="subCount" style="height:2em; width:2em;">−</button>
-        <input type="number" id="itemCount" value="1" min="1" max="5" readonly style="flex:1 1 auto; box-sizing:border-box; text-align:center;" />
+        <input type="number" id="itemCount" value="1" min="1" max="5" readonly style="flex:1 1 auto; box-sizing:border-box; text-align:center; min-width:0;" />
         <button type="button" id="addCount" style="height:2em; width:2em;">+</button>
       </div>
     </div>
 
   </div>
 
-  <!-- Right Half (50%): merged header + two option columns (25% + 25%) -->
-  <div id="lootOptions" style="flex:0 0 50%; display:flex; flex-direction:column;">
+  <!-- Right half: 50% -->
+  <div id="lootOptions" style="flex:1 1 50%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
 
-    <!-- Merged header row (spans the whole right half; align Select all to the right) -->
+    <!-- Merged header -->
     <div style="display:flex; align-items:center; justify-content:flex-end; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
       <label style="white-space:nowrap; font-weight:normal;">
         <input type="checkbox" id="selectAllLoot" />
@@ -858,18 +858,16 @@ Hooks.once("ready", () => {
       </label>
     </div>
 
-    <!-- Two equal columns under the merged header -->
-    <div style="display:flex; gap:1rem;">
-      <!-- Column 2 (25%) -->
-      <div class="checkbox-group" style="flex:0 0 50%;">
+    <!-- Two inner columns that share the right half equally -->
+    <div style="display:flex; gap:1rem; min-width:0;">
+      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
         <label style="display:block; margin-bottom:0.5em;"><input type="checkbox" id="includeWeapons"> Weapons</label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap;"><input type="checkbox" id="includeArmor"> Armor</label>
+        <label style="display:block; margin-bottom:0.5em;"><input type="checkbox" id="includeArmor"> Armor</label>
         <label style="display:block; margin-bottom:0.5em;"><input type="checkbox" id="includeAccessories"> Accessories</label>
         <label style="display:block; margin-bottom:0.5em;"><input type="checkbox" id="includeShields"> Shields</label>
       </div>
 
-      <!-- Column 3 (25%) -->
-      <div class="checkbox-group" style="flex:0 0 50%;">
+      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
         <label style="display:block; margin-bottom:0.5em;"><input type="checkbox" id="includeMaterials"> Materials</label>
         <label style="display:block; margin-bottom:0.5em;"><input type="checkbox" id="includeIngredients"> Ingredients</label>
         <label style="display:block; margin-bottom:0.5em;"><input type="checkbox" id="includeCurrency"> Currency</label>
