@@ -792,7 +792,7 @@ Hooks.once("ready", () => {
 
          <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
            <label for="highestPCLevel" style="width:70px;">Level:</label>
-           <select id="highestPCLevel" style="width:110px; box-sizing:border-box;">
+           <select id="highestPCLevel" style="width:100px; box-sizing:border-box;">
              <option value="500">5+</option>
              <option value="1000">10+</option>
              <option value="1500">20+</option>
@@ -803,7 +803,7 @@ Hooks.once("ready", () => {
 
         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
           <label for="origin" style="width:70px;">Origin:</label>
-          <select id="origin" style="width:110px; box-sizing:border-box;">
+          <select id="origin" style="width:100px; box-sizing:border-box;">
             <option value="Random" selected>Random</option>
             <option value="Aerial">Aerial</option>
             <option value="Thunderous">Thunderous</option>
@@ -820,7 +820,7 @@ Hooks.once("ready", () => {
 
         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
           <label for="nature" style="width:70px;">Nature:</label>
-          <select id="nature" style="width:110px; box-sizing:border-box;">
+          <select id="nature" style="width:100px; box-sizing:border-box;">
             <option value="Random" selected>Random</option>
             <option value="Anthropod">Anthropod</option>
             <option value="Bird">Bird</option>
@@ -838,7 +838,7 @@ Hooks.once("ready", () => {
 
         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
           <label for="itemCount" style="width:70px;">Items:</label>
-          <div style="display:flex; width:110px;">
+          <div style="display:flex; width:100px;">
             <button type="button" id="subCount" style="height:25px; width:32px;">−</button>
             <input type="number" id="itemCount" value="1" min="1" max="5" readonly style="flex:1; box-sizing:border-box; text-align:center;" />
             <button type="button" id="addCount" style="height:25px; width:32px;">+</button>
