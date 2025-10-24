@@ -838,7 +838,7 @@ Hooks.once("ready", () => {
 
         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
           <label for="itemCount" style="width:70px;">Items:</label>
-          <div style="display:flex; gap:4px; width:110px;">
+          <div style="display:flex; width:110px;">
             <button type="button" id="subCount" style="height:25px; width:32px;">−</button>
             <input type="number" id="itemCount" value="1" min="1" max="5" readonly style="flex:1; box-sizing:border-box; text-align:center;" />
             <button type="button" id="addCount" style="height:25px; width:32px;">+</button>
@@ -851,39 +851,38 @@ Hooks.once("ready", () => {
       <div id="lootOptions" style="flex:1; min-width:240px;">
         <!-- Merged header row -->
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:4px;">
-          <div style="font-weight:bold;">Options</div>
           <label style="white-space:nowrap; font-weight:normal;">
             <input type="checkbox" id="selectAllLoot" />
             <small>Select all</small>
           </label>
         </div>
         <!-- Two equal columns under the merged header -->
-        <div style="display:flex; gap:10px;">
+        <div style="display:flex;">
           <div style="width:115px;" class="checkbox-group">
-            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+            <label style="display:block; margin-bottom:0.5em;">
               <input type="checkbox" id="includeWeapons"> Weapons
             </label>
-            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap;">
               <input type="checkbox" id="includeArmor"> Armor
             </label>
-            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+            <label style="display:block; margin-bottom:0.5em;">
               <input type="checkbox" id="includeAccessories"> Accessories
             </label>
-            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+            <label style="display:block; margin-bottom:0.5em;">
               <input type="checkbox" id="includeShields"> Shields
             </label>
           </div>
           <div style="width:115px;" class="checkbox-group">
-            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+            <label style="display:block; margin-bottom:0.5em;">
               <input type="checkbox" id="includeMaterials"> Materials
             </label>
-            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+            <label style="display:block; margin-bottom:0.5em;">
               <input type="checkbox" id="includeIngredients"> Ingredients
             </label>
-            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+            <label style="display:block; margin-bottom:0.5em;">
               <input type="checkbox" id="includeCurrency"> Currency
             </label>
-            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+            <label style="display:block; margin-bottom:0.5em;">
               <input type="checkbox" id="includeCustom"> Custom
             </label>
           </div>
