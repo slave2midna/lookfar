@@ -783,7 +783,7 @@ Hooks.once("ready", () => {
         <form style="display:flex; width:100%; flex-wrap:nowrap; gap:5px;">
 
         <!-- Column 1: Form Inputs -->
-        <div style="width:200px;">
+        <div id="genOptions" style="min-width:220px; flex:0 0 auto;">
 
          <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
            <label for="treasureBudget" style="width:70px;">Budget:</label>
