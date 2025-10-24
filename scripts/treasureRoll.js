@@ -783,15 +783,15 @@ Hooks.once("ready", () => {
         <form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.5rem; box-sizing:border-box;">
 
   <!-- Left Half of Dialog/Column 1 -->
-  <div id="genOptions" style="flex:1 1 35%; min-width:0; box-sizing:border-box;">
+  <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
 
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="treasureBudget" style="flex:0 0 30%; max-width:30%; padding-right:0.75em; box-sizing:border-box;">Budget:</label>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em; gap:0.5em;">
+      <label for="treasureBudget" style="flex:0 0 30%; min-width:30%; box-sizing:border-box; text-align:right;">Budget:</label>
       <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 70%; min-width:0; box-sizing:border-box;" />
     </div>
 
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="highestPCLevel" style="flex:0 0 30%; max-width:30%; padding-right:0.75em; box-sizing:border-box;">Level:</label>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em; gap:0.5em;">
+      <label for="highestPCLevel" style="flex:0 0 30%; min-width:30%; box-sizing:border-box; text-align:right;">Level:</label>
       <select id="highestPCLevel" style="flex:1 1 70%; min-width:0; box-sizing:border-box;">
         <option value="500">5+</option>
         <option value="1000">10+</option>
@@ -801,8 +801,8 @@ Hooks.once("ready", () => {
       </select>
     </div>
 
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="origin" style="flex:0 0 30%; max-width:30%; padding-right:0.75em; box-sizing:border-box;">Origin:</label>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em; gap:0.5em;">
+      <label for="origin" style="flex:0 0 30%; min-width:30%; box-sizing:border-box; text-align:right;">Origin:</label>
       <select id="origin" style="flex:1 1 70%; min-width:0; box-sizing:border-box;">
         <option value="Random" selected>Random</option>
         <option value="Aerial">Aerial</option>
@@ -818,8 +818,8 @@ Hooks.once("ready", () => {
       </select>
     </div>
 
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="nature" style="flex:0 0 30%; max-width:30%; padding-right:0.75em; box-sizing:border-box;">Nature:</label>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em; gap:0.5em;">
+      <label for="nature" style="flex:0 0 30%; min-width:30%; box-sizing:border-box; text-align:right;">Nature:</label>
       <select id="nature" style="flex:1 1 70%; min-width:0; box-sizing:border-box;">
         <option value="Random" selected>Random</option>
         <option value="Anthropod">Anthropod</option>
@@ -836,8 +836,8 @@ Hooks.once("ready", () => {
       </select>
     </div>
 
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="itemCount" style="flex:0 0 30%; max-width:30%; padding-right:0.75em; box-sizing:border-box;">Items:</label>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em; gap:0.5em;">
+      <label for="itemCount" style="flex:0 0 30%; min-width:30%; box-sizing:border-box; text-align:right;">Items:</label>
       <div style="display:flex; align-items:center; gap:0.25rem; flex:1 1 70%; min-width:0;">
         <button type="button" id="subCount" style="height:2em; width:2em;">−</button>
         <input type="number" id="itemCount" value="1" min="1" max="5" readonly style="flex:1 1 auto; box-sizing:border-box; text-align:center; min-width:0;" />
@@ -848,7 +848,7 @@ Hooks.once("ready", () => {
   </div>
 
   <!-- Right half of Dialog/Column 2 & 3 -->
-  <div id="lootOptions" style="flex:1 1 65%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
+  <div id="lootOptions" style="flex:1 1 60%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
 
     <!-- Merged header -->
     <div style="display:flex; align-items:center; justify-content:flex-end; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
