@@ -782,7 +782,7 @@ Hooks.once("ready", () => {
       content: `
         <form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.5rem; box-sizing:border-box;">
 
-  <!-- Column 1: 50% -->
+  <!-- Column 1: 30% -->
   <div id="genOptions" style="flex:1 1 50%; min-width:0; box-sizing:border-box;">
 
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
@@ -847,8 +847,8 @@ Hooks.once("ready", () => {
 
   </div>
 
-  <!-- Right half: 50% -->
-  <div id="lootOptions" style="flex:1 1 50%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
+  <!-- Right half: 70% -->
+  <div id="lootOptions" style="flex:1 1 70%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
 
     <!-- Merged header -->
     <div style="display:flex; align-items:center; justify-content:flex-end; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
