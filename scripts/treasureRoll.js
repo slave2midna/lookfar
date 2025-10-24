@@ -847,46 +847,47 @@ Hooks.once("ready", () => {
 
       </div>
 
-      <!-- Column 2: Checkboxes A -->
-      <div style="width:115px;" class="checkbox-group">
-        <!-- Placeholder header for coherence (can be localized/filled later) -->
-        <div style="text-align:right; font-weight:bold; margin-bottom:6px;">More</div>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeWeapons"> Weapons
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeArmor"> Armor
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeAccessories"> Accessories
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeShields"> Shields
-        </label>
-      </div>
-
-      <!-- Column 3: Checkboxes B -->
-      <div style="width:115px;" class="checkbox-group">
-        <!-- Header with Select All toggle (right aligned) -->
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+      <!-- Loot Options: merged header row + two columns -->
+      <div id="lootOptions" style="flex:1; min-width:240px;">
+        <!-- Merged header row -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:4px;">
           <div style="font-weight:bold;">Options</div>
           <label style="white-space:nowrap; font-weight:normal;">
             <input type="checkbox" id="selectAllLoot" />
             <small>Select all</small>
           </label>
         </div>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeMaterials"> Materials
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeIngredients"> Ingredients
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeCurrency"> Currency
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeCustom"> Custom
-        </label>
+        <!-- Two equal columns under the merged header -->
+        <div style="display:flex; gap:10px;">
+          <div style="width:115px;" class="checkbox-group">
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+              <input type="checkbox" id="includeWeapons"> Weapons
+            </label>
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+              <input type="checkbox" id="includeArmor"> Armor
+            </label>
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+              <input type="checkbox" id="includeAccessories"> Accessories
+            </label>
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+              <input type="checkbox" id="includeShields"> Shields
+            </label>
+          </div>
+          <div style="width:115px;" class="checkbox-group">
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+              <input type="checkbox" id="includeMaterials"> Materials
+            </label>
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+              <input type="checkbox" id="includeIngredients"> Ingredients
+            </label>
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+              <input type="checkbox" id="includeCurrency"> Currency
+            </label>
+            <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
+              <input type="checkbox" id="includeCustom"> Custom
+            </label>
+          </div>
+        </div>
       </div>
 
 </form>
@@ -953,16 +954,21 @@ Hooks.once("renderDialog", (app, html) => {
   // Select All wiring
   const $selectAll = html.find("#selectAllLoot");
   if ($selectAll.length) {
-    const $boxes = html.find('.checkbox-group input[type="checkbox"]').not("#selectAllLoot");
+    const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot");
 
     $selectAll.on("change", (ev) => {
       const checked = ev.currentTarget.checked;
       $boxes.prop("checked", checked);
+	  $selectAll.prop("indeterminate", false);
     });
 
     $boxes.on("change", () => {
-      const allChecked = $boxes.toArray().every(b => b.checked);
-      $selectAll.prop("checked", allChecked);
+     const arr = $boxes.toArray();
+     const allChecked = arr.every(b => b.checked);
+     const anyChecked = arr.some(b => b.checked);
+     $selectAll
+       .prop("checked", allChecked)
+       .prop("indeterminate", anyChecked && !allChecked);
     });
   }		
 });
