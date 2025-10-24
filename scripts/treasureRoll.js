@@ -802,7 +802,7 @@ Hooks.once("ready", () => {
   <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
       <label for="treasureBudget" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Budget:</label>
-      <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 65%; min-width:0; width:100%; box-sizing:border-box;" />
+      <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 65%; min-width:0; max-width:65%; box-sizing:border-box;" />
     </div>
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
       <label for="highestPCLevel" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Level:</label>
