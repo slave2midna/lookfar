@@ -635,23 +635,12 @@ async function renderTreasureResultDialog(items, budget, config) {
   // Also single-line for the footer
   htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
 
-  // Enrich for the dialog only
+ // Enrich for the dialog only
 const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
-
-// Count displayed tiles to decide if we need a wider dialog (2 columns kicks in at 6+)
-const totalCards = finalItems.length + currencyLines.length;
 
 const dialog = new Dialog({
   title: "Treasure Results",
   content: enrichedHtml,
-  render: async (html) => {
-    if (totalCards >= 6) {
-      html.closest(".dialog").css({
-        width: "500px",
-        "max-width": "500px"
-      });
-    }
-  },
   buttons: {
     keep: {
       label: "Keep",
