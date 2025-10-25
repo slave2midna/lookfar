@@ -557,7 +557,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}` }
+          summary: { value: `An accessory that ${qualityObj?.description || "has no special properties."}` }
         }
       };
     }
