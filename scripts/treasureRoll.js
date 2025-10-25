@@ -453,12 +453,10 @@ async function renderTreasureResultDialog(items, budget, config) {
   const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
   const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
-  // Handle weapon summary 'prefix'
-  const dmgType = data.element?.damageType || baseWeapon?.element || "physical";
-  const martialLabel = baseWeapon?.isMartial ? "martial" : "non-martial";
+  // Handle Masterwork prefix
   const prefix = (data.isMaster && !variantEnabled)
-    ? `A masterwork ${martialLabel} ${dmgType} ${baseWeapon?.category || "unknown"} weapon`
-    : `A ${martialLabel} ${dmgType} ${baseWeapon?.category || "unknown"} weapon`
+    ? `A masterwork ${baseWeapon?.category || "unknown"} weapon`
+    : `A ${baseWeapon?.category || "unknown"} weapon`
 
   itemData = {
     name: data.name,
