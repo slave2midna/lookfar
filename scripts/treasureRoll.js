@@ -1018,28 +1018,33 @@ Hooks.once("renderDialog", (app, html) => {
   }
 
   // --- Grey-out logic for "Ignore budget/level" ---
-const $ignore = html.find("#ignoreValues");
+const $ignore      = html.find("#ignoreValues");
 const $budgetLabel = html.find('label[for="treasureBudget"]');
 const $budgetField = html.find("#treasureBudget");
 const $levelLabel  = html.find('label[for="highestPCLevel"]');
 const $levelField  = html.find("#highestPCLevel");
 
+const setFieldState = ($el, isDisabled) => {
+  // Disable/enable the control
+  $el.prop("disabled", isDisabled);
+
+  // Visually grey the control (keeps Level greyed out)
+  $el.css("opacity", isDisabled ? 0.5 : "");
+
+  // Keep a consistent border while disabled so hover-out redraws don't show
+  // a disappearing border (removes the perceived flicker)
+  $el.css("border", isDisabled ? "1px solid var(--color-border, #777)" : "");
+  $el.css("outline", isDisabled ? "none" : "");
+  $el.css("box-shadow", "none"); // neutralize theme hover/focus shadows
+};
+
 const toggleDisabled = (isDisabled) => {
-  const opacity = isDisabled ? 0.5 : 1.0;
+  const labelOpacity = isDisabled ? 0.5 : 1.0;
+  $budgetLabel.css("opacity", labelOpacity);
+  $levelLabel.css("opacity", labelOpacity);
 
-  // Fade labels only
-  $budgetLabel.css("opacity", opacity);
-  $levelLabel.css("opacity", opacity);
-
-  // Disable fields; also kill hover/hover-out transitions by removing pointer events
-  $budgetField.prop("disabled", isDisabled).css("pointer-events", isDisabled ? "none" : "");
-  $levelField.prop("disabled", isDisabled).css("pointer-events", isDisabled ? "none" : "");
-
-  // Ensure no inline opacity is left on fields (browser default disabled style will grey them)
-  if (!isDisabled) {
-    $budgetField.css("opacity", "");
-    $levelField.css("opacity", "");
-  }
+  setFieldState($budgetField, isDisabled);
+  setFieldState($levelField,  isDisabled);
 };
 
 // Initialize + listen
