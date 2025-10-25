@@ -892,12 +892,16 @@ Hooks.once("ready", () => {
   <!-- Right half of Dialog/Column 2 & 3 -->
   <div id="lootOptions" style="flex:1 1 60%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
     <!-- Merged header -->
-    <div style="display:flex; align-items:center; justify-content:flex-end; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
-      <label style="white-space:nowrap; font-weight:normal;">
-        <input type="checkbox" id="selectAllLoot" />
-        <small>Select all</small>
-      </label>
-    </div>
+    <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.75em; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
+  <label style="white-space:nowrap; font-weight:normal;">
+    <input type="checkbox" id="ignoreBudget" />
+    <small>Ignore budget</small>
+  </label>
+  <label style="white-space:nowrap; font-weight:normal;">
+    <input type="checkbox" id="selectAllLoot" />
+    <small>Select all</small>
+  </label>
+</div>
     <!-- Two inner columns that share the right half equally -->
     <div style="display:flex; min-width:0;">
       <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
@@ -986,7 +990,7 @@ Hooks.once("renderDialog", (app, html) => {
   // Select All wiring
   const $selectAll = html.find("#selectAllLoot");
   if ($selectAll.length) {
-    const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot");
+    const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreBudget");
 
     $selectAll.on("change", (ev) => {
       const checked = ev.currentTarget.checked;
