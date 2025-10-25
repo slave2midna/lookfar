@@ -651,29 +651,32 @@ if (allCards.length > 5) {
 // Footer
 htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
 
+// Should we widen the dialog? (second column appears when > 5 cards)
+const needsWide = allCards.length > 5;
+
 // Enrich for the dialog only
-const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });	
+const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
 
-  const dialog = new Dialog({
-    title: "Treasure Results",
-    content: enrichedHtml,
-    buttons: {
-      keep: {
-  		label: "Keep",
-  		callback: async () => {
-    	  // Move items out of cache
-    	  for (const item of finalItems) {
-      	  if (item?.folder?.id === cacheFolder.id) {
-        	await item.update({ folder: null });
-      	  }
-    	}
+const dialog = new Dialog({
+  title: "Treasure Results",
+  content: enrichedHtml,
+  buttons: {
+    keep: {
+      label: "Keep",
+      callback: async () => {
+        // Move items out of cache
+        for (const item of finalItems) {
+          if (item?.folder?.id === cacheFolder.id) {
+            await item.update({ folder: null });
+          }
+        }
 
-    	await ChatMessage.create({
-      	  content: enrichedHtml,
-      	  speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
-    	});
-  	   }
-	 },
+        await ChatMessage.create({
+          content: enrichedHtml,
+          speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
+        });
+      }
+    },
     stash: {
       label: "Stash",
       callback: async () => {
@@ -681,16 +684,24 @@ const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
         await createStash(finalItems, cacheFolder, currencyTotal);
       }
     },
-      reroll: {
-        label: "Reroll",
-        callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
-      }
+    reroll: {
+      label: "Reroll",
+      callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
     }
-  });
+  }
+});
 
-  dialog.render(true);
+dialog.render(true);
 
-  Hooks.once("renderDialog", (_app, html) => {
+// After render: widen only when two columns are present
+Hooks.once("renderDialog", (_app, html) => {
+  if (needsWide) {
+    html.closest(".dialog").css({
+      width: "500px",
+      "max-width": "500px"
+    });
+  }
+
   const links = html.find("a.content-link");
   if (links.length) {
     links.on("click", async function (event) {
@@ -700,8 +711,8 @@ const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
       const doc = await fromUuid(uuid);
       if (doc?.sheet) doc.sheet.render(true);
     });
-   }
- });
+  }
+});
 } 
 	
 // Misc. Hooks
@@ -972,8 +983,7 @@ Hooks.once("renderDialog", (app, html) => {
 });
 
 genDialog.render(true);
-
-	  
+  
   })();
  });
 });
