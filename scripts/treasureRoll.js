@@ -453,10 +453,12 @@ async function renderTreasureResultDialog(items, budget, config) {
   const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
   const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
-  // Handle master prefix
+  // Handle weapon summary 'prefix'
+  const dmgType = (data.element?.damageType || baseWeapon?.element || "physical");
+  const elemLabel = `${dmgType}`.charAt(0).toUpperCase() + `${dmgType}`.slice(1);
   const prefix = (data.isMaster && !variantEnabled)
-    ? `A masterwork ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`
-    : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`;
+    ? `A masterwork ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} ${elemLabel} weapon`
+    : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} ${elemLabel} weapon`;
 
   itemData = {
     name: data.name,
@@ -506,7 +508,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: `A ${baseArmor?.isMartial ? "martial" : "standard"} armor set that ${qualityObj?.description || "has no special properties."}` }
+          summary: { value: `A set of ${baseArmor?.isMartial ? "martial" : "non-martial"} armor that ${qualityObj?.description || "has no special properties."}` }
         }
       };
 	} else if (dataLoader.shieldsData.shieldList.some(s => data.name.endsWith(s.name))) {
@@ -532,7 +534,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: `A shield that ${qualityObj?.description || "has no special properties."}` }
+          summary: { value: `A ${baseShield?.isMartial ? "martial" : "non-martial"} shield that ${qualityObj?.description || "has no special properties."}` }
     	}
       };
     } else if (dataLoader.accessoriesData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
