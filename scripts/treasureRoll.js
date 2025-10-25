@@ -636,28 +636,39 @@ async function renderTreasureResultDialog(items, budget, config) {
   htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
 
   // Enrich for the dialog only
-  const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
+const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
 
-  const dialog = new Dialog({
-    title: "Treasure Results",
-    content: enrichedHtml,
-    buttons: {
-      keep: {
-  		label: "Keep",
-  		callback: async () => {
-    	  // Move items out of cache
-    	  for (const item of finalItems) {
-      	  if (item?.folder?.id === cacheFolder.id) {
-        	await item.update({ folder: null });
-      	  }
-    	}
+// Count displayed tiles to decide if we need a wider dialog (2 columns kicks in at 6+)
+const totalCards = finalItems.length + currencyLines.length;
 
-    	await ChatMessage.create({
-      	  content: enrichedHtml,
-      	  speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
-    	});
-  	   }
-	 },
+const dialog = new Dialog({
+  title: "Treasure Results",
+  content: enrichedHtml,
+  render: async (html) => {
+    if (totalCards >= 6) {
+      html.closest(".dialog").css({
+        width: "500px",
+        "max-width": "500px"
+      });
+    }
+  },
+  buttons: {
+    keep: {
+      label: "Keep",
+      callback: async () => {
+        // Move items out of cache
+        for (const item of finalItems) {
+          if (item?.folder?.id === cacheFolder.id) {
+            await item.update({ folder: null });
+          }
+        }
+
+        await ChatMessage.create({
+          content: enrichedHtml,
+          speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
+        });
+      }
+    },
     stash: {
       label: "Stash",
       callback: async () => {
@@ -665,15 +676,15 @@ async function renderTreasureResultDialog(items, budget, config) {
         await createStash(finalItems, cacheFolder, currencyTotal);
       }
     },
-      reroll: {
-        label: "Reroll",
-        callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
-      }
+    reroll: {
+      label: "Reroll",
+      callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
     }
-  });
+  }
+});
 
-  dialog.render(true);
-
+dialog.render(true);
+	
   Hooks.once("renderDialog", (_app, html) => {
   const links = html.find("a.content-link");
   if (links.length) {
