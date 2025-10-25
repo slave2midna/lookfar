@@ -12,7 +12,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 6,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Tome",
@@ -26,7 +26,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 6,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Crossbow",
@@ -40,7 +40,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 8,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Bow",
@@ -54,7 +54,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 8,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Knuckle",
@@ -68,7 +68,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 6,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Dagger",
@@ -82,7 +82,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 4,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Pistol",
@@ -96,7 +96,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 8,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Rifle",
@@ -110,7 +110,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 12,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Whip",
@@ -124,7 +124,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 8,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Hammer",
@@ -138,7 +138,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 6,
-      "isMartial": "false"
+      "isMartial": false
     },
     {
       "name": "Broadaxe",
@@ -152,7 +152,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 10,
-      "isMartial": "true"
+      "isMartial": true
     },
     {
       "name": "Waraxe",
@@ -166,7 +166,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 14,
-      "isMartial": "true"
+      "isMartial": true
     },
     {
       "name": "Light Spear",
@@ -180,7 +180,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 8,
-      "isMartial": "true"
+      "isMartial": true
     },
     {
       "name": "Heavy Spear",
@@ -194,7 +194,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 12,
-      "isMartial": "true"
+      "isMartial": true
     },
     {
       "name": "Longsword",
@@ -208,7 +208,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 6,
-      "isMartial": "true"
+      "isMartial": true
     },
     {
       "name": "Greatsword",
@@ -222,7 +222,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 10,
-      "isMartial": "true"
+      "isMartial": true
     },
     {
       "name": "Katana",
@@ -236,7 +236,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 10,
-      "isMartial": "true"
+      "isMartial": true
     },
     {
       "name": "Rapier",
@@ -250,7 +250,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 6,
-      "isMartial": "true"
+      "isMartial": true
     },
     {
       "name": "Shuriken",
@@ -264,7 +264,7 @@
       "defense": "def",
       "element": "physical",
       "damage": 4,
-      "isMartial": "false"
+      "isMartial": false
     }
   ],
   "weaponQualities": {
@@ -787,6 +787,7 @@
     ]
   }
 }
+
 
 
 
