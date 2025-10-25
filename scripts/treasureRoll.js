@@ -696,10 +696,13 @@ dialog.render(true);
 // After render: widen only when two columns are present
 Hooks.once("renderDialog", (_app, html) => {
   if (needsWide) {
-    html.closest(".dialog").css({
-      width: "500px",
-      "max-width": "500px"
-    });
+    const $dlg = html.closest(".dialog");
+    // widen
+    $dlg.css({ width: "500px", "max-width": "500px" });
+    // trim the footer spacing so it doesn't look bloated
+    $dlg.find(".dialog-buttons").css({ "margin-top": "0.5rem", "margin-bottom": "0" });
+    // tighten inner content padding to match
+    $dlg.find(".window-content").css({ "padding-bottom": "0.25rem" });
   }
 
   const links = html.find("a.content-link");
