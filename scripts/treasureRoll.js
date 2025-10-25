@@ -639,7 +639,7 @@ if (allCards.length > 5) {
   const left  = allCards.slice(0, 5).join("");
   const right = allCards.slice(5).join("");
   htmlContent = `
-    <div class="lf-results" style="display:flex; gap:1rem; align-items:flex-start; min-width:0; padding-bottom:6px;">
+    <div class="lf-results" style="display:flex; gap:1rem; align-items:flex-start; min-width:0; margin-bottom:0;">
       <div style="flex:1 1 0; min-width:0;">${left}</div>
       <div style="flex:1 1 0; min-width:0;">${right}</div>
     </div>
@@ -648,9 +648,7 @@ if (allCards.length > 5) {
   htmlContent = `<div class="lf-results" style="display:block; padding-bottom:6px;">${allCards.join("")}</div>`;
 }
 
-// Footer
-htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
-
+	
 // Should we widen the dialog? (second column appears when > 5 cards)
 const needsWide = allCards.length > 5;
 
@@ -695,8 +693,23 @@ dialog.render(true);
 
 // After render: widen only when two columns are present
 Hooks.once("renderDialog", (_app, html) => {
+  const $dlg = html.closest(".dialog");
+
   if (needsWide) {
-    html.closest(".dialog").css({ width: "500px", "max-width": "500px" });
+    $dlg.css({ width: "500px", "max-width": "500px" });
+  }
+
+  // Inject a stable budget bar just above the dialog buttons
+  const $wc   = $dlg.find(".window-content");
+  const $btns = $wc.find(".dialog-buttons");
+  if ($btns.length) {
+    const $bar = $(`
+      <div class="lf-budget"
+           style="margin:8px 0; border-top:1px solid var(--color-border-light, #8882); padding-top:6px;">
+        <strong>Remaining Budget:</strong> ${budget}
+      </div>
+    `);
+    $bar.insertBefore($btns);
   }
 
   const links = html.find("a.content-link");
