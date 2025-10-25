@@ -1027,19 +1027,23 @@ const $levelField  = html.find("#highestPCLevel");
 const toggleDisabled = (isDisabled) => {
   const opacity = isDisabled ? 0.5 : 1.0;
 
-  // Labels
+  // Fade labels only
   $budgetLabel.css("opacity", opacity);
   $levelLabel.css("opacity", opacity);
 
-  // Fields (this is the bit that makes the <select> visibly grey out too)
-  $budgetField.prop("disabled", isDisabled).css("opacity", opacity);
-  $levelField.prop("disabled", isDisabled).css("opacity", opacity);
+  // Disable fields; also kill hover/hover-out transitions by removing pointer events
+  $budgetField.prop("disabled", isDisabled).css("pointer-events", isDisabled ? "none" : "");
+  $levelField.prop("disabled", isDisabled).css("pointer-events", isDisabled ? "none" : "");
+
+  // Ensure no inline opacity is left on fields (browser default disabled style will grey them)
+  if (!isDisabled) {
+    $budgetField.css("opacity", "");
+    $levelField.css("opacity", "");
+  }
 };
 
-// Initialize state on open
+// Initialize + listen
 toggleDisabled($ignore.is(":checked"));
-
-// Watch for user toggling the checkbox
 $ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
 });
 
