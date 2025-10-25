@@ -770,16 +770,18 @@ Hooks.once("ready", () => {
 		includeIngredients, 
 		includeMaterials,
 		includeCurrency,  
-        includeCustom
+        includeCustom,
+		ignoreValues = false  
       } = rerollConfig;
 
-      let remainingBudget = budget;
+      let remainingBudget = ignoreValues ? Number.MAX_SAFE_INTEGER : budget;
+      const effectiveMaxVal = ignoreValues ? Number.MAX_SAFE_INTEGER : maxVal;
       let items = [];
       let ingredientCount = 0;
       let failedAttempts = 0;
       const maxAttempts = 50; // infinite loop protection. Increase if needed.
 
-      while (remainingBudget > 0 && items.length < itemCount && failedAttempts < maxAttempts) {
+      while ((ignoreValues || remainingBudget > 0) && items.length < itemCount && failedAttempts < maxAttempts) {
         let itemTypes = [];
         if (includeWeapons) itemTypes.push("Weapon");
         if (includeArmor) itemTypes.push("Armor");
@@ -795,7 +797,7 @@ Hooks.once("ready", () => {
 
         const type = getRandom(itemTypes);
         let item = null;
-        const cap = Math.min(remainingBudget, maxVal);
+        const cap = Math.min(remainingBudget, effectiveMaxVal);
 
         switch (type) {
           case "Weapon":     item = rollWeapon(weaponList, weaponQualities, weaponElements, origin, game.settings.get("lookfar", "useVariantDamageRules")); break;
@@ -808,7 +810,7 @@ Hooks.once("ready", () => {
           case "Custom":     item = await rollCustom(); break;
         }
 
-        if (!item || item.value > remainingBudget || item.value > maxVal) {
+        if (!item || item.value > remainingBudget || item.value > effectiveMaxVal) {
           failedAttempts++;
           continue;
         }
@@ -821,7 +823,8 @@ Hooks.once("ready", () => {
         ui.notifications.warn("No loot generated.");
         return;
       }
-
+		
+      const displayBudget = ignoreValues ? "Ignored" : remainingBudget;
       renderTreasureResultDialog(items, remainingBudget, rerollConfig);
       return;
     }
@@ -894,8 +897,8 @@ Hooks.once("ready", () => {
     <!-- Merged header -->
     <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.75em; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
   <label style="white-space:nowrap; font-weight:normal;">
-    <input type="checkbox" id="ignoreBudget" />
-    <small>Ignore budget</small>
+    <input type="checkbox" id="ignoreValues" />
+    <small>Ignore budget/level</small>
   </label>
   <label style="white-space:nowrap; font-weight:normal;">
     <input type="checkbox" id="selectAllLoot" />
@@ -943,6 +946,8 @@ Hooks.once("ready", () => {
 		const includeCurrency = html.find("#includeCurrency").is(":checked");
         const includeCustom = html.find("#includeCustom").is(":checked");
 
+		const ignoreValues = html.find("#ignoreValues").is(":checked");  
+
         const selectedOrigin = html.find("#origin").val();
         const selectedNature = html.find("#nature").val();
 
@@ -961,7 +966,8 @@ Hooks.once("ready", () => {
           includeIngredients,
           includeMaterials,
 		  includeCurrency,	
-          includeCustom
+          includeCustom,
+		  ignoreValues	
         });
       }
     }
