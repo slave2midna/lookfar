@@ -710,6 +710,19 @@ Hooks.once("renderDialog", (_app, html) => {
       </div>
     `);
     $bar.insertBefore($btns);
+
+    // ⬇️ NEW: let the content auto-size (no internal scroll)
+    $wc.css({
+      "max-height": "none",
+      "overflow": "visible",
+      "overflow-y": "visible"
+    });
+
+    // ⬇️ NEW: ask Foundry to recompute the dialog height
+    if (typeof _app?.setPosition === "function") {
+      _app.setPosition({ height: "auto" });
+      setTimeout(() => _app.setPosition({ height: "auto" }), 0);
+    }
   }
 
   const links = html.find("a.content-link");
