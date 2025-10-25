@@ -414,8 +414,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           data: {
             cost: data.value ?? null,
             quantity: data.quantity ?? 1,
-            taste: data.taste || "",
-            description: `An ingredient that tastes <b>${data.taste}</b>.`
+            taste: data.taste || ""
           },
           featureType: "projectfu.ingredient",
           summary: { value: `An ingredient that tastes ${data.taste}.` },
@@ -437,9 +436,8 @@ async function renderTreasureResultDialog(items, budget, config) {
           quantity: { value: 1 },
           origin: { value: data.origin },
           source: { value: "LOOKFAR" },
-          summary: { value: `${data.nature} material of ${data.origin.toLowerCase()} origin.` },
-          description: `<b>${data.nature}</b> material of <b>${data.origin.toLowerCase()}</b> origin.<br>` + 
-            `It can be used to craft <b>${data.detail}</b> items.`
+          summary: { value: `${data.nature} material of ${data.origin.toLowerCase()} origins.` },
+          description: `This material can be used to craft <b>${data.detail}</b> items.`
         }
       };
     } else if (dataLoader.weaponsData.weaponList.some(w => data.name.endsWith(w.name))) {
@@ -486,7 +484,6 @@ async function renderTreasureResultDialog(items, budget, config) {
         value: `${prefix} that ${qualityObj?.description || "has no special properties."}`
       },
       description:
-        `${prefix} that ${qualityObj?.description || "has no special properties."}<br>` +
         `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> ` +
         `<b>DMG:</b> HR+${(baseWeapon?.damage ?? 0) + (variantEnabled ? variantBonus : (data.isMaster ? 4 : 0))} <strong>|</strong> ` +
         `<b>ELE:</b> ${(data.element?.damageType || baseWeapon?.element || "physical")
@@ -517,9 +514,8 @@ async function renderTreasureResultDialog(items, budget, config) {
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: `A full set of armor that ${qualityObj?.description || "has no special properties."}` },
-          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}<br>` +
-            `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseArmor?.init ?? 0}`
+          summary: { value: `A ${baseArmor?.isMartial ? "martial" : "standard"} armor set that ${qualityObj?.description || "has no special properties."}` },
+          description: `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseArmor?.init ?? 0}`
         }
       };
 	} else if (dataLoader.shieldsData.shieldList.some(s => data.name.endsWith(s.name))) {
@@ -572,8 +568,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}` },
-          description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
+          summary: { value: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}` }
         }
       };
     }
