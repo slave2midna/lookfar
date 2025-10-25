@@ -1018,25 +1018,29 @@ Hooks.once("renderDialog", (app, html) => {
   }
 
   // --- Grey-out logic for "Ignore budget/level" ---
-  const $ignore = html.find("#ignoreValues");
-  const $budgetLabel = html.find('label[for="treasureBudget"]');
-  const $budgetField = html.find("#treasureBudget");
-  const $levelLabel  = html.find('label[for="highestPCLevel"]');
-  const $levelField  = html.find("#highestPCLevel");
+const $ignore = html.find("#ignoreValues");
+const $budgetLabel = html.find('label[for="treasureBudget"]');
+const $budgetField = html.find("#treasureBudget");
+const $levelLabel  = html.find('label[for="highestPCLevel"]');
+const $levelField  = html.find("#highestPCLevel");
 
-  const toggleDisabled = (isDisabled) => {
-    const opacity = isDisabled ? 0.5 : 1.0;
-    $budgetLabel.css("opacity", opacity);
-    $levelLabel.css("opacity", opacity);
-    $budgetField.prop("disabled", isDisabled);
-    $levelField.prop("disabled", isDisabled);
-  };
+const toggleDisabled = (isDisabled) => {
+  const opacity = isDisabled ? 0.5 : 1.0;
 
-  // Initialize state on open
-  toggleDisabled($ignore.is(":checked"));
+  // Labels
+  $budgetLabel.css("opacity", opacity);
+  $levelLabel.css("opacity", opacity);
 
-  // Watch for user toggling the checkbox
-  $ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
+  // Fields (this is the bit that makes the <select> visibly grey out too)
+  $budgetField.prop("disabled", isDisabled).css("opacity", opacity);
+  $levelField.prop("disabled", isDisabled).css("opacity", opacity);
+};
+
+// Initialize state on open
+toggleDisabled($ignore.is(":checked"));
+
+// Watch for user toggling the checkbox
+$ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
 });
 
 genDialog.render(true);
