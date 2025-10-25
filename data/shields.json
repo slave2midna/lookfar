@@ -6,7 +6,7 @@
             "def":1,
             "mdef":1,
             "init":0,
-            "isMartial":"false"
+            "isMartial":false
         },
         {
             "name":"Shield",
@@ -14,7 +14,7 @@
             "def":2,
             "mdef":2,
             "init":0,
-            "isMartial":"true"
+            "isMartial":true
         }
     ],
     "shieldQualities":{
@@ -381,4 +381,5 @@
             }
         ]
     }
+
 }
