@@ -683,10 +683,11 @@ Hooks.once("renderDialog", (_app, html) => {
     $dlg.css({ width: "500px", "max-width": "500px" });
   }
 
-  // Inject a stable budget bar just above the dialog buttons
   const $wc   = $dlg.find(".window-content");
   const $btns = $wc.find(".dialog-buttons");
-  if ($btns.length) {
+
+  // Only show the budget bar when NOT ignoring values
+  if ($btns.length && !config?.ignoreValues) {
     const $bar = $(`
       <div class="lf-budget"
            style="margin:8px 0; border-top:1px solid var(--color-border-light, #8882); padding-top:6px;">
@@ -694,19 +695,18 @@ Hooks.once("renderDialog", (_app, html) => {
       </div>
     `);
     $bar.insertBefore($btns);
+  }
 
-    // ⬇️ NEW: let the content auto-size (no internal scroll)
-    $wc.css({
-      "max-height": "none",
-      "overflow": "visible",
-      "overflow-y": "visible"
-    });
+  // Keep the auto-size tweaks regardless
+  $wc.css({
+    "max-height": "none",
+    "overflow": "visible",
+    "overflow-y": "visible"
+  });
 
-    // ⬇️ NEW: ask Foundry to recompute the dialog height
-    if (typeof _app?.setPosition === "function") {
-      _app.setPosition({ height: "auto" });
-      setTimeout(() => _app.setPosition({ height: "auto" }), 0);
-    }
+  if (typeof _app?.setPosition === "function") {
+    _app.setPosition({ height: "auto" });
+    setTimeout(() => _app.setPosition({ height: "auto" }), 0);
   }
 
   const links = html.find("a.content-link");
