@@ -324,6 +324,16 @@ async function rollCustom() {
 // Stash Creation
 async function createStash(items, cacheFolder, currencyTotal = 0) {
 
+  // Identify ingredient items (classFeature with featureType=projectfu.ingredient)
+  const isIngredientItem = (it) => {
+    const ft = foundry.utils.getProperty(it, "system.featureType")
+            ?? foundry.utils.getProperty(it, "system.data.featureType");
+    return it?.type === "classFeature" && ft === "projectfu.ingredient";
+  };
+
+  const stashableItems = items.filter(i => !isIngredientItem(i));
+  const skippedIngredients = items.filter(isIngredientItem);
+
   const allStashes = game.actors.filter(a => a.type === "stash");
   const re = /^New Stash #(\d+)$/i;
   let nextNum = 1;
@@ -342,14 +352,17 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     img: "icons/svg/item-bag.svg"
   });
 
-  const embedded = items.map(i => {
+  // Only embed stashable (non-ingredient) items
+  const embedded = stashableItems.map(i => {
     const data = i.toObject();
     delete data._id;
     delete data.folder;
     return data;
   });
 
-  await stash.createEmbeddedDocuments("Item", embedded);
+  if (embedded.length) {
+    await stash.createEmbeddedDocuments("Item", embedded);
+  }
 
   // Deposit rolled currency into the stash's zenit resource
   if (currencyTotal > 0) {
@@ -358,19 +371,37 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     await stash.update({ "system.resources.zenit.value": current + currencyTotal });
   }
 
-  const deletions = items
+  // Only delete from cache the items we actually stashed
+  const deletions = stashableItems
     .filter(i => i?.folder?.id === cacheFolder.id)
     .map(i => i.delete());
   if (deletions.length) await Promise.allSettled(deletions);
 
-  stash.sheet?.render(true);
+  // Friendly single warning if any ingredients were skipped
+  if (skippedIngredients.length > 0) {
+    ui.notifications?.warn(
+      `Skipped ${skippedIngredients.length} ingredient${skippedIngredients.length > 1 ? "s" : ""}: ` +
+      `ingredients can’t be added to a Stash in this system yet. ` +
+      `Consider unchecking “Ingredients” when stashing.`
+    );
+  }
+
+  // Build chat message
   const depositNote = currencyTotal > 0
     ? `<br>Deposited <strong>${currencyTotal}</strong> ${(game.settings.get("projectfu","optionRenameCurrency") || "Zenit")} into the stash.`
     : "";
+
+  const skippedNote = skippedIngredients.length > 0
+    ? `<br><em>Skipped ${skippedIngredients.length} ingredient${skippedIngredients.length > 1 ? "s" : ""}; cannot be stashed.</em>`
+    : "";
+
   await ChatMessage.create({
-    content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.${depositNote}`,
+    content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.${depositNote}${skippedNote}`,
     speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
-   });
+  });
+
+  // Open the stash
+  stash.sheet?.render(true);
 
   return stash;
 }
