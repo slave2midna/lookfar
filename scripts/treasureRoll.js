@@ -833,7 +833,8 @@ Hooks.once("ready", () => {
     const genDialog = new Dialog({
       title: "Treasure Generator",
       content: `
-        <form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.25rem; box-sizing:border-box;">
+<form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.25rem; box-sizing:border-box;">
+
   <!-- Left Half of Dialog/Column 1 -->
   <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
     <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
@@ -892,40 +893,59 @@ Hooks.once("ready", () => {
       </div>
     </div>
   </div>
+
   <!-- Right half of Dialog/Column 2 & 3 -->
   <div id="lootOptions" style="flex:1 1 60%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
     <!-- Merged header -->
     <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.75em; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
-  <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
-  	<input type="checkbox" id="ignoreValues" />
-  	<small>Ignore budget/level</small>
-  </label>
-  <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
-    <input type="checkbox" id="selectAllLoot" />
-    <small>Select all</small>
-  </label>
-</div>
+      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
+        <input type="checkbox" id="ignoreValues" />
+        <small>Ignore budget/level</small>
+      </label>
+      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
+        <input type="checkbox" id="selectAllLoot" />
+        <small>Select all</small>
+      </label>
+    </div>
+
     <!-- Two inner columns that share the right half equally -->
     <div style="display:flex; min-width:0;">
       <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
-        <label style="display:block; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeWeapons"> Weapons </label>
-        <label style="display:block; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeArmor"> Armor </label>
-        <label style="display:block; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeAccessories"> Accessories </label>
-        <label style="display:block; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeShields"> Shields </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeWeapons" />
+          <span>Weapons</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeArmor" />
+          <span>Armor</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeAccessories" />
+          <span>Accessories</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeShields" />
+          <span>Shields</span>
+        </label>
       </div>
+
       <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
-        <label style="display:block; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeMaterials"> Materials </label>
-        <label style="display:block; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeIngredients"> Ingredients </label>
-        <label style="display:block; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeCurrency"> Currency </label>
-        <label style="display:block; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeCustom"> Custom </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeMaterials" />
+          <span>Materials</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeIngredients" />
+          <span>Ingredients</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeCurrency" />
+          <span>Currency</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeCustom" />
+          <span>Custom</span>
+        </label>
       </div>
     </div>
   </div>
