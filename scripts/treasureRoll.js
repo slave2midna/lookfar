@@ -455,10 +455,9 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   // Handle weapon summary 'prefix'
   const dmgType = (data.element?.damageType || baseWeapon?.element || "physical");
-  const elemLabel = `${dmgType}`.charAt(0).toUpperCase() + `${dmgType}`.slice(1);
   const prefix = (data.isMaster && !variantEnabled)
-    ? `A masterwork ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} ${elemLabel} weapon`
-    : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} ${elemLabel} weapon`;
+    ? `A masterwork ${baseWeapon?.hand || "unknown"} ${baseWeapon?.category || "unknown"} ${dmgType} weapon`
+    : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.category || "unknown"} ${dmgType} weapon`;
 
   itemData = {
     name: data.name,
