@@ -977,6 +977,8 @@ Hooks.once("ready", () => {
 // Hook setups
 Hooks.once("renderDialog", (app, html) => {
   if (!html.find || !html.find("#itemCount").length) return;
+
+  // --- Item count controls ---
   const $count = html.find("#itemCount");
   const min = Number($count.attr("min")) || 1;
   const max = Number($count.attr("max")) || 10;
@@ -993,26 +995,48 @@ Hooks.once("renderDialog", (app, html) => {
   // prevent wheel changing the number accidentally
   $count.on("wheel", (e) => e.preventDefault());
 
-  // Select All wiring
+  // --- Select All wiring ---
   const $selectAll = html.find("#selectAllLoot");
   if ($selectAll.length) {
-    const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreBudget");
+    // exclude the header checkboxes (select-all + ignoreValues)
+    const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreValues");
 
     $selectAll.on("change", (ev) => {
       const checked = ev.currentTarget.checked;
       $boxes.prop("checked", checked);
-	  $selectAll.prop("indeterminate", false);
+      $selectAll.prop("indeterminate", false);
     });
 
     $boxes.on("change", () => {
-     const arr = $boxes.toArray();
-     const allChecked = arr.every(b => b.checked);
-     const anyChecked = arr.some(b => b.checked);
-     $selectAll
-       .prop("checked", allChecked)
-       .prop("indeterminate", anyChecked && !allChecked);
+      const arr = $boxes.toArray();
+      const allChecked = arr.every(b => b.checked);
+      const anyChecked = arr.some(b => b.checked);
+      $selectAll
+        .prop("checked", allChecked)
+        .prop("indeterminate", anyChecked && !allChecked);
     });
-  }		
+  }
+
+  // --- Grey-out logic for "Ignore budget/level" ---
+  const $ignore = html.find("#ignoreValues");
+  const $budgetLabel = html.find('label[for="treasureBudget"]');
+  const $budgetField = html.find("#treasureBudget");
+  const $levelLabel  = html.find('label[for="highestPCLevel"]');
+  const $levelField  = html.find("#highestPCLevel");
+
+  const toggleDisabled = (isDisabled) => {
+    const opacity = isDisabled ? 0.5 : 1.0;
+    $budgetLabel.css("opacity", opacity);
+    $levelLabel.css("opacity", opacity);
+    $budgetField.prop("disabled", isDisabled);
+    $levelField.prop("disabled", isDisabled);
+  };
+
+  // Initialize state on open
+  toggleDisabled($ignore.is(":checked"));
+
+  // Watch for user toggling the checkbox
+  $ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
 });
 
 genDialog.render(true);
