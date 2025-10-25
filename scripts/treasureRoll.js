@@ -897,12 +897,12 @@ Hooks.once("ready", () => {
     <!-- Merged header -->
     <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.75em; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
   <label style="white-space:nowrap; font-weight:normal;">
-    <input type="checkbox" id="ignoreValues" />
-    <small>Ignore budget/level</small>
+    <input type="checkbox" id="ignoreValues" style="vertical-align:middle;" />
+    <small style="position:relative; top:-1px;">Ignore budget/level</small>
   </label>
   <label style="white-space:nowrap; font-weight:normal;">
-    <input type="checkbox" id="selectAllLoot" />
-    <small>Select all</small>
+    <input type="checkbox" id="selectAllLoot" style="vertical-align:middle;" />
+    <small style="position:relative; top:-1px;">Select all</small>
   </label>
 </div>
     <!-- Two inner columns that share the right half equally -->
