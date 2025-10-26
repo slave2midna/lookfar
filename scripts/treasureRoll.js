@@ -324,7 +324,7 @@ async function rollCustom() {
 // Stash Creation
 async function createStash(items, cacheFolder, currencyTotal = 0) {
 
-  // Identify ingredient items
+  // Identify ingredient items (classFeature with featureType=projectfu.ingredient)
   const isIngredientItem = (it) => {
     const ft = foundry.utils.getProperty(it, "system.featureType")
             ?? foundry.utils.getProperty(it, "system.data.featureType");
@@ -352,7 +352,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     img: "icons/svg/item-bag.svg"
   });
 
-  // Only embed stashable items
+  // Only embed stashable (non-ingredient) items
   const embedded = stashableItems.map(i => {
     const data = i.toObject();
     delete data._id;
@@ -371,17 +371,18 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     await stash.update({ "system.resources.zenit.value": current + currencyTotal });
   }
 
-  // Delete from cache the items we actually stashed
+  // Only delete from cache the items we actually stashed
   const deletions = stashableItems
     .filter(i => i?.folder?.id === cacheFolder.id)
     .map(i => i.delete());
   if (deletions.length) await Promise.allSettled(deletions);
 
-  // Friendly warning when ingredients are skipped
+  // Friendly single warning if any ingredients were skipped
   if (skippedIngredients.length > 0) {
     ui.notifications?.warn(
       `Skipped ${skippedIngredients.length} ingredient${skippedIngredients.length > 1 ? "s" : ""}: ` +
-      `ingredients can’t be added to a Stash in the system yet.`
+      `ingredients can’t be added to a Stash in this system yet. ` +
+      `Consider unchecking “Ingredients” when stashing.`
     );
   }
 
@@ -608,7 +609,7 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   const finalItems = tempItems.filter(Boolean);
 
- // Build compact, one-line item cards
+ // Build compact, one-line cards (items)
 const itemCards = finalItems.map(item => {
   const cost = getItemCost(item.system);
 
@@ -637,10 +638,36 @@ const itemCards = finalItems.map(item => {
           </div>`;
 });
 
-  // Also single-line for the footer
-  htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
+// Build currency tiles in the same style
+const currencyCards = currencyLines.map(c =>
+  `<div style="text-align:center;margin-bottom:0.75em">
+     <img src="${c.img || 'icons/svg/coins.svg'}" width="32" height="32" style="display:block;margin:0 auto 6px">
+     <strong>${c.name}</strong>
+   </div>`
+);
 
- // Enrich for the dialog only
+// Merge items + currency, then layout
+const allCards = [...itemCards, ...currencyCards];
+
+let htmlContent;
+if (allCards.length > 5) {
+  const left  = allCards.slice(0, 5).join("");
+  const right = allCards.slice(5).join("");
+  htmlContent = `
+    <div class="lf-results" style="display:flex; gap:1rem; align-items:flex-start; min-width:0; margin-bottom:0;">
+      <div style="flex:1 1 0; min-width:0;">${left}</div>
+      <div style="flex:1 1 0; min-width:0;">${right}</div>
+    </div>
+  `;
+} else {
+  htmlContent = `<div class="lf-results" style="display:block; padding-bottom:6px;">${allCards.join("")}</div>`;
+}
+
+	
+// Should we widen the dialog? (second column appears when > 5 cards)
+const needsWide = allCards.length > 5;
+
+// Enrich for the dialog only
 const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
 
 const dialog = new Dialog({
@@ -678,8 +705,41 @@ const dialog = new Dialog({
 });
 
 dialog.render(true);
-	
-  Hooks.once("renderDialog", (_app, html) => {
+
+// After render: widen only when two columns are present
+Hooks.once("renderDialog", (_app, html) => {
+  const $dlg = html.closest(".dialog");
+
+  if (needsWide) {
+    $dlg.css({ width: "500px", "max-width": "500px" });
+  }
+
+  const $wc   = $dlg.find(".window-content");
+  const $btns = $wc.find(".dialog-buttons");
+
+  // Only show the budget bar when NOT ignoring values
+  if ($btns.length && !config?.ignoreValues) {
+    const $bar = $(`
+      <div class="lf-budget"
+           style="margin:8px 0; border-top:1px solid var(--color-border-light, #8882); padding-top:6px;">
+        <strong>Remaining Budget:</strong> ${budget}
+      </div>
+    `);
+    $bar.insertBefore($btns);
+  }
+
+  // Keep the auto-size tweaks regardless
+  $wc.css({
+    "max-height": "none",
+    "overflow": "visible",
+    "overflow-y": "visible"
+  });
+
+  if (typeof _app?.setPosition === "function") {
+    _app.setPosition({ height: "auto" });
+    setTimeout(() => _app.setPosition({ height: "auto" }), 0);
+  }
+
   const links = html.find("a.content-link");
   if (links.length) {
     links.on("click", async function (event) {
@@ -692,7 +752,8 @@ dialog.render(true);
   }
 });
 } 
-
+	
+// Misc. Hooks
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
   (async () => {
@@ -862,7 +923,7 @@ Hooks.once("ready", () => {
       </label>
     </div>
 
-    <!-- Two inner columns checkboxes -->
+    <!-- Two inner columns that share the right half equally -->
     <div style="display:flex; min-width:0;">
       <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
         <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
@@ -948,10 +1009,11 @@ Hooks.once("ready", () => {
   }
 });
 
+// Hook setups
 Hooks.once("renderDialog", (app, html) => {
   if (!html.find || !html.find("#itemCount").length) return;
 
-  // Item count controls
+  // --- Item count controls ---
   const $count = html.find("#itemCount");
   const min = Number($count.attr("min")) || 1;
   const max = Number($count.attr("max")) || 10;
@@ -965,12 +1027,13 @@ Hooks.once("renderDialog", (app, html) => {
   html.find("#addCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) + 1); });
   html.find("#subCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) - 1); });
 
+  // prevent wheel changing the number accidentally
   $count.on("wheel", (e) => e.preventDefault());
 
-  // Select All wiring
+  // --- Select All wiring ---
   const $selectAll = html.find("#selectAllLoot");
   if ($selectAll.length) {
-
+    // exclude the header checkboxes (select-all + ignoreValues)
     const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreValues");
 
     $selectAll.on("change", (ev) => {
@@ -989,23 +1052,28 @@ Hooks.once("renderDialog", (app, html) => {
     });
   }
 
-  // Grey-out logic for "Ignore budget/level"
-  const $ignore      = html.find("#ignoreValues");
-  const $budgetLabel = html.find('label[for="treasureBudget"]');
-  const $budgetField = html.find("#treasureBudget");
-  const $levelLabel  = html.find('label[for="highestPCLevel"]');
-  const $levelField  = html.find("#highestPCLevel");
+  // --- Grey-out logic for "Ignore budget/level" ---
+const $ignore      = html.find("#ignoreValues");
+const $budgetLabel = html.find('label[for="treasureBudget"]');
+const $budgetField = html.find("#treasureBudget");
+const $levelLabel  = html.find('label[for="highestPCLevel"]');
+const $levelField  = html.find("#highestPCLevel");
 
-  const setFieldState = ($el, isDisabled) => {
-
+const setFieldState = ($el, isDisabled) => {
+  // Disable/enable the control
   $el.prop("disabled", isDisabled);
+
+  // Visually grey the control (keeps Level greyed out)
   $el.css("opacity", isDisabled ? 0.5 : "");
+
+  // Keep a consistent border while disabled so hover-out redraws don't show
+  // a disappearing border (removes the perceived flicker)
   $el.css("border", isDisabled ? "1px solid var(--color-border, #777)" : "");
   $el.css("outline", isDisabled ? "none" : "");
-  $el.css("box-shadow", "none");
+  $el.css("box-shadow", "none"); // neutralize theme hover/focus shadows
 };
 
-  const toggleDisabled = (isDisabled) => {
+const toggleDisabled = (isDisabled) => {
   const labelOpacity = isDisabled ? 0.5 : 1.0;
   $budgetLabel.css("opacity", labelOpacity);
   $levelLabel.css("opacity", labelOpacity);
@@ -1014,6 +1082,7 @@ Hooks.once("renderDialog", (app, html) => {
   setFieldState($levelField,  isDisabled);
 };
 
+// Initialize + listen
 toggleDisabled($ignore.is(":checked"));
 $ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
 });
