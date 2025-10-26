@@ -442,7 +442,7 @@
       {
         "name": "Multi",
         "value": 1000,
-        "description": "attacks as if it has Multi(2)"
+        "description": "attacks as if it had Multi(2)"
       },
       {
         "name": "Maiming",
@@ -469,17 +469,17 @@
       {
         "name": "Whirlwind",
         "value": 600,
-        "description": "deals 5 extra damage during the first round of a conflict."
+        "description": "deals 5 extra damage during the first round of conflict."
       },
       {
         "name": "Finesse",
         "value": 600,
-        "description": "this weapon is in your off-hand, you may use two-weapon fighting with it regardless of its category."
+        "description": "can be used in the off-hand for two-weapon fighting, regardless of category."
       },
       {
         "name": "Switch",
         "value": 800,
-        "description": "when you hit one or more creatures, you may immediately perform the Equipment action for free."
+        "description": "allows you to perform the EQUIP action for free when you hit one or more creatures."
       },
       {
         "name": "Skybreaker",
@@ -489,24 +489,24 @@
       {
         "name": "Polarized",
         "value": 1000,
-        "description": "when you cast a spell that targets a creature (not special) who is suffering from slow, that spell’s total MP cost is halved."
+        "description": "halves the MP cost of spells targeting a creature suffering from slow."
       },
       {
         "name": "Slipstream",
         "value": 1200,
-        "description": "when you deal damage to a creature outside of your turn during a conflict, you deal 5 extra damage that creature."
+        "description": "deals 5 extra damage to a creature, when you damage a creature outside of your turn in a conflict."
       }
     ],
     "Thunderous": [
       {
         "name": "Spiked",
         "value": 600,
-        "description": "when you use a spell or skill to deal bolt damage to a creature, one ally you can see may take their turn (if that haven't) immediately after yours."
+        "description": "gives one ally you can see the option to take their turn immediately after yours, when you deal bolt damage to a creature."
       },
       {
         "name": "Shockwave",
         "value": 800,
-        "description": "when damge dealt by this weapon causes one or more enemies to enter crisis, every enemy present in the scene suffers dazed."
+        "description": "causes all enemies present in the scene to suffer dazed, when damage dealt by this weapon put an enemy into crisis."
       },
       {
         "name": "Livewire",
@@ -516,44 +516,44 @@
       {
         "name": "Conductor’s",
         "value": 1000,
-        "description": "when you use the Encourage Skill, the target recovers extra HP equal to【half your level】"
+        "description": "causes the target of your Encourage Skill to recover extra HP equal to【half your level】."
       },
       {
         "name": "Jolted",
         "value": 1200,
-        "description": "after a creature hits you with a melee attack, you deal 5 bolt damage to that creature."
+        "description": "deals 5 bolt damage to a creature that hits you with a melee attack."
       },
       {
         "name": "Overcharged",
         "value": 1500,
-        "description": "when you deal damage with this weapon if at least one target is shaken, each target loses 20 Mind Points."
+        "description": "causes each target of this weapon to lose 20 MP on a successful hit, if at least one of them is shaken."
       }
     ],
     "Paradox": [
       {
         "name": "Temporal",
         "value": 600,
-        "description": "deals 5 extra damage as long as you have exactly one other weapon equipped of a different category."
+        "description": "deals 5 extra damage as long as you have one other weapon equipped of a different category."
       },
       {
         "name": "Anomalous",
         "value": 800,
-        "description": "grants you the effects of the Mirror spell at the beginning of any conflict scene."
+        "description": "grants you the effects of the Mirror spell at the beginning of a conflict scene."
       },
       {
         "name": "Bound",
         "value": 1000,
-        "description": "when you hit 2 targets with this weapon, you may tether them. when either loses HP due to damage they are Vulnerable to, the other loses 5 HP."
+        "description": "tethers up to 2 targets hit by this weapon. When either target loses HP from damage they vulnerable to, the other loses 5 HP."
       },
       {
         "name": "Distorted",
         "value": 1200,
-        "description": "when you score a critical success on a Magic Check for an offensive spell, that spell deals 5 extra damage."
+        "description": "empowers a spell to deal 5 extra damage when it hits with critical success."
       },
       {
         "name": "Echoing",
         "value": 1500,
-        "description": "when an enemy in the scene heals from one or more status effects, roll a d8. That enemy suffers a status effect based on the number rolled: 1-2 dazed, 3-4 shaken, 5-6 slow, 7-8 weak."
+        "description": "causes an enemy in the scene to suffer a random status effect (1d4: dazed, shaken, slow, or weak), when that enemy heals from one or more status effects."
       },
       {
         "name": "Faded",
@@ -570,39 +570,39 @@
       {
         "name": "Deeproot",
         "value": 800,
-        "description": "when you recover HP, if you are in Crisis, you recover 5 additional HP."
+        "description": "recovers 5 additional HP when you recover HP while in crisis."
       },
       {
         "name": "Trembling",
         "value": 1000,
-        "description": "when you hit a creatures with this weapon, you recover an amount of Mind Points equal to your HR."
+        "description": "recovers MP equal to its HR when you hit a creature with this weapon."
       },
       {
         "name": "Blooming",
         "value": 1000,
-        "description": "when you heal an ally during a conflict, they gain resistance to physical damage till the start of your next turn."
+        "description": "grants resistance to physical damage until the start of your next turn when you heal an ally in a conflict."
       },
       {
         "name": "Runestone",
         "value": 1500,
-        "description": "gives a +2 bonus to Magic Checks you perform for Elementalism Rituals, as long as it has a total MP cost equal to or lower than 60."
+        "description": "gives a +2 bonus to Magic Checks for Elementalism Rituals with a total MP cost equal to or less than 60."
       },
       {
         "name": "Spinebreaker",
         "value": 1800,
-        "description": "Your with weapons belonging to the heavy and/or spear Categories deal 5 extra damage."
+        "description": "causes any equipped heavy or spear weapon to deal 5 extra damage."
       }
     ],
     "Ardent": [
       {
         "name": "Dancing",
         "value": 500,
-        "description": "reduces that MP of the Bladestorm Skill by half when using this weapon."
+        "description": "halves the MP cost of your Bladestorm Skill when using this weapon."
       },
       {
         "name": "Shadowfire",
         "value": 600,
-        "description": "when you attack using the Shadow Strike Skill you may have the attack deal fire damage instead of dark damage."
+        "description": "allows you to change the damage type of your Shadow Strike skill to fire instead of dark at will."
       },
       {
         "name": "Cauterized",
@@ -612,24 +612,24 @@
       {
         "name": "Bonded",
         "value": 800,
-        "description": "when you invoke a Bond during a Check, you recover 5 Mind Points."
+        "description": "restores 5 MP when you invoke a bond during any check."
       },
       {
         "name": "Silencing",
         "value": 1300,
-        "description": "when you hit a creatures, that creature can't perform the Spell action during their next turn."
+        "description": "prevents a creature from taking the Spell action during their next turn when successfully hit."
       },
       {
         "name": "Rapidfire",
         "value": 1800,
-        "description": "Your attacks with weapons belonging to the bow and/or sword Categories deal 5 extra damage."
+        "description": "causes any equipped bow or firearm weapon to deal 5 extra damage."
       }
     ],
     "Glacial": [
       {
         "name": "Frostbitten",
         "value": 600,
-        "description": "when you enter Crisis for the first time during a conflict, deals 5 ice damage to every enemy present in the scene."
+        "description": "deals 5 ice damage to every enemy present in the scene when you enter Crisis for the first time."
       },
       {
         "name": "Niveous",
@@ -639,29 +639,29 @@
       {
         "name": "Rimebound",
         "value": 1000,
-        "description": "when you start your turn in a conflict, each creature in the scene suffering from the weak status effect loses 5 HP."
+        "description": "causes each creature in the scene suffering weak to lose 5 HP at the start of your turn in a conflict."
       },
       {
         "name": "Brumal",
         "value": 1000,
-        "description": "gives a +1 bonus to Defense and Magic Defense against attacks and offensive spells enraged creatures."
+        "description": "gives a +1 bonus to DEF and M.DEF against attacks and offensive spells from enraged creatures."
       },
       {
         "name": "Boreal",
         "value": 1800,
-        "description": "when you deal ice damage to a creature, that creature suffers the slow status effect or loses 10 MP if already slowed."
+        "description": "causes a creature to suffer slow, or lose 10 MP if already slowed when you deal ice damage to it."
       },
       {
         "name": "Gelid",
         "value": 1800,
-        "description": "when you deal damage to a creature suffering from the weak status effect, you deal 5 extra damage to that creature."
+        "description": "deals 5 extra damage to creatures suffering from the weak status effect."
       }
     ],
     "Spiritual": [
       {
         "name": "Anima",
         "value": 600,
-        "description": "when you end your turn, if you are merged with an Arcanum, you may heal from a single status effect of your choice."
+        "description": "heals you from a single status effect of your choice when you end your turn merged with an Arcanum."
       },
       {
         "name": "Aetheric",
@@ -671,17 +671,17 @@
       {
         "name": "Auroral",
         "value": 1000,
-        "description": "as long as you are affected by a spell with a duration of “Scene”, all damage you deal ignores Resistances."
+        "description": "causes damage you deal to ignore resistance as long as you are affected by a spell with the scene duration."
       },
       {
         "name": "Spellbound",
         "value": 1000,
-        "description": "applies all bonuses you would apply to an Accuracy Check when using the Spellblade Skill with this weapon, to your Magic Check instead."
+        "description": "applies all Accuracy Check bonuses to your Magic Check instead when using the Spellblade skill with this weapon."
       },
       {
         "name": "Vitalis",
         "value": 1000,
-        "description": "when you perform the Guard action and choose to cover an ally, that ally recovers 5 Hit Points."
+        "description": "heals an ally for 5 HP when you perform the Guard action and choose to cover that ally."
       },
       {
         "name": "Sylvan",
@@ -693,12 +693,12 @@
       {
         "name": "Tarnished",
         "value": 600,
-        "description": "when you cast a spell using the Spellblade Skill, any dark damage dealt by the spell ignores Immunities and Resistances."
+        "description": "causes dark damage dealt by a spell using the Spellblade skill ignore Immunities and Resistances."
       },
       {
         "name": "Psychic",
         "value": 1000,
-        "description": "when you cast an offensive spell, treat the target’s Magic Defense as being equal to their Willpower die size."
+        "description": "treats the M.DEF of targets of your offensive spells as being equal to their WLP die."
       },
       {
         "name": "Withering",
@@ -708,49 +708,49 @@
       {
         "name": "Malicious",
         "value": 1000,
-        "description": "when you cast a spell targeting a creature ( not special ) you have a Bond of hatred towards, that spell’s total MP cost is halved."
+        "description": "halves the total MP cost of spells targeting a creature you have a Bond of hatred towards."
       },
       {
         "name": "Overlord's",
         "value": 1200,
-        "description": "gives a +1 bonus to Defense and Magic Defense against attacks and offensive spells from shaken creatures."
+        "description": "grants a +1 to DEF and M.DEF against attacks and offensive spells from shaken creatures."
       },
       {
         "name": "Wraith",
         "value": 1500,
-        "description": "when you Counterattack with this weapon and hit the target, that target suffers the poisoned status effect."
+        "description": "inflicts the poisoned status on the target of your Counterattack skill."
       }
     ],
     "Aquatic": [
       {
         "name": "Coral",
         "value": 600,
-        "description": "when you reduce an enemy to 0 HP, you may treat your DEX as being one die size higher until the end of your next turn."
+        "description": "allows you to treat your DEX as being one die higher until the end of your next turn when you reduce an enemy to 0 HP."
       },
       {
         "name": "Barnacled",
         "value": 800,
-        "description": "treats defense score with this weapon treat the Defense score of each target as being equal to their current Might die size."
+        "description": "treats the DEF score of each target of this weapon as being equal to their current MIG die size."
       },
       {
         "name": "Boreal",
         "value": 1000,
-        "description": "when you cast and resolve an offensive spell, you recover an amount of HP equal to the HR of the Magic Check."
+        "description": "recovers an amount of HP equal to the HR of a successful Magic Check when you cast an offensive spell."
       },
       {
         "name": "Maleable",
         "value": 1000,
-        "description": "prevents attacks with this weapon from triggering counterattacks other reactive Skills."
+        "description": "prevents attacks with this weapon from triggering counterattacks or other reactive skills."
       },
       {
         "name": "Spring",
         "value": 1200,
-        "description": "if you cause one or more allies to recover HP, if that ally has full HP they recover 5 MP."
+        "description": "causes any ally that regains full HP to recover 5 MP as well."
       },
       {
         "name": "Misty",
         "value": 1500,
-        "description": "when you hit a creature during a single scene, you may reduce the damage of the next attack made against you by the HR of the last recorded hit."
+        "description": "allows you to reduce the damage of a creature hit with this weapon by the HR of its last recorded hit."
       }
     ],
     "Mechanical": [
@@ -762,12 +762,12 @@
       {
         "name": "Breaching",
         "value": 600,
-        "description": "when you use the Breach SKill with this weapon, gain a +2 to your accuracy check."
+        "description": "gives a +2 to your accuracy check when you use the Breach skill with this weapon."
       },
       {
         "name": "Alchemist's",
         "value": 800,
-        "description": "when you create a potion using Gadget (Alchemy), if at least two dice show the same mumber, your area and effect is chosen freely."
+        "description": "allows you to choose the area and effect of a potion you create using Gadget (Alchemy), if at least 2 dice show the same number."
       },
       {
         "name": "Magnetic",
@@ -777,18 +777,13 @@
       {
         "name": "Bard's",
         "value": 1200,
-        "description": "when you use the Tavern Talk skill, you earn 200xSL zenit."
+        "description": "earns you【200 x SL】worth of zenit when you use the Tavern Talk skill."
       },
       {
         "name": "Energized",
         "value": 1500,
-        "description": "when you hit two or more creatures in a single turn with this weapon, it becomes charged."
+        "description": "deals 5 extra bolt damage when you hit two or more creatures in a single turn with this weapon."
       }
     ]
   }
 }
-
-
-
-
-
