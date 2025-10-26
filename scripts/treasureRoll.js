@@ -637,32 +637,10 @@ const itemCards = finalItems.map(item => {
           </div>`;
 });
 
-// Build & style currency tiles
-const currencyCards = currencyLines.map(c =>
-  `<div style="text-align:center;margin-bottom:0.75em">
-     <img src="${c.img || 'icons/svg/coins.svg'}" width="32" height="32" style="display:block;margin:0 auto 6px">
-     <strong>${c.name}</strong>
-   </div>`
-);
+  // Also single-line for the footer
+  htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
 
-// Merge items + currency, then layout
-const allCards = [...itemCards, ...currencyCards];
-
-let htmlContent;
-if (allCards.length > 5) {
-  const left  = allCards.slice(0, 5).join("");
-  const right = allCards.slice(5).join("");
-  htmlContent = `
-    <div class="lf-results" style="display:flex; gap:1rem; align-items:flex-start; min-width:0; margin-bottom:0;">
-      <div style="flex:1 1 0; min-width:0;">${left}</div>
-      <div style="flex:1 1 0; min-width:0;">${right}</div>
-    </div>
-  `;
-} else {
-  htmlContent = `<div class="lf-results" style="display:block; padding-bottom:6px;">${allCards.join("")}</div>`;
-}
-
-const needsWide = allCards.length > 5; // Max item cards before creating new column in results dialog
+ // Enrich for the dialog only
 const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
 
 const dialog = new Dialog({
@@ -700,41 +678,8 @@ const dialog = new Dialog({
 });
 
 dialog.render(true);
-
-// Hooks & Wiring
-Hooks.once("renderDialog", (_app, html) => {
-  const $dlg = html.closest(".dialog");
-
-  if (needsWide) {
-    $dlg.css({ width: "500px", "max-width": "500px" });
-  }
-
-  const $wc   = $dlg.find(".window-content");
-  const $btns = $wc.find(".dialog-buttons");
-
-  // Only show remaining budget when NOT ignoring values
-  if ($btns.length && !config?.ignoreValues) {
-    const $bar = $(`
-      <div class="lf-budget"
-           style="margin:8px 0; border-top:1px solid var(--color-border-light, #8882); padding-top:6px;">
-        <strong>Remaining Budget:</strong> ${budget}
-      </div>
-    `);
-    $bar.insertBefore($btns);
-  }
-
-  // Lock auto-size and overflow of dialog
-  $wc.css({
-    "max-height": "none",
-    "overflow": "visible",
-    "overflow-y": "visible"
-  });
-
-  if (typeof _app?.setPosition === "function") {
-    _app.setPosition({ height: "auto" });
-    setTimeout(() => _app.setPosition({ height: "auto" }), 0);
-  }
-
+	
+  Hooks.once("renderDialog", (_app, html) => {
   const links = html.find("a.content-link");
   if (links.length) {
     links.on("click", async function (event) {
