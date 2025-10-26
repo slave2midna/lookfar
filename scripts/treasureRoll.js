@@ -324,6 +324,16 @@ async function rollCustom() {
 // Stash Creation
 async function createStash(items, cacheFolder, currencyTotal = 0) {
 
+  // Identify ingredient items
+  const isIngredientItem = (it) => {
+    const ft = foundry.utils.getProperty(it, "system.featureType")
+            ?? foundry.utils.getProperty(it, "system.data.featureType");
+    return it?.type === "classFeature" && ft === "projectfu.ingredient";
+  };
+
+  const stashableItems = items.filter(i => !isIngredientItem(i));
+  const skippedIngredients = items.filter(isIngredientItem);
+
   const allStashes = game.actors.filter(a => a.type === "stash");
   const re = /^New Stash #(\d+)$/i;
   let nextNum = 1;
@@ -342,14 +352,17 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     img: "icons/svg/item-bag.svg"
   });
 
-  const embedded = items.map(i => {
+  // Only embed stashable items
+  const embedded = stashableItems.map(i => {
     const data = i.toObject();
     delete data._id;
     delete data.folder;
     return data;
   });
 
-  await stash.createEmbeddedDocuments("Item", embedded);
+  if (embedded.length) {
+    await stash.createEmbeddedDocuments("Item", embedded);
+  }
 
   // Deposit rolled currency into the stash's zenit resource
   if (currencyTotal > 0) {
@@ -358,19 +371,36 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     await stash.update({ "system.resources.zenit.value": current + currencyTotal });
   }
 
-  const deletions = items
+  // Delete from cache the items we actually stashed
+  const deletions = stashableItems
     .filter(i => i?.folder?.id === cacheFolder.id)
     .map(i => i.delete());
   if (deletions.length) await Promise.allSettled(deletions);
 
-  stash.sheet?.render(true);
+  // Friendly warning when ingredients are skipped
+  if (skippedIngredients.length > 0) {
+    ui.notifications?.warn(
+      `Skipped ${skippedIngredients.length} ingredient${skippedIngredients.length > 1 ? "s" : ""}: ` +
+      `ingredients can’t be added to a Stash in the system yet.`
+    );
+  }
+
+  // Build chat message
   const depositNote = currencyTotal > 0
     ? `<br>Deposited <strong>${currencyTotal}</strong> ${(game.settings.get("projectfu","optionRenameCurrency") || "Zenit")} into the stash.`
     : "";
+
+  const skippedNote = skippedIngredients.length > 0
+    ? `<br><em>Skipped ${skippedIngredients.length} ingredient${skippedIngredients.length > 1 ? "s" : ""}; cannot be stashed.</em>`
+    : "";
+
   await ChatMessage.create({
-    content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.${depositNote}`,
+    content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.${depositNote}${skippedNote}`,
     speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
-   });
+  });
+
+  // Open the stash
+  stash.sheet?.render(true);
 
   return stash;
 }
@@ -414,8 +444,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           data: {
             cost: data.value ?? null,
             quantity: data.quantity ?? 1,
-            taste: data.taste || "",
-            description: `An ingredient that tastes <b>${data.taste}</b>.`
+            taste: data.taste || ""
           },
           featureType: "projectfu.ingredient",
           summary: { value: `An ingredient that tastes ${data.taste}.` },
@@ -437,9 +466,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           quantity: { value: 1 },
           origin: { value: data.origin },
           source: { value: "LOOKFAR" },
-          summary: { value: `${data.nature} material of ${data.origin.toLowerCase()} origin.` },
-          description: `<b>${data.nature}</b> material of <b>${data.origin.toLowerCase()}</b> origin.<br>` + 
-            `It can be used to craft <b>${data.detail}</b> items.`
+          summary: { value: `${data.nature} material of ${data.origin.toLowerCase()} origins. It can be used to craft ${data.detail} items.` }
         }
       };
     } else if (dataLoader.weaponsData.weaponList.some(w => data.name.endsWith(w.name))) {
@@ -456,10 +483,10 @@ async function renderTreasureResultDialog(items, budget, config) {
   const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
   const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
-  // Handle master prefix
+  // Handle Masterwork prefix
   const prefix = (data.isMaster && !variantEnabled)
-    ? `A masterwork ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`
-    : `A ${baseWeapon?.hand || "unknown"} ${baseWeapon?.type || "unknown"} ${baseWeapon?.category || "unknown"} weapon`;
+    ? `A masterwork ${baseWeapon?.category || "unknown"} weapon`
+    : `A ${baseWeapon?.category || "unknown"} weapon`
 
   itemData = {
     name: data.name,
@@ -483,15 +510,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       cost: { value: data.value },
       source: { value: "LOOKFAR" },
       summary: {
-        value: `${prefix} that ${qualityObj?.description || "has no special properties."}`
-      },
-      description:
-        `${prefix} that ${qualityObj?.description || "has no special properties."}<br>` +
-        `<b>ACC:</b> +${(baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0)} <strong>|</strong> ` +
-        `<b>DMG:</b> HR+${(baseWeapon?.damage ?? 0) + (variantEnabled ? variantBonus : (data.isMaster ? 4 : 0))} <strong>|</strong> ` +
-        `<b>ELE:</b> ${(data.element?.damageType || baseWeapon?.element || "physical")
-          .charAt(0)
-          .toUpperCase()}${(data.element?.damageType || baseWeapon?.element || "physical").slice(1)}`
+        value: `${prefix} that ${qualityObj?.description || "has no special properties."}` }
     }
   };
 } else if (dataLoader.armorData.armorList.some(a => data.name.endsWith(a.name))) {
@@ -517,9 +536,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: `A full set of armor that ${qualityObj?.description || "has no special properties."}` },
-          description: `A full set of armor that ${qualityObj?.description || "has no special properties."}<br>` +
-            `<b>DEF:</b> ${baseArmor?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseArmor?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseArmor?.init ?? 0}`
+          summary: { value: `A set of ${baseArmor?.isMartial ? "martial" : "non-martial"} armor that ${qualityObj?.description || "has no special properties."}` }
         }
       };
 	} else if (dataLoader.shieldsData.shieldList.some(s => data.name.endsWith(s.name))) {
@@ -545,9 +562,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: `A shield that ${qualityObj?.description || "has no special properties."}` },
-          description: `A shield that ${qualityObj?.description || "has no special properties."}<br>` +
-        	`<b>DEF:</b> ${baseShield?.def ?? 0} <strong>|</strong> <b>MDEF:</b> ${baseShield?.mdef ?? 0} <strong>|</strong> <b>INIT:</b> ${baseShield?.init ?? 0}`
+          summary: { value: `A ${baseShield?.isMartial ? "martial" : "non-martial"} shield that ${qualityObj?.description || "has no special properties."}` }
     	}
       };
     } else if (dataLoader.accessoriesData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
@@ -572,8 +587,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           quality: { value: qualityObj?.description || "No quality" },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
-          summary: { value: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}` },
-          description: `A ${baseAccessory.name.toLowerCase()} that ${qualityObj?.description || "has no special properties."}`
+          summary: { value: `An accessory that ${qualityObj?.description || "has no special properties."}` }
         }
       };
     }
@@ -594,21 +608,18 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   const finalItems = tempItems.filter(Boolean);
 
-  // Build compact, one-line cards
-  let htmlContent = finalItems.map(item => {
+ // Build compact, one-line item cards
+const itemCards = finalItems.map(item => {
   const cost = getItemCost(item.system);
 
   // Detect ingredient
   const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
 
-  // Correct quantity lookup:
-  // - Ingredients store it at system.data.quantity
-  // - Other items store it at system.quantity.value
+  // Correct quantity lookup
   const quantity = isIngredient
     ? (item.system?.data?.quantity ?? 1)
     : (item.system?.quantity?.value ?? 1);
 
-  // Only show “x#” if ingredient and more than 1
   const quantitySuffix = isIngredient && quantity > 1 ? ` x ${quantity}` : "";
 
   const desc =
@@ -618,19 +629,13 @@ async function renderTreasureResultDialog(items, budget, config) {
     item.system?.data?.summary ??
     "";
 
-  return `<div style="text-align:center;margin-bottom:0.75em"><img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px"><a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br><small>${desc}</small><br><small>Value: ${cost} z</small></div>`;
-  }).join("");  // join with empty string — no newlines between items
-
-  // Append currency lines
-  if (currencyLines.length) {
-    const rows = currencyLines.map(c =>
-      `<div style="text-align:center;margin-bottom:0.75em">
-         <img src="${c.img || 'icons/svg/coins.svg'}" width="32" height="32" style="display:block;margin:0 auto 6px">
-         <strong>${c.name}</strong>
-       </div>`
-    ).join("");
-    htmlContent += rows;
-  }
+  return `<div style="text-align:center;margin-bottom:0.75em">
+            <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
+            <a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br>
+            <small>${desc}</small><br>
+            <small>Value: ${cost} z</small>
+          </div>`;
+});
 
   // Also single-line for the footer
   htmlContent += `<div><strong>Remaining Budget:</strong> ${budget}</div>`;
@@ -684,11 +689,10 @@ dialog.render(true);
       const doc = await fromUuid(uuid);
       if (doc?.sheet) doc.sheet.render(true);
     });
-   }
- });
+  }
+});
 } 
-	
-// Misc. Hooks
+
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
   (async () => {
@@ -720,16 +724,18 @@ Hooks.once("ready", () => {
 		includeIngredients, 
 		includeMaterials,
 		includeCurrency,  
-        includeCustom
+        includeCustom,
+		ignoreValues = false  
       } = rerollConfig;
 
-      let remainingBudget = budget;
+      let remainingBudget = ignoreValues ? Number.MAX_SAFE_INTEGER : budget;
+      const effectiveMaxVal = ignoreValues ? Number.MAX_SAFE_INTEGER : maxVal;
       let items = [];
       let ingredientCount = 0;
       let failedAttempts = 0;
-      const maxAttempts = 10; // const (tiny cleanup)
+      const maxAttempts = 50; // infinite loop protection. Increase if needed.
 
-      while (remainingBudget > 0 && items.length < itemCount && failedAttempts < maxAttempts) {
+      while ((ignoreValues || remainingBudget > 0) && items.length < itemCount && failedAttempts < maxAttempts) {
         let itemTypes = [];
         if (includeWeapons) itemTypes.push("Weapon");
         if (includeArmor) itemTypes.push("Armor");
@@ -745,7 +751,7 @@ Hooks.once("ready", () => {
 
         const type = getRandom(itemTypes);
         let item = null;
-        const cap = Math.min(remainingBudget, maxVal);
+        const cap = Math.min(remainingBudget, effectiveMaxVal);
 
         switch (type) {
           case "Weapon":     item = rollWeapon(weaponList, weaponQualities, weaponElements, origin, game.settings.get("lookfar", "useVariantDamageRules")); break;
@@ -758,7 +764,7 @@ Hooks.once("ready", () => {
           case "Custom":     item = await rollCustom(); break;
         }
 
-        if (!item || item.value > remainingBudget || item.value > maxVal) {
+        if (!item || item.value > remainingBudget || item.value > effectiveMaxVal) {
           failedAttempts++;
           continue;
         }
@@ -771,7 +777,8 @@ Hooks.once("ready", () => {
         ui.notifications.warn("No loot generated.");
         return;
       }
-
+		
+      const displayBudget = ignoreValues ? "Ignored" : remainingBudget;
       renderTreasureResultDialog(items, remainingBudget, rerollConfig);
       return;
     }
@@ -780,105 +787,122 @@ Hooks.once("ready", () => {
     const genDialog = new Dialog({
       title: "Treasure Generator",
       content: `
-        <form style="display:flex; width:100%; flex-wrap:nowrap; gap:5px;">
+<form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.25rem; box-sizing:border-box;">
 
-        <!-- Column 1: Form Inputs -->
-        <div style="width:180px;">
-
-         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-           <label for="treasureBudget" style="width:70px;">Budget:</label>
-           <input type="number" id="treasureBudget" value="1" min="1" style="width:110px; box-sizing:border-box;" />
-         </div>
-
-         <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-           <label for="highestPCLevel" style="width:70px;">Level:</label>
-           <select id="highestPCLevel" style="width:110px; box-sizing:border-box;">
-             <option value="500">5+</option>
-             <option value="1000">10+</option>
-             <option value="1500">20+</option>
-             <option value="2000">30+</option>
-             <option value="999999">40+</option>
-          </select>
-        </div>
-
-        <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-          <label for="origin" style="width:70px;">Origin:</label>
-          <select id="origin" style="width:110px; box-sizing:border-box;">
-            <option value="Random" selected>Random</option>
-            <option value="Aerial">Aerial</option>
-            <option value="Thunderous">Thunderous</option>
-            <option value="Paradox">Paradox</option>
-            <option value="Terrestrial">Terrestrial</option>
-            <option value="Ardent">Ardent</option>
-            <option value="Glacial">Glacial</option>
-            <option value="Spiritual">Spiritual</option>
-            <option value="Corrupted">Corrupted</option>
-            <option value="Aquatic">Aquatic</option>
-            <option value="Mechanical">Mechanical</option>
-          </select>
-        </div>
-
-        <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-          <label for="nature" style="width:70px;">Nature:</label>
-          <select id="nature" style="width:110px; box-sizing:border-box;">
-            <option value="Random" selected>Random</option>
-            <option value="Anthropod">Anthropod</option>
-            <option value="Bird">Bird</option>
-            <option value="Fish">Fish</option>
-            <option value="Mammal">Mammal</option>
-            <option value="Mollusk">Mollusk</option>
-            <option value="Reptile">Reptile</option>
-            <option value="Fungus">Fungus</option>
-            <option value="Incorporeal">Incorporeal</option>
-            <option value="Liquid">Liquid</option>
-            <option value="Artificial">Artificial</option>
-            <option value="Mineral">Mineral</option>
-          </select>
-        </div>
-
-        <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-          <label for="itemCount" style="width:70px;">Items:</label>
-          <div style="display:flex; gap:4px; width:110px;">
-            <button type="button" id="subCount" style="height:25px; width:32px;">−</button>
-            <input type="number" id="itemCount" value="1" min="1" max="5" readonly style="flex:1; box-sizing:border-box; text-align:center;" />
-            <button type="button" id="addCount" style="height:25px; width:32px;">+</button>
-          </div>
-        </div>
-
+  <!-- Left Half of Dialog/Column 1 -->
+  <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="treasureBudget" style="flex:0 0 35%; max-width:35%; padding-right:0.5em; box-sizing:border-box;">Budget:</label>
+      <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 65%; min-width:0; max-width:65%; box-sizing:border-box;" />
+    </div>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="highestPCLevel" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Level:</label>
+      <select id="highestPCLevel" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+        <option value="500">5+</option>
+        <option value="1000">10+</option>
+        <option value="1500">20+</option>
+        <option value="2000">30+</option>
+        <option value="999999">40+</option>
+      </select>
+    </div>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="origin" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Origin:</label>
+      <select id="origin" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+        <option value="Random" selected>Random</option>
+        <option value="Aerial">Aerial</option>
+        <option value="Thunderous">Thunderous</option>
+        <option value="Paradox">Paradox</option>
+        <option value="Terrestrial">Terrestrial</option>
+        <option value="Ardent">Ardent</option>
+        <option value="Glacial">Glacial</option>
+        <option value="Spiritual">Spiritual</option>
+        <option value="Corrupted">Corrupted</option>
+        <option value="Aquatic">Aquatic</option>
+        <option value="Mechanical">Mechanical</option>
+      </select>
+    </div>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="nature" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Nature:</label>
+      <select id="nature" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+        <option value="Random" selected>Random</option>
+        <option value="Anthropod">Anthropod</option>
+        <option value="Bird">Bird</option>
+        <option value="Fish">Fish</option>
+        <option value="Mammal">Mammal</option>
+        <option value="Mollusk">Mollusk</option>
+        <option value="Reptile">Reptile</option>
+        <option value="Fungus">Fungus</option>
+        <option value="Incorporeal">Incorporeal</option>
+        <option value="Liquid">Liquid</option>
+        <option value="Artificial">Artificial</option>
+        <option value="Mineral">Mineral</option>
+      </select>
+    </div>
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="itemCount" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Items:</label>
+      <div style="display:flex; align-items:center; gap:0.25rem; flex:1 1 65%; min-width:0;">
+        <button type="button" id="subCount" style="height:2em; width:2em;">−</button>
+        <input type="number" id="itemCount" value="1" min="1" max="10" readonly style="flex:1 1 auto; box-sizing:border-box; text-align:center; min-width:0;" />
+        <button type="button" id="addCount" style="height:2em; width:2em;">+</button>
       </div>
+    </div>
+  </div>
 
-      <!-- Column 2: Checkboxes A -->
-      <div style="width:115px;" class="checkbox-group">
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeWeapons"> Weapons
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeArmor"> Armor
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeAccessories"> Accessories
-        </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeShields"> Shields
-        </label>
-      </div>
+  <!-- Right half of Dialog/Column 2 & 3 -->
+  <div id="lootOptions" style="flex:1 1 60%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
+    <!-- Merged header -->
+    <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.75em; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
+      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
+        <input type="checkbox" id="ignoreValues" />
+        <small>Ignore budget/level</small>
+      </label>
+      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
+        <input type="checkbox" id="selectAllLoot" />
+        <small>Select all</small>
+      </label>
+    </div>
 
-      <!-- Column 3: Checkboxes B -->
-      <div style="width:115px;" class="checkbox-group">
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeMaterials"> Materials
+    <!-- Two inner columns checkboxes -->
+    <div style="display:flex; min-width:0;">
+      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeWeapons" />
+          <span>Weapons</span>
         </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeIngredients"> Ingredients
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeArmor" />
+          <span>Armor</span>
         </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeCurrency"> Currency
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeAccessories" />
+          <span>Accessories</span>
         </label>
-        <label style="display:block; margin-bottom:0.5em; white-space:nowrap; vertical-align:middle;">
-          <input type="checkbox" id="includeCustom"> Custom
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeShields" />
+          <span>Shields</span>
         </label>
       </div>
 
+      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeMaterials" />
+          <span>Materials</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeIngredients" />
+          <span>Ingredients</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeCurrency" />
+          <span>Currency</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeCustom" />
+          <span>Custom</span>
+        </label>
+      </div>
+    </div>
+  </div>
 </form>
       `,
        buttons: {
@@ -895,6 +919,8 @@ Hooks.once("ready", () => {
         const includeMaterials = html.find("#includeMaterials").is(":checked");
 		const includeCurrency = html.find("#includeCurrency").is(":checked");
         const includeCustom = html.find("#includeCustom").is(":checked");
+
+		const ignoreValues = html.find("#ignoreValues").is(":checked");  
 
         const selectedOrigin = html.find("#origin").val();
         const selectedNature = html.find("#nature").val();
@@ -914,19 +940,21 @@ Hooks.once("ready", () => {
           includeIngredients,
           includeMaterials,
 		  includeCurrency,	
-          includeCustom
+          includeCustom,
+		  ignoreValues	
         });
       }
     }
   }
 });
 
-// Item Stepper Wire
 Hooks.once("renderDialog", (app, html) => {
   if (!html.find || !html.find("#itemCount").length) return;
+
+  // Item count controls
   const $count = html.find("#itemCount");
   const min = Number($count.attr("min")) || 1;
-  const max = Number($count.attr("max")) || 5;
+  const max = Number($count.attr("max")) || 10;
 
   const clampSet = (val) => {
     const n = parseInt(val, 10);
@@ -937,13 +965,61 @@ Hooks.once("renderDialog", (app, html) => {
   html.find("#addCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) + 1); });
   html.find("#subCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) - 1); });
 
-  // prevent wheel changing the number accidentally
   $count.on("wheel", (e) => e.preventDefault());
+
+  // Select All wiring
+  const $selectAll = html.find("#selectAllLoot");
+  if ($selectAll.length) {
+
+    const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreValues");
+
+    $selectAll.on("change", (ev) => {
+      const checked = ev.currentTarget.checked;
+      $boxes.prop("checked", checked);
+      $selectAll.prop("indeterminate", false);
+    });
+
+    $boxes.on("change", () => {
+      const arr = $boxes.toArray();
+      const allChecked = arr.every(b => b.checked);
+      const anyChecked = arr.some(b => b.checked);
+      $selectAll
+        .prop("checked", allChecked)
+        .prop("indeterminate", anyChecked && !allChecked);
+    });
+  }
+
+  // Grey-out logic for "Ignore budget/level"
+  const $ignore      = html.find("#ignoreValues");
+  const $budgetLabel = html.find('label[for="treasureBudget"]');
+  const $budgetField = html.find("#treasureBudget");
+  const $levelLabel  = html.find('label[for="highestPCLevel"]');
+  const $levelField  = html.find("#highestPCLevel");
+
+  const setFieldState = ($el, isDisabled) => {
+
+  $el.prop("disabled", isDisabled);
+  $el.css("opacity", isDisabled ? 0.5 : "");
+  $el.css("border", isDisabled ? "1px solid var(--color-border, #777)" : "");
+  $el.css("outline", isDisabled ? "none" : "");
+  $el.css("box-shadow", "none");
+};
+
+  const toggleDisabled = (isDisabled) => {
+  const labelOpacity = isDisabled ? 0.5 : 1.0;
+  $budgetLabel.css("opacity", labelOpacity);
+  $levelLabel.css("opacity", labelOpacity);
+
+  setFieldState($budgetField, isDisabled);
+  setFieldState($levelField,  isDisabled);
+};
+
+toggleDisabled($ignore.is(":checked"));
+$ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
 });
 
 genDialog.render(true);
-
-	  
+  
   })();
  });
 });

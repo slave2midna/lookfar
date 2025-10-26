@@ -8,7 +8,7 @@
             "mdefAttr":"ins",
             "mdef":2,
             "init":-1,
-            "isMartial":"false"
+            "isMartial":false
         },
         {
             "name":"Garb",
@@ -18,7 +18,7 @@
             "mdefAttr":"ins",
             "mdef":1,
             "init":-1,
-            "isMartial":"false"
+            "isMartial":false
         },
         {
             "name":"Tunic",
@@ -28,7 +28,7 @@
             "mdefAttr":"ins",
             "mdef":1,
             "init":0,
-            "isMartial":"false"
+            "isMartial":false
         },
         {
             "name":"Robe",
@@ -38,7 +38,7 @@
             "mdefAttr":"ins",
             "mdef":2,
             "init":-2,
-            "isMartial":"false"
+            "isMartial":false
         },
         {
             "name":"Cuirass",
@@ -48,7 +48,7 @@
             "mdefAttr":"ins",
             "mdef":0,
             "init":-2,
-            "isMartial":"true"
+            "isMartial":true
         },
         {
             "name":"Chain",
@@ -58,7 +58,7 @@
             "mdefAttr":"ins",
             "mdef":0,
             "init":-3,
-            "isMartial":"true"
+            "isMartial":true
         },
         {
             "name":"Scale",
@@ -68,7 +68,7 @@
             "mdefAttr":"ins",
             "mdef":1,
             "init":-3,
-            "isMartial":"true"
+            "isMartial":true
         },
         {
             "name":"Plate",
@@ -78,7 +78,7 @@
             "mdefAttr":"ins",
             "mdef":0,
             "init":-4,
-            "isMartial":"true"
+            "isMartial":true
         }
     ],
     "armorQualities":{
@@ -447,4 +447,5 @@
     }
 
 }
+
 
