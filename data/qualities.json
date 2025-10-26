@@ -1,0 +1,123 @@
+{
+  "basic": [
+    { "name": "Thin", "cost": 500, "description": "grants immunity to the slow status.", "appliesTo": ["weapon"] },
+    { "name": "Thick", "cost": 500, "description": "grants immunity to the daze status.", "appliesTo": ["weapon"] },
+    { "name": "Sturdy", "cost": 500, "description": "grants immunity to the shaken status.", "appliesTo": ["weapon"] },
+    { "name": "Strong", "cost": 500, "description": "grants immunity to the weak status.", "appliesTo": ["weapon"] },
+    { "name": "Tempered", "cost": 700, "description": "grants resistance to fire damage.", "appliesTo": ["weapon"] },
+    { "name": "Cracked", "cost": 700, "description": "grants resistance to earth damage.", "appliesTo": ["weapon"] },
+    { "name": "Insulated", "cost": 700, "description": "grants resistance to ice damage.", "appliesTo": ["weapon"] },
+    { "name": "Grated", "cost": 700, "description": "grants resistance to air damage.", "appliesTo": ["weapon"] },
+    { "name": "Rubber", "cost": 700, "description": "grants resistance to bolt damage.", "appliesTo": ["weapon"] },
+    { "name": "Sacred", "cost": 700, "description": "grants resistance to dark damage.", "appliesTo": ["weapon"] },
+    { "name": "Purified", "cost": 700, "description": "grants resistance to light damage.", "appliesTo": ["weapon"] },
+    { "name": "Alchemists", "cost": 700, "description": "grants resistance to poison damage.", "appliesTo": ["weapon"] },
+    { "name": "Mythril", "cost": 800, "description": "gives +1 to Magic Defense.", "appliesTo": ["weapon"] },
+    { "name": "Adamant", "cost": 800, "description": "gives +1 to Defense.", "appliesTo": ["weapon"] },
+    { "name": "Monks", "cost": 1000, "description": "grants resistance to physical damage.", "appliesTo": ["weapon"] },
+    { "name": "Flamewalker", "cost": 1500, "description": "grants immunity to fire damage.", "appliesTo": ["weapon"] },
+    { "name": "Forestwalker", "cost": 1500, "description": "grants immunity to earth damage.", "appliesTo": ["weapon"] },
+    { "name": "Frostwalker", "cost": 1500, "description": "grants immunity to ice damage.", "appliesTo": ["weapon"] },
+    { "name": "Windwalker", "cost": 1500, "description": "grants immunity to air damage.", "appliesTo": ["weapon"] },
+    { "name": "Stormwalker", "cost": 1500, "description": "grants immunity to bolt damage.", "appliesTo": ["weapon"] },
+    { "name": "Shadowwalker", "cost": 1500, "description": "grants immunity to dark damage.", "appliesTo": ["weapon"] },
+    { "name": "Sunwalker", "cost": 1500, "description": "grants immunity to light damage.", "appliesTo": ["weapon"] },
+    { "name": "Poisoners", "cost": 1500, "description": "grants immunity to poison damage.", "appliesTo": ["weapon"] },
+    { "name": "Shielded", "cost": 2000, "description": "gives +1 to Defense & Magic Defense.", "appliesTo": ["weapon"] },
+    { "name": "Physicians", "cost": 2000, "description": "grants immunity to all status effects.", "appliesTo": ["weapon"] },
+    { "name": "Magical", "cost": 100, "description": "targets Magic Defense instead of Defense.", "appliesTo": ["weapon"] },
+    { "name": "Beast Hunter", "cost": 300, "description": "deals 5 extra damage to beasts.", "appliesTo": ["weapon"] },
+    { "name": "Construct Hunter", "cost": 300, "description": "deals 5 extra damage to constructs.", "appliesTo": ["weapon"] },
+    { "name": "Demon Hunter", "cost": 300, "description": "deals 5 extra damage to demons.", "appliesTo": ["weapon"] },
+    { "name": "Elemental Hunter", "cost": 300, "description": "deals 5 extra damage to elementals.", "appliesTo": ["weapon"] },
+    { "name": "Monster Hunter", "cost": 300, "description": "deals 5 extra damage to monsters.", "appliesTo": ["weapon"] },
+    { "name": "Plant Hunter", "cost": 300, "description": "deals 5 extra damage to plants.", "appliesTo": ["weapon"] },
+    { "name": "Undead Hunter", "cost": 300, "description": "deals 5 extra damage to undead.", "appliesTo": ["weapon"] },
+    { "name": "Piercing", "cost": 400, "description": "ignores resistances.", "appliesTo": ["weapon"] },
+    { "name": "Multi", "cost": 1000, "description": "attacks as if it had Multi(2)", "appliesTo": ["weapon"] },
+    { "name": "Maiming", "cost": 1500, "description": "causes slow on hit.", "appliesTo": ["weapon"] },
+    { "name": "Dazzling", "cost": 1500, "description": "causes daze on hit.", "appliesTo": ["weapon"] },
+    { "name": "Horrifying", "cost": 1500, "description": "causes shaken on hit.", "appliesTo": ["weapon"] },
+    { "name": "Debilitating", "cost": 1500, "description": "causes weak on hit.", "appliesTo": ["weapon"] }
+  ],
+  "aerial": [
+    { "name": "Whirlwind", "cost": 600, "description": "deals 5 extra damage during the first round of conflict.", "appliesTo": ["weapon"] },
+    { "name": "Finesse", "cost": 600, "description": "can be used in the off-hand for two-weapon fighting, regardless of category.", "appliesTo": ["weapon"] },
+    { "name": "Switch", "cost": 800, "description": "allows you to perform the EQUIP action for free when you hit one or more creatures.", "appliesTo": ["weapon"] },
+    { "name": "Skybreaker", "cost": 900, "description": "grants immunity to damage dealt by flying creatures.", "appliesTo": ["weapon"] },
+    { "name": "Polarized", "cost": 1000, "description": "halves the MP cost of spells targeting a creature suffering from slow.", "appliesTo": ["weapon"] },
+    { "name": "Slipstream", "cost": 1200, "description": "deals 5 extra damage to a creature when you damage a creature outside of your turn in a conflict.", "appliesTo": ["weapon"] }
+  ],
+  "thunderous": [
+    { "name": "Spiked", "cost": 600, "description": "gives one ally you can see the option to take their turn immediately after yours, when you deal bolt damage to a creature.", "appliesTo": ["weapon"] },
+    { "name": "Shockwave", "cost": 800, "description": "causes all enemies present in the scene to suffer dazed, when damage dealt by this weapon put an enemy into crisis.", "appliesTo": ["weapon"] },
+    { "name": "Livewire", "cost": 1000, "description": "grants【half your level in the Elementalist Class】as extra damage to your Cataclysm Skill.", "appliesTo": ["weapon"] },
+    { "name": "Conductor’s", "cost": 1000, "description": "causes the target of your Encourage Skill to recover extra HP equal to【half your level】.", "appliesTo": ["weapon"] },
+    { "name": "Jolted", "cost": 1200, "description": "deals 5 bolt damage to a creature that hits you with a melee attack.", "appliesTo": ["weapon"] },
+    { "name": "Overcharged", "cost": 1500, "description": "causes each target of this weapon to lose 20 MP on a successful hit, if at least one of them is shaken.", "appliesTo": ["weapon"] }
+  ],
+  "paradox": [
+    { "name": "Temporal", "cost": 600, "description": "deals 5 extra damage as long as you have one other weapon equipped of a different category.", "appliesTo": ["weapon"] },
+    { "name": "Anomalous", "cost": 800, "description": "grants you the effects of the Mirror spell at the beginning of a conflict scene.", "appliesTo": ["weapon"] },
+    { "name": "Bound", "cost": 1000, "description": "tethers up to 2 targets hit by this weapon. When either target loses HP from damage they are Vulnerable to, the other loses 5 HP.", "appliesTo": ["weapon"] },
+    { "name": "Distorted", "cost": 1200, "description": "empowers a spell to deal 5 extra damage when it hits with critical success.", "appliesTo": ["weapon"] },
+    { "name": "Echoing", "cost": 1500, "description": "causes an enemy in the scene to suffer a random status effect (1d4: dazed, shaken, slow, or weak), when that enemy heals from one or more status effects.", "appliesTo": ["weapon"] },
+    { "name": "Faded", "cost": 1800, "description": "causes enemies hit by this weapon to fade. If a fading enemy would recover HP, instead they recover no HP and stop fading.", "appliesTo": ["weapon"] }
+  ],
+  "terrestrial": [
+    { "name": "Earthward", "cost": 600, "description": "grants resistance to damage caused by environmental hazards.", "appliesTo": ["weapon"] },
+    { "name": "Deeproot", "cost": 800, "description": "recovers 5 additional HP when you recover HP while in crisis.", "appliesTo": ["weapon"] },
+    { "name": "Trembling", "cost": 1000, "description": "recovers MP equal to its HR when you hit a creature with this weapon.", "appliesTo": ["weapon"] },
+    { "name": "Blooming", "cost": 1000, "description": "grants resistance to physical damage until the start of your next turn when you heal an ally in a conflict.", "appliesTo": ["weapon"] },
+    { "name": "Runestone", "cost": 1500, "description": "gives a +2 bonus to Magic Checks for Elementalism Rituals with a total MP cost equal to or less than 60.", "appliesTo": ["weapon"] },
+    { "name": "Spinebreaker", "cost": 1800, "description": "causes any equipped heavy or spear weapon to deal 5 extra damage.", "appliesTo": ["weapon"] }
+  ],
+  "ardent": [
+    { "name": "Dancing", "cost": 500, "description": "halves the MP cost of your Bladestorm Skill when using this weapon.", "appliesTo": ["weapon"] },
+    { "name": "Shadowfire", "cost": 600, "description": "allows you to change the damage type of your Shadow Strike skill to fire instead of dark at will.", "appliesTo": ["weapon"] },
+    { "name": "Cauterized", "cost": 600, "description": "deals 1 extra damage for every status effect you are suffering from.", "appliesTo": ["weapon"] },
+    { "name": "Bonded", "cost": 800, "description": "restores 5 MP when you invoke a bond during any check.", "appliesTo": ["weapon"] },
+    { "name": "Silencing", "cost": 1300, "description": "prevents a creature from taking the Spell action during their next turn when successfully hit.", "appliesTo": ["weapon"] },
+    { "name": "Rapidfire", "cost": 1800, "description": "causes any equipped bow or firearm weapon to deal 5 extra damage.", "appliesTo": ["weapon"] }
+  ],
+  "glacial": [
+    { "name": "Frostbitten", "cost": 600, "description": "deals 5 ice damage to every enemy present in the scene when you enter Crisis for the first time.", "appliesTo": ["weapon"] },
+    { "name": "Niveous", "cost": 800, "description": "makes Ice damage you deal ignore Immunities and Resistances.", "appliesTo": ["weapon"] },
+    { "name": "Rimebound", "cost": 1000, "description": "causes each creature in the scene suffering weak to lose 5 HP at the start of your turn in a conflict.", "appliesTo": ["weapon"] },
+    { "name": "Brumal", "cost": 1000, "description": "gives a +1 bonus to DEF and M.DEF against attacks and offensive spells from enraged creatures.", "appliesTo": ["weapon"] },
+    { "name": "Boreal", "cost": 1800, "description": "causes a creature to suffer slow, or lose 10 MP if already slowed when you deal ice damage to it.", "appliesTo": ["weapon"] },
+    { "name": "Gelid", "cost": 1800, "description": "deals 5 extra damage to creatures suffering from the weak status effect.", "appliesTo": ["weapon"] }
+  ],
+  "spiritual": [
+    { "name": "Anima", "cost": 600, "description": "heals you from a single status effect of your choice when you end your turn merged with an Arcanum.", "appliesTo": ["weapon"] },
+    { "name": "Aetheric", "cost": 800, "description": "deals 1 extra damage for each Bond of affection you have.", "appliesTo": ["weapon"] },
+    { "name": "Auroral", "cost": 1000, "description": "causes damage you deal to ignore resistance as long as you are affected by a spell with the scene duration.", "appliesTo": ["weapon"] },
+    { "name": "Spellbound", "cost": 1000, "description": "applies all Accuracy Check bonuses to your Magic Check instead when using the Spellblade skill with this weapon.", "appliesTo": ["weapon"] },
+    { "name": "Vitalis", "cost": 1000, "description": "heals an ally for 5 HP when you perform the Guard action and choose to cover that ally.", "appliesTo": ["weapon"] },
+    { "name": "Sylvan", "cost": 1500, "description": "grants resistance to dark, light, and poison damage.", "appliesTo": ["weapon"] }
+  ],
+  "corrupted": [
+    { "name": "Tarnished", "cost": 600, "description": "causes dark damage dealt by a spell using the Spellblade skill ignore Immunities and Resistances.", "appliesTo": ["weapon"] },
+    { "name": "Psychic", "cost": 1000, "description": "treats the M.DEF of targets of your offensive spells as being equal to their WLP die.", "appliesTo": ["weapon"] },
+    { "name": "Withering", "cost": 1000, "description": "makes Dark and poison damage you deal ignore Immunities and Resistances.", "appliesTo": ["weapon"] },
+    { "name": "Malicious", "cost": 1000, "description": "halves the total MP cost of spells targeting a creature you have a Bond of hatred towards.", "appliesTo": ["weapon"] },
+    { "name": "Overlord's", "cost": 1200, "description": "grants a +1 to DEF and M.DEF against attacks and offensive spells from shaken creatures.", "appliesTo": ["weapon"] },
+    { "name": "Wraith", "cost": 1500, "description": "inflicts the poisoned status on the target of your Counterattack skill.", "appliesTo": ["weapon"] }
+  ],
+  "aquatic": [
+    { "name": "Coral", "cost": 600, "description": "allows you to treat your DEX as being one die higher until the end of your next turn when you reduce an enemy to 0 HP.", "appliesTo": ["weapon"] },
+    { "name": "Barnacled", "cost": 800, "description": "treats the DEF score of each target of this weapon as being equal to their current MIG die size.", "appliesTo": ["weapon"] },
+    { "name": "Boreal", "cost": 1000, "description": "recovers an amount of HP equal to the HR of a successful Magic Check when you cast an offensive spell.", "appliesTo": ["weapon"] },
+    { "name": "Maleable", "cost": 1000, "description": "prevents attacks with this weapon from triggering counterattacks or other reactive skills.", "appliesTo": ["weapon"] },
+    { "name": "Spring", "cost": 1200, "description": "causes any ally that regains full HP to recover 5 MP as well.", "appliesTo": ["weapon"] },
+    { "name": "Misty", "cost": 1500, "description": "allows you to reduce the damage of a creature hit with this weapon by the HR of its last recorded hit.", "appliesTo": ["weapon"] }
+  ],
+  "mechanical": [
+    { "name": "Thief's", "cost": 300, "description": "allows you to spend your opportunity to earn 100z.", "appliesTo": ["weapon"] },
+    { "name": "Breaching", "cost": 600, "description": "gives a +2 to your accuracy check when you use the Breach skill with this weapon.", "appliesTo": ["weapon"] },
+    { "name": "Alchemist's", "cost": 800, "description": "allows you to choose the area and effect of a potion you create using Gadget (Alchemy), if at least 2 dice show the same number.", "appliesTo": ["weapon"] },
+    { "name": "Magnetic", "cost": 1000, "description": "deals 5 additional damage to creatures with traits related to metal.", "appliesTo": ["weapon"] },
+    { "name": "Bard's", "cost": 1200, "description": "earns you【200 x SL】worth of zenit when you use the Tavern Talk skill.", "appliesTo": ["weapon"] },
+    { "name": "Energized", "cost": 1500, "description": "deals 5 extra bolt damage when you hit two or more creatures in a single turn with this weapon.", "appliesTo": ["weapon"] }
+  ]
+}
