@@ -57,14 +57,12 @@ export const dataLoader = {
       this.shieldsData.shieldList        = Array.isArray(eq?.shieldList)     ? eq.shieldList     : [];
       this.accessoriesData.accessoryList = Array.isArray(eq?.accessoryList)  ? eq.accessoryList  : [];
 
-      console.log("[Lookfar] Equipment Lists:",
-        {
-          weapons: this.weaponsData.weaponList.length,
-          armor: this.armorData.armorList.length,
-          shields: this.shieldsData.shieldList.length,
-          accessories: this.accessoriesData.accessoryList.length
-        }
-      );
+      console.log("[Lookfar] Equipment Lists:", {
+        weapons: this.weaponsData.weaponList.length,
+        armor: this.armorData.armorList.length,
+        shields: this.shieldsData.shieldList.length,
+        accessories: this.accessoriesData.accessoryList.length
+      });
     } catch (err) {
       console.error("[Lookfar] Failed to load equipment.json:", err);
     }
@@ -77,10 +75,10 @@ export const dataLoader = {
 
       // Fast-path: if file already provides per-type blocks, use them directly.
       if (q.weaponQualities || q.armorQualities || q.shieldQualities || q.accessoryQualities) {
-        this.weaponsData.weaponQualities       = q.weaponQualities     || {};
-        this.armorData.armorQualities          = q.armorQualities      || {};
-        this.shieldsData.shieldQualities       = q.shieldQualities     || {};
-        this.accessoriesData.accessoryQualities= q.accessoryQualities  || {};
+        this.weaponsData.weaponQualities        = q.weaponQualities     || {};
+        this.armorData.armorQualities           = q.armorQualities      || {};
+        this.shieldsData.shieldQualities        = q.shieldQualities     || {};
+        this.accessoriesData.accessoryQualities = q.accessoryQualities  || {};
       } else {
         // Flexible converter: from a generic structure to legacy per-type groups
         const byType = this._convertGenericQualitiesToPerType(q);
@@ -102,50 +100,52 @@ export const dataLoader = {
 
   /**
    * Convert a generic qualities.json into per-type legacy groups.
-   * Expected generic pattern (examples):
-   * {
-   *   "basic": [{ id, weaponName, armorName, accessoryName, cost, description, appliesTo:["weapon","armor","accessory"] }, ...],
-   *   "Aerial": [ ... same shape ... ],
-   *   "Thunderous": [ ... ],
-   *   ...
-   * }
+   * Improvements:
+   *  - Armor implies Shield: if appliesTo includes "armor", shields get it too.
+   *  - Name fallback: if <type>Name is empty, fall back to any other name field
+   *    (weaponName, armorName, shieldName, accessoryName) or a generic "name".
    */
   _convertGenericQualitiesToPerType(qualitiesObj) {
-    const OUT = {
-      weapon:    {},
-      armor:     {},
-      shield:    {},
-      accessory: {}
-    };
-
+    const OUT = { weapon: {}, armor: {}, shield: {}, accessory: {} };
     const TYPE_KEYS = ["weapon", "armor", "shield", "accessory"];
-    const nameKeyFor = (type) => {
-      // Try explicit per-type name first, fall back to a generic "name"
-      switch (type) {
-        case "weapon":    return "weaponName";
-        case "armor":     return "armorName";
-        case "shield":    return "shieldName";
-        case "accessory": return "accessoryName";
-        default:          return "name";
+
+    // Flexible name resolver
+    const resolveNameForType = (entry, type) => {
+      // Prefer the specific <type>Name, then try other known name fields, then "name"
+      const typeKey =
+        type === "weapon"    ? "weaponName" :
+        type === "armor"     ? "armorName"  :
+        type === "shield"    ? "shieldName" :
+                               "accessoryName";
+
+      const tryKeys = [typeKey, "weaponName", "armorName", "shieldName", "accessoryName", "name"];
+      for (const k of tryKeys) {
+        const v = entry?.[k];
+        if (typeof v === "string" && v.trim().length) return v.trim();
       }
+      return null;
     };
 
     for (const [group, list] of Object.entries(qualitiesObj || {})) {
-      if (!Array.isArray(list)) continue; // ignore non-array keys, or meta fields
+      if (!Array.isArray(list)) continue;
 
-      // For each equipment type, build its group by filtering/applying naming
       for (const type of TYPE_KEYS) {
         const groupArr = [];
 
         for (const entry of list) {
-          // Respect "appliesTo" if present; otherwise assume it's allowed if it has a usable name
-          const applies = Array.isArray(entry?.appliesTo) ? entry.appliesTo.includes(type) : true;
-          if (!applies) continue;
+          // Build an effective appliesTo set, where "armor" implies "shield"
+          const baseApplies = Array.isArray(entry?.appliesTo)
+            ? entry.appliesTo
+            // Default (if omitted): allow all main types except shield (it will be added via armor)
+            : ["weapon", "armor", "accessory"];
 
-          const nk = nameKeyFor(type);
-          const rawName = entry?.[nk] ?? entry?.name ?? "";
-          const name = (typeof rawName === "string" && rawName.trim().length) ? rawName.trim() : null;
-          if (!name) continue; // skip if no label for this type
+          const appliesSet = new Set(baseApplies);
+          if (appliesSet.has("armor")) appliesSet.add("shield"); // armor => shield
+
+          if (!appliesSet.has(type)) continue;
+
+          const name = resolveNameForType(entry, type);
+          if (!name) continue;
 
           groupArr.push({
             name,
@@ -154,17 +154,12 @@ export const dataLoader = {
           });
         }
 
-        // Only add the group if it has at least one entry (keeps output clean)
-        if (groupArr.length) {
-          OUT[type][group] = groupArr;
-        }
+        if (groupArr.length) OUT[type][group] = groupArr;
       }
     }
 
     // Ensure at least empty "basic" groups exist so logic that expects them won’t crash
-    for (const type of TYPE_KEYS) {
-      OUT[type].basic ??= [];
-    }
+    for (const type of TYPE_KEYS) OUT[type].basic ??= [];
 
     return OUT;
   }
