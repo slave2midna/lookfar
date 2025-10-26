@@ -219,68 +219,77 @@
         "Feather",
         "Talon",
         "Beak",
-        "Claw"
+        "Claw",
+        "Bone"
       ],
       "Fish":[
         "Fin",
-        "Scales",
-        "Spine",
-        "Teeth"
+        "Scale",
+        "Gill",
+        "Tooth",
+        "Bone"
       ],
       "Mammal":[
         "Bone",
-        "Claw",
+        "Fur",
         "Horn",
         "Hide",
-        "Skull"
+        "Tusk"
       ],
       "Mollusk":[
         "Shell",
         "Pearl",
-        "Tentacle"
+        "Valve",
+        "Mantle",
+        "Beak"
       ],
       "Reptile":[
         "Claw",
-        "Scales",
+        "Scale",
         "Tail",
-        "Bone"
+        "Spine",
+        "Fang"
       ],
       "Fungus":[
-        "Spore",
+        "Sporecase",
         "Cap",
-        "Veil",
-        "Stem"
+        "Vein",
+        "Stem",
+        "Fiber"
       ],
       "Incorporeal":[
-        "Essence",
+        "Wisp",
         "Vapor",
         "Ash",
-        "Shade"
+        "Essence",
+        "Soul"
       ],
       "Liquid":[
-        "Oil",
-        "Sludge",
+        "Droplet",
+        "Globule",
         "Ichor",
-        "Resin"
+        "Resin",
+        "Film"
       ],
       "Artificial":[
-        "Gear",
-        "Plate",
-        "Spring",
-        "Cable",
-        "Wire"
+        "Alloy",
+        "Circuit",
+        "Frame",
+        "Casing",
+        "Component"
       ],
       "Mineral":[
+        "Crystal",
         "Shard",
-        "Stone",
         "Ore",
-        "Crystal"
+        "Fragment",
+        "Nodule"
       ],
       "Plant":[
         "Branch",
         "Vine",
         "Bark",
-        "Fiber",
+        "Thorn",
         "Reed"
       ]
     },
@@ -288,77 +297,86 @@
       "Anthropod":[
         "Meat",
         "Sac",
-        "Shell",
-        "Leg"
+        "Egg",
+        "Leg",
+        "Juice"
       ],
       "Bird":[
         "Egg",
-        "Fat",
-        "Feather",
-        "Heart"
+        "Wing",
+        "Meat",
+        "Heart",
+        "Blood"
       ],
       "Fish":[
         "Meat",
-        "Liver",
+        "Egg",
         "Oil",
-        "Gill"
+        "Eye",
+        "Bile"
       ],
       "Mammal":[
         "Meat",
         "Fat",
         "Organ",
-        "Milk"
+        "Milk",
+        "Blood"
       ],
       "Mollusk":[
-        "Meat",
-        "Extract",
+        "Flesh",
+        "Ink",
         "Gland",
-        "Ink"
+        "Slurry",
+        "Meat"
       ],
       "Reptile":[
         "Meat",
+        "Egg",
+        "Venom",
         "Blood",
-        "Fat",
-        "Egg"
+        "Liver"
       ],
       "Fungus":[
-        "Mushroom",
+        "Shroom",
         "Spore",
         "Flesh",
-        "Gills"
+        "Pulp",
+        "Residue"
       ],
       "Incorporeal":[
         "Mist",
-        "Ectoplasm",
-        "Wisp",
-        "Ghostsap"
+        "Plasma",
+        "Breath",
+        "Essence",
+        "Residue"
       ],
       "Liquid":[
         "Fluid",
         "Reagent",
         "Syrup",
-        "Slime"
+        "Slime",
+        "Gel"
       ],
       "Artificial":[
         "Gel",
         "Solution",
-        "Oil",
-        "Tonic"
+        "Compound",
+        "Serum",
+        "Extract"
       ],
       "Mineral":[
-        "Salt",
         "Dust",
         "Grain",
-        "Char"
+        "Powder",
+        "Salt",
+        "Residue"
       ],
       "Plant":[
         "Leaf",
-        "Petal",
-        "Bud",
+        "Seed",
         "Fruit",
         "Sap",
-        "Root",
-        "Stem"
+        "Root"
       ]
     }
   },
@@ -367,9 +385,9 @@
       "Aerial":[
         "Light",
         "Hollow",
-        "Windborne",
-        "Feathered",
-        "Drifting"
+        "Avian",
+        "Fowl",
+        "Drift"
       ],
       "Thunderous":[
         "Conductive",
@@ -437,149 +455,149 @@
     },
     "ingredient":{
       "Aerial":[
-        "Feathery",
-        "Light",
-        "Whorled",
-        "Lifted",
-        "Vaporous"
+        "Fluffy",
+        "Airy",
+        "Crisp",
+        "Wispy",
+        "Downy"
       ],
       "Thunderous":[
-        "Crackled",
-        "Striped",
-        "Buzzing",
-        "Ionic",
-        "Twined"
+        "Crackling",
+        "Zesty",
+        "Sparkling",
+        "Sizzling",
+        "Charged"
       ],
       "Paradox":[
         "Flickering",
-        "Glitched",
-        "Echoed",
-        "Fractaline",
-        "Phase-touched"
+        "Prismatic",
+        "Twisted",
+        "Mishapen",
+        "Glistening"
       ],
       "Terrestrial":[
-        "Dusty",
+        "Coarse",
         "Earthen",
         "Grainy",
-        "Burrowed",
-        "Pebbled"
+        "Rooted",
+        "Loamy"
       ],
       "Ardent":[
-        "Smoldered",
+        "Roasted",
+        "Smoked",
         "Charred",
-        "Blistered",
-        "Glowing",
-        "Ashen"
+        "Toasted",
+        "Glazed"
       ],
       "Glacial":[
-        "Frosted",
-        "Frozen",
-        "Hoarfrost",
-        "Paled",
-        "Glass-coated"
+        "Chilled",
+        "Crystalline",
+        "Iced",
+        "Smooth",
+        "Brittle"
       ],
       "Spiritual":[
-        "Haloed",
-        "Ghostly",
-        "Shimmering",
-        "Warded",
-        "Pale-lit"
+        "Luminous",
+        "Silken",
+        "Translucent",
+        "Hallowed",
+        "Misted"
       ],
       "Corrupted":[
-        "Mottled",
-        "Streaked",
-        "Decayed",
-        "Blotched",
-        "Warped"
+        "Stained",
+        "Wilted",
+        "Marbled",
+        "Fermented",
+        "Spoiled"
       ],
       "Aquatic":[
-        "Dripping",
-        "Brine-wet",
-        "Algae-veined",
-        "Rippled",
-        "Scaled"
+        "Moist",
+        "Scaley",
+        "Brined",
+        "Puffy",
+        "Slick"
       ],
       "Mechanical":[
-        "Plated",
-        "Engraved",
-        "Oiled",
-        "Wired",
-        "Etched"
+        "Refined",
+        "Pressed",
+        "Distilled",
+        "Tempered",
+        "Infused"
       ]
     }
   },
   "detail":{
     "agility":[
-      "Elastic",
-      "Sharp",
+      "Stretchy",
+      "Pointy",
       "Slender",
       "Slippery",
-      "Quickened",
-      "Reflexive",
-      "Flickering",
-      "Spry",
-      "Nimble",
+      "Hooded",
+      "Reflective",
+      "Slimey",
+      "Springy",
+      "Small",
       "Responsive"
     ],
     "powerful":[
-      "Crushing",
-      "Brutal",
+      "Strong",
+      "Big",
       "Hefty",
-      "Overcharged",
+      "Prickly",
       "Serrated",
-      "Forceful",
-      "Driven",
+      "Blunt",
+      "Mighty",
       "Colossal",
-      "Pounding",
-      "Wrecking"
+      "Sharp",
+      "Clubbed"
     ],
     "protective":[
-      "Reinforced",
+      "Sturdy",
       "Plated",
       "Runed",
       "Shielded",
       "Hardened",
       "Tough",
-      "Defensive",
+      "Thick",
       "Layered",
-      "Fortified",
-      "Wardbound"
+      "Bulbous",
+      "Bloated"
     ],
     "recovery":[
-      "Restorative",
+      "Curative",
       "Steady",
-      "Healed",
-      "Mended",
-      "Balanced",
+      "Healthy",
+      "Lush",
+      "Hearty",
       "Repaired",
-      "Stabilizing",
-      "Refreshed",
-      "Renewing",
-      "Regenerative"
+      "Stable",
+      "Refreshing",
+      "Rejuvinating",
+      "Regenerating"
     ],
     "debilitating":[
-      "Invasive",
-      "Draining",
+      "Corrosive",
+      "Drained",
       "Hexed",
-      "Venomed",
-      "Slowing",
+      "Mutated",
+      "Melting",
       "Withering",
       "Cursed",
-      "Blinding",
+      "Freckled",
       "Sapping",
-      "Paralyzing"
+      "Infected"
     ],
     "support":[
-      "Amplifying",
-      "Channeled",
+      "Amplified",
+      "Spongey",
       "Linked",
-      "Echoed",
-      "Guiding",
+      "Squeaky",
+      "Humming",
       "Resonating",
       "Anchored",
-      "Projecting",
+      "Porous",
       "Boosted",
-      "Infused"
+      "Sticky"
     ]
   },
   "taste":{
