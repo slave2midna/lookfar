@@ -91,7 +91,7 @@
     { "id": "hunter-monsters-plants", "weaponName": "", "cost": 500, "description": "deals 5 extra damage to monsters and plants.", "appliesTo": ["weapon"] },
     { "id": "hunter-monsters-undead", "weaponName": "", "cost": 500, "description": "deals 5 extra damage to monsters and undead.", "appliesTo": ["weapon"] },
     { "id": "hunter-plants-undead", "weaponName": "", "cost": 500, "description": "deals 5 extra damage to plants and undead.", "appliesTo": ["weapon"] },
-    { "id": "multi", "weaponName": "Multi", "cost": 1000, "description": "gives attacks with this weapon Multi(2).", "appliesTo": ["weapon"] },
+    { "id": "multi", "weaponName": "Twin", "cost": 1000, "description": "gives attacks with this weapon Multi(2).", "appliesTo": ["weapon"] },
     { "id": "inflict-slow", "weaponName": "Maiming", "cost": 1500, "description": "causes slow on hit.", "appliesTo": ["weapon"] },
     { "id": "inflict-daze", "weaponName": "Dazzling", "cost": 1500, "description": "causes daze on hit.", "appliesTo": ["weapon"] },
     { "id": "inflict-shaken", "weaponName": "Horrifying", "cost": 1500, "description": "causes shaken on hit.", "appliesTo": ["weapon"] },
