@@ -1,5 +1,8 @@
 {
   "LOOKFAR": {
+
+
+    "__SECTION__Buttons": "=== Buttons ===",
     "Button": {
       "TravelCheck": {
         "Name": "Travel Check",
@@ -10,6 +13,10 @@
         "Title": "Generate Some Treasure"
       }
     },
+
+
+
+    "__SECTION__Settings": "=== Settings ===",
     "Settings": {
       "ResultVisibility": {
         "Name": "Result Visibility",
@@ -41,6 +48,10 @@
       },
       "DefaultRollTable": "Lookfar Defaults"
     },
+
+
+
+    "__SECTION__Dialogs": "=== Dialogs ===",
     "Dialogs": {
       "TravelCheck": {
         "Title": "Travel Check",
@@ -68,17 +79,29 @@
         "Terrain": "Terrain"
       }
     },
+
+
+
+    "__SECTION__Severity": "=== Severity ===",
     "Severity": {
       "Minor": "Minor",
       "Heavy": "Heavy",
       "Massive": "Massive"
     },
+
+
+
+    "__SECTION__Chat": "=== Chat ===",
     "Chat": {
       "Alias": {
         "Roll": "Travel Roll",
         "Result": "Travel Result"
       }
     },
+
+
+
+    "__SECTION__Errors": "=== Errors ===",
     "Errors": {
       "DataUnavailable": "Error: Data not available.",
       "DamageMissing": "Error: Damage data not found.",
@@ -87,6 +110,10 @@
       "NoDiscoveryEffect": "No discovery effect available.",
       "NoDiscoverySource": "No discovery source available."
     },
+
+
+
+    "__SECTION__Keywords": "=== Keywords ===",
     "Keywords": {
       "Traits": {
         "Abandoned": "abandoned",
@@ -296,6 +323,10 @@
         "Ziggurat": "ziggurat"
       }
     },
+
+
+
+    "__SECTION__Dangers": "=== Dangers ===",
     "Dangers": {
       "StatusEffects": {
         "Minor": {
@@ -352,6 +383,10 @@
         "Source17": "An ally reveals a secret that throws everything into question."
       }
     },
+
+
+
+    "__SECTION__Discoveries": "=== Discoveries ===",
     "Discoveries": {
       "Effects": {
         "Effect1": "Each party member regains 1 IP.",
@@ -381,5 +416,8 @@
         "Source12": "A single tree growing out of stone, radiating magic."
       }
     }
+
+
+
   }
 }
