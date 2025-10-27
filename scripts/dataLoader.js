@@ -73,14 +73,14 @@ export const dataLoader = {
       const q = await r.json();
       this.qualitiesData = q || {};
 
-      // Fast-path: if file already provides per-type blocks, use them directly.
+      // Default fast-path case, if file already provides per-type blocks, this uses them directly.
       if (q.weaponQualities || q.armorQualities || q.shieldQualities || q.accessoryQualities) {
         this.weaponsData.weaponQualities        = q.weaponQualities     || {};
         this.armorData.armorQualities           = q.armorQualities      || {};
         this.shieldsData.shieldQualities        = q.shieldQualities     || {};
         this.accessoriesData.accessoryQualities = q.accessoryQualities  || {};
       } else {
-        // Flexible converter: from a generic structure to legacy per-type groups
+        // Fancy flexible converter, from a generic structure to legacy per-type groups
         const byType = this._convertGenericQualitiesToPerType(q);
 
         this.weaponsData.weaponQualities        = byType.weapon;
@@ -98,18 +98,11 @@ export const dataLoader = {
     }
   },
 
-  /**
-   * Convert a generic qualities.json into per-type legacy groups.
-   * Improvements:
-   *  - Armor implies Shield: if appliesTo includes "armor", shields get it too.
-   *  - Name fallback: if <type>Name is empty, fall back to any other name field
-   *    (weaponName, armorName, shieldName, accessoryName) or a generic "name".
-   */
   _convertGenericQualitiesToPerType(qualitiesObj) {
     const OUT = { weapon: {}, armor: {}, shield: {}, accessory: {} };
     const TYPE_KEYS = ["weapon", "armor", "shield", "accessory"];
 
-    // Flexible name resolver
+    // Name resolver
     const resolveNameForType = (entry, type) => {
     const keyMap = {
       weapon: "weaponName",
@@ -128,14 +121,12 @@ export const dataLoader = {
         const groupArr = [];
 
         for (const entry of list) {
-          // Build an effective appliesTo set, where "armor" implies "shield"
           const baseApplies = Array.isArray(entry?.appliesTo)
             ? entry.appliesTo
-            // Default (if omitted): allow all main types except shield (it will be added via armor)
             : ["weapon", "armor", "accessory"];
 
           const appliesSet = new Set(baseApplies);
-          if (appliesSet.has("armor")) appliesSet.add("shield"); // armor => shield
+          if (appliesSet.has("armor")) appliesSet.add("shield");
 
           if (!appliesSet.has(type)) continue;
 
