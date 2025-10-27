@@ -111,20 +111,15 @@ export const dataLoader = {
 
     // Flexible name resolver
     const resolveNameForType = (entry, type) => {
-      // Prefer the specific <type>Name, then try other known name fields, then "name"
-      const typeKey =
-        type === "weapon"    ? "weaponName" :
-        type === "armor"     ? "armorName"  :
-        type === "shield"    ? "shieldName" :
-                               "accessoryName";
-
-      const tryKeys = [typeKey, "weaponName", "armorName", "shieldName", "accessoryName", "name"];
-      for (const k of tryKeys) {
-        const v = entry?.[k];
-        if (typeof v === "string" && v.trim().length) return v.trim();
-      }
-      return null;
+    const keyMap = {
+      weapon: "weaponName",
+      armor: "armorName",
+      shield: "shieldName",
+      accessory: "accessoryName"
     };
+    const name = entry?.[keyMap[type]];
+    return (typeof name === "string" && name.trim().length) ? name.trim() : null;
+  };
 
     for (const [group, list] of Object.entries(qualitiesObj || {})) {
       if (!Array.isArray(list)) continue;
