@@ -407,7 +407,7 @@
         "Fossilized",
         "Quarried",
         "Sedimentary",
-        "Ironbound",
+        "Iron",
         "Earthen"
       ],
       "Ardent":[
@@ -433,7 +433,7 @@
       ],
       "Corrupted":[
         "Warped",
-        "Blighted",
+        "Blight",
         "Decayed",
         "Toxic",
         "Speckled"
@@ -479,7 +479,7 @@
         "Coarse",
         "Earthen",
         "Grainy",
-        "Rooted",
+        "Brown",
         "Loamy"
       ],
       "Ardent":[
@@ -492,15 +492,15 @@
       "Glacial":[
         "Chilled",
         "Crystalline",
-        "Iced",
+        "Cold",
         "Smooth",
         "Brittle"
       ],
       "Spiritual":[
         "Luminous",
-        "Silken",
+        "Silk",
         "Translucent",
-        "Hallowed",
+        "Hollow",
         "Misted"
       ],
       "Corrupted":[
@@ -533,7 +533,7 @@
       "Slender",
       "Slippery",
       "Hooded",
-      "Reflective",
+      "Moist",
       "Slimey",
       "Springy",
       "Small",
@@ -546,15 +546,15 @@
       "Prickly",
       "Serrated",
       "Blunt",
-      "Mighty",
-      "Colossal",
+      "Red",
+      "Huge",
       "Sharp",
       "Clubbed"
     ],
     "protective":[
       "Sturdy",
       "Plated",
-      "Runed",
+      "Blue",
       "Shielded",
       "Hardened",
       "Tough",
@@ -571,8 +571,8 @@
       "Hearty",
       "Repaired",
       "Stable",
-      "Refreshing",
-      "Rejuvinating",
+      "Fresh",
+      "Green",
       "Regenerating"
     ],
     "debilitating":[
@@ -581,20 +581,20 @@
       "Hexed",
       "Mutated",
       "Melting",
-      "Withering",
+      "Withered",
       "Cursed",
       "Freckled",
-      "Sapping",
+      "Black",
       "Infected"
     ],
     "support":[
-      "Amplified",
+      "Yellow",
       "Spongey",
-      "Linked",
+      "Ribbed",
       "Squeaky",
       "Humming",
       "Resonating",
-      "Anchored",
+      "Reflective",
       "Porous",
       "Boosted",
       "Sticky"
@@ -622,7 +622,7 @@
       "Lip-puckering",
       "Vinegary",
       "Fermented",
-      "Biting",
+      "Lemon",
       "Crisp"
     ],
     "sweet":[

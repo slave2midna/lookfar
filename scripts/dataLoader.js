@@ -73,14 +73,14 @@ export const dataLoader = {
       const q = await r.json();
       this.qualitiesData = q || {};
 
-      // Fast-path: if file already provides per-type blocks, use them directly.
+      // Default fast-path case, if file already provides per-type blocks, this uses them directly.
       if (q.weaponQualities || q.armorQualities || q.shieldQualities || q.accessoryQualities) {
         this.weaponsData.weaponQualities        = q.weaponQualities     || {};
         this.armorData.armorQualities           = q.armorQualities      || {};
         this.shieldsData.shieldQualities        = q.shieldQualities     || {};
         this.accessoriesData.accessoryQualities = q.accessoryQualities  || {};
       } else {
-        // Flexible converter: from a generic structure to legacy per-type groups
+        // Fancy flexible converter, from a generic structure to legacy per-type groups
         const byType = this._convertGenericQualitiesToPerType(q);
 
         this.weaponsData.weaponQualities        = byType.weapon;
@@ -98,33 +98,21 @@ export const dataLoader = {
     }
   },
 
-  /**
-   * Convert a generic qualities.json into per-type legacy groups.
-   * Improvements:
-   *  - Armor implies Shield: if appliesTo includes "armor", shields get it too.
-   *  - Name fallback: if <type>Name is empty, fall back to any other name field
-   *    (weaponName, armorName, shieldName, accessoryName) or a generic "name".
-   */
   _convertGenericQualitiesToPerType(qualitiesObj) {
     const OUT = { weapon: {}, armor: {}, shield: {}, accessory: {} };
     const TYPE_KEYS = ["weapon", "armor", "shield", "accessory"];
 
-    // Flexible name resolver
+    // Name resolver
     const resolveNameForType = (entry, type) => {
-      // Prefer the specific <type>Name, then try other known name fields, then "name"
-      const typeKey =
-        type === "weapon"    ? "weaponName" :
-        type === "armor"     ? "armorName"  :
-        type === "shield"    ? "shieldName" :
-                               "accessoryName";
-
-      const tryKeys = [typeKey, "weaponName", "armorName", "shieldName", "accessoryName", "name"];
-      for (const k of tryKeys) {
-        const v = entry?.[k];
-        if (typeof v === "string" && v.trim().length) return v.trim();
-      }
-      return null;
+    const keyMap = {
+      weapon: "weaponName",
+      armor: "armorName",
+      shield: "armorName",
+      accessory: "accessoryName"
     };
+    const name = entry?.[keyMap[type]];
+    return (typeof name === "string" && name.trim().length) ? name.trim() : null;
+  };
 
     for (const [group, list] of Object.entries(qualitiesObj || {})) {
       if (!Array.isArray(list)) continue;
@@ -133,14 +121,12 @@ export const dataLoader = {
         const groupArr = [];
 
         for (const entry of list) {
-          // Build an effective appliesTo set, where "armor" implies "shield"
           const baseApplies = Array.isArray(entry?.appliesTo)
             ? entry.appliesTo
-            // Default (if omitted): allow all main types except shield (it will be added via armor)
             : ["weapon", "armor", "accessory"];
 
           const appliesSet = new Set(baseApplies);
-          if (appliesSet.has("armor")) appliesSet.add("shield"); // armor => shield
+          if (appliesSet.has("armor")) appliesSet.add("shield");
 
           if (!appliesSet.has(type)) continue;
 
