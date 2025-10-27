@@ -60,7 +60,7 @@
   ],
 
   "url": "#{URL}#",
-  "manifest": "#{MANIFEST}#",
+  "manifest": "https://github.com/slave2midna/lookfar/releases/tag/v2.0.0b/module.json",
   "download": "#{DOWNLOAD}#",
   "license": "MIT License",
   "readme": "README.md",
