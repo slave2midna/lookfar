@@ -12,6 +12,12 @@ function getLookfarTools() {
       icon: 'fa-solid fa-gem',
       onClick: () => Hooks.call('lookfarShowTreasureRollDialog'),
     },
+    {
+      // Item Forge Button
+      name: "Item Forger",
+      icon: "fa-solid fa-hammer",
+      onClick: () => Hooks.call("lookfarShowItemForgeDialog"),
+    },
     // {
     //   // Example placeholder for a future button
     //   name: 'LOOKFAR.Button.AnotherFeature.Name',
@@ -26,4 +32,3 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
   for (const tool of getLookfarTools()) tools.push(tool);
   return tools;
 });
-
