@@ -11,7 +11,7 @@ import { dataLoader } from "./dataLoader.js";
   const getQualitiesRoot = () =>
       dataLoader?.qualitiesData || dataLoader?.qualities || null;
 
-  // We’ll keep these tolerant getters so you can swap schemas freely
+  // Tolerant getters so you can swap schemas freely
   const getWeaponList    = d => d?.weapons?.weaponList        ?? d?.weaponsData?.weaponList        ?? d?.weaponList        ?? [];
   const getArmorList     = d => d?.armor?.armorList           ?? d?.armorData?.armorList           ?? d?.armorList         ?? [];
   const getShieldList    = d => d?.shields?.shieldList        ?? d?.shieldsData?.shieldList        ?? d?.shieldList        ?? [];
@@ -111,6 +111,28 @@ import { dataLoader } from "./dataLoader.js";
         </fieldset>
       </div>
     </div>
+
+    <!-- MATERIALS (full width, below both columns, above buttons) -->
+    <fieldset style="margin:4px 0 0 0;">
+      <legend>Materials</legend>
+      <div id="materialsDrop"
+           aria-label="Materials drop zone"
+           style="
+             min-height:72px;
+             border:1px dashed #999;
+             display:flex;
+             align-items:center;
+             justify-content:center;
+             gap:8px;
+             padding:6px;
+             box-sizing:border-box;
+             user-select:none;
+           ">
+        <div id="materialsHint" style="opacity:0.6; font-size:12px;">
+          Drag & drop Item documents here (max 5)
+        </div>
+      </div>
+    </fieldset>
   </form>
 </div>`;
 
@@ -132,6 +154,7 @@ import { dataLoader } from "./dataLoader.js";
             const $selT = html.find('#templateList [data-selected="1"]');
             const chosenT = $selT.data('name');
             if (!chosenT) return ui.notifications.warn("Select a template first.");
+            // Materials captured inside render() closure; wire later when crafting is implemented.
             ui.notifications.info(`Forging ${kind}: ${chosenT}`);
           }
         }
@@ -143,18 +166,28 @@ import { dataLoader } from "./dataLoader.js";
         $wc.css({ display: "block", overflow: "visible" });
         $dlg.css({ width: "700px" });
 
-        // Auto height
-        const app = ui.windows[Number($dlg.attr("data-appid"))];
-        if (app?.setPosition) {
-          app.setPosition({ height: "auto" });
-          setTimeout(() => app.setPosition({ height: "auto" }), 0);
-        }
+        // Auto height helpers
+        const relayout = () => {
+          const app2 = ui.windows[Number($dlg.attr("data-appid"))];
+          if (app2?.setPosition) {
+            app2.setPosition({ height: "auto" });
+            setTimeout(() => app2.setPosition({ height: "auto" }), 0);
+          }
+        };
+        relayout();
 
+        // --- DOM refs
         const $templateList   = html.find("#templateList");
         const $qualitiesList  = html.find("#qualitiesList");
         const $customize      = html.find("#customizeArea");
         const $attrInner      = html.find("#attrInner");
+        const $materialsDrop  = html.find("#materialsDrop");
+        const $materialsHint  = html.find("#materialsHint");
 
+        // --- Materials state (duplicates allowed, cap 5)
+        const materials = []; // array of { uuid, img, name }
+
+        // --- Helpers
         const getNameSafe = (r) => esc(getName(r));
         const findWeaponByTemplateName = (name) => {
           if (!name) return null;
@@ -162,13 +195,75 @@ import { dataLoader } from "./dataLoader.js";
           return getWeaponList(equipmentRoot).find(w => String(getName(w)).toLowerCase() === lower) ?? null;
         };
 
+        const getItemImage = (item) =>
+          item?.img || item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+
+        const renderMaterials = () => {
+          // Remove previous rendered icons (retain dashed frame + hint)
+          $materialsDrop.children('img[data-mat="1"]').remove();
+          if (materials.length === 0) {
+            $materialsHint.show();
+          } else {
+            $materialsHint.hide();
+            for (const m of materials) {
+              const $img = $(
+                `<img data-mat="1" src="${esc(m.img)}" title="${esc(m.name || "")}"
+                      style="width:48px; height:48px; object-fit:contain; image-rendering:auto;">`
+              );
+              $materialsDrop.append($img);
+            }
+          }
+          relayout();
+        };
+
+        // --- Drag/drop bindings for materials
+        $materialsDrop
+          .on("dragover", (ev) => {
+            ev.preventDefault();
+            $materialsDrop.css("background", "rgba(65,105,225,0.08)");
+          })
+          .on("dragleave", () => {
+            $materialsDrop.css("background", "");
+          })
+          .on("drop", async (ev) => {
+            ev.preventDefault();
+            $materialsDrop.css("background", "");
+
+            const dt = ev.originalEvent?.dataTransfer;
+            if (!dt) return;
+
+            let raw = dt.getData("text/plain");
+            if (!raw) return;
+
+            try {
+              const data = JSON.parse(raw);
+              if (!data?.uuid) return; // not a Foundry document payload
+              const doc = await fromUuid(data.uuid);
+              if (!doc || doc.documentName !== "Item") {
+                ui.notifications?.warn("Only Item documents can be dropped here.");
+                return;
+              }
+              if (materials.length >= 5) {
+                ui.notifications?.warn("You can only add up to 5 materials.");
+                return;
+              }
+              materials.push({ uuid: data.uuid, img: getItemImage(doc), name: doc.name });
+              renderMaterials();
+            } catch (e) {
+              console.error("[Item Forger] Drop parse failed:", e);
+              ui.notifications?.error("Could not read dropped data.");
+            }
+          });
+
         // Renderers
         const renderTemplates = (rows) => {
           if (!Array.isArray(rows) || !rows.length) {
             $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
             return;
           }
-          const items = rows.map((r, i) => `<div data-index="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`).join("");
+          const items = rows.map((r, i) =>
+            `<div data-index="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
+          ).join("");
           $templateList.html(items);
 
           $templateList.find("div[data-index]").on("click", function() {
@@ -297,15 +392,13 @@ import { dataLoader } from "./dataLoader.js";
           renderCustomize(kind);
           renderAttrs(kind);
           if (kind !== "weapon") updateHandToggle();
-
-          const app2 = ui.windows[Number($dlg.attr("data-appid"))];
-          if (app2?.setPosition) {
-            app2.setPosition({ height: "auto" });
-            setTimeout(() => app2.setPosition({ height: "auto" }), 0);
-          }
+          relayout();
         };
 
+        // Initial render + events
         updateForKind("weapon");
+        renderMaterials(); // initialize materials tray (shows hint)
+
         html.on("change", 'input[name="itemType"]', (ev) => updateForKind(ev.currentTarget.value));
       }
     }, { resizable: false });
