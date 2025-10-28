@@ -20,6 +20,7 @@ import { dataLoader } from "./dataLoader.js";
   const getName = r => r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
   const esc = s => { try { return foundry.utils.escapeHTML(String(s)); } catch { return String(s); } };
 
+  // NOTE: Keeping this, though we now render by category directly
   const flattenQualities = (qRoot) => {
     if (!qRoot || typeof qRoot !== "object") return [];
     return Object.values(qRoot).filter(Array.isArray).flat().filter(Boolean);
@@ -45,6 +46,23 @@ import { dataLoader } from "./dataLoader.js";
     if (["onehanded","one-handed"].some(k=>v.includes(k))) return "1";
     return null;
   };
+
+  // ----------------------------
+  // Category filter options (label -> key in qualities.json)
+  // ----------------------------
+  const CATEGORY_OPTIONS = [
+    ["Basic",       "basic"],
+    ["Ardent",      "ardent"],
+    ["Aerial",      "aerial"],
+    ["Thunderous",  "thunderous"],
+    ["Paradox",     "paradox"],
+    ["Terrestrial", "terrestrial"],
+    ["Glacial",     "glacial"],
+    ["Spiritual",   "spiritual"],
+    ["Corrupted",   "corrupted"],
+    ["Aquatic",     "aquatic"],
+    ["Mechanical",  "mechanical"],
+  ];
 
   // ----------------------------
   // Dialog builder
@@ -102,6 +120,12 @@ import { dataLoader } from "./dataLoader.js";
 
         <fieldset>
           <legend>Qualities</legend>
+          <!-- Category filter sits above the scroll box -->
+          <div style="margin-bottom:4px;">
+            <select id="qualitiesCategory" style="width:100%;">
+              ${CATEGORY_OPTIONS.map(([label, key]) => `<option value="${key}" ${key==='basic'?'selected':''}>${label}</option>`).join("")}
+            </select>
+          </div>
           <div id="qualitiesList" aria-label="Qualities list"
                style="width:100%; height:212px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
             <div>Loading…</div>
@@ -110,8 +134,8 @@ import { dataLoader } from "./dataLoader.js";
       </div>
     </div>
 
-    <!-- MATERIALS (no top margin now) -->
-    <fieldset style="margin:0;">
+    <!-- MATERIALS (now with a small bottom margin so Forge doesn't clip) -->
+    <fieldset style="margin:0 0 6px 0;">
       <legend>Materials</legend>
       <div id="materialsDrop"
            aria-label="Materials drop zone"
@@ -137,7 +161,7 @@ import { dataLoader } from "./dataLoader.js";
   function openItemForgeDialog() {
     const equipmentRoot  = getEquipmentRoot();
     const qualitiesRoot  = getQualitiesRoot();
-    const qualitiesCache = flattenQualities(qualitiesRoot);
+    // const qualitiesCache = flattenQualities(qualitiesRoot); // not needed for category filter
 
     const dlg = new Dialog({
       title: "Item Forger",
@@ -171,12 +195,13 @@ import { dataLoader } from "./dataLoader.js";
         };
         relayout();
 
-        const $templateList   = html.find("#templateList");
-        const $qualitiesList  = html.find("#qualitiesList");
-        const $customize      = html.find("#customizeArea");
-        const $attrInner      = html.find("#attrInner");
-        const $materialsDrop  = html.find("#materialsDrop");
-        const $materialsHint  = html.find("#materialsHint");
+        const $templateList     = html.find("#templateList");
+        const $qualitiesList    = html.find("#qualitiesList");
+        const $qualitiesSelect  = html.find("#qualitiesCategory");
+        const $customize        = html.find("#customizeArea");
+        const $attrInner        = html.find("#attrInner");
+        const $materialsDrop    = html.find("#materialsDrop");
+        const $materialsHint    = html.find("#materialsHint");
 
         const materials = [];
 
@@ -196,11 +221,10 @@ import { dataLoader } from "./dataLoader.js";
           } else {
             $materialsHint.hide();
             materials.forEach((m, i) => {
-              const $img = $(
-                `<img data-mat="1" data-index="${i}" src="${esc(m.img)}" title="Click to remove: ${esc(m.name || "")}"
-                      style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`
-              );
-              // click to remove that material
+              const $img = $(`
+                <img data-mat="1" data-index="${i}" src="${esc(m.img)}" title="Click to remove: ${esc(m.name || "")}"
+                     style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">
+              `);
               $img.on("click", () => {
                 materials.splice(i, 1);
                 renderMaterials();
@@ -225,7 +249,7 @@ import { dataLoader } from "./dataLoader.js";
 
             const dt = ev.originalEvent?.dataTransfer;
             if (!dt) return;
-            let raw = dt.getData("text/plain");
+            const raw = dt.getData("text/plain");
             if (!raw) return;
 
             try {
@@ -266,14 +290,18 @@ import { dataLoader } from "./dataLoader.js";
           if (first.length) first.trigger("click");
         };
 
+        // Qualities rendering now respects category + appliesTo
         const renderQualities = (type) => {
-          if (!Array.isArray(qualitiesCache) || !qualitiesCache.length) {
+          if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
             $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
             return;
           }
-          const filtered = qualitiesCache.filter(q => matchesAppliesTo(q, type));
+          const catKey = String($qualitiesSelect.val() || "basic").toLowerCase();
+          const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
+          const filtered = catList.filter(q => matchesAppliesTo(q, type));
+
           if (!filtered.length) {
-            $qualitiesList.html(`<div style="text-align:center; opacity:0.75;">No ${type} qualities.</div>`);
+            $qualitiesList.html(`<div style="text-align:center; opacity:0.75;">No ${catKey} ${type} qualities.</div>`);
             return;
           }
           const items = filtered.map((q, i) =>
@@ -370,12 +398,19 @@ import { dataLoader } from "./dataLoader.js";
 
         const updateForKind = (kind) => {
           populateTemplates(kind);
-          renderQualities(kind);
           renderCustomize(kind);
           renderAttrs(kind);
+          // Re-render qualities for current category + appliesTo
+          renderQualities(kind);
           if (kind !== "weapon") updateHandToggle();
           relayout();
         };
+
+        // Category change re-filters without altering other state
+        $qualitiesSelect.on("change", () => {
+          const kind = html.find('input[name="itemType"]:checked').val();
+          renderQualities(kind);
+        });
 
         updateForKind("weapon");
         renderMaterials();
