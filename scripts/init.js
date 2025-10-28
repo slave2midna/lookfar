@@ -4,6 +4,7 @@ import { dataLoader } from "./dataLoader.js";
 import "./travelRoll.js";
 import "./treasureRoll.js";
 import "./buttonManager.js";
+import "./itemForge.js";
 
 Hooks.once("init", async () => {
   console.log("Lookfar GM Assistant: Initializing...");
@@ -15,5 +16,3 @@ Hooks.once("init", async () => {
 Hooks.once("ready", () => {
   LookfarSettings.registerDynamicRollTableSettings();
 });
-
-
