@@ -11,7 +11,7 @@ import { dataLoader } from "./dataLoader.js";
   const getQualitiesRoot = () =>
       dataLoader?.qualitiesData || dataLoader?.qualities || null;
 
-  // Tolerant getters so you can swap schemas freely
+  // Tolerant getters
   const getWeaponList    = d => d?.weapons?.weaponList        ?? d?.weaponsData?.weaponList        ?? d?.weaponList        ?? [];
   const getArmorList     = d => d?.armor?.armorList           ?? d?.armorData?.armorList           ?? d?.armorList         ?? [];
   const getShieldList    = d => d?.shields?.shieldList        ?? d?.shieldsData?.shieldList        ?? d?.shieldList        ?? [];
@@ -20,7 +20,6 @@ import { dataLoader } from "./dataLoader.js";
   const getName = r => r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
   const esc = s => { try { return foundry.utils.escapeHTML(String(s)); } catch { return String(s); } };
 
-  // qualities.* might be grouped by category -> [qualities]
   const flattenQualities = (qRoot) => {
     if (!qRoot || typeof qRoot !== "object") return [];
     return Object.values(qRoot).filter(Array.isArray).flat().filter(Boolean);
@@ -55,9 +54,9 @@ import { dataLoader } from "./dataLoader.js";
   const content = `
 <div id="if-body">
   <form>
-    <div style="display:flex; gap:4px; align-items:flex-start; min-width:0; margin-bottom:8px;">
-      <!-- COLUMN 1 (60%) - no gaps between stacked fieldsets -->
-      <div style="flex:0 0 60%; min-width:0; display:flex; flex-direction:column; margin-bottom:8px;">
+    <div style="display:flex; gap:4px; align-items:flex-start; min-width:0; margin-bottom:0;">
+      <!-- COLUMN 1 (60%) -->
+      <div style="flex:0 0 60%; min-width:0; display:flex; flex-direction:column;">
         <fieldset style="margin:0;">
           <legend>Choose Item</legend>
           <div style="display:flex; align-items:flex-start; min-width:0;">
@@ -76,12 +75,11 @@ import { dataLoader } from "./dataLoader.js";
           </div>
         </fieldset>
 
-        <!-- Attributes (fixed height; empty when not weapon) -->
         <div id="attrRow">
           <fieldset style="margin:0;">
             <legend>Attributes</legend>
             <div id="attrInner" style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; height:${ATTR_ROW_FIXED_HEIGHT}; box-sizing:border-box;">
-              <!-- Filled when weapon; otherwise left empty to hold space -->
+              <!-- Filled when weapon; otherwise left empty -->
             </div>
           </fieldset>
         </div>
@@ -96,7 +94,7 @@ import { dataLoader } from "./dataLoader.js";
       </div>
 
       <!-- COLUMN 2 (40%) -->
-      <div style="flex:0 0 40%; min-width:0; display:flex; flex-direction:column; margin-bottom:8px;">
+      <div style="flex:0 0 40%; min-width:0; display:flex; flex-direction:column;">
         <fieldset>
           <legend>Customize</legend>
           <div id="customizeArea" style="width:100%; height:100px;"></div>
@@ -112,8 +110,8 @@ import { dataLoader } from "./dataLoader.js";
       </div>
     </div>
 
-    <!-- MATERIALS (full width, below both columns, above buttons) -->
-    <fieldset style="margin:4px 0 0 0;">
+    <!-- MATERIALS (no top margin now) -->
+    <fieldset style="margin:0;">
       <legend>Materials</legend>
       <div id="materialsDrop"
            aria-label="Materials drop zone"
@@ -137,7 +135,6 @@ import { dataLoader } from "./dataLoader.js";
 </div>`;
 
   function openItemForgeDialog() {
-    // Pull cached data from dataLoader (already loaded during init)
     const equipmentRoot  = getEquipmentRoot();
     const qualitiesRoot  = getQualitiesRoot();
     const qualitiesCache = flattenQualities(qualitiesRoot);
@@ -150,11 +147,10 @@ import { dataLoader } from "./dataLoader.js";
           label: "Forge",
           icon: '<i class="fas fa-hammer"></i>',
           callback: (html) => {
-            const kind = html.find('input[name="itemType"] :checked').val() || html.find('input[name="itemType"]:checked').val();
+            const kind = html.find('input[name="itemType"]:checked').val();
             const $selT = html.find('#templateList [data-selected="1"]');
             const chosenT = $selT.data('name');
             if (!chosenT) return ui.notifications.warn("Select a template first.");
-            // Materials captured inside render() closure; wire later when crafting is implemented.
             ui.notifications.info(`Forging ${kind}: ${chosenT}`);
           }
         }
@@ -166,7 +162,6 @@ import { dataLoader } from "./dataLoader.js";
         $wc.css({ display: "block", overflow: "visible" });
         $dlg.css({ width: "700px" });
 
-        // Auto height helpers
         const relayout = () => {
           const app2 = ui.windows[Number($dlg.attr("data-appid"))];
           if (app2?.setPosition) {
@@ -176,7 +171,6 @@ import { dataLoader } from "./dataLoader.js";
         };
         relayout();
 
-        // --- DOM refs
         const $templateList   = html.find("#templateList");
         const $qualitiesList  = html.find("#qualitiesList");
         const $customize      = html.find("#customizeArea");
@@ -184,39 +178,39 @@ import { dataLoader } from "./dataLoader.js";
         const $materialsDrop  = html.find("#materialsDrop");
         const $materialsHint  = html.find("#materialsHint");
 
-        // --- Materials state (duplicates allowed, cap 5)
-        const materials = []; // array of { uuid, img, name }
+        const materials = [];
 
-        // --- Helpers
         const getNameSafe = (r) => esc(getName(r));
         const findWeaponByTemplateName = (name) => {
           if (!name) return null;
           const lower = String(name).toLowerCase();
           return getWeaponList(equipmentRoot).find(w => String(getName(w)).toLowerCase() === lower) ?? null;
         };
-
         const getItemImage = (item) =>
           item?.img || item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
 
         const renderMaterials = () => {
-          // Remove previous rendered icons (retain dashed frame + hint)
           $materialsDrop.children('img[data-mat="1"]').remove();
           if (materials.length === 0) {
             $materialsHint.show();
           } else {
             $materialsHint.hide();
-            for (const m of materials) {
+            materials.forEach((m, i) => {
               const $img = $(
-                `<img data-mat="1" src="${esc(m.img)}" title="${esc(m.name || "")}"
-                      style="width:48px; height:48px; object-fit:contain; image-rendering:auto;">`
+                `<img data-mat="1" data-index="${i}" src="${esc(m.img)}" title="Click to remove: ${esc(m.name || "")}"
+                      style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`
               );
+              // click to remove that material
+              $img.on("click", () => {
+                materials.splice(i, 1);
+                renderMaterials();
+              });
               $materialsDrop.append($img);
-            }
+            });
           }
           relayout();
         };
 
-        // --- Drag/drop bindings for materials
         $materialsDrop
           .on("dragover", (ev) => {
             ev.preventDefault();
@@ -231,13 +225,12 @@ import { dataLoader } from "./dataLoader.js";
 
             const dt = ev.originalEvent?.dataTransfer;
             if (!dt) return;
-
             let raw = dt.getData("text/plain");
             if (!raw) return;
 
             try {
               const data = JSON.parse(raw);
-              if (!data?.uuid) return; // not a Foundry document payload
+              if (!data?.uuid) return;
               const doc = await fromUuid(data.uuid);
               if (!doc || doc.documentName !== "Item") {
                 ui.notifications?.warn("Only Item documents can be dropped here.");
@@ -255,7 +248,6 @@ import { dataLoader } from "./dataLoader.js";
             }
           });
 
-        // Renderers
         const renderTemplates = (rows) => {
           if (!Array.isArray(rows) || !rows.length) {
             $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
@@ -265,19 +257,11 @@ import { dataLoader } from "./dataLoader.js";
             `<div data-index="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
           ).join("");
           $templateList.html(items);
-
           $templateList.find("div[data-index]").on("click", function() {
             $templateList.find("div[data-index]").css({ backgroundColor: "", color: "" }).attr("data-selected", "");
             $(this).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" }).attr("data-selected", "1");
             updateHandToggle();
-          }).on("mouseenter", function() {
-            if (this.dataset.selected === "1") return;
-            $(this).css({ backgroundColor: "rgba(100,149,237,0.8)", color: "white" });
-          }).on("mouseleave", function() {
-            if (this.dataset.selected === "1") return;
-            $(this).css({ backgroundColor: "", color: "" });
           });
-
           const first = $templateList.find("div[data-index]").first();
           if (first.length) first.trigger("click");
         };
@@ -300,7 +284,6 @@ import { dataLoader } from "./dataLoader.js";
 
         const renderAttrs = (type) => {
           if (type !== "weapon") {
-            // Leave box empty (fixed height) to keep preview from shifting
             $attrInner.html("");
             return;
           }
@@ -329,7 +312,6 @@ import { dataLoader } from "./dataLoader.js";
             $customize.html(`<div style="opacity:0.8;">No Options</div>`);
             return;
           }
-          // Hand toggle above Type; slightly tighter controls; labels aligned
           $customize.html(`
             <style>
               #customizeArea label { display:flex; align-items:center; gap:4px; line-height:1; }
@@ -395,10 +377,8 @@ import { dataLoader } from "./dataLoader.js";
           relayout();
         };
 
-        // Initial render + events
         updateForKind("weapon");
-        renderMaterials(); // initialize materials tray (shows hint)
-
+        renderMaterials();
         html.on("change", 'input[name="itemType"]', (ev) => updateForKind(ev.currentTarget.value));
       }
     }, { resizable: false });
@@ -406,9 +386,6 @@ import { dataLoader } from "./dataLoader.js";
     dlg.render(true);
   }
 
-  // --------------------------------
-  // Public hook to open the dialog
-  // --------------------------------
   Hooks.on("lookfarShowItemForgeDialog", () => {
     try {
       openItemForgeDialog();
