@@ -1,28 +1,17 @@
-// Item Forger — v13 Macro (2-column layout, +100px width, auto-height, no scrolling)
-// - Column 1 (60%): Choose Item → Attributes (fixed height; empty when not weapon) → Preview  [no gaps]
-// - Column 2 (40%): Customize (weapon-only, shorter) → Qualities
-// - Wider dialog (~700px total); auto height; non-resizable
+import { dataLoader } from "./dataLoader.js";
 
-(() => {
-  const EQUIPMENT_URL  = "/modules/lookfar/data/equipment.json";
-  const QUALITIES_URL  = "/modules/lookfar/data/qualities.json";
+(function registerItemForge() {
 
-  // ----- helpers -----
-  const fetchJSON = async (url, label) => {
-    try {
-      const r = await fetch(url, { cache: "no-store" });
-      if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-      return await r.json();
-    } catch (err) {
-      ui.notifications.error(`Item Forger: failed to load ${label} (${err.message})`);
-      console.error(`[Item Forger] ${label} fetch error:`, err);
-      return null;
-    }
-  };
+  // ----------------------------
+  // Safe accessors to module data
+  // ----------------------------
+  const getEquipmentRoot = () =>
+      dataLoader?.equipmentData || dataLoader || {};
 
-  const fetchEquipment = () => fetchJSON(EQUIPMENT_URL, "equipment.json");
-  const fetchQualities = () => fetchJSON(QUALITIES_URL, "qualities.json");
+  const getQualitiesRoot = () =>
+      dataLoader?.qualitiesData || dataLoader?.qualities || null;
 
+  // We’ll keep these tolerant getters so you can swap schemas freely
   const getWeaponList    = d => d?.weapons?.weaponList        ?? d?.weaponsData?.weaponList        ?? d?.weaponList        ?? [];
   const getArmorList     = d => d?.armor?.armorList           ?? d?.armorData?.armorList           ?? d?.armorList         ?? [];
   const getShieldList    = d => d?.shields?.shieldList        ?? d?.shieldsData?.shieldList        ?? d?.shieldList        ?? [];
@@ -31,9 +20,10 @@
   const getName = r => r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
   const esc = s => { try { return foundry.utils.escapeHTML(String(s)); } catch { return String(s); } };
 
-  const flattenQualities = (qData) => {
-    if (!qData || typeof qData !== "object") return [];
-    return Object.values(qData).filter(Array.isArray).flat().filter(Boolean);
+  // qualities.* might be grouped by category -> [qualities]
+  const flattenQualities = (qRoot) => {
+    if (!qRoot || typeof qRoot !== "object") return [];
+    return Object.values(qRoot).filter(Array.isArray).flat().filter(Boolean);
   };
 
   const matchesAppliesTo = (q, type) => {
@@ -57,8 +47,10 @@
     return null;
   };
 
-  // ----- UI -----
-  const ATTR_ROW_FIXED_HEIGHT = "30px"; // fixed box height so preview doesn't shift
+  // ----------------------------
+  // Dialog builder
+  // ----------------------------
+  const ATTR_ROW_FIXED_HEIGHT = "30px";
 
   const content = `
 <div id="if-body">
@@ -122,205 +114,215 @@
   </form>
 </div>`;
 
-  // ----- dialog -----
-  let equipmentCache = null;
-  let qualitiesCache = null;
+  function openItemForgeDialog() {
+    // Pull cached data from dataLoader (already loaded during init)
+    const equipmentRoot  = getEquipmentRoot();
+    const qualitiesRoot  = getQualitiesRoot();
+    const qualitiesCache = flattenQualities(qualitiesRoot);
 
-  const dlg = new Dialog({
-    title: "Item Forger",
-    content,
-    buttons: {
-      forge: {
-        label: "Forge",
-        icon: '<i class="fas fa-hammer"></i>',
-        callback: (html) => {
-          const kind = html.find('input[name="itemType"] :checked').val() || html.find('input[name="itemType"]:checked').val();
-          const $selT = html.find('#templateList [data-selected="1"]');
-          const chosenT = $selT.data('name');
-          if (!chosenT) return ui.notifications.warn("Select a template first.");
-          ui.notifications.info(`Forging ${kind}: ${chosenT}`);
+    const dlg = new Dialog({
+      title: "Item Forger",
+      content,
+      buttons: {
+        forge: {
+          label: "Forge",
+          icon: '<i class="fas fa-hammer"></i>',
+          callback: (html) => {
+            const kind = html.find('input[name="itemType"] :checked').val() || html.find('input[name="itemType"]:checked').val();
+            const $selT = html.find('#templateList [data-selected="1"]');
+            const chosenT = $selT.data('name');
+            if (!chosenT) return ui.notifications.warn("Select a template first.");
+            ui.notifications.info(`Forging ${kind}: ${chosenT}`);
+          }
         }
-      }
-    },
-    default: "forge",
-    render: async (html) => {
-      const $dlg = html.closest(".window-app");
-      const $wc  = $dlg.find(".window-content");
-      $wc.css({ display: "block", overflow: "visible" });
-      $dlg.css({ width: "700px" });
+      },
+      default: "forge",
+      render: async (html) => {
+        const $dlg = html.closest(".window-app");
+        const $wc  = $dlg.find(".window-content");
+        $wc.css({ display: "block", overflow: "visible" });
+        $dlg.css({ width: "700px" });
 
-      const app = ui.windows[Number($dlg.attr("data-appid"))];
-      if (app?.setPosition) {
-        app.setPosition({ height: "auto" });
-        setTimeout(() => app.setPosition({ height: "auto" }), 0);
-      }
-
-      const $templateList   = html.find("#templateList");
-      const $qualitiesList  = html.find("#qualitiesList");
-      const $customize      = html.find("#customizeArea");
-      const $attrInner      = html.find("#attrInner");
-
-      // Data load
-      if (!equipmentCache) {
-        equipmentCache = await fetchEquipment();
-        if (!equipmentCache) $templateList.html(`<div style="text-align:center;">Could not load equipment data.</div>`);
-      }
-      if (!qualitiesCache) {
-        const raw = await fetchQualities();
-        qualitiesCache = flattenQualities(raw);
-        if (!qualitiesCache.length) $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
-      }
-
-      const getNameSafe = (r) => esc(getName(r));
-      const findWeaponByTemplateName = (name) => {
-        if (!name) return null;
-        const lower = String(name).toLowerCase();
-        return getWeaponList(equipmentCache).find(w => String(getName(w)).toLowerCase() === lower) ?? null;
-      };
-
-      // Renders
-      const renderTemplates = (rows) => {
-        if (!Array.isArray(rows) || !rows.length) {
-          $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
-          return;
+        // Auto height
+        const app = ui.windows[Number($dlg.attr("data-appid"))];
+        if (app?.setPosition) {
+          app.setPosition({ height: "auto" });
+          setTimeout(() => app.setPosition({ height: "auto" }), 0);
         }
-        const items = rows.map((r, i) => `<div data-index="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`).join("");
-        $templateList.html(items);
 
-        $templateList.find("div[data-index]").on("click", function() {
-          $templateList.find("div[data-index]").css({ backgroundColor: "", color: "" }).attr("data-selected", "");
-          $(this).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" }).attr("data-selected", "1");
-          updateHandToggle();
-        }).on("mouseenter", function() {
-          if (this.dataset.selected === "1") return;
-          $(this).css({ backgroundColor: "rgba(100,149,237,0.8)", color: "white" });
-        }).on("mouseleave", function() {
-          if (this.dataset.selected === "1") return;
-          $(this).css({ backgroundColor: "", color: "" });
-        });
+        const $templateList   = html.find("#templateList");
+        const $qualitiesList  = html.find("#qualitiesList");
+        const $customize      = html.find("#customizeArea");
+        const $attrInner      = html.find("#attrInner");
 
-        const first = $templateList.find("div[data-index]").first();
-        if (first.length) first.trigger("click");
-      };
+        const getNameSafe = (r) => esc(getName(r));
+        const findWeaponByTemplateName = (name) => {
+          if (!name) return null;
+          const lower = String(name).toLowerCase();
+          return getWeaponList(equipmentRoot).find(w => String(getName(w)).toLowerCase() === lower) ?? null;
+        };
 
-      const renderQualities = (type) => {
-        if (!Array.isArray(qualitiesCache) || !qualitiesCache.length) return;
-        const filtered = qualitiesCache.filter(q => matchesAppliesTo(q, type));
-        if (!filtered.length) {
-          $qualitiesList.html(`<div style="text-align:center; opacity:0.75;">No ${type} qualities.</div>`);
-          return;
-        }
-        const items = filtered.map((q, i) => `<div data-qindex="${i}" style="padding:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`).join("");
-        $qualitiesList.html(items);
-      };
+        // Renderers
+        const renderTemplates = (rows) => {
+          if (!Array.isArray(rows) || !rows.length) {
+            $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
+            return;
+          }
+          const items = rows.map((r, i) => `<div data-index="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`).join("");
+          $templateList.html(items);
 
-      const renderAttrs = (type) => {
-        if (type !== "weapon") {
-          // leave empty but keep fixed height to preserve layout
-          $attrInner.html("");
-          return;
-        }
-        $attrInner.html(`
-          <label>Attr A:
-            <select id="optAttrA" style="max-width:160px;">
-              <option value="MIG">MIG</option>
-              <option value="DEX">DEX</option>
-              <option value="INS">INS</option>
-              <option value="WLP">WLP</option>
-            </select>
-          </label>
-          <label>Attr B:
-            <select id="optAttrB" style="max-width:160px;">
-              <option value="MIG">MIG</option>
-              <option value="DEX">DEX</option>
-              <option value="INS">INS</option>
-              <option value="WLP">WLP</option>
-            </select>
-          </label>
-        `);
-      };
+          $templateList.find("div[data-index]").on("click", function() {
+            $templateList.find("div[data-index]").css({ backgroundColor: "", color: "" }).attr("data-selected", "");
+            $(this).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" }).attr("data-selected", "1");
+            updateHandToggle();
+          }).on("mouseenter", function() {
+            if (this.dataset.selected === "1") return;
+            $(this).css({ backgroundColor: "rgba(100,149,237,0.8)", color: "white" });
+          }).on("mouseleave", function() {
+            if (this.dataset.selected === "1") return;
+            $(this).css({ backgroundColor: "", color: "" });
+          });
 
-      const renderCustomize = (type) => {
-        if (type !== "weapon") {
-          $customize.html(`<div style="opacity:0.8;">No Options</div>`);
-          return;
-        }
-        // Hand toggle sits ABOVE Type so all checkboxes group together
-        // Increased label gap by +1px (2 -> 3)
-        $customize.html(`
-          <style>
-            #customizeArea label { display:flex; align-items:center; gap:4px; line-height:1; }
-            #customizeArea input[type="checkbox"] { transform: scale(0.9); transform-origin: left center; margin:0 4px 0 0; }
-            #customizeArea select { height: 22px; }
-          </style>
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <label><input type="checkbox" id="optPlusOne"><span>+1 Accuracy</span></label>
-            <label><input type="checkbox" id="optPlusDamage"><span>+4 Damage</span></label>
-            <label id="handToggleWrap" style="display:none;">
-              <input type="checkbox" id="optToggleHand">
-              <span id="handToggleLabel"></span>
-            </label>
-            <label>Type:
-              <select id="optElement" style="max-width:160px;">
-                <option value="physical" selected>Physical</option>
-                <option value="fire">Fire</option>
-                <option value="ice">Ice</option>
-                <option value="earth">Earth</option>
-                <option value="air">Air</option>
-                <option value="bolt">Bolt</option>
-                <option value="dark">Dark</option>
-                <option value="light">Light</option>
-                <option value="poison">Poison</option>
+          const first = $templateList.find("div[data-index]").first();
+          if (first.length) first.trigger("click");
+        };
+
+        const renderQualities = (type) => {
+          if (!Array.isArray(qualitiesCache) || !qualitiesCache.length) {
+            $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
+            return;
+          }
+          const filtered = qualitiesCache.filter(q => matchesAppliesTo(q, type));
+          if (!filtered.length) {
+            $qualitiesList.html(`<div style="text-align:center; opacity:0.75;">No ${type} qualities.</div>`);
+            return;
+          }
+          const items = filtered.map((q, i) =>
+            `<div data-qindex="${i}" style="padding:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`
+          ).join("");
+          $qualitiesList.html(items);
+        };
+
+        const renderAttrs = (type) => {
+          if (type !== "weapon") {
+            // Leave box empty (fixed height) to keep preview from shifting
+            $attrInner.html("");
+            return;
+          }
+          $attrInner.html(`
+            <label>Attr A:
+              <select id="optAttrA" style="max-width:160px;">
+                <option value="MIG">MIG</option>
+                <option value="DEX">DEX</option>
+                <option value="INS">INS</option>
+                <option value="WLP">WLP</option>
               </select>
             </label>
-          </div>
-        `);
-      };
+            <label>Attr B:
+              <select id="optAttrB" style="max-width:160px;">
+                <option value="MIG">MIG</option>
+                <option value="DEX">DEX</option>
+                <option value="INS">INS</option>
+                <option value="WLP">WLP</option>
+              </select>
+            </label>
+          `);
+        };
 
-      const populateTemplates = (kind) => {
-        const data = kind === "armor" ? getArmorList(equipmentCache)
-                   : kind === "shield" ? getShieldList(equipmentCache)
-                   : kind === "accessory" ? getAccessoryList(equipmentCache)
-                   : getWeaponList(equipmentCache);
-        renderTemplates(data);
-      };
+        const renderCustomize = (type) => {
+          if (type !== "weapon") {
+            $customize.html(`<div style="opacity:0.8;">No Options</div>`);
+            return;
+          }
+          // Hand toggle above Type; slightly tighter controls; labels aligned
+          $customize.html(`
+            <style>
+              #customizeArea label { display:flex; align-items:center; gap:4px; line-height:1; }
+              #customizeArea input[type="checkbox"] { transform: scale(0.9); transform-origin: left center; margin:0 4px 0 0; }
+              #customizeArea select { height: 22px; }
+            </style>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label><input type="checkbox" id="optPlusOne"><span>+1 Accuracy</span></label>
+              <label><input type="checkbox" id="optPlusDamage"><span>+4 Damage</span></label>
+              <label id="handToggleWrap" style="display:none;">
+                <input type="checkbox" id="optToggleHand">
+                <span id="handToggleLabel"></span>
+              </label>
+              <label>Type:
+                <select id="optElement" style="max-width:160px;">
+                  <option value="physical" selected>Physical</option>
+                  <option value="fire">Fire</option>
+                  <option value="ice">Ice</option>
+                  <option value="earth">Earth</option>
+                  <option value="air">Air</option>
+                  <option value="bolt">Bolt</option>
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                  <option value="poison">Poison</option>
+                </select>
+              </label>
+            </div>
+          `);
+        };
 
-      const updateHandToggle = () => {
-        const kind = html.find('input[name="itemType"]:checked').val();
-        const $wrap = html.find("#handToggleWrap");
-        const $labelSpan = html.find("#handToggleLabel");
-        const $checkbox = html.find("#optToggleHand");
-        if (kind !== "weapon") return $wrap.hide();
+        const populateTemplates = (kind) => {
+          const data = kind === "armor" ? getArmorList(equipmentRoot)
+                     : kind === "shield" ? getShieldList(equipmentRoot)
+                     : kind === "accessory" ? getAccessoryList(equipmentRoot)
+                     : getWeaponList(equipmentRoot);
+          renderTemplates(data);
+        };
 
-        const $sel = html.find('#templateList [data-selected="1"]');
-        const name = $sel.data("name");
-        if (!name) return $wrap.hide();
+        const updateHandToggle = () => {
+          const kind = html.find('input[name="itemType"]:checked').val();
+          const $wrap = html.find("#handToggleWrap");
+          const $labelSpan = html.find("#handToggleLabel");
+          const $checkbox = html.find("#optToggleHand");
+          if (kind !== "weapon") return $wrap.hide();
 
-        const base = findWeaponByTemplateName(name);
-        const h = normHand(base?.hand);
-        if (h === "2") { $labelSpan.text("Make 1-handed"); $wrap.show(); $checkbox.prop("checked", false); }
-        else if (h === "1") { $labelSpan.text("Make 2-handed"); $wrap.show(); $checkbox.prop("checked", false); }
-        else $wrap.hide();
-      };
+          const $sel = html.find('#templateList [data-selected="1"]');
+          const name = $sel.data("name");
+          if (!name) return $wrap.hide();
 
-      const updateForKind = (kind) => {
-        populateTemplates(kind);
-        renderQualities(kind);
-        renderCustomize(kind);
-        renderAttrs(kind);
-        if (kind !== "weapon") updateHandToggle();
+          const base = findWeaponByTemplateName(name);
+          const h = normHand(base?.hand);
+          if (h === "2") { $labelSpan.text("Make 1-handed"); $wrap.show(); $checkbox.prop("checked", false); }
+          else if (h === "1") { $labelSpan.text("Make 2-handed"); $wrap.show(); $checkbox.prop("checked", false); }
+          else $wrap.hide();
+        };
 
-        const app2 = ui.windows[Number($dlg.attr("data-appid"))];
-        if (app2?.setPosition) {
-          app2.setPosition({ height: "auto" });
-          setTimeout(() => app2.setPosition({ height: "auto" }), 0);
-        }
-      };
+        const updateForKind = (kind) => {
+          populateTemplates(kind);
+          renderQualities(kind);
+          renderCustomize(kind);
+          renderAttrs(kind);
+          if (kind !== "weapon") updateHandToggle();
 
-      updateForKind("weapon");
-      html.on("change", 'input[name="itemType"]', (ev) => updateForKind(ev.currentTarget.value));
+          const app2 = ui.windows[Number($dlg.attr("data-appid"))];
+          if (app2?.setPosition) {
+            app2.setPosition({ height: "auto" });
+            setTimeout(() => app2.setPosition({ height: "auto" }), 0);
+          }
+        };
+
+        updateForKind("weapon");
+        html.on("change", 'input[name="itemType"]', (ev) => updateForKind(ev.currentTarget.value));
+      }
+    }, { resizable: false });
+
+    dlg.render(true);
+  }
+
+  // --------------------------------
+  // Public hook to open the dialog
+  // --------------------------------
+  Hooks.on("lookfarShowItemForgeDialog", () => {
+    try {
+      openItemForgeDialog();
+    } catch (err) {
+      console.error("[Item Forger] failed to open:", err);
+      ui.notifications?.error("Item Forger: failed to open (see console).");
     }
-  }, { resizable: false });
+  });
 
-  dlg.render(true);
 })();
