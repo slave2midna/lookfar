@@ -20,20 +20,17 @@ import { dataLoader } from "./dataLoader.js";
   const getName = r => r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
   const esc = s => { try { return foundry.utils.escapeHTML(String(s)); } catch { return String(s); } };
 
-  // NOTE: Keeping this, though we now render by category directly
-  const flattenQualities = (qRoot) => {
-    if (!qRoot || typeof qRoot !== "object") return [];
-    return Object.values(qRoot).filter(Array.isArray).flat().filter(Boolean);
-  };
-
   const matchesAppliesTo = (q, type) => {
     const at = Array.isArray(q?.appliesTo) ? q.appliesTo : [];
     return at.some(x => String(x).toLowerCase() === String(type).toLowerCase());
   };
 
+  // Shows the most specific per-type name first, with fallbacks.
   const qualityDisplayName = (q, type) => {
-    if (type === "weapon") return q.weaponName ?? q.name ?? "(Unnamed)";
-    if (type === "armor")  return q.armorName  ?? q.name ?? "(Unnamed)";
+    if (type === "weapon")    return q.weaponName    ?? q.name ?? "(Unnamed)";
+    if (type === "armor")     return q.armorName     ?? q.name ?? "(Unnamed)";
+    if (type === "shield")    return q.shieldName    ?? q.name ?? "(Unnamed)";
+    if (type === "accessory") return q.accessoryName ?? q.name ?? "(Unnamed)";
     return q.name ?? "(Unnamed)";
   };
 
@@ -134,7 +131,7 @@ import { dataLoader } from "./dataLoader.js";
       </div>
     </div>
 
-    <!-- MATERIALS (now with a small bottom margin so Forge doesn't clip) -->
+    <!-- MATERIALS -->
     <fieldset style="margin:0 0 6px 0;">
       <legend>Materials</legend>
       <div id="materialsDrop"
@@ -161,7 +158,6 @@ import { dataLoader } from "./dataLoader.js";
   function openItemForgeDialog() {
     const equipmentRoot  = getEquipmentRoot();
     const qualitiesRoot  = getQualitiesRoot();
-    // const qualitiesCache = flattenQualities(qualitiesRoot); // not needed for category filter
 
     const dlg = new Dialog({
       title: "Item Forger",
@@ -214,6 +210,35 @@ import { dataLoader } from "./dataLoader.js";
         const getItemImage = (item) =>
           item?.img || item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
 
+        // ---------- Shared selectable list behavior ----------
+        const wireSelectableList = ($container, itemSel, { onSelect } = {}) => {
+          const $items = $container.find(itemSel);
+          // hover
+          $items.on("mouseenter", function() {
+            if (this.dataset.selected === "1") return;
+            $(this).css({ backgroundColor: "rgba(0,0,0,0.08)" });
+          }).on("mouseleave", function() {
+            if (this.dataset.selected === "1") return;
+            $(this).css({ backgroundColor: "", color: "" });
+          });
+
+          // click select
+          $items.on("click", function() {
+            $container.find(itemSel).each(function() {
+              this.dataset.selected = "";
+              $(this).css({ backgroundColor: "", color: "" });
+            });
+            this.dataset.selected = "1";
+            $(this).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" });
+            onSelect?.(this);
+          });
+
+          // auto-select first item if any
+          const $first = $items.first();
+          if ($first.length) $first.trigger("click");
+        };
+
+        // ---------- Materials ----------
         const renderMaterials = () => {
           $materialsDrop.children('img[data-mat="1"]').remove();
           if (materials.length === 0) {
@@ -272,25 +297,23 @@ import { dataLoader } from "./dataLoader.js";
             }
           });
 
+        // ---------- Templates ----------
         const renderTemplates = (rows) => {
           if (!Array.isArray(rows) || !rows.length) {
             $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
             return;
           }
           const items = rows.map((r, i) =>
-            `<div data-index="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
+            `<div class="if-template" data-index="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
           ).join("");
           $templateList.html(items);
-          $templateList.find("div[data-index]").on("click", function() {
-            $templateList.find("div[data-index]").css({ backgroundColor: "", color: "" }).attr("data-selected", "");
-            $(this).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" }).attr("data-selected", "1");
-            updateHandToggle();
+
+          wireSelectableList($templateList, ".if-template", {
+            onSelect: () => updateHandToggle()
           });
-          const first = $templateList.find("div[data-index]").first();
-          if (first.length) first.trigger("click");
         };
 
-        // Qualities rendering now respects category + appliesTo
+        // ---------- Qualities (category + appliesTo + selectable) ----------
         const renderQualities = (type) => {
           if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
             $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
@@ -305,11 +328,17 @@ import { dataLoader } from "./dataLoader.js";
             return;
           }
           const items = filtered.map((q, i) =>
-            `<div data-qindex="${i}" style="padding:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`
+            `<div class="if-quality" data-qindex="${i}" style="padding:4px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`
           ).join("");
           $qualitiesList.html(items);
+
+          // make the qualities list selectable with hover + default selection
+          wireSelectableList($qualitiesList, ".if-quality", {
+            onSelect: () => {/* wiring later */}
+          });
         };
 
+        // ---------- Attrs ----------
         const renderAttrs = (type) => {
           if (type !== "weapon") {
             $attrInner.html("");
@@ -335,6 +364,7 @@ import { dataLoader } from "./dataLoader.js";
           `);
         };
 
+        // ---------- Customize ----------
         const renderCustomize = (type) => {
           if (type !== "weapon") {
             $customize.html(`<div style="opacity:0.8;">No Options</div>`);
@@ -370,6 +400,7 @@ import { dataLoader } from "./dataLoader.js";
           `);
         };
 
+        // ---------- Populate ----------
         const populateTemplates = (kind) => {
           const data = kind === "armor" ? getArmorList(equipmentRoot)
                      : kind === "shield" ? getShieldList(equipmentRoot)
@@ -400,8 +431,7 @@ import { dataLoader } from "./dataLoader.js";
           populateTemplates(kind);
           renderCustomize(kind);
           renderAttrs(kind);
-          // Re-render qualities for current category + appliesTo
-          renderQualities(kind);
+          renderQualities(kind); // respects current category
           if (kind !== "weapon") updateHandToggle();
           relayout();
         };
