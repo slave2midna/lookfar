@@ -127,7 +127,7 @@ import { dataLoader } from "./dataLoader.js";
             </select>
           </div>
           <div id="qualitiesList" aria-label="Qualities list"
-               style="width:100%; height:212px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
+               style="width:100%; height:190px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
             <div>Loading…</div>
           </div>
         </fieldset>
