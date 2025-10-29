@@ -484,6 +484,7 @@ if (kind === "weapon") {
   const baseAcc      = w?.accuracy ?? w?.acc ?? "—";
   const baseDmg      = w?.damage   ?? w?.dmg ?? "—";
   const baseEle      = (w?.element ?? "physical").toString();
+  const isMartial    = !!w?.isMartial;
 
   // UI OVERRIDES
   const selA   = (html.find('#optAttrA').val() || baseA).toString().toUpperCase();
@@ -515,15 +516,20 @@ if (kind === "weapon") {
   const qdesc = q?.description ?? q?.desc ?? "";
 
   $preview.html(`${style}
-    <div id="if-preview-card">
-      <img id="if-preview-icon" src="${icon}">
-      <div id="if-preview-rows">
-        <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
-        <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
-        <div class="if-row-desc">${esc(qdesc)}</div>
+  <div id="if-preview-card">
+    <div id="if-preview-head">
+      <div class="if-icon-wrap">
+        <img id="if-preview-icon" src="${icon}">
+        ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
       </div>
     </div>
-  `);
+    <div id="if-preview-rows">
+      <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
+      <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
+      <div class="if-row-desc">${esc(qdesc)}</div>
+    </div>
+  </div>
+`);
   return;
 }
 
