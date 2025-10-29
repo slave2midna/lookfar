@@ -256,7 +256,7 @@
          "name":"Shuriken",
          "value":150,
          "category":"thrown",
-         "hand":"two-handed",
+         "hand":"one-handed",
          "type":"ranged",
          "attrA":"dex",
          "attrB":"ins",
