@@ -230,16 +230,16 @@ const renderPreview = (kind, selectedEl) => {
       .if-muted{ opacity:0.7; }
       .if-tight{ letter-spacing:0.2px; }
       /* NEW: wrapped quality description row with padding so it doesn't touch border */
-      .if-row-desc{
-        width:100%;
-        text-align:left;
-        font-size:11px;
-        line-height:1.2;
-        white-space:normal;          /* allow wrap */
-        overflow:hidden;
-        padding:4px 8px;             /* breathing room */
-        box-sizing:border-box;
-      }
+      .if-row-desc {
+  width: 100%;
+  text-align: center;         /* ← centered text */
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: normal;        /* allow wrapping */
+  overflow: hidden;
+  padding: 4px 8px;           /* breathing room */
+  box-sizing: border-box;
+}
     </style>
   `;
 
