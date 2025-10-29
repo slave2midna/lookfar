@@ -197,13 +197,15 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
         const materials = [];
 
   // ---- COST: recompute whenever template or quality selection changes ----
-  const updateCost = () => {
+const updateCost = () => {
   const $cost = html.find('#costArea');
 
+  // selected template
   const $t = html.find('#templateList [data-selected="1"]').first();
   const ti = Number($t.data("idx"));
   const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
 
+  // selected quality (may be none)
   const $q = html.find('#qualitiesList [data-selected="1"]').first();
   const qi = Number($q.data("idx"));
   const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
@@ -214,7 +216,9 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
   // weapon-only customize surcharges
   const kind  = html.find('input[name="itemType"]:checked').val();
   let custom  = 0;
+
   if (kind === "weapon") {
+    // --- customize fields ---
     const plus1  = html.find('#optPlusOne').is(':checked');     // +1 Accuracy
     const plus4  = html.find('#optPlusDamage').is(':checked');  // +4 Damage
     const eleSel = (html.find('#optElement').val() || 'physical').toString();
@@ -222,7 +226,27 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
     if (plus1) custom += 100;
     if (plus4) custom += 200;
     if (eleSel !== 'physical') custom += 100;
-    // hand toggle: no cost
+
+    // --- Attr A/B surcharge logic (+50) ---
+    // Get the weapon's original attrs from template (uppercase)
+    const baseA = String(tmpl?.attrA ?? "").toUpperCase();
+    const baseB = String(tmpl?.attrB ?? "").toUpperCase();
+
+    // Current selections (default to base if empty)
+    const selA = String(html.find('#optAttrA').val() || baseA).toUpperCase();
+    const selB = String(html.find('#optAttrB').val() || baseB).toUpperCase();
+
+    // If user sets A==B AND it's not exactly the original pair, add +50
+    const isMatchingNow = selA && selB && (selA === selB);
+    const wasMatchingBase = baseA && baseB && (baseA === baseB);
+    const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
+
+    if (isMatchingNow && !sameAsOriginalPair) {
+      // Example A: Staff WLP/WLP → set to INS/INS => +50
+      // Example B: Bow DEX/INS → set to DEX/DEX => +50
+      // If base was MIG/MIG and user sets back to MIG/MIG, sameAsOriginalPair=true => no +50
+      custom += 50;
+    }
   }
 
   $cost.text(`${base + qcost + custom}z`);
