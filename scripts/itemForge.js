@@ -248,25 +248,67 @@ const renderPreview = (kind, selectedEl) => {
     </style>
   `;
 
-  // If not weapon, just show icon/placeholder (we'll wire other types later)
-  const kindNow = html.find('input[name="itemType"]:checked').val();
-  if (kind !== "weapon" || kindNow !== "weapon") {
-    $preview.html(`${style}
-      <div id="if-preview-card">
-        <img id="if-preview-icon" src="${icon}">
-        <div id="if-preview-rows" class="if-muted"><div class="if-row">Preview coming soon…</div></div>
-      </div>
-    `);
-    return;
-  }
+  // dial sanity check
+const kindNow = html.find('input[name="itemType"]:checked').val();
+if (kindNow !== kind) {
+  $preview.html(`${style}
+    <div id="if-preview-card">
+      <img id="if-preview-icon" src="${icon}">
+      <div id="if-preview-rows" class="if-muted"><div class="if-row">Preview coming soon…</div></div>
+    </div>
+  `);
+  return;
+}
 
+// ---------- ARMOR PREVIEW ----------
+if (kind === "armor") {
+  // current template selection
+  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx  = Number($sel.data("idx"));
+  const a    = Number.isFinite(idx) ? currentTemplates[idx] : null;
+
+  // pull fields from equipment.json (with gentle fallbacks)
+  const isMartial = !!a?.isMartial;
+  const defAttr   = (a?.defAttr   ?? "").toString().toUpperCase();
+  const def       = (a?.def       ?? "—");
+  const mdefAttr  = (a?.mdefAttr  ?? "").toString().toUpperCase();
+  const mdef      = (a?.mdef      ?? "—");
+  const init      = (a?.init      ?? "—");
+
+  // Row: conditional formatting
+  // false  → "DEF: defAttr+def | M.DEF: mdefAttr+mdef | INIT: init"
+  // true   → "<span class=is-martial></span> DEF: def | M.DEF mdefAttr+mdef | INIT: init"
+  const rowArmor = !isMartial
+    ? `DEF: ${esc(defAttr)}+${esc(def)} | M.DEF: ${esc(mdefAttr)}+${esc(mdef)} | INIT: ${esc(init)}`
+    : `<span class="is-martial"></span> DEF: ${esc(def)} | M.DEF ${esc(mdefAttr)}+${esc(mdef)} | INIT: ${esc(init)}`;
+
+  // Quality description (centered, wrapped)
+  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  const qIdx  = Number($qsel.data("idx"));
+  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+  const qdesc = q?.description ?? q?.desc ?? "";
+
+  $preview.html(`${style}
+    <div id="if-preview-card">
+      <img id="if-preview-icon" src="${icon}">
+      <div id="if-preview-rows">
+        <div class="if-row if-tight">${rowArmor}</div>
+        <div class="if-row-desc">${esc(qdesc)}</div>
+      </div>
+    </div>
+  `);
+  return;
+}
+
+// ---------- WEAPON PREVIEW (unchanged below this line) ----------
+if (kind === "weapon") {
   // TEMPLATE selection
   const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
   const idx = Number($sel.data("idx"));
   const w   = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
   // BASE values from template
-  const baseHand     = normHand(w?.hand) || null;            // "1" | "2" | null
+  const baseHand     = normHand(w?.hand) || null; // "1" | "2" | null
   const baseHandText = handLabel(baseHand ?? (w?.hand ?? "—"));
   const baseType     = w?.type ?? "—";
   const baseCat      = w?.category ?? w?.cat ?? "—";
@@ -276,7 +318,7 @@ const renderPreview = (kind, selectedEl) => {
   const baseDmg      = w?.damage   ?? w?.dmg ?? "—";
   const baseEle      = (w?.element ?? "physical").toString();
 
-  // UI OVERRIDES from Attributes + Customize
+  // UI OVERRIDES
   const selA   = (html.find('#optAttrA').val() || baseA).toString().toUpperCase();
   const selB   = (html.find('#optAttrB').val() || baseB).toString().toUpperCase();
   const plus1  = html.find('#optPlusOne').is(':checked');
@@ -284,22 +326,16 @@ const renderPreview = (kind, selectedEl) => {
   const flip   = html.find('#optToggleHand').is(':checked');
   const eleSel = (html.find('#optElement').val() || baseEle).toString();
 
-  // apply numeric mods if possible
   const dispAcc = plus1 ? addModIfNumber(baseAcc, 1) : baseAcc;
   const dispDmg = plus4 ? addModIfNumber(baseDmg, 4) : baseDmg;
 
-  // apply hand flip if base hand is recognized
   let dispHand = baseHand;
-  if (flip && (baseHand === "1" || baseHand === "2")) {
-    dispHand = baseHand === "1" ? "2" : "1";
-  }
+  if (flip && (baseHand === "1" || baseHand === "2")) dispHand = baseHand === "1" ? "2" : "1";
   const dispHandText = handLabel(dispHand ?? baseHandText);
 
-  // ROWS
   const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
   const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} | ${eleSel}`;
 
-  // Quality row (selected on the right)
   const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
   const qIdx  = Number($qsel.data("idx"));
   const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
@@ -315,7 +351,16 @@ const renderPreview = (kind, selectedEl) => {
       </div>
     </div>
   `);
-};
+  return;
+}
+
+// ---------- other kinds (shield/accessory) → placeholder for now ----------
+$preview.html(`${style}
+  <div id="if-preview-card">
+    <img id="if-preview-icon" src="${icon}">
+    <div id="if-preview-rows" class="if-muted"><div class="if-row">Preview coming soon…</div></div>
+  </div>
+`);
 
         // ---------- shared selectable list ----------
         const wireSelectableList = ($container, itemSel, { onSelect } = {}) => {
