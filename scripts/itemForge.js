@@ -469,11 +469,17 @@ if (kind === "weapon") {
   const flip   = html.find('#optToggleHand').is(':checked');
   const eleSel = (html.find('#optElement').val() || baseEle).toString();
 
-  const dispAcc = plus1 ? addModIfNumber(baseAcc, 1) : baseAcc;
-  const dispDmg = plus4 ? addModIfNumber(baseDmg, 4) : baseDmg;
-
+  // Apply hand flip to hand label and compute damage modifier:
   let dispHand = baseHand;
   if (flip && (baseHand === "1" || baseHand === "2")) dispHand = baseHand === "1" ? "2" : "1";
+
+  const handMod = (flip && baseHand === "2") ? -4  // "Make 1-handed" → -4 dmg
+                 : (flip && baseHand === "1") ? +4 // "Make 2-handed" → +4 dmg
+                 : 0;
+
+  const dispAcc = plus1 ? addModIfNumber(baseAcc, 1) : baseAcc;
+  const dispDmg = addModIfNumber(plus4 ? addModIfNumber(baseDmg, 4) : baseDmg, handMod);
+
   const dispHandText = handLabel(dispHand ?? baseHandText);
 
   const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
@@ -704,21 +710,45 @@ return;
         };
 
         const updateHandToggle = (selectedEl) => {
-          const kind = html.find('input[name="itemType"]:checked').val();
-          const $wrap = html.find("#handToggleWrap");
-          const $labelSpan = html.find("#handToggleLabel");
-          const $checkbox = html.find("#optToggleHand");
-          if (kind !== "weapon") return $wrap.hide();
+  const kind = html.find('input[name="itemType"]:checked').val();
+  const $wrap = html.find("#handToggleWrap");      // <label id="handToggleWrap">
+  const $labelSpan = html.find("#handToggleLabel");
+  const $checkbox = html.find("#optToggleHand");
+  if (kind !== "weapon") return $wrap.hide();
 
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
-          const h = normHand(base?.hand);
+  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx = Number($sel.data("idx"));
+  const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-          if (h === "2") { $labelSpan.text("Make 1-handed"); $wrap.show(); $checkbox.prop("checked", false); }
-          else if (h === "1") { $labelSpan.text("Make 2-handed"); $wrap.show(); $checkbox.prop("checked", false); }
-          else $wrap.hide();
-        };
+  const h = normHand(base?.hand);
+  const cat = String(base?.category ?? base?.cat ?? "").toLowerCase();
+  const restricted = new Set(["brawling","dagger","thrown"]);
+
+  // helper to style-disable the whole control
+  const setDisabled = (disabled, title="") => {
+    $checkbox.prop("disabled", disabled).prop("checked", false);
+    $wrap.css({ opacity: disabled ? 0.5 : 1, filter: disabled ? "grayscale(1)" : "" });
+    if (title) $wrap.attr("title", title); else $wrap.removeAttr("title");
+  };
+
+  if (h === "2") {
+    $labelSpan.text("Make 1-handed");
+    $wrap.show();
+
+    // In these categories, you cannot make it 1-handed → disable + grey out
+    if (restricted.has(cat)) {
+      setDisabled(true, "Not available for this weapon category");
+    } else {
+      setDisabled(false);
+    }
+  } else if (h === "1") {
+    $labelSpan.text("Make 2-handed");
+    $wrap.show();
+    setDisabled(false); // allowed
+  } else {
+    $wrap.hide();
+  }
+};
 
         // Ensure Attr selects exist before template auto-select, and keep preview in sync
         const updateForKind = (kind) => {
