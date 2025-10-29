@@ -168,6 +168,7 @@ import { dataLoader } from "./dataLoader.js";
         const $attrInner        = html.find("#attrInner");
         const $materialsDrop    = html.find("#materialsDrop");
         const $materialsHint    = html.find("#materialsHint");
+        const $preview          = html.find("#itemPreviewLarge");
 
         let currentTemplates = [];
         let currentQualities = [];
@@ -176,6 +177,14 @@ import { dataLoader } from "./dataLoader.js";
         const getNameSafe = (r) => esc(getName(r));
         const getItemImage = (item) =>
           item?.img || item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+
+        // ---------- icons (top-of-preview) ----------
+        const getKindIcon = (kind) => ({
+          weapon:    "icons/svg/sword.svg",
+          shield:    "icons/svg/shield.svg",
+          armor:     "icons/svg/armor.svg",
+          accessory: "icons/svg/bag.svg"
+        }[kind] || "icons/svg/mystery-man.svg");
 
         // --- NEW: apply Attr A/B defaults from selected weapon template ---
         const applyAttrDefaultsFromTemplate = (selectedEl) => {
@@ -198,6 +207,77 @@ import { dataLoader } from "./dataLoader.js";
           if (allowed.has(b)) $b.val(b);
         };
 
+        // ---------- PREVIEW: render compact item card ----------
+        const clip = (v, n=10) => {
+          const s = String(v ?? "");
+          return s.length > n ? s.slice(0, n-1) + "…" : s;
+        };
+
+        const renderPreview = (kind, selectedEl) => {
+          // Base shell (keeps dimensions fixed)
+          const icon = getKindIcon(kind);
+          const style = `
+            <style>
+              #if-preview-card { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:6px; padding:6px; box-sizing:border-box; }
+              #if-preview-icon { width:32px; height:32px; object-fit:contain; image-rendering:auto; }
+              #if-preview-rows { width:100%; display:flex; flex-direction:column; gap:2px; }
+              .if-row { width:100%; text-align:center; font-size:11px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+              .if-bullet { margin:0 6px; opacity:0.7; }
+              .if-muted { opacity:0.7; }
+            </style>
+          `;
+
+          // If not weapon yet, just show icon placeholder
+          const kindNow = html.find('input[name="itemType"]:checked').val();
+          if (kind !== "weapon" || kindNow !== "weapon") {
+            $preview.html(`${style}
+              <div id="if-preview-card">
+                <img id="if-preview-icon" src="${icon}">
+                <div id="if-preview-rows" class="if-muted">
+                  <div class="if-row">Preview coming soon…</div>
+                </div>
+              </div>
+            `);
+            return;
+          }
+
+          // Weapon selected → pull current template
+          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+          const idx = Number($sel.data("idx"));
+          const w = Number.isFinite(idx) ? currentTemplates[idx] : null;
+
+          // Build rows safely
+          const row1_hand     = w?.hand ?? "—";
+          const row1_type     = w?.type ?? "—";
+          const row1_category = w?.category ?? w?.cat ?? "—";
+
+          const row2_a  = (w?.attrA ?? "—").toString().toUpperCase();
+          const row2_b  = (w?.attrB ?? "—").toString().toUpperCase();
+          const row2_acc = (w?.accuracy ?? w?.acc ?? "—");
+          const row2_dmg = (w?.damage ?? w?.dmg ?? "—");
+          const row2_ele = (w?.element ?? "physical");
+
+          $preview.html(`${style}
+            <div id="if-preview-card">
+              <img id="if-preview-icon" src="${icon}">
+              <div id="if-preview-rows">
+                <div class="if-row">
+                  ${esc(clip(row1_hand,12))} <span class="if-bullet">•</span>
+                  ${esc(clip(row1_type,12))} <span class="if-bullet">•</span>
+                  ${esc(clip(row1_category,14))}
+                </div>
+                <div class="if-row">
+                  ${esc(row2_a)}/${esc(row2_b)} <span class="if-bullet">•</span>
+                  Acc ${esc(row2_acc)} <span class="if-bullet">•</span>
+                  Dmg ${esc(row2_dmg)} <span class="if-bullet">•</span>
+                  ${esc(clip(row2_ele,12))}
+                </div>
+              </div>
+            </div>
+          `);
+        };
+
+        // ---------- shared selectable list ----------
         const wireSelectableList = ($container, itemSel, { onSelect } = {}) => {
           const $items = $container.find(itemSel);
           $items.on("mouseenter", function() {
@@ -273,6 +353,9 @@ import { dataLoader } from "./dataLoader.js";
           currentTemplates = Array.isArray(rows) ? rows : [];
           if (!currentTemplates.length) {
             $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
+            // even with no templates, keep preview icon in sync with dial
+            const kind = html.find('input[name="itemType"]:checked').val();
+            renderPreview(kind, null);
             return;
           }
           const items = currentTemplates.map((r, i) =>
@@ -282,7 +365,9 @@ import { dataLoader } from "./dataLoader.js";
           wireSelectableList($templateList, ".if-template", {
             onSelect: (el) => {
               updateHandToggle(el);
-              applyAttrDefaultsFromTemplate(el); // ← set Attr A/B from equipment.json
+              applyAttrDefaultsFromTemplate(el);
+              const kind = html.find('input[name="itemType"]:checked').val();
+              renderPreview(kind, el);                 // ← update preview on selection
             }
           });
         };
@@ -377,12 +462,13 @@ import { dataLoader } from "./dataLoader.js";
           else $wrap.hide();
         };
 
-        // --- CHANGED ORDER: ensure Attr selects exist before template auto-select ---
+        // Ensure Attr selects exist before template auto-select, and keep preview in sync
         const updateForKind = (kind) => {
-          renderCustomize(kind);     // 1) create area (hand toggle holder)
-          renderAttrs(kind);         // 2) create Attr selects
-          populateTemplates(kind);   // 3) renders & auto-selects first template → sets hand + Attrs
-          renderQualities(kind);     // 4) category/apply filter
+          renderCustomize(kind);
+          renderAttrs(kind);
+          populateTemplates(kind);
+          renderQualities(kind);
+          renderPreview(kind, null);      // ← set icon/placeholder immediately for this dial
           if (kind === "weapon") updateHandToggle();
           relayout();
         };
@@ -392,9 +478,14 @@ import { dataLoader } from "./dataLoader.js";
           renderQualities(kind);
         });
 
+        // Re-render preview icon when the dial changes (even before templates arrive)
+        html.on("change", 'input[name="itemType"]', (ev) => {
+          const kind = ev.currentTarget.value;
+          updateForKind(kind);
+        });
+
         updateForKind("weapon");
         renderMaterials();
-        html.on("change", 'input[name="itemType"]', (ev) => updateForKind(ev.currentTarget.value));
       }
     }, { resizable: false });
 
