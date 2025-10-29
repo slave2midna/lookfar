@@ -110,7 +110,7 @@ import { dataLoader } from "./dataLoader.js";
             </select>
           </div>
           <div id="qualitiesList" aria-label="Qualities list"
-               style="width:100%; height:140px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
+               style="width:100%; height:138px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
             <div>Loading…</div>
           </div>
         </fieldset>
@@ -119,7 +119,7 @@ import { dataLoader } from "./dataLoader.js";
         <fieldset style="margin:0;">
           <legend>Cost</legend>
           <div id="costArea"
-               style="width:100%; height:12px; display:flex; align-items:center; justify-content:center; font-size:14px;">
+               style="width:100%; height:10px; display:flex; align-items:center; justify-content:center; font-size:14px;">
             1000z
           </div>
         </fieldset>
