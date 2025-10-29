@@ -104,7 +104,8 @@ import { dataLoader } from "./dataLoader.js";
           <legend>Qualities</legend>
           <div style="margin-bottom:4px;">
             <select id="qualitiesCategory" style="width:100%;">
-              ${CATEGORY_OPTIONS.map(([label, key]) => `<option value="${key}" ${key==='basic'?'selected':''}>${label}</option>`).join("")}
+              <option value="none" selected>None</option>
+              ${CATEGORY_OPTIONS.map(([label, key]) => `<option value="${key}">${label}</option>`).join("")}
             </select>
           </div>
           <div id="qualitiesList" aria-label="Qualities list"
@@ -366,15 +367,14 @@ if (kind === "shield") {
 
 // ---------- ACCESSORY PREVIEW ----------
 if (kind === "accessory") {
-  // Selected quality (name only row)
+  // Selected quality (description-only row)
   const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
   const qIdx  = Number($qsel.data("idx"));
   const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
 
-  // Show the selected quality's display name for accessories; fallback prompt if none selected
-  const qname = q ? esc(qualityDisplayName(q, "accessory")) : "Choose a quality…";
+  // Use the quality description; fallback to empty if none
+  const qdesc = q?.description ?? q?.desc ?? "";
 
-  // Render: icon only + a single row with the selected quality name
   $preview.html(`${style}
     <div id="if-preview-card">
       <div id="if-preview-head">
@@ -383,12 +383,12 @@ if (kind === "accessory") {
         </div>
       </div>
       <div id="if-preview-rows">
-        <div class="if-row if-tight">${qname}</div>
+        <div class="if-row-desc">${esc(qdesc)}</div>
       </div>
     </div>
   `);
   return;
-}  
+} 
 
 // ---------- WEAPON PREVIEW (unchanged below this line) ----------
 if (kind === "weapon") {
@@ -553,17 +553,28 @@ return;
   if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
     $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
     currentQualities = [];
-    // also reflect that there is no quality description
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
     return;
   }
-  const catKey  = String($qualitiesSelect.val() || "basic").toLowerCase();
+
+  const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
+
+  // NEW: when "none" is chosen, show an empty list and no qualities
+  if (catKey === "none") {
+    currentQualities = [];
+    $qualitiesList.html("");  // empty scrollbox (by request)
+    const kind = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+    return;
+  }
+
   const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
   currentQualities = catList.filter(q => matchesAppliesTo(q, type));
 
   if (!currentQualities.length) {
-    $qualitiesList.html(`<div style="text-align:center; opacity:0.75;">No ${catKey} ${type} qualities.</div>`);
+    // Keep scrollbox empty if category has no entries
+    $qualitiesList.html("");
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
     return;
@@ -574,7 +585,6 @@ return;
   ).join("");
   $qualitiesList.html(items);
 
-  // when a quality is selected, update preview to show its description
   wireSelectableList($qualitiesList, ".if-quality", {
     onSelect: () => {
       const kind = html.find('input[name="itemType"]:checked').val();
