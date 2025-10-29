@@ -213,6 +213,12 @@ const clip = (v, n=14) => {
   return s.length > n ? s.slice(0, n-1) + "…" : s;
 };
 
+const addModIfNumber = (val, mod) => {
+  const num = Number(val);
+  return Number.isFinite(num) ? (num + mod) : val; // keep original if not numeric
+};
+const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
+
 const renderPreview = (kind, selectedEl) => {
   const icon = getKindIcon(kind);
   const style = `
@@ -229,67 +235,82 @@ const renderPreview = (kind, selectedEl) => {
                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
       .if-muted{ opacity:0.7; }
       .if-tight{ letter-spacing:0.2px; }
-      /* NEW: wrapped quality description row with padding so it doesn't touch border */
-      .if-row-desc {
-  width: 100%;
-  text-align: center;         /* ← centered text */
-  font-size: 11px;
-  line-height: 1.2;
-  white-space: normal;        /* allow wrapping */
-  overflow: hidden;
-  padding: 4px 8px;           /* breathing room */
-  box-sizing: border-box;
-}
+      .if-row-desc{
+        width:100%;
+        text-align:center;
+        font-size:11px;
+        line-height:1.2;
+        white-space:normal;
+        overflow:hidden;
+        padding:4px 8px;
+        box-sizing:border-box;
+      }
     </style>
   `;
 
+  // If not weapon, just show icon/placeholder (we'll wire other types later)
   const kindNow = html.find('input[name="itemType"]:checked').val();
   if (kind !== "weapon" || kindNow !== "weapon") {
     $preview.html(`${style}
       <div id="if-preview-card">
         <img id="if-preview-icon" src="${icon}">
-        <div id="if-preview-rows" class="if-muted">
-          <div class="if-row">Preview coming soon…</div>
-        </div>
+        <div id="if-preview-rows" class="if-muted"><div class="if-row">Preview coming soon…</div></div>
       </div>
     `);
     return;
   }
 
-  // weapon selection
+  // TEMPLATE selection
   const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
   const idx = Number($sel.data("idx"));
   const w   = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-  // row 1
-  const row1_hand     = w?.hand ?? "—";
-  const row1_type     = w?.type ?? "—";
-  const row1_category = w?.category ?? w?.cat ?? "—";
+  // BASE values from template
+  const baseHand     = normHand(w?.hand) || null;            // "1" | "2" | null
+  const baseHandText = handLabel(baseHand ?? (w?.hand ?? "—"));
+  const baseType     = w?.type ?? "—";
+  const baseCat      = w?.category ?? w?.cat ?? "—";
+  const baseA        = (w?.attrA ?? "—").toString().toUpperCase();
+  const baseB        = (w?.attrB ?? "—").toString().toUpperCase();
+  const baseAcc      = w?.accuracy ?? w?.acc ?? "—";
+  const baseDmg      = w?.damage   ?? w?.dmg ?? "—";
+  const baseEle      = (w?.element ?? "physical").toString();
 
-  // row 2 (requested format)
-  const a   = (w?.attrA ?? "—").toString().toUpperCase();
-  const b   = (w?.attrB ?? "—").toString().toUpperCase();
-  const acc = (w?.accuracy ?? w?.acc ?? "—");
-  const dmg = (w?.damage   ?? w?.dmg ?? "—");
-  const ele = (w?.element  ?? "physical");
-  const row2 = `【${a} + ${b}】+ ${acc} | HR+${dmg} | ${ele}`;
+  // UI OVERRIDES from Attributes + Customize
+  const selA   = (html.find('#optAttrA').val() || baseA).toString().toUpperCase();
+  const selB   = (html.find('#optAttrB').val() || baseB).toString().toUpperCase();
+  const plus1  = html.find('#optPlusOne').is(':checked');
+  const plus4  = html.find('#optPlusDamage').is(':checked');
+  const flip   = html.find('#optToggleHand').is(':checked');
+  const eleSel = (html.find('#optElement').val() || baseEle).toString();
 
-  // NEW: Quality description (from selected quality in the right scroll box)
+  // apply numeric mods if possible
+  const dispAcc = plus1 ? addModIfNumber(baseAcc, 1) : baseAcc;
+  const dispDmg = plus4 ? addModIfNumber(baseDmg, 4) : baseDmg;
+
+  // apply hand flip if base hand is recognized
+  let dispHand = baseHand;
+  if (flip && (baseHand === "1" || baseHand === "2")) {
+    dispHand = baseHand === "1" ? "2" : "1";
+  }
+  const dispHandText = handLabel(dispHand ?? baseHandText);
+
+  // ROWS
+  const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
+  const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} | ${eleSel}`;
+
+  // Quality row (selected on the right)
   const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
   const qIdx  = Number($qsel.data("idx"));
   const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-  const qdesc = q?.description ?? q?.desc ?? "";  // tolerate "desc" fallback
+  const qdesc = q?.description ?? q?.desc ?? "";
 
   $preview.html(`${style}
     <div id="if-preview-card">
       <img id="if-preview-icon" src="${icon}">
       <div id="if-preview-rows">
-        <div class="if-row if-tight">
-          ${esc(clip(row1_hand,12))} • ${esc(clip(row1_type,12))} • ${esc(clip(row1_category,14))}
-        </div>
-        <div class="if-row if-tight">
-          ${esc(clip(row2, 64))}
-        </div>
+        <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
+        <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
         <div class="if-row-desc">${esc(qdesc)}</div>
       </div>
     </div>
@@ -506,6 +527,17 @@ const renderPreview = (kind, selectedEl) => {
           relayout();
         };
 
+const refreshPreviewFromUI = () => {
+  const kind = html.find('input[name="itemType"]:checked').val();
+  renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+};
+
+$dlg.off('.ifPrev');
+$dlg.on('change.ifPrev',
+  '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement',
+  refreshPreviewFromUI
+);
+        
         $qualitiesSelect.on("change", () => {
   const kind = html.find('input[name="itemType"]:checked').val();
   renderQualities(kind);
