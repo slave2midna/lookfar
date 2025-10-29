@@ -101,7 +101,7 @@ import { dataLoader } from "./dataLoader.js";
         </fieldset>
 
         <!-- Qualities -->
-        <fieldset style="margin:0;">
+        <fieldset>
           <legend>Qualities</legend>
           <div style="margin-bottom:4px;">
             <select id="qualitiesCategory" style="width:100%;">
@@ -116,7 +116,7 @@ import { dataLoader } from "./dataLoader.js";
         </fieldset>
 
         <!-- Cost -->
-        <fieldset style="margin:0;">
+        <fieldset>
           <legend>Cost</legend>
           <div id="costArea"
                style="width:100%; height:10px; display:flex; align-items:center; justify-content:center; font-size:14px;">
