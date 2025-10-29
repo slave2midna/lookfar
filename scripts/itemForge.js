@@ -177,6 +177,27 @@ import { dataLoader } from "./dataLoader.js";
         const getItemImage = (item) =>
           item?.img || item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
 
+        // --- NEW: apply Attr A/B defaults from selected weapon template ---
+        const applyAttrDefaultsFromTemplate = (selectedEl) => {
+          const kind = html.find('input[name="itemType"]:checked').val();
+          if (kind !== "weapon") return;
+
+          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+          const idx = Number($sel.data("idx"));
+          const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+
+          const $a = html.find('#optAttrA');
+          const $b = html.find('#optAttrB');
+          if (!$a.length || !$b.length) return;
+
+          const allowed = new Set(["MIG","DEX","INS","WLP"]);
+          const a = String(base?.attrA ?? "").toUpperCase();
+          const b = String(base?.attrB ?? "").toUpperCase();
+
+          if (allowed.has(a)) $a.val(a);
+          if (allowed.has(b)) $b.val(b);
+        };
+
         const wireSelectableList = ($container, itemSel, { onSelect } = {}) => {
           const $items = $container.find(itemSel);
           $items.on("mouseenter", function() {
@@ -258,7 +279,12 @@ import { dataLoader } from "./dataLoader.js";
             `<div class="if-template" data-idx="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
           ).join("");
           $templateList.html(items);
-          wireSelectableList($templateList, ".if-template", { onSelect: (el) => updateHandToggle(el) });
+          wireSelectableList($templateList, ".if-template", {
+            onSelect: (el) => {
+              updateHandToggle(el);
+              applyAttrDefaultsFromTemplate(el); // ← set Attr A/B from equipment.json
+            }
+          });
         };
 
         const renderQualities = (type) => {
@@ -351,12 +377,13 @@ import { dataLoader } from "./dataLoader.js";
           else $wrap.hide();
         };
 
+        // --- CHANGED ORDER: ensure Attr selects exist before template auto-select ---
         const updateForKind = (kind) => {
-          populateTemplates(kind);
-          renderCustomize(kind);
-          renderAttrs(kind);
-          renderQualities(kind);
-          if (kind === "weapon") updateHandToggle();  // ✅ correct condition
+          renderCustomize(kind);     // 1) create area (hand toggle holder)
+          renderAttrs(kind);         // 2) create Attr selects
+          populateTemplates(kind);   // 3) renders & auto-selects first template → sets hand + Attrs
+          renderQualities(kind);     // 4) category/apply filter
+          if (kind === "weapon") updateHandToggle();
           relayout();
         };
 
