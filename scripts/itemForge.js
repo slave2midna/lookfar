@@ -484,7 +484,6 @@ if (kind === "weapon") {
   const baseAcc      = w?.accuracy ?? w?.acc ?? "—";
   const baseDmg      = w?.damage   ?? w?.dmg ?? "—";
   const baseEle      = (w?.element ?? "physical").toString();
-  const isMartial    = !!w?.isMartial;
 
   // UI OVERRIDES
   const selA   = (html.find('#optAttrA').val() || baseA).toString().toUpperCase();
@@ -504,6 +503,8 @@ if (kind === "weapon") {
 
   const dispAcc = plus1 ? addModIfNumber(baseAcc, 1) : baseAcc;
   const dispDmg = addModIfNumber(plus4 ? addModIfNumber(baseDmg, 4) : baseDmg, handMod);
+  const dispDmgNum = Number(dispDmg);
+  const isMartialEffective = (Number.isFinite(dispDmgNum) && dispDmgNum >= 10) || !!w?.isMartial;
 
   const dispHandText = handLabel(dispHand ?? baseHandText);
 
@@ -520,7 +521,7 @@ if (kind === "weapon") {
     <div id="if-preview-head">
       <div class="if-icon-wrap">
         <img id="if-preview-icon" src="${icon}">
-        ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
+        ${isMartialEffective ? `<span class="is-martial if-badge"></span>` : ``}
       </div>
     </div>
     <div id="if-preview-rows">
