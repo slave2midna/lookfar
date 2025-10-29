@@ -39,6 +39,19 @@ import { dataLoader } from "./dataLoader.js";
     return null;
   };
 
+  // --- Cost helpers ---
+const toInt = (v) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0;
+};
+
+// equipment.json can use cost or value (some schemas embed under data)
+const getEquipCost = (r) =>
+  toInt(r?.cost ?? r?.value ?? r?.data?.cost ?? r?.data?.cost?.value ?? 0);
+
+// qualities.json uses "cost"
+const getQualityCost = (q) => toInt(q?.cost ?? 0);
+
   const CATEGORY_OPTIONS = [
     ["Basic",       "basic"],
     ["Ardent",      "ardent"],
@@ -118,10 +131,7 @@ import { dataLoader } from "./dataLoader.js";
         <!-- Cost -->
         <fieldset>
           <legend>Cost</legend>
-          <div id="costArea"
-               style="width:100%; height:10px; display:flex; align-items:center; justify-content:center; font-size:14px;">
-            1000z
-          </div>
+          <div id="costArea" style="width:100%; height:10px; display:flex; align-items:center; justify-content:center; font-size:14px;">z</div>
         </fieldset>
       </div>
       </div>
@@ -185,6 +195,27 @@ import { dataLoader } from "./dataLoader.js";
         let currentTemplates = [];
         let currentQualities = [];
         const materials = [];
+
+  // ---- COST: recompute whenever template or quality selection changes ----
+  const updateCost = () => {
+  const $cost = html.find('#costArea');
+
+  // selected template
+  const $t = html.find('#templateList [data-selected="1"]').first();
+  const ti = Number($t.data("idx"));
+  const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
+
+  // selected quality (may be none)
+  const $q = html.find('#qualitiesList [data-selected="1"]').first();
+  const qi = Number($q.data("idx"));
+  const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
+
+  const base  = getEquipCost(tmpl);
+  const qcost = getQualityCost(qual);
+  const total = base + qcost;
+
+  $cost.text(`${total}z`);
+};
 
         const getNameSafe = (r) => esc(getName(r));
         const getItemImage = (item) =>
@@ -556,6 +587,7 @@ return;
               applyAttrDefaultsFromTemplate(el);
               const kind = html.find('input[name="itemType"]:checked').val();
               renderPreview(kind, el);                 // ← update preview on selection
+              updateCost();                            // ← NEW
             }
           });
         };
@@ -566,6 +598,7 @@ return;
     currentQualities = [];
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+    updateCost();                            // ← NEW
     return;
   }
 
@@ -577,6 +610,7 @@ return;
     $qualitiesList.html("");  // empty scrollbox (by request)
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+    updateCost();                            // ← NEW
     return;
   }
 
@@ -584,10 +618,10 @@ return;
   currentQualities = catList.filter(q => matchesAppliesTo(q, type));
 
   if (!currentQualities.length) {
-    // Keep scrollbox empty if category has no entries
     $qualitiesList.html("");
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+    updateCost();                            // ← NEW
     return;
   }
 
@@ -600,6 +634,7 @@ return;
     onSelect: () => {
       const kind = html.find('input[name="itemType"]:checked').val();
       renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+      updateCost();                          // ← NEW
     }
   });
 };
@@ -683,6 +718,7 @@ return;
           renderPreview(kind, null);      // ← set icon/placeholder immediately for this dial
           if (kind === "weapon") updateHandToggle();
           relayout();
+          updateCost();                   // ← NEW
         };
 
 const refreshPreviewFromUI = () => {
