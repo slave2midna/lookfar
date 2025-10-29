@@ -207,75 +207,80 @@ import { dataLoader } from "./dataLoader.js";
           if (allowed.has(b)) $b.val(b);
         };
 
-        // ---------- PREVIEW: render compact item card ----------
-        const clip = (v, n=10) => {
-          const s = String(v ?? "");
-          return s.length > n ? s.slice(0, n-1) + "…" : s;
-        };
+// ---------- PREVIEW: render compact item card ----------
+const clip = (v, n=14) => {
+  const s = String(v ?? "");
+  return s.length > n ? s.slice(0, n-1) + "…" : s;
+};
 
-        const renderPreview = (kind, selectedEl) => {
-          // Base shell (keeps dimensions fixed)
-          const icon = getKindIcon(kind);
-          const style = `
-            <style>
-              #if-preview-card { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:6px; padding:6px; box-sizing:border-box; }
-              #if-preview-icon { width:32px; height:32px; object-fit:contain; image-rendering:auto; }
-              #if-preview-rows { width:100%; display:flex; flex-direction:column; gap:2px; }
-              .if-row { width:100%; text-align:center; font-size:11px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-              .if-bullet { margin:0 6px; opacity:0.7; }
-              .if-muted { opacity:0.7; }
-            </style>
-          `;
+const renderPreview = (kind, selectedEl) => {
+  // Base shell (keeps dimensions fixed)
+  const icon = getKindIcon(kind);
+  const style = `
+    <style>
+      /* center the card within the host (which is already a flex center container) */
+      #if-preview-card {
+        width:100%; height:100%;
+        display:flex; flex-direction:column;
+        align-items:center; justify-content:center;  /* ← center vertically & horizontally */
+        gap:8px; padding:6px; box-sizing:border-box;
+      }
+      #if-preview-icon { width:32px; height:32px; object-fit:contain; image-rendering:auto; }
+      #if-preview-rows { width:100%; display:flex; flex-direction:column; gap:4px; }
+      .if-row { width:100%; text-align:center; font-size:11px; line-height:1.15;
+                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .if-muted { opacity:0.7; }
+      .if-tight { letter-spacing:0.2px; }
+    </style>
+  `;
 
-          // If not weapon yet, just show icon placeholder
-          const kindNow = html.find('input[name="itemType"]:checked').val();
-          if (kind !== "weapon" || kindNow !== "weapon") {
-            $preview.html(`${style}
-              <div id="if-preview-card">
-                <img id="if-preview-icon" src="${icon}">
-                <div id="if-preview-rows" class="if-muted">
-                  <div class="if-row">Preview coming soon…</div>
-                </div>
-              </div>
-            `);
-            return;
-          }
+  // Non-weapon: show icon placeholder (we'll wire stats later)
+  const kindNow = html.find('input[name="itemType"]:checked').val();
+  if (kind !== "weapon" || kindNow !== "weapon") {
+    $preview.html(`${style}
+      <div id="if-preview-card">
+        <img id="if-preview-icon" src="${icon}">
+        <div id="if-preview-rows" class="if-muted">
+          <div class="if-row">Preview coming soon…</div>
+        </div>
+      </div>
+    `);
+    return;
+  }
 
-          // Weapon selected → pull current template
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const w = Number.isFinite(idx) ? currentTemplates[idx] : null;
+  // Weapon selected → pull current template
+  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx = Number($sel.data("idx"));
+  const w = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-          // Build rows safely
-          const row1_hand     = w?.hand ?? "—";
-          const row1_type     = w?.type ?? "—";
-          const row1_category = w?.category ?? w?.cat ?? "—";
+  // Row 1
+  const row1_hand     = w?.hand ?? "—";
+  const row1_type     = w?.type ?? "—";
+  const row1_category = w?.category ?? w?.cat ?? "—";
 
-          const row2_a  = (w?.attrA ?? "—").toString().toUpperCase();
-          const row2_b  = (w?.attrB ?? "—").toString().toUpperCase();
-          const row2_acc = (w?.accuracy ?? w?.acc ?? "—");
-          const row2_dmg = (w?.damage ?? w?.dmg ?? "—");
-          const row2_ele = (w?.element ?? "physical");
+  // Row 2 (new formatting)
+  const a  = (w?.attrA ?? "—").toString().toUpperCase();
+  const b  = (w?.attrB ?? "—").toString().toUpperCase();
+  const acc = (w?.accuracy ?? w?.acc ?? "—");
+  const dmg = (w?.damage ?? w?.dmg ?? "—");
+  const ele = (w?.element ?? "physical");
 
-          $preview.html(`${style}
-            <div id="if-preview-card">
-              <img id="if-preview-icon" src="${icon}">
-              <div id="if-preview-rows">
-                <div class="if-row">
-                  ${esc(clip(row1_hand,12))} <span class="if-bullet">•</span>
-                  ${esc(clip(row1_type,12))} <span class="if-bullet">•</span>
-                  ${esc(clip(row1_category,14))}
-                </div>
-                <div class="if-row">
-                  ${esc(row2_a)}/${esc(row2_b)} <span class="if-bullet">•</span>
-                  Acc ${esc(row2_acc)} <span class="if-bullet">•</span>
-                  Dmg ${esc(row2_dmg)} <span class="if-bullet">•</span>
-                  ${esc(clip(row2_ele,12))}
-                </div>
-              </div>
-            </div>
-          `);
-        };
+  const row2 = `【${a} + ${b}】+ ${acc} | HR+${dmg} | ${ele}`;
+
+  $preview.html(`${style}
+    <div id="if-preview-card">
+      <img id="if-preview-icon" src="${icon}">
+      <div id="if-preview-rows">
+        <div class="if-row if-tight">
+          ${esc(clip(row1_hand,12))} • ${esc(clip(row1_type,12))} • ${esc(clip(row1_category,14))}
+        </div>
+        <div class="if-row if-tight">
+          ${esc(clip(row2, 64))}
+        </div>
+      </div>
+    </div>
+  `);
+};
 
         // ---------- shared selectable list ----------
         const wireSelectableList = ($container, itemSel, { onSelect } = {}) => {
