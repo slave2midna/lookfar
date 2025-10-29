@@ -182,8 +182,8 @@ import { dataLoader } from "./dataLoader.js";
         const getKindIcon = (kind) => ({
           weapon:    "icons/svg/sword.svg",
           shield:    "icons/svg/shield.svg",
-          armor:     "icons/svg/armor.svg",
-          accessory: "icons/svg/bag.svg"
+          armor:     "icons/svg/statue.svg",
+          accessory: "icons/svg/gem.svg"
         }[kind] || "icons/svg/mystery-man.svg");
 
         // --- NEW: apply Attr A/B defaults from selected weapon template ---
@@ -222,31 +222,52 @@ const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h ||
 const renderPreview = (kind, selectedEl) => {
   const icon = getKindIcon(kind);
   const style = `
-    <style>
-      #if-preview-card{
-        width:100%; height:100%;
-        display:flex; flex-direction:column;
-        align-items:center; justify-content:center;
-        gap:8px; padding:6px; box-sizing:border-box;
-      }
-      #if-preview-icon{ width:32px; height:32px; object-fit:contain; image-rendering:auto; }
-      #if-preview-rows{ width:100%; display:flex; flex-direction:column; gap:4px; }
-      .if-row{ width:100%; text-align:center; font-size:11px; line-height:1.15;
-               white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-      .if-muted{ opacity:0.7; }
-      .if-tight{ letter-spacing:0.2px; }
-      .if-row-desc{
-        width:100%;
-        text-align:center;
-        font-size:11px;
-        line-height:1.2;
-        white-space:normal;
-        overflow:hidden;
-        padding:4px 8px;
-        box-sizing:border-box;
-      }
-    </style>
-  `;
+  <style>
+    #if-preview-card{
+      width:100%; height:100%;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:8px; padding:6px; box-sizing:border-box;
+    }
+    /* head row to hold the icon */
+    #if-preview-head{
+      display:flex; align-items:center; justify-content:center;
+      gap:6px;
+    }
+    /* icon wrapper to allow absolute-positioned badge */
+    .if-icon-wrap{
+      position:relative;
+      width:32px; height:32px;
+      display:inline-block;
+    }
+    #if-preview-icon{ width:32px; height:32px; object-fit:contain; image-rendering:auto; display:block; }
+    /* the badge that overlaps the icon (uses your system class + positioning) */
+    .if-badge{
+      position:absolute;
+      right:-2px;
+      bottom:-2px;
+      z-index:2;              /* ensure on top of the image */
+      transform:scale(0.9);   /* small shrink so it fits neatly */
+      pointer-events:none;    /* avoid accidental clicks */
+    }
+
+    #if-preview-rows{ width:100%; display:flex; flex-direction:column; gap:4px; }
+    .if-row{ width:100%; text-align:center; font-size:11px; line-height:1.15;
+             white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .if-muted{ opacity:0.7; }
+    .if-tight{ letter-spacing:0.2px; }
+    .if-row-desc{
+      width:100%;
+      text-align:center;
+      font-size:11px;
+      line-height:1.2;
+      white-space:normal;
+      overflow:hidden;
+      padding:4px 8px;
+      box-sizing:border-box;
+    }
+  </style>
+`;
 
   // dial sanity check
 const kindNow = html.find('input[name="itemType"]:checked').val();
@@ -288,17 +309,19 @@ if (kind === "armor") {
 
   // HEAD: icon + optional martial badge to the right of the icon
   $preview.html(`${style}
-    <div id="if-preview-card">
-      <div id="if-preview-head">
+  <div id="if-preview-card">
+    <div id="if-preview-head">
+      <div class="if-icon-wrap">
         <img id="if-preview-icon" src="${icon}">
-        ${isMartial ? `<span class="is-martial"></span>` : ``}
-      </div>
-      <div id="if-preview-rows">
-        <div class="if-row if-tight">${rowArmor}</div>
-        <div class="if-row-desc">${esc(qdesc)}</div>
+        ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
       </div>
     </div>
-  `);
+    <div id="if-preview-rows">
+      <div class="if-row if-tight">${rowArmor}</div>
+      <div class="if-row-desc">${esc(qdesc)}</div>
+    </div>
+  </div>
+`);
   return;
 }
 
