@@ -214,27 +214,35 @@ const clip = (v, n=14) => {
 };
 
 const renderPreview = (kind, selectedEl) => {
-  // Base shell (keeps dimensions fixed)
   const icon = getKindIcon(kind);
   const style = `
     <style>
-      /* center the card within the host (which is already a flex center container) */
-      #if-preview-card {
+      #if-preview-card{
         width:100%; height:100%;
         display:flex; flex-direction:column;
-        align-items:center; justify-content:center;  /* ← center vertically & horizontally */
+        align-items:center; justify-content:center;
         gap:8px; padding:6px; box-sizing:border-box;
       }
-      #if-preview-icon { width:32px; height:32px; object-fit:contain; image-rendering:auto; }
-      #if-preview-rows { width:100%; display:flex; flex-direction:column; gap:4px; }
-      .if-row { width:100%; text-align:center; font-size:11px; line-height:1.15;
-                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-      .if-muted { opacity:0.7; }
-      .if-tight { letter-spacing:0.2px; }
+      #if-preview-icon{ width:32px; height:32px; object-fit:contain; image-rendering:auto; }
+      #if-preview-rows{ width:100%; display:flex; flex-direction:column; gap:4px; }
+      .if-row{ width:100%; text-align:center; font-size:11px; line-height:1.15;
+               white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .if-muted{ opacity:0.7; }
+      .if-tight{ letter-spacing:0.2px; }
+      /* NEW: wrapped quality description row with padding so it doesn't touch border */
+      .if-row-desc{
+        width:100%;
+        text-align:left;
+        font-size:11px;
+        line-height:1.2;
+        white-space:normal;          /* allow wrap */
+        overflow:hidden;
+        padding:4px 8px;             /* breathing room */
+        box-sizing:border-box;
+      }
     </style>
   `;
 
-  // Non-weapon: show icon placeholder (we'll wire stats later)
   const kindNow = html.find('input[name="itemType"]:checked').val();
   if (kind !== "weapon" || kindNow !== "weapon") {
     $preview.html(`${style}
@@ -248,24 +256,29 @@ const renderPreview = (kind, selectedEl) => {
     return;
   }
 
-  // Weapon selected → pull current template
+  // weapon selection
   const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
   const idx = Number($sel.data("idx"));
-  const w = Number.isFinite(idx) ? currentTemplates[idx] : null;
+  const w   = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-  // Row 1
+  // row 1
   const row1_hand     = w?.hand ?? "—";
   const row1_type     = w?.type ?? "—";
   const row1_category = w?.category ?? w?.cat ?? "—";
 
-  // Row 2 (new formatting)
-  const a  = (w?.attrA ?? "—").toString().toUpperCase();
-  const b  = (w?.attrB ?? "—").toString().toUpperCase();
+  // row 2 (requested format)
+  const a   = (w?.attrA ?? "—").toString().toUpperCase();
+  const b   = (w?.attrB ?? "—").toString().toUpperCase();
   const acc = (w?.accuracy ?? w?.acc ?? "—");
-  const dmg = (w?.damage ?? w?.dmg ?? "—");
-  const ele = (w?.element ?? "physical");
-
+  const dmg = (w?.damage   ?? w?.dmg ?? "—");
+  const ele = (w?.element  ?? "physical");
   const row2 = `【${a} + ${b}】+ ${acc} | HR+${dmg} | ${ele}`;
+
+  // NEW: Quality description (from selected quality in the right scroll box)
+  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  const qIdx  = Number($qsel.data("idx"));
+  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+  const qdesc = q?.description ?? q?.desc ?? "";  // tolerate "desc" fallback
 
   $preview.html(`${style}
     <div id="if-preview-card">
@@ -277,6 +290,7 @@ const renderPreview = (kind, selectedEl) => {
         <div class="if-row if-tight">
           ${esc(clip(row2, 64))}
         </div>
+        <div class="if-row-desc">${esc(qdesc)}</div>
       </div>
     </div>
   `);
@@ -378,24 +392,38 @@ const renderPreview = (kind, selectedEl) => {
         };
 
         const renderQualities = (type) => {
-          if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
-            $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
-            currentQualities = [];
-            return;
-          }
-          const catKey = String($qualitiesSelect.val() || "basic").toLowerCase();
-          const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
-          currentQualities = catList.filter(q => matchesAppliesTo(q, type));
-          if (!currentQualities.length) {
-            $qualitiesList.html(`<div style="text-align:center; opacity:0.75;">No ${catKey} ${type} qualities.</div>`);
-            return;
-          }
-          const items = currentQualities.map((q, i) =>
-            `<div class="if-quality" data-idx="${i}" style="padding:4px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`
-          ).join("");
-          $qualitiesList.html(items);
-          wireSelectableList($qualitiesList, ".if-quality", { onSelect: () => {} });
-        };
+  if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
+    $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
+    currentQualities = [];
+    // also reflect that there is no quality description
+    const kind = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+    return;
+  }
+  const catKey  = String($qualitiesSelect.val() || "basic").toLowerCase();
+  const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
+  currentQualities = catList.filter(q => matchesAppliesTo(q, type));
+
+  if (!currentQualities.length) {
+    $qualitiesList.html(`<div style="text-align:center; opacity:0.75;">No ${catKey} ${type} qualities.</div>`);
+    const kind = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+    return;
+  }
+
+  const items = currentQualities.map((q, i) =>
+    `<div class="if-quality" data-idx="${i}" style="padding:4px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`
+  ).join("");
+  $qualitiesList.html(items);
+
+  // when a quality is selected, update preview to show its description
+  wireSelectableList($qualitiesList, ".if-quality", {
+    onSelect: () => {
+      const kind = html.find('input[name="itemType"]:checked').val();
+      renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+    }
+  });
+};
 
         const renderAttrs = (type) => {
           if (type !== "weapon") return $attrInner.html("");
@@ -479,9 +507,10 @@ const renderPreview = (kind, selectedEl) => {
         };
 
         $qualitiesSelect.on("change", () => {
-          const kind = html.find('input[name="itemType"]:checked').val();
-          renderQualities(kind);
-        });
+  const kind = html.find('input[name="itemType"]:checked').val();
+  renderQualities(kind);
+  renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+});
 
         // Re-render preview icon when the dial changes (even before templates arrive)
         html.on("change", 'input[name="itemType"]', (ev) => {
