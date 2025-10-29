@@ -200,21 +200,32 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
   const updateCost = () => {
   const $cost = html.find('#costArea');
 
-  // selected template
   const $t = html.find('#templateList [data-selected="1"]').first();
   const ti = Number($t.data("idx"));
   const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
 
-  // selected quality (may be none)
   const $q = html.find('#qualitiesList [data-selected="1"]').first();
   const qi = Number($q.data("idx"));
   const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
 
   const base  = getEquipCost(tmpl);
   const qcost = getQualityCost(qual);
-  const total = base + qcost;
 
-  $cost.text(`${total}z`);
+  // weapon-only customize surcharges
+  const kind  = html.find('input[name="itemType"]:checked').val();
+  let custom  = 0;
+  if (kind === "weapon") {
+    const plus1  = html.find('#optPlusOne').is(':checked');     // +1 Accuracy
+    const plus4  = html.find('#optPlusDamage').is(':checked');  // +4 Damage
+    const eleSel = (html.find('#optElement').val() || 'physical').toString();
+
+    if (plus1) custom += 100;
+    if (plus4) custom += 200;
+    if (eleSel !== 'physical') custom += 100;
+    // hand toggle: no cost
+  }
+
+  $cost.text(`${base + qcost + custom}z`);
 };
 
         const getNameSafe = (r) => esc(getName(r));
@@ -724,6 +735,7 @@ return;
 const refreshPreviewFromUI = () => {
   const kind = html.find('input[name="itemType"]:checked').val();
   renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+  updateCost(); // ensure cost updates with +1, +4, or element
 };
 
 $dlg.off('.ifPrev');
