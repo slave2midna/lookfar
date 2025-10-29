@@ -275,12 +275,10 @@ if (kind === "armor") {
   const mdef      = (a?.mdef      ?? "—");
   const init      = (a?.init      ?? "—");
 
-  // Row: conditional formatting
-  // false  → "DEF: defAttr+def | M.DEF: mdefAttr+mdef | INIT: init"
-  // true   → "<span class=is-martial></span> DEF: def | M.DEF mdefAttr+mdef | INIT: init"
+  // Row with bold labels; defAttr suppressed when isMartial=true
   const rowArmor = !isMartial
-    ? `DEF: ${esc(defAttr)}+${esc(def)} | M.DEF: ${esc(mdefAttr)}+${esc(mdef)} | INIT: ${esc(init)}`
-    : `<span class="is-martial"></span> DEF: ${esc(def)} | M.DEF ${esc(mdefAttr)}+${esc(mdef)} | INIT: ${esc(init)}`;
+    ? `<strong>DEF:</strong> ${esc(defAttr)}+${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`
+    : `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
 
   // Quality description (centered, wrapped)
   const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
@@ -288,9 +286,13 @@ if (kind === "armor") {
   const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
   const qdesc = q?.description ?? q?.desc ?? "";
 
+  // HEAD: icon + optional martial badge to the right of the icon
   $preview.html(`${style}
     <div id="if-preview-card">
-      <img id="if-preview-icon" src="${icon}">
+      <div id="if-preview-head">
+        <img id="if-preview-icon" src="${icon}">
+        ${isMartial ? `<span class="is-martial"></span>` : ``}
+      </div>
       <div id="if-preview-rows">
         <div class="if-row if-tight">${rowArmor}</div>
         <div class="if-row-desc">${esc(qdesc)}</div>
