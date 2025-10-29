@@ -100,7 +100,8 @@ import { dataLoader } from "./dataLoader.js";
           <div id="customizeArea" style="width:100%; height:100px;"></div>
         </fieldset>
 
-        <fieldset>
+        <!-- Qualities (height reduced to 160px) -->
+        <fieldset style="margin:0;">
           <legend>Qualities</legend>
           <div style="margin-bottom:4px;">
             <select id="qualitiesCategory" style="width:100%;">
@@ -109,10 +110,20 @@ import { dataLoader } from "./dataLoader.js";
             </select>
           </div>
           <div id="qualitiesList" aria-label="Qualities list"
-               style="width:100%; height:182px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
+               style="width:100%; height:160px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
             <div>Loading…</div>
           </div>
         </fieldset>
+
+        <!-- Cost (no margin from Qualities, 22px tall row) -->
+        <fieldset style="margin:0;">
+          <legend>Cost</legend>
+          <div id="costArea"
+               style="width:100%; height:22px; display:flex; align-items:center; justify-content:center; font-size:12px;">
+            1000z
+          </div>
+        </fieldset>
+      </div>
       </div>
     </div>
 
