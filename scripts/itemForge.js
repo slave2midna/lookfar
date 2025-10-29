@@ -183,7 +183,7 @@ import { dataLoader } from "./dataLoader.js";
           weapon:    "icons/svg/sword.svg",
           shield:    "icons/svg/shield.svg",
           armor:     "icons/svg/statue.svg",
-          accessory: "icons/svg/gem.svg"
+          accessory: "icons/svg/stoned.svg"
         }[kind] || "icons/svg/mystery-man.svg");
 
         // --- NEW: apply Attr A/B defaults from selected weapon template ---
@@ -358,6 +358,32 @@ if (kind === "shield") {
       <div id="if-preview-rows">
         <div class="if-row if-tight">${rowShield}</div>
         <div class="if-row-desc">${esc(qdesc)}</div>
+      </div>
+    </div>
+  `);
+  return;
+}
+
+// ---------- ACCESSORY PREVIEW ----------
+if (kind === "accessory") {
+  // Selected quality (name only row)
+  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  const qIdx  = Number($qsel.data("idx"));
+  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+
+  // Show the selected quality's display name for accessories; fallback prompt if none selected
+  const qname = q ? esc(qualityDisplayName(q, "accessory")) : "Choose a quality…";
+
+  // Render: icon only + a single row with the selected quality name
+  $preview.html(`${style}
+    <div id="if-preview-card">
+      <div id="if-preview-head">
+        <div class="if-icon-wrap">
+          <img id="if-preview-icon" src="${icon}">
+        </div>
+      </div>
+      <div id="if-preview-rows">
+        <div class="if-row if-tight">${qname}</div>
       </div>
     </div>
   `);
