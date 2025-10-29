@@ -325,6 +325,45 @@ if (kind === "armor") {
   return;
 }
 
+// ---------- SHIELD PREVIEW ----------
+if (kind === "shield") {
+  // current template selection
+  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx  = Number($sel.data("idx"));
+  const s    = Number.isFinite(idx) ? currentTemplates[idx] : null;
+
+  // pull fields from equipment.json (with gentle fallbacks)
+  const isMartial = !!s?.isMartial;
+  const def       = (s?.def  ?? "—");
+  const mdef      = (s?.mdef ?? "—");
+
+  // second row: DEF: +def | M.DEF: +mdef (bold labels)
+  const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
+
+  // Quality description (same behavior as other kinds)
+  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  const qIdx  = Number($qsel.data("idx"));
+  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+  const qdesc = q?.description ?? q?.desc ?? "";
+
+  // HEAD: icon + optional martial badge (presence only difference)
+  $preview.html(`${style}
+    <div id="if-preview-card">
+      <div id="if-preview-head">
+        <div class="if-icon-wrap">
+          <img id="if-preview-icon" src="${icon}">
+          ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
+        </div>
+      </div>
+      <div id="if-preview-rows">
+        <div class="if-row if-tight">${rowShield}</div>
+        <div class="if-row-desc">${esc(qdesc)}</div>
+      </div>
+    </div>
+  `);
+  return;
+}  
+
 // ---------- WEAPON PREVIEW (unchanged below this line) ----------
 if (kind === "weapon") {
   // TEMPLATE selection
