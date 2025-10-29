@@ -720,31 +720,32 @@ return;
   const idx = Number($sel.data("idx"));
   const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-  const h = normHand(base?.hand);
+  const h = normHand(base?.hand); // "1" | "2" | null
   const cat = String(base?.category ?? base?.cat ?? "").toLowerCase();
   const restricted = new Set(["brawling","dagger","thrown"]);
 
   // helper to style-disable the whole control
   const setDisabled = (disabled, title="") => {
-    $checkbox.prop("disabled", disabled).prop("checked", false);
+    $checkbox.prop("disabled", disabled);
+    if (disabled) $checkbox.prop("checked", false);  // ensure off when disabled
     $wrap.css({ opacity: disabled ? 0.5 : 1, filter: disabled ? "grayscale(1)" : "" });
     if (title) $wrap.attr("title", title); else $wrap.removeAttr("title");
   };
 
   if (h === "2") {
+    // Base is 2H → show "Make 1-handed" and allow it (no restriction)
     $labelSpan.text("Make 1-handed");
     $wrap.show();
-
-    // In these categories, you cannot make it 1-handed → disable + grey out
+    setDisabled(false);
+  } else if (h === "1") {
+    // Base is 1H → show "Make 2-handed"; for certain categories this is not allowed
+    $labelSpan.text("Make 2-handed");
+    $wrap.show();
     if (restricted.has(cat)) {
-      setDisabled(true, "Not available for this weapon category");
+      setDisabled(true, "This category cannot be made 2-handed");
     } else {
       setDisabled(false);
     }
-  } else if (h === "1") {
-    $labelSpan.text("Make 2-handed");
-    $wrap.show();
-    setDisabled(false); // allowed
   } else {
     $wrap.hide();
   }
