@@ -361,6 +361,8 @@ $preview.html(`${style}
     <div id="if-preview-rows" class="if-muted"><div class="if-row">Preview coming soon…</div></div>
   </div>
 `);
+return;
+}
 
         // ---------- shared selectable list ----------
         const wireSelectableList = ($container, itemSel, { onSelect } = {}) => {
