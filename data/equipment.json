@@ -1,6 +1,7 @@
 {
    "weaponList":[
       {
+         "id":"staff",
          "name":"Staff",
          "value":100,
          "category":"arcane",
@@ -15,6 +16,7 @@
          "isMartial":false
       },
       {
+         "id":"tome",
          "name":"Tome",
          "value":100,
          "category":"arcane",
@@ -29,6 +31,7 @@
          "isMartial":false
       },
       {
+         "id":"crossbow",
          "name":"Crossbow",
          "value":150,
          "category":"bow",
@@ -43,6 +46,7 @@
          "isMartial":false
       },
       {
+         "id":"shortbow",
          "name":"Bow",
          "value":200,
          "category":"bow",
@@ -57,6 +61,7 @@
          "isMartial":false
       },
       {
+         "id":"iron-knuckle",
          "name":"Knuckle",
          "value":150,
          "category":"brawling",
@@ -71,6 +76,7 @@
          "isMartial":false
       },
       {
+         "id":"steel-dagger",
          "name":"Dagger",
          "value":150,
          "category":"dagger",
@@ -85,6 +91,7 @@
          "isMartial":false
       },
       {
+         "id":"pistol",
          "name":"Pistol",
          "value":250,
          "category":"firearm",
@@ -96,11 +103,12 @@
          "defense":"def",
          "element":"physical",
          "damage":8,
-         "isMartial":false
+         "isMartial":true
       },
       {
+         "id":"rifle",
          "name":"Rifle",
-         "value":300,
+         "value":250,
          "category":"firearm",
          "hand":"two-handed",
          "type":"ranged",
@@ -110,9 +118,10 @@
          "defense":"def",
          "element":"physical",
          "damage":12,
-         "isMartial":false
+         "isMartial":true
       },
       {
+         "id":"chain-whip",
          "name":"Whip",
          "value":150,
          "category":"flail",
@@ -127,6 +136,7 @@
          "isMartial":false
       },
       {
+         "id":"iron-hammer",
          "name":"Hammer",
          "value":200,
          "category":"heavy",
@@ -141,7 +151,23 @@
          "isMartial":false
       },
       {
-         "name":"Broadaxe",
+         "id":"warhammer",
+         "name":"Warhammer",
+         "value":200,
+         "category":"heavy",
+         "hand":"two-handed",
+         "type":"melee",
+         "attrA":"mig",
+         "attrB":"mig",
+         "accuracy":0,
+         "defense":"def",
+         "element":"physical",
+         "damage":10,
+         "isMartial":true
+      },
+      {
+         "id":"broadaxe",
+         "name":"Handaxe",
          "value":250,
          "category":"heavy",
          "hand":"one-handed",
@@ -155,6 +181,7 @@
          "isMartial":true
       },
       {
+         "id":"waraxe",
          "name":"Waraxe",
          "value":250,
          "category":"heavy",
@@ -169,6 +196,7 @@
          "isMartial":true
       },
       {
+         "id":"light-spear",
          "name":"Light Spear",
          "value":200,
          "category":"spear",
@@ -183,6 +211,7 @@
          "isMartial":true
       },
       {
+         "id":"heavy-spear",
          "name":"Heavy Spear",
          "value":200,
          "category":"spear",
@@ -197,6 +226,7 @@
          "isMartial":true
       },
       {
+         "id":"bronze-sword",
          "name":"Longsword",
          "value":200,
          "category":"sword",
@@ -211,6 +241,7 @@
          "isMartial":true
       },
       {
+         "id":"greatsword",
          "name":"Greatsword",
          "value":200,
          "category":"sword",
@@ -225,6 +256,7 @@
          "isMartial":true
       },
       {
+         "id":"katana",
          "name":"Katana",
          "value":200,
          "category":"sword",
@@ -239,6 +271,7 @@
          "isMartial":true
       },
       {
+         "id":"rapier",
          "name":"Rapier",
          "value":200,
          "category":"sword",
@@ -253,6 +286,7 @@
          "isMartial":true
       },
       {
+         "id":"shuriken",
          "name":"Shuriken",
          "value":150,
          "category":"thrown",
@@ -269,6 +303,7 @@
    ],
    "armorList":[
       {
+         "id":"silk-shirt",
          "name":"Shirt",
          "value":100,
          "defAttr":"dex",
@@ -279,6 +314,7 @@
          "isMartial":false
       },
       {
+         "id":"travel-garb",
          "name":"Garb",
          "value":100,
          "defAttr":"dex",
@@ -289,6 +325,7 @@
          "isMartial":false
       },
       {
+         "id":"combat-tunic",
          "name":"Tunic",
          "value":150,
          "defAttr":"dex",
@@ -299,6 +336,7 @@
          "isMartial":false
       },
       {
+         "id":"sage-robe",
          "name":"Robe",
          "value":200,
          "defAttr":"dex",
@@ -309,6 +347,7 @@
          "isMartial":false
       },
       {
+         "id":"brigandine",
          "name":"Cuirass",
          "value":150,
          "defAttr":"",
@@ -319,6 +358,7 @@
          "isMartial":true
       },
       {
+         "id":"bronze-plate",
          "name":"Chain",
          "value":200,
          "defAttr":"",
@@ -329,6 +369,7 @@
          "isMartial":true
       },
       {
+         "id":"iron-plate",
          "name":"Scale",
          "value":250,
          "defAttr":"",
@@ -339,6 +380,7 @@
          "isMartial":true
       },
       {
+         "id":"steel-plate",
          "name":"Plate",
          "value":300,
          "defAttr":"",
@@ -351,6 +393,7 @@
    ],
    "shieldList":[
       {
+         "id":"bronze-shield",
          "name":"Buckler",
          "value":100,
          "def":1,
@@ -359,6 +402,7 @@
          "isMartial":false
       },
       {
+         "id":"runic-shield",
          "name":"Shield",
          "value":150,
          "def":2,
@@ -369,78 +413,77 @@
    ],
    "accessoryList":[
       {
+         "id":"necklace",
          "name":"Amulet",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"belt",
          "name":"Belt",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"boots",
          "name":"Boots",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"cape",
          "name":"Cloak",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"charm",
          "name":"Earrings",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
-         "name":"Glasses",
-         "def":0,
-         "mdef":0,
-         "init":0
-      },
-      {
+         "id":"gloves",
          "name":"Gloves",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"hat",
          "name":"Hat",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
-         "name":"Headset",
-         "def":0,
-         "mdef":0,
-         "init":0
-      },
-      {
+         "id":"helm",
          "name":"Helmet",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"hood",
          "name":"Hood",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"mask",
          "name":"Mask",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"ring",
          "name":"Ring",
          "def":0,
          "mdef":0,
