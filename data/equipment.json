@@ -241,7 +241,7 @@
          "isMartial":true
       },
       {
-         "name":"greatsword",
+         "id":"greatsword",
          "name":"Greatsword",
          "value":200,
          "category":"sword",
@@ -303,6 +303,7 @@
    ],
    "armorList":[
       {
+         "id":"silk-shirt",
          "name":"Shirt",
          "value":100,
          "defAttr":"dex",
@@ -313,6 +314,7 @@
          "isMartial":false
       },
       {
+         "id":"travel-garb",
          "name":"Garb",
          "value":100,
          "defAttr":"dex",
@@ -323,6 +325,7 @@
          "isMartial":false
       },
       {
+         "id":"combat-tunic",
          "name":"Tunic",
          "value":150,
          "defAttr":"dex",
@@ -333,6 +336,7 @@
          "isMartial":false
       },
       {
+         "id":"sage-robe",
          "name":"Robe",
          "value":200,
          "defAttr":"dex",
@@ -343,6 +347,7 @@
          "isMartial":false
       },
       {
+         "id":"brigandine",
          "name":"Cuirass",
          "value":150,
          "defAttr":"",
@@ -353,6 +358,7 @@
          "isMartial":true
       },
       {
+         "id":"bronze-plate",
          "name":"Chain",
          "value":200,
          "defAttr":"",
@@ -363,6 +369,7 @@
          "isMartial":true
       },
       {
+         "id":"iron-plate",
          "name":"Scale",
          "value":250,
          "defAttr":"",
@@ -373,6 +380,7 @@
          "isMartial":true
       },
       {
+         "id":"steel-plate",
          "name":"Plate",
          "value":300,
          "defAttr":"",
@@ -385,6 +393,7 @@
    ],
    "shieldList":[
       {
+         "id":"bronze-shield",
          "name":"Buckler",
          "value":100,
          "def":1,
@@ -393,6 +402,7 @@
          "isMartial":false
       },
       {
+         "id":"runic-shield",
          "name":"Shield",
          "value":150,
          "def":2,
@@ -403,78 +413,77 @@
    ],
    "accessoryList":[
       {
+         "id":"necklace",
          "name":"Amulet",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"belt",
          "name":"Belt",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"boots",
          "name":"Boots",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"cape",
          "name":"Cloak",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"charm",
          "name":"Earrings",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
-         "name":"Glasses",
-         "def":0,
-         "mdef":0,
-         "init":0
-      },
-      {
+         "id":"gloves",
          "name":"Gloves",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"hat",
          "name":"Hat",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
-         "name":"Headset",
-         "def":0,
-         "mdef":0,
-         "init":0
-      },
-      {
+         "id":"helm",
          "name":"Helmet",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"hood",
          "name":"Hood",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"mask",
          "name":"Mask",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
+         "id":"ring",
          "name":"Ring",
          "def":0,
          "mdef":0,
