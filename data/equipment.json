@@ -100,7 +100,7 @@
       },
       {
          "name":"Rifle",
-         "value":300,
+         "value":250,
          "category":"firearm",
          "hand":"two-handed",
          "type":"ranged",
@@ -110,7 +110,7 @@
          "defense":"def",
          "element":"physical",
          "damage":12,
-         "isMartial":false
+         "isMartial":true
       },
       {
          "name":"Whip",
