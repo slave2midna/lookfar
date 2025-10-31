@@ -131,11 +131,11 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
         <!-- Cost -->
         <fieldset>
           <legend>Cost</legend>
-          <div id="costWrap" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
-            <div id="costArea" style="min-width:64px; display:flex; align-items:center; justify-content:center; font-size:14px;">
+          <div id="costWrap" style="width:100%; display:flex; align-items:center; justify-content:center; gap:4px;">
+            <div id="costArea" style="display:flex; align-items:center; justify-content:center; font-size:14px;">
               <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i><span>0</span>
             </div>
-            <label style="display:flex; align-items:center; gap:4px; font-size:12px;">
+            <label style="display:flex; align-items:center; font-size:14px;">
               <input type="checkbox" id="optFee">
               <span>Fee?</span>
             </label>
