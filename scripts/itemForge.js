@@ -132,9 +132,9 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
 <fieldset>
   <legend>Cost</legend>
   <div id="costWrap"
-       style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 8px; box-sizing:border-box;">
+       style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 16px; box-sizing:border-box;">
     <div id="costArea"
-         style="display:flex; align-items:center; font-size:14px; min-width:80px; justify-content:flex-start;">
+         style="display:flex; align-items:center; font-size:14px; justify-content:flex-start;">
       <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
       <span id="costValue">0</span>
     </div>
