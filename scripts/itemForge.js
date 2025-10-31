@@ -129,15 +129,17 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
         </fieldset>
 
         <!-- Cost -->
-        <fieldset>
-          <legend>Cost</legend>
-          <div>
-            <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
-            <span id="costValue" style="margin-right:8px;">0</span>
-            <label style="margin-left:8px; display:inline-flex; align-items:center; font-size:14px; white-space:nowrap;">
-              <input type="checkbox" id="optFee" style="margin-right:4px;"><span>Fee?</span></label>
-          </div>
-       </fieldset>
+<fieldset>
+  <legend>Cost</legend>
+  <div id="costRow" style="font-size:14px; line-height:1; display:inline-flex; align-items:center;">
+    <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
+    <span id="costValue" style="margin-right:12px;">0</span>
+    <label style="margin-left:12px; display:inline-flex; align-items:center; font-size:14px; white-space:nowrap;">
+      <input type="checkbox" id="optFee" style="margin-right:4px;">
+      <span>Fee?</span>
+    </label>
+  </div>
+</fieldset>
       </div>
     </div>
   </div>
@@ -202,8 +204,8 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
         const materials = [];
 
   // ---- COST: recompute whenever template or quality selection changes ----
-const updateCost = () => {
-  const $cost = html.find('#costArea');
+  const updateCost = () => {
+  const $val = html.find('#costValue');  // ← just the number span
 
   // selected template
   const $t = html.find('#templateList [data-selected="1"]').first();
@@ -223,47 +225,34 @@ const updateCost = () => {
   let custom  = 0;
 
   if (kind === "weapon") {
-    // --- customize fields ---
-    const plus1  = html.find('#optPlusOne').is(':checked');     // +1 Accuracy
-    const plus4  = html.find('#optPlusDamage').is(':checked');  // +4 Damage
+    const plus1  = html.find('#optPlusOne').is(':checked');
+    const plus4  = html.find('#optPlusDamage').is(':checked');
     const eleSel = (html.find('#optElement').val() || 'physical').toString();
 
     if (plus1) custom += 100;
     if (plus4) custom += 200;
     if (eleSel !== 'physical') custom += 100;
 
-    // --- Attr A/B surcharge logic (+50) ---
-    // Get the weapon's original attrs from template (uppercase)
+    // Attr A/B surcharge (+50 if user makes them equal and it's not the original pair)
     const baseA = String(tmpl?.attrA ?? "").toUpperCase();
     const baseB = String(tmpl?.attrB ?? "").toUpperCase();
+    const selA  = String(html.find('#optAttrA').val() || baseA).toUpperCase();
+    const selB  = String(html.find('#optAttrB').val() || baseB).toUpperCase();
 
-    // Current selections (default to base if empty)
-    const selA = String(html.find('#optAttrA').val() || baseA).toUpperCase();
-    const selB = String(html.find('#optAttrB').val() || baseB).toUpperCase();
-
-    // If user sets A==B AND it's not exactly the original pair, add +50
     const isMatchingNow = selA && selB && (selA === selB);
-    const wasMatchingBase = baseA && baseB && (baseA === baseB);
     const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
-
-    if (isMatchingNow && !sameAsOriginalPair) {
-      // Example A: Staff WLP/WLP → set to INS/INS => +50
-      // Example B: Bow DEX/INS → set to DEX/DEX => +50
-      // If base was MIG/MIG and user sets back to MIG/MIG, sameAsOriginalPair=true => no +50
-      custom += 50;
-    }
+    if (isMatchingNow && !sameAsOriginalPair) custom += 50;
   }
 
   // base total before fee
   let total = base + qcost + custom;
 
-  // 10% fee (after all surcharges). Round **up** to whole z.
+  // 10% fee (after surcharges). Round up.
   const feeOn = html.find('#optFee').is(':checked');
   if (feeOn) total = Math.ceil(total * 1.10);
 
-  $cost.html(
-  `<i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i><span>${total}</span>`
-  );
+  // Write just the number
+  $val.text(total);
 };
 
         const getNameSafe = (r) => esc(getName(r));
