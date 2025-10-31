@@ -101,7 +101,7 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
         <fieldset style="margin:0;">
           <legend>Preview</legend>
           <div id="itemPreviewLarge" title="Crafted item preview"
-               style="width:100%; height:150px; border:1px solid #999; display:flex; align-items:center; justify-content:center;">
+               style="width:100%; height:160px; border:1px solid #999; display:flex; align-items:center; justify-content:center;">
             CONTENT
           </div>
         </fieldset>
