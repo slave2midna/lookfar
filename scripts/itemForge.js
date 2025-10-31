@@ -131,7 +131,13 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
         <!-- Cost -->
         <fieldset>
           <legend>Cost</legend>
-          <div id="costArea" style="width:100%; height:10px; display:flex; align-items:center; justify-content:center; font-size:14px;">z</div>
+          <div id="costWrap" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <div id="costArea" style="min-width:64px; display:flex; align-items:center; justify-content:center; font-size:14px;">0z</div>
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px;">
+              <input type="checkbox" id="optFee">
+              <span>Fee?</span>
+            </label>
+          </div>
         </fieldset>
       </div>
       </div>
@@ -249,7 +255,14 @@ const updateCost = () => {
     }
   }
 
-  $cost.text(`${base + qcost + custom}z`);
+  // base total before fee
+  let total = base + qcost + custom;
+
+  // 10% fee (after all surcharges). Round **up** to whole z.
+  const feeOn = html.find('#optFee').is(':checked');
+  if (feeOn) total = Math.ceil(total * 1.10);
+
+  $cost.text(`${total}z`);
 };
 
         const getNameSafe = (r) => esc(getName(r));
@@ -802,7 +815,7 @@ const refreshPreviewFromUI = () => {
 
 $dlg.off('.ifPrev');
 $dlg.on('change.ifPrev',
-  '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement',
+  '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
   refreshPreviewFromUI
 );
         
