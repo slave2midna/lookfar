@@ -129,24 +129,18 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
         </fieldset>
 
         <!-- Cost -->
-<fieldset>
-  <legend>Cost</legend>
-  <div id="costWrap"
-     <style="width:100%; display:flex; align-items:center; justify-content:flex-start; gap:18px; box-sizing:border-box;">
-    <div id="costArea"
-         style="display:flex; align-items:center; font-size:14px; justify-content:flex-start;">
-      <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
-      <span id="costValue">0</span>
-    </div>
-    <label style="display:flex; align-items:center; font-size:14px; white-space:nowrap;">
-      <input type="checkbox" id="optFee" style="margin-right:4px;">
-      <span>Fee?</span>
-    </label>
-  </div>
-</fieldset>
-        </div>
+        <fieldset>
+          <legend>Cost</legend>
+          <div>
+            <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
+            <span id="costValue" style="margin-right:12px;">0</span>
+            <label style="margin-left:12px; display:inline-flex; align-items:center; font-size:14px; white-space:nowrap;">
+              <input type="checkbox" id="optFee" style="margin-right:4px;">Fee?</label>
+          </div>
+       </fieldset>
       </div>
     </div>
+  </div>
 
     <fieldset style="margin:0 0 6px 0;">
       <legend>Materials</legend>
