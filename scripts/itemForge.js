@@ -597,10 +597,15 @@ return;
   const needKey = getRequiredOriginKey(html); // e.g., "ardent" | "" (no req)
   const hasReq = !needKey || materials.some(m => String(m.origin) === needKey);
 
+  // Reset hint to default text up front
+  $materialsHint.text("Drag & drop Item documents here (max 5)");
+
   // Rebuild thumbnails
   $materialsDrop.children('img[data-mat="1"]').remove();
 
   if (materials.length === 0) {
+    // Show a message ONLY before any materials are added
+    if (needKey) $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
     $materialsHint.show();
   } else {
     $materialsHint.hide();
@@ -628,17 +633,10 @@ return;
     });
   }
 
-  // Visual requirement feedback
+  // Border communicates requirement status at all times
   $materialsDrop.css({
     borderColor: (!hasReq && needKey) ? "red" : "#999"
   });
-
-  // Dynamic helper text to guide users
-  if (!hasReq && needKey) {
-    $materialsHint.text(`Needs 1 ${needKey} material to craft.`).show();
-  } else {
-    $materialsHint.text("Drag & drop Item documents here (max 5)");
-  }
 
   relayout();
 };
