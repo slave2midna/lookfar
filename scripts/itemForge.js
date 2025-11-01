@@ -52,6 +52,26 @@ const getEquipCost = (r) =>
 // qualities.json uses "cost"
 const getQualityCost = (q) => toInt(q?.cost ?? 0);
 
+// ----- Treasure helpers (NEW) -----
+const getTreasureCost = (doc) =>
+  toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
+
+const getTreasureOrigin = (doc) => {
+  const v = doc?.system?.origin
+        ?? doc?.system?.keywords?.origin
+        ?? doc?.system?.material?.origin
+        ?? doc?.origin
+        ?? "";
+  return String(v).trim().toLowerCase();
+};
+
+// Which origin is required by the selected quality category?
+const getRequiredOriginKey = (html) => {
+  const key = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
+  // No origin requirement for "none" or "basic"
+  return (key === "none" || key === "basic") ? "" : key;
+};
+
   const CATEGORY_OPTIONS = [
     ["Basic",       "basic"],
     ["Ardent",      "ardent"],
@@ -206,7 +226,7 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
 
   // ---- COST: recompute whenever template or quality selection changes ----
   const updateCost = () => {
-  const $val = html.find('#costValue');  // ← just the number span
+  const $val = html.find('#costValue');
 
   // selected template
   const $t = html.find('#templateList [data-selected="1"]').first();
@@ -234,7 +254,6 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
     if (plus4) custom += 200;
     if (eleSel !== 'physical') custom += 100;
 
-    // Attr A/B surcharge (+50 if user makes them equal and it's not the original pair)
     const baseA = String(tmpl?.attrA ?? "").toUpperCase();
     const baseB = String(tmpl?.attrB ?? "").toUpperCase();
     const selA  = String(html.find('#optAttrA').val() || baseA).toUpperCase();
@@ -245,17 +264,19 @@ const getQualityCost = (q) => toInt(q?.cost ?? 0);
     if (isMatchingNow && !sameAsOriginalPair) custom += 50;
   }
 
-  // base total before fee
-  let total = base + qcost + custom;
+  // SUBTRACT materials' cost (pre-fee)
+  const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
 
-  // 10% fee (after surcharges). Round up.
+  // base total before fee (floored at 0)
+  let total = Math.max(0, base + qcost + custom - matTotal);
+
+  // 10% fee (after all deductions/surcharges)
   const feeOn = html.find('#optFee').is(':checked');
   if (feeOn) total = Math.ceil(total * 1.10);
 
-  // Write just the number
   $val.text(total);
 };
-
+        
         const getNameSafe = (r) => esc(getName(r));
         const getItemImage = (item) =>
           item?.img || item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
@@ -572,53 +593,107 @@ return;
         };
 
         const renderMaterials = () => {
-          $materialsDrop.children('img[data-mat="1"]').remove();
-          if (materials.length === 0) {
-            $materialsHint.show();
-          } else {
-            $materialsHint.hide();
-            materials.forEach((m, i) => {
-              const $img = $(`<img data-mat="1" data-index="${i}" src="${esc(m.img)}" title="Click to remove: ${esc(m.name || "")}"
-                               style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`);
-              $img.on("click", () => {
-                materials.splice(i, 1);
-                renderMaterials();
-              });
-              $materialsDrop.append($img);
-            });
-          }
-          relayout();
-        };
+  // Which origin is required by the selected quality category? ("" if none/basic)
+  const needKey = getRequiredOriginKey(html); // e.g., "ardent" | "" (no req)
+  const hasReq = !needKey || materials.some(m => String(m.origin) === needKey);
+
+  // Rebuild thumbnails
+  $materialsDrop.children('img[data-mat="1"]').remove();
+
+  if (materials.length === 0) {
+    $materialsHint.show();
+  } else {
+    $materialsHint.hide();
+
+    materials.forEach((m, i) => {
+      const tip = [
+        m.name ? m.name : "",
+        m.origin ? `Origin: ${m.origin}` : "",
+        Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
+      ].filter(Boolean).join(" • ");
+
+      const $img = $(
+        `<img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+              title="Click to remove\n${esc(tip)}"
+              style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`
+      );
+
+      $img.on("click", () => {
+        materials.splice(i, 1);
+        renderMaterials();
+        updateCost(); // keep total in sync after removing a material
+      });
+
+      $materialsDrop.append($img);
+    });
+  }
+
+  // Visual requirement feedback
+  $materialsDrop.css({
+    borderColor: (!hasReq && needKey) ? "red" : "#999"
+  });
+
+  // Dynamic helper text to guide users
+  if (!hasReq && needKey) {
+    $materialsHint.text(`Needs 1 ${needKey} material to craft.`).show();
+  } else {
+    $materialsHint.text("Drag & drop Item documents here (max 5)");
+  }
+
+  relayout();
+};
 
         $materialsDrop
-          .on("dragover", (ev) => { ev.preventDefault(); $materialsDrop.css("background", "rgba(65,105,225,0.08)"); })
-          .on("dragleave", () => { $materialsDrop.css("background", ""); })
-          .on("drop", async (ev) => {
-            ev.preventDefault();
-            $materialsDrop.css("background", "");
-            const dt = ev.originalEvent?.dataTransfer;
-            if (!dt) return;
-            const raw = dt.getData("text/plain");
-            if (!raw) return;
-            try {
-              const data = JSON.parse(raw);
-              if (!data?.uuid) return;
-              const doc = await fromUuid(data.uuid);
-              if (!doc || doc.documentName !== "Item") {
-                ui.notifications?.warn("Only Item documents can be dropped here.");
-                return;
-              }
-              if (materials.length >= 5) {
-                ui.notifications?.warn("You can only add up to 5 materials.");
-                return;
-              }
-              materials.push({ uuid: data.uuid, img: getItemImage(doc), name: doc.name });
-              renderMaterials();
-            } catch (e) {
-              console.error("[Item Forger] Drop parse failed:", e);
-              ui.notifications?.error("Could not read dropped data.");
-            }
-          });
+  .on("dragover", (ev) => { ev.preventDefault(); $materialsDrop.css("background", "rgba(65,105,225,0.08)"); })
+  .on("dragleave", () => { $materialsDrop.css("background", ""); })
+  .on("drop", async (ev) => {
+    ev.preventDefault();
+    $materialsDrop.css("background", "");
+    const dt = ev.originalEvent?.dataTransfer;
+    if (!dt) return;
+    const raw = dt.getData("text/plain");
+    if (!raw) return;
+
+    try {
+      const data = JSON.parse(raw);
+      if (!data?.uuid) return;
+
+      const doc = await fromUuid(data.uuid);
+      if (!doc || doc.documentName !== "Item") {
+        ui.notifications?.warn("Only Item documents can be dropped here.");
+        return;
+      }
+
+      // RESTRICT: treasure only
+      if (String(doc.type) !== "treasure") {
+        ui.notifications?.warn("Only Treasure items can be used as materials.");
+        return;
+      }
+
+      if (materials.length >= 5) {
+        ui.notifications?.warn("You can only add up to 5 materials.");
+        return;
+      }
+
+      // Extract origin + cost
+      const matCost   = getTreasureCost(doc);
+      const matOrigin = getTreasureOrigin(doc); // lowercased
+
+      materials.push({
+        uuid: data.uuid,
+        img:  getItemImage(doc),
+        name: doc.name,
+        cost: matCost,
+        origin: matOrigin
+      });
+
+      renderMaterials();
+      updateCost();
+    } catch (e) {
+      console.error("[Item Forger] Drop parse failed:", e);
+      ui.notifications?.error("Could not read dropped data.");
+    }
+  });
 
         const renderTemplates = (rows) => {
           currentTemplates = Array.isArray(rows) ? rows : [];
@@ -814,6 +889,8 @@ $dlg.on('change.ifPrev',
   const kind = html.find('input[name="itemType"]:checked').val();
   renderQualities(kind);
   renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+  renderMaterials();   // ← update red border + hint
+  updateCost();        // ← cost unaffected by requirement, but safe to keep in sync
 });
 
         // Re-render preview icon when the dial changes (even before templates arrive)
