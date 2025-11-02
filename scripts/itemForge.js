@@ -79,23 +79,24 @@ const getTreasureOrigin = (doc) => {
 // Which origin is required by the selected quality category?
 const getRequiredOriginKey = (html) => {
   const key = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
-  // No origin requirement for "none" or "basic"
-  return (key === "none" || key === "basic") ? "" : key;
+  // No origin requirement for "none", "basic", or "custom"
+  return (key === "none" || key === "basic" || key === "custom") ? "" : key;
 };
 
   const CATEGORY_OPTIONS = [
-    ["Basic",       "basic"],
-    ["Ardent",      "ardent"],
-    ["Aerial",      "aerial"],
-    ["Thunderous",  "thunderous"],
-    ["Paradox",     "paradox"],
-    ["Terrestrial", "terrestrial"],
-    ["Glacial",     "glacial"],
-    ["Spiritual",   "spiritual"],
-    ["Corrupted",   "corrupted"],
-    ["Aquatic",     "aquatic"],
-    ["Mechanical",  "mechanical"],
-  ];
+  ["Basic",       "basic"],
+  ["Custom",      "custom"],
+  ["Ardent",      "ardent"],
+  ["Aerial",      "aerial"],
+  ["Thunderous",  "thunderous"],
+  ["Paradox",     "paradox"],
+  ["Terrestrial", "terrestrial"],
+  ["Glacial",     "glacial"],
+  ["Spiritual",   "spiritual"],
+  ["Corrupted",   "corrupted"],
+  ["Aquatic",     "aquatic"],
+  ["Mechanical",  "mechanical"],
+];
 
   const ATTR_ROW_FIXED_HEIGHT = "30px";
 
@@ -239,28 +240,32 @@ const getRequiredOriginKey = (html) => {
   const updateCost = () => {
   const $val = html.find('#costValue');
 
-  // selected template
   const $t = html.find('#templateList [data-selected="1"]').first();
   const ti = Number($t.data("idx"));
   const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
 
-  // selected quality (may be none)
+  const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
+
+let qcost = 0;
+if (catKey === "custom") {
+  // Use only the committed value (set by the Apply button)
+  qcost = toInt(html.data('customCost') ?? 0);
+} else {
   const $q = html.find('#qualitiesList [data-selected="1"]').first();
   const qi = Number($q.data("idx"));
   const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
+  qcost = getQualityCost(qual);
+}
 
   const base  = getEquipCost(tmpl);
-  const qcost = getQualityCost(qual);
 
   // weapon-only customize surcharges
   const kind  = html.find('input[name="itemType"]:checked').val();
   let custom  = 0;
-
   if (kind === "weapon") {
     const plus1  = html.find('#optPlusOne').is(':checked');
     const plus4  = html.find('#optPlusDamage').is(':checked');
     const eleSel = (html.find('#optElement').val() || 'physical').toString();
-
     if (plus1) custom += 100;
     if (plus4) custom += 200;
     if (eleSel !== 'physical') custom += 100;
@@ -269,19 +274,14 @@ const getRequiredOriginKey = (html) => {
     const baseB = String(tmpl?.attrB ?? "").toUpperCase();
     const selA  = String(html.find('#optAttrA').val() || baseA).toUpperCase();
     const selB  = String(html.find('#optAttrB').val() || baseB).toUpperCase();
-
     const isMatchingNow = selA && selB && (selA === selB);
     const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
     if (isMatchingNow && !sameAsOriginalPair) custom += 50;
   }
 
-  // SUBTRACT materials' cost (pre-fee)
   const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
-
-  // base total before fee (floored at 0)
   let total = Math.max(0, base + qcost + custom - matTotal);
 
-  // 10% fee (after all deductions/surcharges)
   const feeOn = html.find('#optFee').is(':checked');
   if (feeOn) total = Math.ceil(total * 1.10);
 
@@ -383,6 +383,18 @@ const renderPreview = (kind, selectedEl) => {
   </style>
 `;
 
+  // --- helper: get quality description including Custom ---
+const qdesc = () => {
+  const catKeyNow = String($qualitiesSelect.val() || "none").toLowerCase();
+  if (catKeyNow === "custom") {
+    return String(html.data('customEffect') ?? "").trim(); // committed only
+  }
+  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  const qIdx  = Number($qsel.data("idx"));
+  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+  return q?.description ?? q?.desc ?? "";
+};
+
   // dial sanity check
 const kindNow = html.find('input[name="itemType"]:checked').val();
 if (kindNow !== kind) {
@@ -416,10 +428,10 @@ if (kind === "armor") {
     : `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
 
   // Quality description (centered, wrapped)
-  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-  const qIdx  = Number($qsel.data("idx"));
-  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-  const qdesc = q?.description ?? q?.desc ?? "";
+  // const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  // const qIdx  = Number($qsel.data("idx"));
+  // const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+  // const qdesc = q?.description ?? q?.desc ?? "";
 
   // HEAD: icon + optional martial badge to the right of the icon
   $preview.html(`${style}
@@ -432,7 +444,7 @@ if (kind === "armor") {
     </div>
     <div id="if-preview-rows">
       <div class="if-row if-tight">${rowArmor}</div>
-      <div class="if-row-desc">${esc(qdesc)}</div>
+      <div class="if-row-desc">${esc(qdesc())}</div>
     </div>
   </div>
 `);
@@ -455,10 +467,10 @@ if (kind === "shield") {
   const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
 
   // Quality description (same behavior as other kinds)
-  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-  const qIdx  = Number($qsel.data("idx"));
-  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-  const qdesc = q?.description ?? q?.desc ?? "";
+  //const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  //const qIdx  = Number($qsel.data("idx"));
+  //const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+  //const qdesc = q?.description ?? q?.desc ?? "";
 
   // HEAD: icon + optional martial badge (presence only difference)
   $preview.html(`${style}
@@ -471,7 +483,7 @@ if (kind === "shield") {
       </div>
       <div id="if-preview-rows">
         <div class="if-row if-tight">${rowShield}</div>
-        <div class="if-row-desc">${esc(qdesc)}</div>
+        <div class="if-row-desc">${esc(qdesc())}</div>
       </div>
     </div>
   `);
@@ -481,12 +493,11 @@ if (kind === "shield") {
 // ---------- ACCESSORY PREVIEW ----------
 if (kind === "accessory") {
   // Selected quality (description-only row)
-  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-  const qIdx  = Number($qsel.data("idx"));
-  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-
+  // const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  // const qIdx  = Number($qsel.data("idx"));
+  // const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
   // Use the quality description; fallback to empty if none
-  const qdesc = q?.description ?? q?.desc ?? "";
+  // const qdesc = q?.description ?? q?.desc ?? "";
 
   $preview.html(`${style}
     <div id="if-preview-card">
@@ -496,7 +507,7 @@ if (kind === "accessory") {
         </div>
       </div>
       <div id="if-preview-rows">
-        <div class="if-row-desc">${esc(qdesc)}</div>
+        <div class="if-row-desc">${esc(qdesc())}</div>
       </div>
     </div>
   `);
@@ -547,10 +558,10 @@ if (kind === "weapon") {
   const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
   const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} | ${eleSel}`;
 
-  const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-  const qIdx  = Number($qsel.data("idx"));
-  const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-  const qdesc = q?.description ?? q?.desc ?? "";
+  // const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+  // const qIdx  = Number($qsel.data("idx"));
+  // const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+  // const qdesc = q?.description ?? q?.desc ?? "";
 
   $preview.html(`${style}
   <div id="if-preview-card">
@@ -563,7 +574,7 @@ if (kind === "weapon") {
     <div id="if-preview-rows">
       <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
       <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
-      <div class="if-row-desc">${esc(qdesc)}</div>
+      <div class="if-row-desc">${esc(qdesc())}</div>
     </div>
   </div>
 `);
@@ -734,19 +745,112 @@ return;
     currentQualities = [];
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-    updateCost();                            // ← NEW
+    updateCost();
     return;
   }
 
   const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
 
+  // --- NEW: "custom" branch ---
+if (catKey === "custom") {
+  currentQualities = [];
+
+  // Prefill with last committed values
+  const effCommitted = String(html.data('customEffect') ?? "Custom effect text");
+  const cstCommitted = toInt(html.data('customCost') ?? 0);
+
+  $qualitiesList.html(`
+    <div id="customQualityWrap"
+         style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
+
+      <textarea id="customEffect"
+          rows="2" wrap="soft"
+          style="
+            width:100%;
+            height:44px;
+            box-sizing:border-box;
+            overflow-y:auto;
+            resize:none;
+          "
+          title="Type your custom effect text">${esc(effCommitted)}</textarea>
+
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label for="customCost" style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">Cost:</label>
+        <input id="customCost" type="number" min="0" step="1" inputmode="numeric" pattern="\\d*"
+               value="${cstCommitted}"
+               style="width:100%; height:25px; box-sizing:border-box;"
+               title="Enter a non-negative integer">
+      </div>
+
+      <button type="button" id="customApply"
+  style="
+    width:auto;
+    height:28px;
+    margin:2px auto 0;
+    display:block;
+    padding:0 10px;
+    line-height:1;
+    box-sizing:border-box;
+  ">
+  Apply
+</button>
+    </div>
+  `);
+
+  // UX wiring:
+  // - Keep Enter/newlines allowed in Effect (textarea)
+  // - Block Enter only in Cost (prevents dialog submit)
+  $qualitiesList
+    .off('.customUX')
+    .on('keydown.customUX', '#customCost', (ev) => {
+      if (ev.key === 'Enter') ev.preventDefault();
+    })
+    // Filter non-digits for safety on keypress in Cost
+    .on('keypress.customUX', '#customCost', (ev) => {
+      if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
+    })
+    // Sanitize on paste into Cost
+    .on('paste.customUX', '#customCost', (ev) => {
+      ev.preventDefault();
+      const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
+      const digits = txt.replace(/\D+/g, '');
+      const el = ev.currentTarget;
+      const start = el.selectionStart ?? el.value.length;
+      const end   = el.selectionEnd   ?? el.value.length;
+      el.value = el.value.slice(0, start) + digits + el.value.slice(end);
+    })
+    // Apply button: commit values, then refresh preview + totals
+    .on('click.customUX', '#customApply', () => {
+      const eff = String(html.find('#customEffect').val() ?? '').trim();
+
+      // Strong sanitize + clamp for cost
+      const raw = String(html.find('#customCost').val() ?? '');
+      const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+      html.find('#customCost').val(cst); // reflect sanitized value
+
+      // Commit (these are the only values used by preview & cost)
+      html.data('customEffect', eff);
+      html.data('customCost', cst);
+
+      const kind = html.find('input[name="itemType"]:checked').val();
+      renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+      updateCost();
+    });
+
+  // Initial render (uses committed values if any)
+  const kind = html.find('input[name="itemType"]:checked').val();
+  renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+  updateCost();
+  return;
+}
+
   // NEW: when "none" is chosen, show an empty list and no qualities
   if (catKey === "none") {
     currentQualities = [];
-    $qualitiesList.html("");  // empty scrollbox (by request)
+    $qualitiesList.html("");
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-    updateCost();                            // ← NEW
+    updateCost();
     return;
   }
 
@@ -757,7 +861,7 @@ return;
     $qualitiesList.html("");
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-    updateCost();                            // ← NEW
+    updateCost();
     return;
   }
 
@@ -770,7 +874,7 @@ return;
     onSelect: () => {
       const kind = html.find('input[name="itemType"]:checked').val();
       renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-      updateCost();                          // ← NEW
+      updateCost();
     }
   });
 };
