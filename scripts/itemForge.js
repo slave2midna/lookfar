@@ -764,14 +764,15 @@ if (catKey === "custom") {
          style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
 
       <textarea id="customEffect"
-                rows="2" wrap="soft"
-                style="
-                  width:100%;
-                  height:44px;             /* ~3 rows; tweak if desired */
-                  box-sizing:border-box;
-                  overflow-y:auto;         /* scroll vertically when long */
-                "
-                title="Type your custom effect text">${esc(effCommitted)}</textarea>
+          rows="2" wrap="soft"
+          style="
+            width:100%;
+            height:44px;
+            box-sizing:border-box;
+            overflow-y:auto;
+            resize:none;
+          "
+          title="Type your custom effect text">${esc(effCommitted)}</textarea>
 
       <div style="display:flex; align-items:center; gap:8px;">
         <label for="customCost" style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">Cost:</label>
