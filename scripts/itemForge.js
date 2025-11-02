@@ -246,16 +246,16 @@ const getRequiredOriginKey = (html) => {
 
   const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
 
-  let qcost = 0;
-  if (catKey === "custom") {
-    // use typed custom cost (only applied after Enter if you want; using current input is fine too)
-    qcost = toInt(html.find('#customCost').val() ?? html.data('customCost') ?? 0);
-  } else {
-    const $q = html.find('#qualitiesList [data-selected="1"]').first();
-    const qi = Number($q.data("idx"));
-    const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
-    qcost = getQualityCost(qual);
-  }
+let qcost = 0;
+if (catKey === "custom") {
+  // Use only the committed value (set by the Apply button)
+  qcost = toInt(html.data('customCost') ?? 0);
+} else {
+  const $q = html.find('#qualitiesList [data-selected="1"]').first();
+  const qi = Number($q.data("idx"));
+  const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
+  qcost = getQualityCost(qual);
+}
 
   const base  = getEquipCost(tmpl);
 
@@ -387,11 +387,8 @@ const renderPreview = (kind, selectedEl) => {
 const qdesc = () => {
   const catKeyNow = String($qualitiesSelect.val() || "none").toLowerCase();
   if (catKeyNow === "custom") {
-    // Prefer live input; fallback to last committed values if present
-    const eff = String(html.find('#customEffect').val() ?? html.data('customEffect') ?? "").trim();
-    return eff;
+    return String(html.data('customEffect') ?? "").trim(); // committed only
   }
-  // From selected quality in the list
   const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
   const qIdx  = Number($qsel.data("idx"));
   const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
@@ -756,50 +753,77 @@ return;
 
   // --- NEW: "custom" branch ---
   if (catKey === "custom") {
-    currentQualities = []; // nothing to select from json
+  currentQualities = [];
 
-    // Fill the same scrollbox region with two stacked inputs
-    $qualitiesList.html(`
-      <div id="customQualityWrap"
-           style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
-        <input id="customEffect" type="text"
-               value="Custom effect text"
-               style="width:100%; height:28px; box-sizing:border-box;"
-               title="Type effect text and press Enter to apply">
-        <input id="customCost" type="text"
-               value="0"
-               style="width:100%; height:28px; box-sizing:border-box;"
-               title="Type cost (number) and press Enter to apply">
-      </div>
-    `);
+  // Read previously committed values (if any) to prefill inputs
+  const effCommitted = String(html.data('customEffect') ?? "Custom effect text");
+  const cstCommitted = toInt(html.data('customCost') ?? 0);
 
-    // Commit only when Enter is pressed
-    const commitCustom = () => {
-      const eff = String(html.find('#customEffect').val() ?? "").trim();
-      const cst = toInt(html.find('#customCost').val());
-      // stash for convenience (not required, but handy if you want)
+  $qualitiesList.html(`
+    <div id="customQualityWrap"
+         style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
+      <label for="customEffect" style="font-size:12px; opacity:0.8; line-height:1;">Effect:</label>
+      <input id="customEffect" type="text"
+             value="${esc(effCommitted)}"
+             style="width:100%; height:28px; box-sizing:border-box;"
+             title="Type your custom effect text">
+
+      <label for="customCost" style="font-size:12px; opacity:0.8; line-height:1;">Cost:</label>
+      <input id="customCost" type="number" min="0" step="1" inputmode="numeric" pattern="\\d*"
+             value="${cstCommitted}"
+             style="width:100%; height:28px; box-sizing:border-box;"
+             title="Enter a non-negative integer">
+
+      <button type="button" id="customApply"
+              style="height:28px; margin-top:2px;">Apply</button>
+    </div>
+  `);
+
+  // Suppress Enter so it doesn't close the dialog
+  $qualitiesList
+    .off('.customUX')
+    .on('keydown.customUX', '#customEffect, #customCost', (ev) => {
+      if (ev.key === 'Enter') ev.preventDefault();
+    })
+    // Filter non-digits for safety on keypress in Cost field
+    .on('keypress.customUX', '#customCost', (ev) => {
+      if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
+    })
+    // Sanitize on paste into Cost field
+    .on('paste.customUX', '#customCost', (ev) => {
+      ev.preventDefault();
+      const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
+      const digits = txt.replace(/\D+/g, '');
+      const el = ev.currentTarget;
+      // insert sanitized digits
+      const start = el.selectionStart ?? el.value.length;
+      const end   = el.selectionEnd   ?? el.value.length;
+      el.value = el.value.slice(0, start) + digits + el.value.slice(end);
+    })
+    // Apply button: commit values, then refresh preview + totals
+    .on('click.customUX', '#customApply', () => {
+      const eff = String(html.find('#customEffect').val() ?? '').trim();
+
+      // Strong sanitize + clamp for cost
+      const raw = String(html.find('#customCost').val() ?? '');
+      const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+      html.find('#customCost').val(cst); // reflect sanitized value
+
+      // Commit (these are the only values used by preview & cost)
       html.data('customEffect', eff);
       html.data('customCost', cst);
+
       const kind = html.find('input[name="itemType"]:checked').val();
       renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
       updateCost();
-    };
+    });
 
-    $qualitiesList
-      .off('.customEnter')
-      .on('keydown.customEnter', '#customEffect, #customCost', (ev) => {
-        if (ev.key === 'Enter') {
-          ev.preventDefault();
-          commitCustom();
-        }
-      });
-
-    // Initial preview/cost pass (uses defaults until Enter)
-    const kind = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-    updateCost();
-    return;
-  }
+  // Initial render (shows committed values if any)
+  const kind = html.find('input[name="itemType"]:checked').val();
+  renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+  updateCost();
+  return;
+}
 
   // NEW: when "none" is chosen, show an empty list and no qualities
   if (catKey === "none") {
