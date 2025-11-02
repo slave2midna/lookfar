@@ -1,0 +1,82 @@
+File License found at https://craftpix.net/file-licenses/
+
+1. PREMIUM AND PAID PRODUCTS
+Subject to your compliance with the terms and conditions of these Terms, CraftPix grants you a limited, non-exclusive, non-transferable license to all resources purchased from CraftPix store, without the right to sublicense contents.
+
+	1.1 CAPABILITIES
+		1.1.1 You can use, copy, adapt, modify, prepare derivative works based upon all purchased assets;
+		1.1.2 You may use game assets as many times as you like;
+		1.1.3 Distribution of source files is NOT permitted;
+		1.1.4 You can sell and distribute games with our assets;
+		1.1.5 You can use each product in unlimited number of free and commercial projects;
+		1.1.6 Without Royalty Fee. By the end of your subscription, you can continue to use all the downloaded game assets.
+	
+	1.2 FORBIDDEN
+		1.2.1 You can NOT resell the source files (PNG, JPG, EPS, Adobe Illustrator, etc.) or slightly modified version of the art. You can not redistribute the art or modified version of the art in a manner that would make some or all of the art files useable to another end user via the app. For example, 		      an app that uses the art as part of the game is fine. An app that allows the user to save or export a modified version of the artwork itself is not fine.
+		1.2.2 For authorization on the site, it is prohibited to authorize through third-party services. This means that you must log in through your browser to use your account.
+		
+
+	1.3 Supplement for Enterprise license holders (Join Enterprise):
+	1.3.1 CAPABILITIES
+		1.3.1.1 Selling online courses containing graphics from https://craftpix.net {For example, at udemy.com, coursera.org}
+		1.3.1.2 Creating your own online school, and selling your teaching materials there with the participation of graphics from https://craftpix.net
+		1.3.1.3 Offline use of graphics in educational institutions (schools, colleges, universities, etc.)
+		1.3.1.4 Build ready-made game templates using https://craftpix.net graphics (with retrievable data) and sell them on the following third-party sites:
+			https://assetstore.unity.com/templates
+			https://www.scirra.com/store/royalty-free-game-templates
+			https://codecanyon.net/category/html5/games
+			https://codecanyon.net/category/mobile/android/games
+			https://www.sellmyapp.com
+
+Important! If you are creating your own online store with game templates, then the cost of the license is discussed individually (you need to contact our support).
+
+		1.3.1.5 Edit the graphics for the purpose of your work and include in your projects (courses, templates, etc.) [example]create the desired file size, change the color, remove unnecessary elements, save the format in Unity, etc.[/example]
+	
+	1.3.2 FORBIDDEN
+		1.3.2.1 Add graphics from https://craftpix.net to your projects (courses, templates, etc.) that are not used in the project (course, template, etc.) in any way. The same goes for game templates and offline educational institutions. [example]You used 3 characters and 1 set of tiles in the tutorial 			video for creating a platformer game. In this case, you can transfer only those graphics to the student that were used in the course. You cannot transfer other characters to him, etc.[/example]
+		1.3.2.2 Add source files (vector is AI, EPS and raster is PSD) to your course or to other training materials, if working with these formats is not implied in your course or other training material. [example]If your course is about how to create a platformer game in Unity, and there are no tutorials 			on how to work with graphics in Photoshop, then the PSD format is not allowed to be included in the course. There are PNGs for that, etc.[/example]
+		1.3.2.3 Add source files to your game template (vector is AI, EPS and raster is PSD) if the game template does not interact with these formats. [example]PNG files are used in the game template (character, background, etc.). This means that you cannot add source files.[/example]
+		1.3.2.4 You cannot distribute graphics separately from courses (training materials) and templates in any form.
+		1.3.2.5 It is not allowed to distribute courses (training materials) and game templates for free if you used paid or premium graphic sets from the site https://craftpix.net
+		1.3.2.6 It is forbidden to sell graphics under the guise of courses (training materials, templates, etc.) if the main value of the work is graphics. The main value should not be the graphics, but your product.
+			
+The above points (section Prohibited) are unfair use of Craftpix.net graphics. In case of fraudulent use, we have the right to revoke the license.
+
+2. FREEBIE PRODUCTS
+
+	2.1 CAPABILITIES
+		2.1.1 You are permitted to use the resources in any number of personal and commercial projects for yourself or a client.
+		2.1.2 You can modify the resources according to your requirements and include them into works such as game projects, elements for websites, applications, printed materials and others;
+		2.1.3 You can sell and distribute games with our assets.
+
+No attribution or link back to this site is required, however any credit will be highly appreciated.
+
+	2.2 FORBIDDEN
+		2.2.1 You can NOT resell the art source files (PNG, JPG, EPS, Adobe Illustrator, etc) or slightly modified version of the art. You can not redistribute the art or modified version of the art in a manner that would make some or all of the art files useable to another end user via the app. For 			      example, an app that uses the art as part of the play of the game is fine. An app that allows the user to save or export a modified version of the artwork itself is not fine.
+		1.2.2 For authorization on the site, it is prohibited to authorize through third-party services. This means that you must log in through your browser to use your account.
+
+	2.3. Supplement for Enterprise license holders (Join Enterprise):
+	2.3.1 CAPABILITIES
+		2.3.1.1 Selling online courses containing graphics from https://craftpix.net {For example, at udemy.com, coursera.org}
+		2.3.1.2 Creating your own online school and selling your educational materials with the participation of graphics from https://craftpix.net
+		2.3.1.3 Offline use of graphics in educational institutions (schools, colleges, universities, etc.).
+		2.3.1.4 Build ready-made game templates using https://craftpix.net graphics (with retrievable data) and sell them on the following third-party sites:
+			https://assetstore.unity.com/templates
+			https://www.scirra.com/store/royalty-free-game-templates
+			https://codecanyon.net/category/html5/games
+			https://codecanyon.net/category/mobile/android/games
+			https://www.sellmyapp.com
+
+Important! If you are creating your own online store with game templates, then the cost of the license is discussed individually (you need to contact our support).
+
+		2.3.1.5 Edit the graphics for the purpose of your work and include in your projects (courses, templates, etc.) [example] create the desired file size, change the color, remove unnecessary elements, save the format in Unity, etc.[/example]
+		2.3.1.6 You can use the graphics from https://craftpix.net/freebies/ to create free projects (courses, templates, etc.) [example] as a free part of a large course or as a promo for a school[/example]
+
+	2.3.2 FORBIDDEN
+		2.3.2.1 Add graphics from https://craftpix.net to your projects (courses, templates, etc.) that are not used in the project (course, template, etc.) in any way. The same goes for game templates and offline educational institutions. [example] You used 3 characters and 1 set of tiles in the tutorial 			video for creating a platformer game. In this case, you can transfer only those graphics to the student that were used in the course. You cannot transfer other characters to him, etc.[/example]
+	2.3.2.2 Add source files (vector is AI, EPS and raster is PSD) to your course or to other training materials, if working with these formats is not implied in your course or other training material. [example] If your course is about how to create a platformer game in Unity, and there are no tutorials on how 		to work with graphics in Photoshop, then the PSD format is not allowed to be included in the course. There are PNGs for that, etc.[/example]
+	2.3.2.3 Add source files to your game template (vector is AI, EPS and raster is PSD) if the game template does not interact with these formats. [example] PNG files are used in the game template (character, background, etc.). This means that you cannot add source files.[/example]
+	2.3.2.4 You cannot distribute graphics separately from courses (training materials) and templates in any form.
+	2.3.2.5 It is forbidden to sell graphics under the guise of courses (training materials, templates, etc.) if the main value of the work is graphics. The main value should not be the graphics, but your product.
+		
+The above points (section Prohibited) are unfair use of Craftpix.net graphics. In case of fraudulent use, we have the right to revoke the license.
