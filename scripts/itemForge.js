@@ -752,27 +752,36 @@ return;
   const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
 
   // --- NEW: "custom" branch ---
-  if (catKey === "custom") {
+if (catKey === "custom") {
   currentQualities = [];
 
-  // Read previously committed values (if any) to prefill inputs
+  // Prefill with last committed values
   const effCommitted = String(html.data('customEffect') ?? "Custom effect text");
   const cstCommitted = toInt(html.data('customCost') ?? 0);
 
   $qualitiesList.html(`
     <div id="customQualityWrap"
          style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
-      <label for="customEffect" style="font-size:12px; opacity:0.8; line-height:1;">Effect:</label>
-      <input id="customEffect" type="text"
-             value="${esc(effCommitted)}"
-             style="width:100%; height:28px; box-sizing:border-box;"
-             title="Type your custom effect text">
 
-      <label for="customCost" style="font-size:12px; opacity:0.8; line-height:1;">Cost:</label>
-      <input id="customCost" type="number" min="0" step="1" inputmode="numeric" pattern="\\d*"
-             value="${cstCommitted}"
-             style="width:100%; height:28px; box-sizing:border-box;"
-             title="Enter a non-negative integer">
+      <label for="customEffect" style="font-size:12px; opacity:0.8; line-height:1;">Effect:</label>
+      <textarea id="customEffect"
+                rows="3" wrap="soft"
+                style="
+                  width:100%;
+                  height:66px;             /* ~3 rows; tweak if desired */
+                  box-sizing:border-box;
+                  overflow-y:auto;         /* scroll vertically when long */
+                  resize:vertical;         /* user can drag taller */
+                "
+                title="Type your custom effect text">${esc(effCommitted)}</textarea>
+
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label for="customCost" style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">Cost:</label>
+        <input id="customCost" type="number" min="0" step="1" inputmode="numeric" pattern="\\d*"
+               value="${cstCommitted}"
+               style="width:90px; height:28px; box-sizing:border-box;"
+               title="Enter a non-negative integer">
+      </div>
 
       <button type="button" id="customApply"
         style="
@@ -787,28 +796,29 @@ return;
           line-height:1;
           box-sizing:border-box;
         ">
-  Apply
-</button>
+        Apply
+      </button>
     </div>
   `);
 
-  // Suppress Enter so it doesn't close the dialog
+  // UX wiring:
+  // - Keep Enter/newlines allowed in Effect (textarea)
+  // - Block Enter only in Cost (prevents dialog submit)
   $qualitiesList
     .off('.customUX')
-    .on('keydown.customUX', '#customEffect, #customCost', (ev) => {
+    .on('keydown.customUX', '#customCost', (ev) => {
       if (ev.key === 'Enter') ev.preventDefault();
     })
-    // Filter non-digits for safety on keypress in Cost field
+    // Filter non-digits for safety on keypress in Cost
     .on('keypress.customUX', '#customCost', (ev) => {
       if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
     })
-    // Sanitize on paste into Cost field
+    // Sanitize on paste into Cost
     .on('paste.customUX', '#customCost', (ev) => {
       ev.preventDefault();
       const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
       const digits = txt.replace(/\D+/g, '');
       const el = ev.currentTarget;
-      // insert sanitized digits
       const start = el.selectionStart ?? el.value.length;
       const end   = el.selectionEnd   ?? el.value.length;
       el.value = el.value.slice(0, start) + digits + el.value.slice(end);
@@ -831,7 +841,7 @@ return;
       updateCost();
     });
 
-  // Initial render (shows committed values if any)
+  // Initial render (uses committed values if any)
   const kind = html.find('input[name="itemType"]:checked').val();
   renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
   updateCost();
