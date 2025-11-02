@@ -764,13 +764,12 @@ if (catKey === "custom") {
          style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
 
       <textarea id="customEffect"
-                rows="3" wrap="soft"
+                rows="2" wrap="soft"
                 style="
                   width:100%;
-                  height:66px;             /* ~3 rows; tweak if desired */
+                  height:44px;             /* ~3 rows; tweak if desired */
                   box-sizing:border-box;
                   overflow-y:auto;         /* scroll vertically when long */
-                  resize:vertical;         /* user can drag taller */
                 "
                 title="Type your custom effect text">${esc(effCommitted)}</textarea>
 
@@ -783,20 +782,17 @@ if (catKey === "custom") {
       </div>
 
       <button type="button" id="customApply"
-        style="
-          width:auto;
-          height:25px;
-          margin-top:2px;
-          align-self:flex-start;
-          display:inline-flex;
-          align-items:center;
-          justify-content:center;
-          padding:0 10px;
-          line-height:1;
-          box-sizing:border-box;
-        ">
-        Apply
-      </button>
+  style="
+    width:auto;
+    height:28px;
+    margin:2px auto 0;
+    display:block;
+    padding:0 10px;
+    line-height:1;
+    box-sizing:border-box;
+  ">
+  Apply
+</button>
     </div>
   `);
 
