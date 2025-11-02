@@ -775,7 +775,20 @@ return;
              title="Enter a non-negative integer">
 
       <button type="button" id="customApply"
-              style="height:28px; margin-top:2px;">Apply</button>
+        style="
+          width:auto;
+          height:25px;
+          margin-top:2px;
+          align-self:flex-start;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          padding:0 10px;
+          line-height:1;
+          box-sizing:border-box;
+        ">
+  Apply
+</button>
     </div>
   `);
 
