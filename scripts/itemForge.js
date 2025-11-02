@@ -57,11 +57,22 @@ const getTreasureCost = (doc) =>
   toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
 
 const getTreasureOrigin = (doc) => {
-  const v = doc?.system?.origin
-        ?? doc?.system?.keywords?.origin
-        ?? doc?.system?.material?.origin
-        ?? doc?.origin
-        ?? "";
+  // 1) your canonical field
+  let v = doc?.system?.origin?.value;
+
+  // 2) fallbacks (kept just in case some items are older/differently shaped)
+  if (v == null || v === "") {
+    v = doc?.system?.origin
+      ?? doc?.system?.keywords?.origin
+      ?? doc?.system?.material?.origin
+      ?? doc?.origin
+      ?? "";
+  }
+
+  // unwrap common shapes (arrays/objects)
+  if (Array.isArray(v)) v = v.find(e => e != null) ?? "";
+  if (v && typeof v === "object") v = v.key ?? v.id ?? v.type ?? v.name ?? v.value ?? "";
+
   return String(v).trim().toLowerCase();
 };
 
