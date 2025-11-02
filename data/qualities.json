@@ -120,8 +120,8 @@
     { "id": "melee-up", "armorName": "Knight's", "shieldName": "", "accessoryName": "Warrior's", "cost": 2000, "description": "melee weapon attacks deal 5 extra damage.", "appliesTo": ["armor", "shield", "accessory"] },
     { "id": "ranged-up", "armorName": "Ranger's", "shieldName": "", "accessoryName": "Marksman's", "cost": 2000, "description": "ranged weapon attacks deal 5 extra damage.", "appliesTo": ["armor", "shield", "accessory"] },
 
-    { "id": "amulet", "weaponName": "Gilded", "accessoryName": "Mythril", "cost": 800, "description": "gives +1 to Magic Defense.", "appliesTo": ["weapon", "accessory"] },
-    { "id": "bulwark", "weaponName": "Broad", "accessoryName": "Adamant", "cost": 800, "description": "gives +1 to Defense.", "appliesTo": ["weapon", "accessory"] }
+    { "id": "amulet", "weaponName": "Gilded", "shieldName": "", "accessoryName": "Mythril", "cost": 800, "description": "gives +1 to Magic Defense.", "appliesTo": ["weapon", "accessory"] },
+    { "id": "bulwark", "weaponName": "Broad", "shieldName": "", "accessoryName": "Adamant", "cost": 800, "description": "gives +1 to Defense.", "appliesTo": ["weapon", "accessory"] }
   ],
   "aerial": [
     { "id": "aerial-1", "weaponName": "Whirlwind", "armorName": "Whirlwind", "shieldName": "", "accessoryName": "Whirlwind", "cost": 600, "description": "deals 5 extra damage during the first round of conflict.", "appliesTo": ["weapon", "armor", "shield", "accessory"] },
