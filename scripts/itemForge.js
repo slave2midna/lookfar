@@ -763,7 +763,6 @@ if (catKey === "custom") {
     <div id="customQualityWrap"
          style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
 
-      <label for="customEffect" style="font-size:12px; opacity:0.8; line-height:1;">Effect:</label>
       <textarea id="customEffect"
                 rows="3" wrap="soft"
                 style="
@@ -779,7 +778,7 @@ if (catKey === "custom") {
         <label for="customCost" style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">Cost:</label>
         <input id="customCost" type="number" min="0" step="1" inputmode="numeric" pattern="\\d*"
                value="${cstCommitted}"
-               style="width:90px; height:28px; box-sizing:border-box;"
+               style="width:100%; height:25px; box-sizing:border-box;"
                title="Enter a non-negative integer">
       </div>
 
