@@ -133,9 +133,61 @@ const validateMaterialsOrigin = (html, materials) => {
   return ok;
 };
 
-/** Cost field asked for "before surcharges": base + quality (no +1/+4/element, no fee, no material) */
+// Cost field asked for "before surcharges": base + quality (no +1/+4/element, no fee, no material)
 const getPreSurchargeCost = (baseCost, qualityCost) =>
   Math.max(0, (Number(baseCost) || 0) + (Number(qualityCost) || 0));
+
+/**
+ * Compute both "worth" (what the item is valued at) and "craft" (what the crafter pays now).
+ * worth = base + quality + weapon surcharges (no materials, no fee)
+ * craft = worth - materials (and +10% if Fee? is checked)
+ */
+const getCurrentCosts = (html, tmpl, currentQualities) => {
+  const base = getEquipCost(tmpl);
+
+  // quality cost (handles Custom and None)
+  const catKey = String(html.find('#qualitiesCategory').val() || 'none').toLowerCase();
+  let qcost = 0;
+  if (catKey === 'custom') {
+    qcost = toInt(html.data('customCost') ?? 0);
+  } else if (catKey !== 'none') {
+    const $q = html.find('#qualitiesList [data-selected="1"]').first();
+    const qi = Number($q.data('idx'));
+    const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
+    qcost = getQualityCost(qual);
+  }
+
+  // weapon surcharges (mirror the preview/updateCost logic)
+  const kind = html.find('input[name="itemType"]:checked').val();
+  let custom = 0;
+  if (kind === 'weapon') {
+    const plus1  = html.find('#optPlusOne').is(':checked');
+    const plus4  = html.find('#optPlusDamage').is(':checked');
+    const eleSel = (html.find('#optElement').val() || 'physical').toString();
+    if (plus1) custom += 100;
+    if (plus4) custom += 200;
+    if (eleSel !== 'physical') custom += 100;
+
+    const baseA = String(tmpl?.attrA ?? '').toUpperCase();
+    const baseB = String(tmpl?.attrB ?? '').toUpperCase();
+    const selA  = String(html.find('#optAttrA').val() || baseA).toUpperCase();
+    const selB  = String(html.find('#optAttrB').val() || baseB).toUpperCase();
+    const isMatchingNow = selA && selB && (selA === selB);
+    const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
+    if (isMatchingNow && !sameAsOriginalPair) custom += 50;
+  }
+
+  // materials subtotal (already normalized on add)
+  const materials = html.data('ifMaterials') || [];
+  const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
+
+  // two outputs
+  const worth = Math.max(0, base + qcost + custom);            // save on item
+  let craft   = Math.max(0, worth - matTotal);                 // show in dialog
+  if (html.find('#optFee').is(':checked')) craft = Math.ceil(craft * 1.10);
+
+  return { worth, craft };
+};
 
 /** Mirror preview math to compute weapon outputs from UI. */
 const computeWeaponStats = (base, html) => {
@@ -194,9 +246,15 @@ const buildItemData = (kind, html, {
   const { desc: qualDesc, cost: qualCost } = getSelectedQualityInfo(html, currentQualities);
   const img = getPreviewIcon(html, dataLoader.getRandomIconFor(kind, base));
 
-  // cost (before surcharges)
-  const baseCost = Number(base?.value ?? base?.cost ?? 0) || 0;
-  const costField = getPreSurchargeCost(baseCost, qualCost);
+  // compute dialog-consistent costs
+  const $sel = ui.windows[Number(html.closest(".window-app").attr("data-appid"))]
+    ? html
+    : html; // html is already the jQuery of the dialog
+  const $t  = html.find('#templateList [data-selected="1"]').first();
+  const ti  = Number($t.data("idx"));
+  const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
+  const { worth } = getCurrentCosts(html, tmpl, currentQualities);
+  const costField = worth; // save worth to the item
 
   if (kind === "weapon") {
     const w = computeWeaponStats(base, html);
@@ -392,6 +450,7 @@ const buildItemData = (kind, html, {
   let currentTemplates = [];
   let currentQualities = [];
   const materials = [];
+  html.data('ifMaterials', materials);  
 
   const dlg = new Dialog({
     title: "Item Forger",
@@ -499,7 +558,11 @@ if (catKey === "custom") {
   const feeOn = html.find('#optFee').is(':checked');
   if (feeOn) total = Math.ceil(total * 1.10);
 
-  $val.text(total);
+  const $t  = html.find('#templateList [data-selected="1"]').first();
+  const ti  = Number($t.data("idx"));
+  const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
+  const { craft } = getCurrentCosts(html, tmpl, currentQualities);
+  $val.text(craft);
 };
         
        const getNameSafe = (r) => esc(getName(r));
@@ -943,6 +1006,7 @@ return;
 
       $img.on("click", () => {
         materials.splice(i, 1);
+        html.data('ifMaterials', materials);  // ← keep helper in sync
         renderMaterials();
         updateCost(); // keep total in sync after removing a material
       });
@@ -1002,7 +1066,7 @@ return;
         cost: matCost,
         origin: matOrigin
       });
-
+      html.data('ifMaterials', materials);  // ← keep helper in sync
       renderMaterials();
       updateCost();
     } catch (e) {
