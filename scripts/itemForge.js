@@ -39,7 +39,13 @@ import { dataLoader } from "./dataLoader.js";
     return null;
   };
 
-  // --- Cost helpers ---
+    // --- Cost helpers ---
+  // Map UI/"template" attr tokens to valid schema keys
+const asAttrKey = (s) => {
+  const v = String(s ?? "").toLowerCase();
+  return (v === "mig" || v === "dex" || v === "ins" || v === "wlp") ? v : "";
+};
+
 const toInt = (v) => {
   const n = Number(v);
   return Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0;
@@ -82,6 +88,255 @@ const getRequiredOriginKey = (html) => {
   // No origin requirement for "none", "basic", or "custom"
   return (key === "none" || key === "basic" || key === "custom") ? "" : key;
 };
+
+// --- begin forge item helpers ------------------------------------------------------------
+  
+/** Return the currently selected base template row. */
+const getSelectedBase = (html, currentTemplates) => {
+  const $sel = html.find('#templateList [data-selected="1"]').first();
+  const idx  = Number($sel.data("idx"));
+  return Number.isFinite(idx) ? currentTemplates[idx] : null;
+};
+
+/** Return { desc, cost } for the currently selected (or custom) quality. */
+const getSelectedQualityInfo = (html, currentQualities) => {
+  const catKey = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
+  if (catKey === "custom") {
+    return {
+      desc: String(html.data('customEffect') ?? "").trim() || "No quality",
+      cost: Math.max(0, Number(html.data('customCost') ?? 0) || 0)
+    };
+  }
+  if (catKey === "none" || !currentQualities?.length) {
+    return { desc: "No quality", cost: 0 };
+  }
+  const $q = html.find('#qualitiesList [data-selected="1"]').first();
+  const qi  = Number($q.data("idx"));
+  const q   = Number.isFinite(qi) ? currentQualities[qi] : null;
+  return { desc: q?.description ?? q?.desc ?? "No quality", cost: Number(q?.cost ?? 0) || 0 };
+};
+
+/** Pull the preview icon currently shown (honors manual override). */
+const getPreviewIcon = (html, fallback) => {
+  const override = html.data('iconOverride');
+  if (override) return override;
+  const src = html.find('#if-preview-icon').attr('src');
+  return src || fallback || "icons/svg/mystery-man.svg";
+};
+
+/** Materials requirement enforcement (category gated). */
+const validateMaterialsOrigin = (html, materials) => {
+  const needKey = getRequiredOriginKey(html); // "" means none/basic/custom
+  if (!needKey) return true;
+  const ok = materials.some(m => String(m.origin) === needKey);
+  if (!ok) ui.notifications?.warn(`This quality requires at least one ${needKey} material.`);
+  return ok;
+};
+
+// Cost field asked for "before surcharges": base + quality (no +1/+4/element, no fee, no material)
+const getPreSurchargeCost = (baseCost, qualityCost) =>
+  Math.max(0, (Number(baseCost) || 0) + (Number(qualityCost) || 0));
+
+/**
+ * Compute both "worth" (what the item is valued at) and "craft" (what the crafter pays now).
+ * worth = base + quality + weapon surcharges (no materials, no fee)
+ * craft = worth - materials (and +10% if Fee? is checked)
+ */
+const getCurrentCosts = (html, tmpl, currentQualities) => {
+  const base = getEquipCost(tmpl);
+
+  // quality cost (handles Custom and None)
+  const catKey = String(html.find('#qualitiesCategory').val() || 'none').toLowerCase();
+  let qcost = 0;
+  if (catKey === 'custom') {
+    qcost = toInt(html.data('customCost') ?? 0);
+  } else if (catKey !== 'none') {
+    const $q = html.find('#qualitiesList [data-selected="1"]').first();
+    const qi = Number($q.data('idx'));
+    const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
+    qcost = getQualityCost(qual);
+  }
+
+  // weapon surcharges (mirror the preview/updateCost logic)
+  const kind = html.find('input[name="itemType"]:checked').val();
+  let custom = 0;
+  if (kind === 'weapon') {
+    const plus1  = html.find('#optPlusOne').is(':checked');
+    const plus4  = html.find('#optPlusDamage').is(':checked');
+    const eleSel = (html.find('#optElement').val() || 'physical').toString();
+    if (plus1) custom += 100;
+    if (plus4) custom += 200;
+    if (eleSel !== 'physical') custom += 100;
+
+    const baseA = String(tmpl?.attrA ?? '').toUpperCase();
+    const baseB = String(tmpl?.attrB ?? '').toUpperCase();
+    const selA  = String(html.find('#optAttrA').val() || baseA).toUpperCase();
+    const selB  = String(html.find('#optAttrB').val() || baseB).toUpperCase();
+    const isMatchingNow = selA && selB && (selA === selB);
+    const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
+    if (isMatchingNow && !sameAsOriginalPair) custom += 50;
+  }
+
+  // materials subtotal (already normalized on add)
+  const materials = html.data('ifMaterials') || [];
+  const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
+
+  // two outputs
+  const worth = Math.max(0, base + qcost + custom);            // save on item
+  let craft   = Math.max(0, worth - matTotal);                 // show in dialog
+  if (html.find('#optFee').is(':checked')) craft = Math.ceil(craft * 1.10);
+
+  return { worth, craft };
+};
+
+/** Mirror preview math to compute weapon outputs from UI. */
+const computeWeaponStats = (base, html) => {
+  const norm = (h) => {
+    const v = String(h ?? "").trim().toLowerCase();
+    if (!v) return null;
+    if (v.includes("2") || v.includes("two") || /(^|[^a-z])2h([^a-z]|$)/.test(v)) return "2";
+    if (v.includes("1") || v.includes("one") || /(^|[^a-z])1h([^a-z]|$)/.test(v)) return "1";
+    if (["twohanded","two-handed"].some(k=>v.includes(k))) return "2";
+    if (["onehanded","one-handed"].some(k=>v.includes(k))) return "1";
+    return null;
+  };
+
+  const baseHand   = norm(base?.hand) || null; // "1" | "2" | null
+  const plus1      = html.find('#optPlusOne').is(':checked');
+  const plus4      = html.find('#optPlusDamage').is(':checked');
+  const flip       = html.find('#optToggleHand').is(':checked');
+  const selA       = String(html.find('#optAttrA').val() || base?.attrA || "").toUpperCase();
+  const selB       = String(html.find('#optAttrB').val() || base?.attrB || "").toUpperCase();
+  const elementVal = (html.find('#optElement').val() || base?.element || "physical").toString();
+
+  // hands label
+  let handsOut = base?.hand || ""; // keep textual form for system field
+  if (flip && (baseHand === "1" || baseHand === "2")) {
+    handsOut = (baseHand === "1") ? "two-handed" : "one-handed";
+  }
+
+  // damage & accuracy
+  const handMod = (flip && baseHand === "2") ? -4
+               : (flip && baseHand === "1") ? +4
+               : 0;
+  const accOut  = (Number(base?.accuracy ?? base?.acc ?? 0) || 0) + (plus1 ? 1 : 0);
+  let dmgOut    = (Number(base?.damage   ?? base?.dmg ?? 0) || 0) + (plus4 ? 4 : 0) + handMod;
+
+  // "isMartial" escalates if effective damage >= 10 (preview logic)
+  const isMartialEffective = (Number.isFinite(dmgOut) && dmgOut >= 10) || !!base?.isMartial;
+
+  return {
+    hands: handsOut,
+    attrs: { A: selA, B: selB },
+    acc: accOut,
+    dmg: dmgOut,
+    dmgType: elementVal,
+    isMartial: isMartialEffective
+  };
+};
+
+/** Build final itemData payload for the selected kind using dialog state. */
+const buildItemData = (kind, html, {
+  currentTemplates,
+  currentQualities
+}) => {
+  const base = getSelectedBase(html, currentTemplates);
+  if (!base) throw new Error("No template selected.");
+
+  const { desc: qualDesc, cost: qualCost } = getSelectedQualityInfo(html, currentQualities);
+  const img = getPreviewIcon(html, dataLoader.getRandomIconFor(kind, base));
+
+  // compute dialog-consistent costs
+  const $sel = ui.windows[Number(html.closest(".window-app").attr("data-appid"))]
+    ? html
+    : html; // html is already the jQuery of the dialog
+  const $t  = html.find('#templateList [data-selected="1"]').first();
+  const ti  = Number($t.data("idx"));
+  const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
+  const { worth } = getCurrentCosts(html, tmpl, currentQualities);
+  const costField = worth; // save worth to the item
+
+  if (kind === "weapon") {
+    const w = computeWeaponStats(base, html);
+    return {
+      name: `Crafted ${base?.name ?? "Weapon"}`,
+      type: "weapon",
+      img,
+      system: {
+        category:   { value: base?.category ?? "" },
+        hands:      { value: w.hands || "" },
+        type:       { value: base?.type ?? "" },
+        attributes: {
+          primary:   { value: asAttrKey(w.attrs.A) },
+          secondary: { value: asAttrKey(w.attrs.B) }
+        },
+        accuracy:   { value: w.acc },
+        defense:    "def", // per spec: DEF for now
+        damageType: { value: w.dmgType || (base?.element ?? "physical") },
+        damage:     { value: w.dmg },
+        isMartial:  { value: !!w.isMartial },
+        quality:    { value: qualDesc || "No quality" },
+        cost:       { value: costField },
+        source:     { value: "LOOKFAR" },
+        summary:    { value: `a finely crafted ${base?.category ?? "weapon"}.` }
+      }
+    };
+  }
+
+  if (kind === "armor") {
+    return {
+      name: `Crafted ${base?.name ?? "Armor"}`,
+      type: "armor",
+      img,
+      system: {
+        def:      { attribute: asAttrKey(base?.defAttr  || "dex"), value: Number(base?.def  ?? 0) || 0 },
+        mdef:     { attribute: asAttrKey(base?.mdefAttr || "ins"), value: Number(base?.mdef ?? 0) || 0 },
+        init:     { value: Number(base?.init ?? 0) || 0 },
+        isMartial:{ value: !!base?.isMartial },
+        quality:  { value: qualDesc || "No quality" },
+        cost:     { value: costField },
+        source:   { value: "LOOKFAR" },
+        summary:  { value: `A set of ${base?.isMartial ? "martial" : "non-martial"} armor that ${qualDesc || "has no special properties."}` }
+      }
+    };
+  }
+
+  if (kind === "shield") {
+    return {
+      name: `Crafted ${base?.name ?? "Shield"}`,
+      type: "shield",
+      img,
+      system: {
+        def:      { attribute: asAttrKey(base?.defAttr  || "dex"), value: Number(base?.def  ?? 0) || 0 },
+        mdef:     { attribute: asAttrKey(base?.mdefAttr || "ins"), value: Number(base?.mdef ?? 0) || 0 },
+        init:     { value: Number(base?.init ?? 0) || 0 },
+        isMartial:{ value: !!base?.isMartial },
+        quality:  { value: qualDesc || "No quality" },
+        cost:     { value: costField },
+        source:   { value: "LOOKFAR" },
+        summary:  { value: `A ${base?.isMartial ? "martial" : "non-martial"} shield that ${qualDesc || "has no special properties."}` }
+      }
+    };
+  }
+
+  // accessory
+  return {
+    name: `Crafted ${base?.name ?? "Accessory"}`,
+    type: "accessory",
+    img,
+    system: {
+      def:     { value: Number(base?.def  ?? 0) || 0 },
+      mdef:    { value: Number(base?.mdef ?? 0) || 0 },
+      init:    { value: Number(base?.init ?? 0) || 0 },
+      quality: { value: qualDesc || "No quality" },
+      cost:    { value: costField },
+      source:  { value: "LOOKFAR" },
+      summary: { value: `An accessory that ${qualDesc || "has no special properties."}` }
+    }
+  };
+};
+
+// --- end item forge helpers ------------------------------------------------------------
 
   const CATEGORY_OPTIONS = [
   ["Basic",       "basic"],
@@ -188,26 +443,43 @@ const getRequiredOriginKey = (html) => {
 </div>`;
 
   function openItemForgeDialog() {
-    const equipmentRoot  = getEquipmentRoot();
-    const qualitiesRoot  = getQualitiesRoot();
+  const equipmentRoot  = getEquipmentRoot();
+  const qualitiesRoot  = getQualitiesRoot();
 
-    const dlg = new Dialog({
-      title: "Item Forger",
-      content,
-      buttons: {
-        forge: {
-          label: "Forge",
-          icon: '<i class="fas fa-hammer"></i>',
-          callback: (html) => {
+  // HOISTED (shared by render + forge button)
+  let currentTemplates = [];
+  let currentQualities = [];
+  const materials = [];
+
+  const dlg = new Dialog({
+    title: "Item Forger",
+    content,
+    buttons: {
+      forge: {
+        label: "Forge",
+        icon: '<i class="fas fa-hammer"></i>',
+        callback: async (html) => {
+          try {
             const kind = html.find('input[name="itemType"]:checked').val();
-            const $selT = html.find('#templateList [data-selected="1"]');
-            const chosenT = $selT.data('name'); // fine for now; index-driven UI still sets this
-            if (!chosenT) return ui.notifications.warn("Select a template first.");
-            ui.notifications.info(`Forging ${kind}: ${chosenT}`);
+            if (!kind) return ui.notifications.warn("Choose an item type first.");
+
+            const base = getSelectedBase(html, currentTemplates);
+            if (!base) return ui.notifications.warn("Select a template first.");
+
+            if (!validateMaterialsOrigin(html, materials)) return;
+
+            const itemData = buildItemData(kind, html, { currentTemplates, currentQualities });
+            const created  = await Item.create(itemData, { renderSheet: true });
+            if (!created) throw new Error("Item creation failed.");
+            ui.notifications.info(`${created.name} forged.`);
+          } catch (err) {
+            console.error("[Item Forger] Forge failed:", err);
+            ui.notifications?.error(`Item Forger: ${err.message || "Failed to forge item."}`);
           }
         }
-      },
-      default: "forge",
+      }
+    },
+    default: "forge",
       render: async (html) => {
         const $dlg = html.closest(".window-app");
         const $wc  = $dlg.find(".window-content");
@@ -232,60 +504,17 @@ const getRequiredOriginKey = (html) => {
         const $materialsHint    = html.find("#materialsHint");
         const $preview          = html.find("#itemPreviewLarge");
 
-        let currentTemplates = [];
-        let currentQualities = [];
-        const materials = [];
+        html.data('ifMaterials', materials);
 
   // ---- COST: recompute whenever template or quality selection changes ----
   const updateCost = () => {
   const $val = html.find('#costValue');
-
-  const $t = html.find('#templateList [data-selected="1"]').first();
-  const ti = Number($t.data("idx"));
+  const $t   = html.find('#templateList [data-selected="1"]').first();
+  const ti   = Number($t.data("idx"));
   const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
 
-  const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
-
-let qcost = 0;
-if (catKey === "custom") {
-  // Use only the committed value (set by the Apply button)
-  qcost = toInt(html.data('customCost') ?? 0);
-} else {
-  const $q = html.find('#qualitiesList [data-selected="1"]').first();
-  const qi = Number($q.data("idx"));
-  const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
-  qcost = getQualityCost(qual);
-}
-
-  const base  = getEquipCost(tmpl);
-
-  // weapon-only customize surcharges
-  const kind  = html.find('input[name="itemType"]:checked').val();
-  let custom  = 0;
-  if (kind === "weapon") {
-    const plus1  = html.find('#optPlusOne').is(':checked');
-    const plus4  = html.find('#optPlusDamage').is(':checked');
-    const eleSel = (html.find('#optElement').val() || 'physical').toString();
-    if (plus1) custom += 100;
-    if (plus4) custom += 200;
-    if (eleSel !== 'physical') custom += 100;
-
-    const baseA = String(tmpl?.attrA ?? "").toUpperCase();
-    const baseB = String(tmpl?.attrB ?? "").toUpperCase();
-    const selA  = String(html.find('#optAttrA').val() || baseA).toUpperCase();
-    const selB  = String(html.find('#optAttrB').val() || baseB).toUpperCase();
-    const isMatchingNow = selA && selB && (selA === selB);
-    const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
-    if (isMatchingNow && !sameAsOriginalPair) custom += 50;
-  }
-
-  const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
-  let total = Math.max(0, base + qcost + custom - matTotal);
-
-  const feeOn = html.find('#optFee').is(':checked');
-  if (feeOn) total = Math.ceil(total * 1.10);
-
-  $val.text(total);
+  const { craft } = getCurrentCosts(html, tmpl, currentQualities);
+  $val.text(craft);
 };
         
        const getNameSafe = (r) => esc(getName(r));
@@ -729,6 +958,7 @@ return;
 
       $img.on("click", () => {
         materials.splice(i, 1);
+        html.data('ifMaterials', materials);  // ← keep helper in sync
         renderMaterials();
         updateCost(); // keep total in sync after removing a material
       });
@@ -788,7 +1018,7 @@ return;
         cost: matCost,
         origin: matOrigin
       });
-
+      html.data('ifMaterials', materials);  // ← keep helper in sync
       renderMaterials();
       updateCost();
     } catch (e) {
