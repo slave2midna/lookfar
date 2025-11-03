@@ -39,7 +39,13 @@ import { dataLoader } from "./dataLoader.js";
     return null;
   };
 
-  // --- Cost helpers ---
+    // --- Cost helpers ---
+  // Map UI/"template" attr tokens to valid schema keys
+const asAttrKey = (s) => {
+  const v = String(s ?? "").toLowerCase();
+  return (v === "mig" || v === "dex" || v === "ins" || v === "wlp") ? v : "";
+};
+
 const toInt = (v) => {
   const n = Number(v);
   return Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0;
@@ -203,8 +209,8 @@ const buildItemData = (kind, html, {
         hands:      { value: w.hands || "" },
         type:       { value: base?.type ?? "" },
         attributes: {
-          primary:   { value: w.attrs.A || "" },
-          secondary: { value: w.attrs.B || "" }
+          primary:   { value: asAttrKey(w.attrs.A) },
+          secondary: { value: asAttrKey(w.attrs.B) }
         },
         accuracy:   { value: w.acc },
         defense:    "def", // per spec: DEF for now
@@ -225,8 +231,8 @@ const buildItemData = (kind, html, {
       type: "armor",
       img,
       system: {
-        def:      { attribute: base?.defAttr  || "dex", value: Number(base?.def  ?? 0) || 0 },
-        mdef:     { attribute: base?.mdefAttr || "ins", value: Number(base?.mdef ?? 0) || 0 },
+        def:      { attribute: asAttrKey(base?.defAttr  || "dex"), value: Number(base?.def  ?? 0) || 0 },
+        mdef:     { attribute: asAttrKey(base?.mdefAttr || "ins"), value: Number(base?.mdef ?? 0) || 0 },
         init:     { value: Number(base?.init ?? 0) || 0 },
         isMartial:{ value: !!base?.isMartial },
         quality:  { value: qualDesc || "No quality" },
@@ -243,8 +249,8 @@ const buildItemData = (kind, html, {
       type: "shield",
       img,
       system: {
-        def:      { attribute: base?.defAttr  || "dex", value: Number(base?.def  ?? 0) || 0 },
-        mdef:     { attribute: base?.mdefAttr || "ins", value: Number(base?.mdef ?? 0) || 0 },
+        def:      { attribute: asAttrKey(base?.defAttr  || "dex"), value: Number(base?.def  ?? 0) || 0 },
+        mdef:     { attribute: asAttrKey(base?.mdefAttr || "ins"), value: Number(base?.mdef ?? 0) || 0 },
         init:     { value: Number(base?.init ?? 0) || 0 },
         isMartial:{ value: !!base?.isMartial },
         quality:  { value: qualDesc || "No quality" },
