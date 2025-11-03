@@ -46,7 +46,7 @@
          "isMartial":false
       },
       {
-         "id":"shortbow",
+         "id":"bow",
          "name":"Bow",
          "value":200,
          "category":"bow",
@@ -61,7 +61,7 @@
          "isMartial":false
       },
       {
-         "id":"iron-knuckle",
+         "id":"knuckle",
          "name":"Knuckle",
          "value":150,
          "category":"brawling",
@@ -76,7 +76,7 @@
          "isMartial":false
       },
       {
-         "id":"steel-dagger",
+         "id":"dagger",
          "name":"Dagger",
          "value":150,
          "category":"dagger",
@@ -121,8 +121,8 @@
          "isMartial":true
       },
       {
-         "id":"chain-whip",
-         "name":"Whip",
+         "id":"flail",
+         "name":"Flail",
          "value":150,
          "category":"flail",
          "hand":"two-handed",
@@ -136,7 +136,7 @@
          "isMartial":false
       },
       {
-         "id":"iron-hammer",
+         "id":"hammer",
          "name":"Hammer",
          "value":200,
          "category":"heavy",
@@ -166,7 +166,7 @@
          "isMartial":true
       },
       {
-         "id":"broadaxe",
+         "id":"handaxe",
          "name":"Handaxe",
          "value":250,
          "category":"heavy",
@@ -196,7 +196,7 @@
          "isMartial":true
       },
       {
-         "id":"light-spear",
+         "id":"light_spear",
          "name":"Light Spear",
          "value":200,
          "category":"spear",
@@ -211,7 +211,7 @@
          "isMartial":true
       },
       {
-         "id":"heavy-spear",
+         "id":"heavy_spear",
          "name":"Heavy Spear",
          "value":200,
          "category":"spear",
@@ -226,8 +226,8 @@
          "isMartial":true
       },
       {
-         "id":"bronze-sword",
-         "name":"Longsword",
+         "id":"sword",
+         "name":"Sword",
          "value":200,
          "category":"sword",
          "hand":"one-handed",
@@ -241,8 +241,8 @@
          "isMartial":true
       },
       {
-         "id":"greatsword",
-         "name":"Greatsword",
+         "id":"claymore",
+         "name":"Claymore",
          "value":200,
          "category":"sword",
          "hand":"two-handed",
@@ -348,7 +348,7 @@
       },
       {
          "id":"brigandine",
-         "name":"Cuirass",
+         "name":"Brigandine",
          "value":150,
          "defAttr":"",
          "def":10,
@@ -359,7 +359,7 @@
       },
       {
          "id":"bronze-plate",
-         "name":"Chain",
+         "name":"Hauberk",
          "value":200,
          "defAttr":"",
          "def":11,
@@ -370,7 +370,7 @@
       },
       {
          "id":"iron-plate",
-         "name":"Scale",
+         "name":"Curiass",
          "value":250,
          "defAttr":"",
          "def":11,
@@ -413,7 +413,7 @@
    ],
    "accessoryList":[
       {
-         "id":"necklace",
+         "id":"amulet",
          "name":"Amulet",
          "def":0,
          "mdef":0,
@@ -427,14 +427,7 @@
          "init":0
       },
       {
-         "id":"boots",
-         "name":"Boots",
-         "def":0,
-         "mdef":0,
-         "init":0
-      },
-      {
-         "id":"cape",
+         "id":"cloak",
          "name":"Cloak",
          "def":0,
          "mdef":0,
@@ -442,14 +435,7 @@
       },
       {
          "id":"charm",
-         "name":"Earrings",
-         "def":0,
-         "mdef":0,
-         "init":0
-      },
-      {
-         "id":"gloves",
-         "name":"Gloves",
+         "name":"Earring",
          "def":0,
          "mdef":0,
          "init":0
@@ -462,7 +448,7 @@
          "init":0
       },
       {
-         "id":"helm",
+         "id":"helmet",
          "name":"Helmet",
          "def":0,
          "mdef":0,
