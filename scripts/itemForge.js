@@ -133,10 +133,6 @@ const validateMaterialsOrigin = (html, materials) => {
   return ok;
 };
 
-// Cost field asked for "before surcharges": base + quality (no +1/+4/element, no fee, no material)
-const getPreSurchargeCost = (baseCost, qualityCost) =>
-  Math.max(0, (Number(baseCost) || 0) + (Number(qualityCost) || 0));
-
 /**
  * Compute both "worth" (what the item is valued at) and "craft" (what the crafter pays now).
  * worth = base + quality + weapon surcharges (no materials, no fee)
@@ -243,13 +239,10 @@ const buildItemData = (kind, html, {
   const base = getSelectedBase(html, currentTemplates);
   if (!base) throw new Error("No template selected.");
 
-  const { desc: qualDesc, cost: qualCost } = getSelectedQualityInfo(html, currentQualities);
+  const { desc: qualDesc } = getSelectedQualityInfo(html, currentQualities);
   const img = getPreviewIcon(html, dataLoader.getRandomIconFor(kind, base));
 
   // compute dialog-consistent costs
-  const $sel = ui.windows[Number(html.closest(".window-app").attr("data-appid"))]
-    ? html
-    : html; // html is already the jQuery of the dialog
   const $t  = html.find('#templateList [data-selected="1"]').first();
   const ti  = Number($t.data("idx"));
   const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
@@ -430,7 +423,6 @@ const buildItemData = (kind, html, {
 </fieldset>
       </div>
     </div>
-  </div>
 
     <fieldset style="margin:0 0 6px 0;">
       <legend>Materials</legend>
@@ -545,14 +537,6 @@ const buildItemData = (kind, html, {
   // 5) Final fallback
   return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
 };
-
-        // ---------- icons (top-of-preview) ----------
-        const getKindIcon = (kind) => ({
-          weapon:    "icons/svg/sword.svg",
-          shield:    "icons/svg/shield.svg",
-          armor:     "icons/svg/statue.svg",
-          accessory: "icons/svg/stoned.svg"
-        }[kind] || "icons/svg/mystery-man.svg");
 
         // --- NEW: apply Attr A/B defaults from selected weapon template ---
         const applyAttrDefaultsFromTemplate = (selectedEl) => {
@@ -738,12 +722,6 @@ if (kind === "armor") {
     ? `<strong>DEF:</strong> ${esc(defAttr)}+${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`
     : `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
 
-  // Quality description (centered, wrapped)
-  // const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-  // const qIdx  = Number($qsel.data("idx"));
-  // const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-  // const qdesc = q?.description ?? q?.desc ?? "";
-
   // HEAD: icon + optional martial badge to the right of the icon
   $preview.html(`${style}
   <div id="if-preview-card">
@@ -777,12 +755,6 @@ if (kind === "shield") {
   // second row: DEF: +def | M.DEF: +mdef (bold labels)
   const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
 
-  // Quality description (same behavior as other kinds)
-  //const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-  //const qIdx  = Number($qsel.data("idx"));
-  //const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-  //const qdesc = q?.description ?? q?.desc ?? "";
-
   // HEAD: icon + optional martial badge (presence only difference)
   $preview.html(`${style}
     <div id="if-preview-card">
@@ -803,12 +775,6 @@ if (kind === "shield") {
 
 // ---------- ACCESSORY PREVIEW ----------
 if (kind === "accessory") {
-  // Selected quality (description-only row)
-  // const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-  // const qIdx  = Number($qsel.data("idx"));
-  // const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-  // Use the quality description; fallback to empty if none
-  // const qdesc = q?.description ?? q?.desc ?? "";
 
   $preview.html(`${style}
     <div id="if-preview-card">
@@ -868,11 +834,6 @@ if (kind === "weapon") {
 
   const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
   const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} ${eleSel}`;
-
-  // const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-  // const qIdx  = Number($qsel.data("idx"));
-  // const q     = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-  // const qdesc = q?.description ?? q?.desc ?? "";
 
   $preview.html(`${style}
   <div id="if-preview-card">
