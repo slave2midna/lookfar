@@ -610,7 +610,7 @@ if (kind === "weapon") {
   const dispHandText = handLabel(dispHand ?? baseHandText);
 
   const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-  const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} | ${eleSel}`;
+  const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} ${eleSel}`;
 
   // const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
   // const qIdx  = Number($qsel.data("idx"));
