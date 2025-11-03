@@ -450,7 +450,6 @@ const buildItemData = (kind, html, {
   let currentTemplates = [];
   let currentQualities = [];
   const materials = [];
-  html.data('ifMaterials', materials);  
 
   const dlg = new Dialog({
     title: "Item Forger",
@@ -505,62 +504,15 @@ const buildItemData = (kind, html, {
         const $materialsHint    = html.find("#materialsHint");
         const $preview          = html.find("#itemPreviewLarge");
 
-        // let currentTemplates = [];
-        // let currentQualities = [];
-        // const materials = [];
+        html.data('ifMaterials', materials);
 
   // ---- COST: recompute whenever template or quality selection changes ----
   const updateCost = () => {
   const $val = html.find('#costValue');
-
-  const $t = html.find('#templateList [data-selected="1"]').first();
-  const ti = Number($t.data("idx"));
+  const $t   = html.find('#templateList [data-selected="1"]').first();
+  const ti   = Number($t.data("idx"));
   const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
 
-  const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
-
-let qcost = 0;
-if (catKey === "custom") {
-  // Use only the committed value (set by the Apply button)
-  qcost = toInt(html.data('customCost') ?? 0);
-} else {
-  const $q = html.find('#qualitiesList [data-selected="1"]').first();
-  const qi = Number($q.data("idx"));
-  const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
-  qcost = getQualityCost(qual);
-}
-
-  const base  = getEquipCost(tmpl);
-
-  // weapon-only customize surcharges
-  const kind  = html.find('input[name="itemType"]:checked').val();
-  let custom  = 0;
-  if (kind === "weapon") {
-    const plus1  = html.find('#optPlusOne').is(':checked');
-    const plus4  = html.find('#optPlusDamage').is(':checked');
-    const eleSel = (html.find('#optElement').val() || 'physical').toString();
-    if (plus1) custom += 100;
-    if (plus4) custom += 200;
-    if (eleSel !== 'physical') custom += 100;
-
-    const baseA = String(tmpl?.attrA ?? "").toUpperCase();
-    const baseB = String(tmpl?.attrB ?? "").toUpperCase();
-    const selA  = String(html.find('#optAttrA').val() || baseA).toUpperCase();
-    const selB  = String(html.find('#optAttrB').val() || baseB).toUpperCase();
-    const isMatchingNow = selA && selB && (selA === selB);
-    const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
-    if (isMatchingNow && !sameAsOriginalPair) custom += 50;
-  }
-
-  const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
-  let total = Math.max(0, base + qcost + custom - matTotal);
-
-  const feeOn = html.find('#optFee').is(':checked');
-  if (feeOn) total = Math.ceil(total * 1.10);
-
-  const $t  = html.find('#templateList [data-selected="1"]').first();
-  const ti  = Number($t.data("idx"));
-  const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
   const { craft } = getCurrentCosts(html, tmpl, currentQualities);
   $val.text(craft);
 };
