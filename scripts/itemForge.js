@@ -288,9 +288,34 @@ if (catKey === "custom") {
   $val.text(total);
 };
         
-        const getNameSafe = (r) => esc(getName(r));
-        const getItemImage = (item) =>
-          item?.img || item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+       const getNameSafe = (r) => esc(getName(r));
+  const getItemImage = (item) => {
+  // 1) Respect an explicitly chosen image (or existing texture)
+  if (item?.img) return item.img;
+
+  // 2) Determine current kind from the dial in this dialog
+  const kind = html.find('input[name="itemType"]:checked').val(); // "weapon" | "armor" | "shield" | "accessory"
+  if (!kind) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+
+  // 3) Find the selected template id on the item (how this script tracks the chosen base)
+  const templateId = item?.system?.templateId;
+  if (!templateId) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+
+  // 4) Resolve the base template from dataLoader lists and pick a random icon from the manifest
+  const byKindList = {
+    weapon:    dataLoader.weaponsData?.weaponList,
+    armor:     dataLoader.armorData?.armorList,
+    shield:    dataLoader.shieldsData?.shieldList,
+    accessory: dataLoader.accessoriesData?.accessoryList
+  }[kind] || [];
+
+  const base = byKindList.find(e => e?.id === templateId);
+  const img  = base ? dataLoader.getRandomIconFor(kind, base) : null;
+  if (img) return img;
+
+  // 5) Final fallback
+  return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+};
 
         // ---------- icons (top-of-preview) ----------
         const getKindIcon = (kind) => ({
@@ -329,12 +354,65 @@ const clip = (v, n=14) => {
 
 const addModIfNumber = (val, mod) => {
   const num = Number(val);
-  return Number.isFinite(num) ? (num + mod) : val; // keep original if not numeric
+  return Number.isFinite(num) ? (num + mod) : val;
 };
 const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
-const renderPreview = (kind, selectedEl) => {
-  const icon = getKindIcon(kind);
+/**
+ * Render the preview.
+ * @param {string} kind - "weapon" | "armor" | "shield" | "accessory"
+ * @param {HTMLElement|null} selectedEl - the selected template element
+ * @param {{ rerollIcon?: boolean }} opts - set rerollIcon=true ONLY when user clicks template/quality
+ */
+const renderPreview = (kind, selectedEl, opts = {}) => {
+  const rerollIcon = !!opts.rerollIcon;
+
+  // simple per-dialog cache for auto-picked icons
+  let iconMap = html.data('autoIconMap');
+  if (!iconMap) { iconMap = {}; html.data('autoIconMap', iconMap); }
+
+  // user-picked override always wins
+  const override = html.data('iconOverride');
+  const getKindIcon = (k) => ({
+    weapon:    "icons/svg/sword.svg",
+    shield:    "icons/svg/shield.svg",
+    armor:     "icons/svg/statue.svg",
+    accessory: "icons/svg/stoned.svg"
+  }[k] || "icons/svg/mystery-man.svg");
+
+  // identify current base template to key the cache
+  const $sel  = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx   = Number($sel.data("idx"));
+  const base  = Number.isFinite(idx) ? currentTemplates[idx] : null;
+  const baseId = base?.id ?? base?._id ?? getName(base); // reasonable key even if id missing
+  const cacheKey = `${kind}:${String(baseId)}`;
+
+  let icon = getKindIcon(kind);
+
+  if (override) {
+    icon = override; // manual override
+  } else {
+    // use cached icon if available, unless we are explicitly re-rolling
+    if (!rerollIcon && iconMap[cacheKey]) {
+      icon = iconMap[cacheKey];
+    } else {
+      // pick a fresh random icon from manifest (if base exists), then cache it
+      try {
+        const pick = base ? dataLoader.getRandomIconFor(kind, base) : null;
+        icon = pick || icon;
+      } catch (e) {
+        console.warn("[Item Forger] preview icon pick failed:", e);
+      }
+      iconMap[cacheKey] = icon;
+    }
+  }
+
+  // remember the folder we’re currently showing for the FilePicker
+  try {
+    const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
+    html.data('lastIconDir', dir);
+  } catch { /* noop */ }
+
   const style = `
   <style>
     #if-preview-card{
@@ -354,7 +432,11 @@ const renderPreview = (kind, selectedEl) => {
       width:32px; height:32px;
       display:inline-block;
     }
-    #if-preview-icon{ width:32px; height:32px; object-fit:contain; image-rendering:auto; display:block; }
+    #if-preview-icon{
+  width:32px; height:32px;
+  object-fit:contain; image-rendering:auto; display:block;
+  cursor:pointer; pointer-events:auto;
+}
     /* the badge that overlaps the icon (uses your system class + positioning) */
     .if-badge{
       position:absolute;
@@ -556,7 +638,7 @@ if (kind === "weapon") {
   const dispHandText = handLabel(dispHand ?? baseHandText);
 
   const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-  const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} | ${eleSel}`;
+  const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} ${eleSel}`;
 
   // const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
   // const qIdx  = Number($qsel.data("idx"));
@@ -729,14 +811,17 @@ return;
           ).join("");
           $templateList.html(items);
           wireSelectableList($templateList, ".if-template", {
-            onSelect: (el) => {
-              updateHandToggle(el);
-              applyAttrDefaultsFromTemplate(el);
-              const kind = html.find('input[name="itemType"]:checked').val();
-              renderPreview(kind, el);                 // ← update preview on selection
-              updateCost();                            // ← NEW
-            }
-          });
+  onSelect: (el) => {
+    updateHandToggle(el);
+    applyAttrDefaultsFromTemplate(el);
+    // Clear any manual icon override when changing base template
+    html.removeData('iconOverride');
+
+    const kind = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kind, el, { rerollIcon: true });   // ← ONLY here we re-roll
+    updateCost();
+  }
+});
         };
 
         const renderQualities = (type) => {
@@ -871,12 +956,16 @@ if (catKey === "custom") {
   $qualitiesList.html(items);
 
   wireSelectableList($qualitiesList, ".if-quality", {
-    onSelect: () => {
-      const kind = html.find('input[name="itemType"]:checked').val();
-      renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-      updateCost();
-    }
-  });
+  onSelect: () => {
+    const kind = html.find('input[name="itemType"]:checked').val();
+    renderPreview(
+      kind,
+      html.find('#templateList [data-selected="1"]').first(),
+      { rerollIcon: true }                           // ← ONLY here we re-roll
+    );
+    updateCost();
+  }
+});
 };
 
         const renderAttrs = (type) => {
@@ -988,8 +1077,12 @@ if (catKey === "custom") {
 
 const refreshPreviewFromUI = () => {
   const kind = html.find('input[name="itemType"]:checked').val();
-  renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-  updateCost(); // ensure cost updates with +1, +4, or element
+  renderPreview(
+    kind,
+    html.find('#templateList [data-selected="1"]').first(),
+    { rerollIcon: false }                                  // ← keep current icon
+  );
+  updateCost();
 };
 
 $dlg.off('.ifPrev');
@@ -1001,16 +1094,59 @@ $dlg.on('change.ifPrev',
         $qualitiesSelect.on("change", () => {
   const kind = html.find('input[name="itemType"]:checked').val();
   renderQualities(kind);
-  renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-  renderMaterials();   // ← update red border + hint
-  updateCost();        // ← cost unaffected by requirement, but safe to keep in sync
+  renderPreview(
+    kind,
+    html.find('#templateList [data-selected="1"]').first(),
+    { rerollIcon: false }                                  // ← do NOT re-roll yet
+  );
+  renderMaterials();
+  updateCost();
 });
 
-        // Re-render preview icon when the dial changes (even before templates arrive)
-        html.on("change", 'input[name="itemType"]', (ev) => {
-          const kind = ev.currentTarget.value;
-          updateForKind(kind);
-        });
+// --- Clickable preview image ---
+// Single-click: open FilePicker to choose an image manually
+html.off('click.ifIconPick'); // delegate from the dialog's root, resilient to re-renders
+html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
+  ev.preventDefault();
+  ev.stopPropagation();
+  console.debug('[Item Forger] preview icon clicked');
+
+  const kind = html.find('input[name="itemType"]:checked').val();
+
+  // Prefer the last folder we showed; otherwise derive from whatever is displayed now; fallback to "/"
+  const fromOverride = html.data('iconOverride');
+  const fromPreview  = $('#if-preview-icon').attr('src');
+  const derivedDir   = (fromOverride || fromPreview || "").includes("/")
+    ? String(fromOverride || fromPreview).replace(/\/[^/]*$/, "/")
+    : "/";
+  const startDir = html.data('lastIconDir') || derivedDir || "/";
+
+  try {
+    const fp = new FilePicker({
+      type: "image",
+      current: startDir,
+      callback: (path) => {
+        console.debug('[Item Forger] FilePicker selected:', path);
+        html.data('iconOverride', path);
+        // remember the folder we picked from for the next click
+        try { html.data('lastIconDir', String(path).replace(/\/[^/]*$/, "/")); } catch {}
+        renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+      }
+    });
+    fp.render(true);
+  } catch (err) {
+    console.error('[Item Forger] FilePicker error:', err);
+    ui.notifications?.error('Could not open FilePicker (see console).');
+  }
+});
+
+// Re-render preview icon when the dial changes (even before templates arrive)
+html.on("change", 'input[name="itemType"]', (ev) => {
+  const kind = ev.currentTarget.value;
+  // Clear any manual icon override when switching kind
+  html.removeData('iconOverride');
+  updateForKind(kind);
+});
 
         updateForKind("weapon");
         renderMaterials();

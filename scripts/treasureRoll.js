@@ -251,7 +251,7 @@ function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = 
   const name = `${amount} ${currencyName}`;
 
   // Currency image settings (customizable later)
-  const img = "icons/svg/coins.svg";
+  const img = "modules/lookfar/assets/misc/coins.png";
 
   return {
     isCurrency: true,
@@ -438,7 +438,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       itemData = {
         name: data.name,
         type,
-        img: "icons/svg/acid.svg",
+        img: "modules/lookfar/assets/misc/ingredient.png",
         folder: cacheFolder.id,
         system: {
           data: {
@@ -453,7 +453,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       };
 	} else if ("detail" in data) {
       type = "treasure";
-      const img = "icons/svg/item-bag.svg";
+      const img = "modules/lookfar/assets/misc/material.png";
       
       itemData = {
         name: data.name,
@@ -477,7 +477,7 @@ async function renderTreasureResultDialog(items, budget, config) {
     ...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
   ];
   const qualityObj = allQualities.find(q => q.name === data.quality);
-  const img = "icons/svg/sword.svg";
+  const img = dataLoader.getRandomIconFor("weapon", baseWeapon) || "icons/svg/sword.svg";
 
   // Handle variant damage
   const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
@@ -521,7 +521,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   		...(dataLoader.armorData.armorQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = "icons/svg/statue.svg";
+      const img = dataLoader.getRandomIconFor("armor", baseArmor) || "icons/svg/statue.svg";
       
       itemData = {
         name: data.name,
@@ -547,7 +547,7 @@ async function renderTreasureResultDialog(items, budget, config) {
     	...(dataLoader.shieldsData.shieldQualities[data.origin] || [])
   	  ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = "icons/svg/shield.svg";
+      const img = dataLoader.getRandomIconFor("shield", baseShield) || "icons/svg/shield.svg";
  
       itemData = {
         name: data.name,
@@ -573,7 +573,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   		...(dataLoader.accessoriesData.accessoryQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = "icons/svg/stoned.svg";
+      const img = dataLoader.getRandomIconFor("accessory", baseAccessory) || "icons/svg/stoned.svg";
 
       itemData = {
         name: data.name,
