@@ -191,7 +191,7 @@ export const dataLoader = {
       const keyMap = {
         weapon: "weaponName",
         armor: "armorName",
-        shield: "armorName",
+        shield: "shieldName",
         accessory: "accessoryName"
       };
       const name = entry?.[keyMap[type]];
