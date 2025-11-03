@@ -397,7 +397,11 @@ const renderPreview = (kind, selectedEl) => {
       width:32px; height:32px;
       display:inline-block;
     }
-    #if-preview-icon{ width:32px; height:32px; object-fit:contain; image-rendering:auto; display:block; }
+    #if-preview-icon{
+  width:32px; height:32px;
+  object-fit:contain; image-rendering:auto; display:block;
+  cursor:pointer; pointer-events:auto;
+}
     /* the badge that overlaps the icon (uses your system class + positioning) */
     .if-badge{
       position:absolute;
@@ -1054,22 +1058,33 @@ $dlg.on('change.ifPrev',
 
 // --- Clickable preview image ---
 // Single-click: open FilePicker to choose an image manually
-$preview.off('.iconPick');
-$preview.on('click.iconPick', '#if-preview-icon', async (ev) => {
+html.off('click.ifIconPick'); // delegate from the dialog's root, resilient to re-renders
+html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
   ev.preventDefault();
-  const kind = html.find('input[name="itemType"]:checked').val();
-  const startDir = html.data('iconOverride')
-    || (game.settings?.get("core","defaultImageDirectory") ?? "/");
+  ev.stopPropagation();
+  console.debug('[Item Forger] preview icon clicked');
 
-  const fp = new FilePicker({
-    type: "image",
-    current: startDir,
-    callback: (path) => {
-      html.data('iconOverride', path);
-      renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-    }
-  });
-  fp.render(true);
+  const kind = html.find('input[name="itemType"]:checked').val();
+  const startDir =
+    html.data('iconOverride')
+    || game.settings?.get?.("core","defaultImageDirectory")
+    || "/";
+
+  try {
+    const fp = new FilePicker({
+      type: "image",
+      current: startDir,
+      callback: (path) => {
+        console.debug('[Item Forger] FilePicker selected:', path);
+        html.data('iconOverride', path);
+        renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+      }
+    });
+    fp.render(true);
+  } catch (err) {
+    console.error('[Item Forger] FilePicker error:', err);
+    ui.notifications?.error('Could not open FilePicker (see console).');
+  }
 });
 
 // Re-render preview icon when the dial changes (even before templates arrive)
