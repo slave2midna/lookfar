@@ -3,6 +3,7 @@ export const dataLoader = {
   threatsData: {},
   discoveryData: {},
   keywordData: {},
+  iconManifest: [],
 
   // Public shapes for equipment
   weaponsData:     { weaponList: [], weaponQualities: {} },
@@ -95,6 +96,17 @@ export const dataLoader = {
       console.log("[Lookfar] Acc.   Qualities Groups:", Object.keys(this.accessoriesData.accessoryQualities));
     } catch (err) {
       console.error("[Lookfar] Failed to load qualities.json:", err);
+    }
+
+    // --- icon manifest (all PNG paths under /modules/lookfar/assets) ---
+    try {
+      const r = await fetch("/modules/lookfar/assets/iconManifest.json", { cache: "no-store" });
+      this.iconManifest = Array.isArray(r) ? r : await r.json();
+      if (!Array.isArray(this.iconManifest)) this.iconManifest = [];
+      console.log("[Lookfar] Icon Manifest:", this.iconManifest.length, "icons");
+    } catch (err) {
+      console.warn("[Lookfar] No iconManifest.json found or failed to load:", err);
+      this.iconManifest = [];
     }
   },
 
