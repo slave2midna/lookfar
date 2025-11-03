@@ -288,9 +288,34 @@ if (catKey === "custom") {
   $val.text(total);
 };
         
-        const getNameSafe = (r) => esc(getName(r));
-        const getItemImage = (item) =>
-          item?.img || item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+       const getNameSafe = (r) => esc(getName(r));
+  const getItemImage = (item) => {
+  // 1) Respect an explicitly chosen image (or existing texture)
+  if (item?.img) return item.img;
+
+  // 2) Determine current kind from the dial in this dialog
+  const kind = html.find('input[name="itemType"]:checked').val(); // "weapon" | "armor" | "shield" | "accessory"
+  if (!kind) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+
+  // 3) Find the selected template id on the item (how this script tracks the chosen base)
+  const templateId = item?.system?.templateId;
+  if (!templateId) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+
+  // 4) Resolve the base template from dataLoader lists and pick a random icon from the manifest
+  const byKindList = {
+    weapon:    dataLoader.weaponsData?.weaponList,
+    armor:     dataLoader.armorData?.armorList,
+    shield:    dataLoader.shieldsData?.shieldList,
+    accessory: dataLoader.accessoriesData?.accessoryList
+  }[kind] || [];
+
+  const base = byKindList.find(e => e?.id === templateId);
+  const img  = base ? dataLoader.getRandomIconFor(kind, base) : null;
+  if (img) return img;
+
+  // 5) Final fallback
+  return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+};
 
         // ---------- icons (top-of-preview) ----------
         const getKindIcon = (kind) => ({
@@ -334,7 +359,18 @@ const addModIfNumber = (val, mod) => {
 const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
 const renderPreview = (kind, selectedEl) => {
-  const icon = getKindIcon(kind);
+  // Try to use a random icon from the selected template’s folder; fallback to generic kind icon
+  let icon = getKindIcon(kind);
+  try {
+    const $sel  = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+    const idx   = Number($sel.data("idx"));
+    const base  = Number.isFinite(idx) ? currentTemplates[idx] : null;
+    const pick  = base ? dataLoader.getRandomIconFor(kind, base) : null;
+    if (pick) icon = pick;
+  } catch (e) {
+    console.warn("[Item Forger] preview icon pick failed:", e);
+  }
+
   const style = `
   <style>
     #if-preview-card{
