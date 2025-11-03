@@ -354,36 +354,64 @@ const clip = (v, n=14) => {
 
 const addModIfNumber = (val, mod) => {
   const num = Number(val);
-  return Number.isFinite(num) ? (num + mod) : val; // keep original if not numeric
+  return Number.isFinite(num) ? (num + mod) : val;
 };
 const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
-const renderPreview = (kind, selectedEl) => {
-  // Honor a user-picked override first; otherwise use a random icon from the selected template’s folder;
-  // finally fall back to a generic kind icon.
+/**
+ * Render the preview.
+ * @param {string} kind - "weapon" | "armor" | "shield" | "accessory"
+ * @param {HTMLElement|null} selectedEl - the selected template element
+ * @param {{ rerollIcon?: boolean }} opts - set rerollIcon=true ONLY when user clicks template/quality
+ */
+const renderPreview = (kind, selectedEl, opts = {}) => {
+  const rerollIcon = !!opts.rerollIcon;
+
+  // simple per-dialog cache for auto-picked icons
+  let iconMap = html.data('autoIconMap');
+  if (!iconMap) { iconMap = {}; html.data('autoIconMap', iconMap); }
+
+  // user-picked override always wins
+  const override = html.data('iconOverride');
+  const getKindIcon = (k) => ({
+    weapon:    "icons/svg/sword.svg",
+    shield:    "icons/svg/shield.svg",
+    armor:     "icons/svg/statue.svg",
+    accessory: "icons/svg/stoned.svg"
+  }[k] || "icons/svg/mystery-man.svg");
+
+  // identify current base template to key the cache
+  const $sel  = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx   = Number($sel.data("idx"));
+  const base  = Number.isFinite(idx) ? currentTemplates[idx] : null;
+  const baseId = base?.id ?? base?._id ?? getName(base); // reasonable key even if id missing
+  const cacheKey = `${kind}:${String(baseId)}`;
+
   let icon = getKindIcon(kind);
 
-const override = html.data('iconOverride');
-if (override) {
-  icon = override;
-} else {
-  try {
-    const $sel  = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-    const idx   = Number($sel.data("idx"));
-    const base  = Number.isFinite(idx) ? currentTemplates[idx] : null;
-    const pick  = base ? dataLoader.getRandomIconFor(kind, base) : null;
-    if (pick) icon = pick;
-  } catch (e) {
-    console.warn("[Item Forger] preview icon pick failed:", e);
+  if (override) {
+    icon = override; // manual override
+  } else {
+    // use cached icon if available, unless we are explicitly re-rolling
+    if (!rerollIcon && iconMap[cacheKey]) {
+      icon = iconMap[cacheKey];
+    } else {
+      // pick a fresh random icon from manifest (if base exists), then cache it
+      try {
+        const pick = base ? dataLoader.getRandomIconFor(kind, base) : null;
+        icon = pick || icon;
+      } catch (e) {
+        console.warn("[Item Forger] preview icon pick failed:", e);
+      }
+      iconMap[cacheKey] = icon;
+    }
   }
-}
 
-// remember the directory of whatever image we’re displaying now
-try {
-  const dir = String(icon || "").includes("/")
-    ? String(icon).replace(/\/[^/]*$/, "/") : "/";
-  html.data('lastIconDir', dir);
-} catch { /* noop */ }
+  // remember the folder we’re currently showing for the FilePicker
+  try {
+    const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
+    html.data('lastIconDir', dir);
+  } catch { /* noop */ }
 
   const style = `
   <style>
@@ -783,17 +811,17 @@ return;
           ).join("");
           $templateList.html(items);
           wireSelectableList($templateList, ".if-template", {
-            onSelect: (el) => {
-              updateHandToggle(el);
-              applyAttrDefaultsFromTemplate(el);
-              // Clear any manual icon override when changing base template
-              html.removeData('iconOverride');
+  onSelect: (el) => {
+    updateHandToggle(el);
+    applyAttrDefaultsFromTemplate(el);
+    // Clear any manual icon override when changing base template
+    html.removeData('iconOverride');
 
-              const kind = html.find('input[name="itemType"]:checked').val();
-              renderPreview(kind, el);                 // ← update preview on selection
-              updateCost();                            // ← NEW
-            }
-          });
+    const kind = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kind, el, { rerollIcon: true });   // ← ONLY here we re-roll
+    updateCost();
+  }
+});
         };
 
         const renderQualities = (type) => {
@@ -928,12 +956,16 @@ if (catKey === "custom") {
   $qualitiesList.html(items);
 
   wireSelectableList($qualitiesList, ".if-quality", {
-    onSelect: () => {
-      const kind = html.find('input[name="itemType"]:checked').val();
-      renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-      updateCost();
-    }
-  });
+  onSelect: () => {
+    const kind = html.find('input[name="itemType"]:checked').val();
+    renderPreview(
+      kind,
+      html.find('#templateList [data-selected="1"]').first(),
+      { rerollIcon: true }                           // ← ONLY here we re-roll
+    );
+    updateCost();
+  }
+});
 };
 
         const renderAttrs = (type) => {
@@ -1045,8 +1077,12 @@ if (catKey === "custom") {
 
 const refreshPreviewFromUI = () => {
   const kind = html.find('input[name="itemType"]:checked').val();
-  renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-  updateCost(); // ensure cost updates with +1, +4, or element
+  renderPreview(
+    kind,
+    html.find('#templateList [data-selected="1"]').first(),
+    { rerollIcon: false }                                  // ← keep current icon
+  );
+  updateCost();
 };
 
 $dlg.off('.ifPrev');
@@ -1058,9 +1094,13 @@ $dlg.on('change.ifPrev',
         $qualitiesSelect.on("change", () => {
   const kind = html.find('input[name="itemType"]:checked').val();
   renderQualities(kind);
-  renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-  renderMaterials();   // ← update red border + hint
-  updateCost();        // ← cost unaffected by requirement, but safe to keep in sync
+  renderPreview(
+    kind,
+    html.find('#templateList [data-selected="1"]').first(),
+    { rerollIcon: false }                                  // ← do NOT re-roll yet
+  );
+  renderMaterials();
+  updateCost();
 });
 
 // --- Clickable preview image ---
