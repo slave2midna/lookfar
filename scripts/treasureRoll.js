@@ -251,7 +251,7 @@ function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = 
   const name = `${amount} ${currencyName}`;
 
   // Currency image settings (customizable later)
-  const img = "icons/svg/coins.svg";
+  const img = "modules/lookfar/assets/misc/coins.png";
 
   return {
     isCurrency: true,
@@ -438,7 +438,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       itemData = {
         name: data.name,
         type,
-        img: "icons/svg/acid.svg",
+        img: "modules/lookfar/assets/misc/ingredient.png",
         folder: cacheFolder.id,
         system: {
           data: {
@@ -453,7 +453,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       };
 	} else if ("detail" in data) {
       type = "treasure";
-      const img = "icons/svg/item-bag.svg";
+      const img = "modules/lookfar/assets/misc/material.png";
       
       itemData = {
         name: data.name,
