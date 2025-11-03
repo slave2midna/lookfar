@@ -359,16 +359,23 @@ const addModIfNumber = (val, mod) => {
 const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
 const renderPreview = (kind, selectedEl) => {
-  // Try to use a random icon from the selected template’s folder; fallback to generic kind icon
+  // Honor a user-picked override first; otherwise use a random icon from the selected template’s folder;
+  // finally fall back to a generic kind icon.
   let icon = getKindIcon(kind);
-  try {
-    const $sel  = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-    const idx   = Number($sel.data("idx"));
-    const base  = Number.isFinite(idx) ? currentTemplates[idx] : null;
-    const pick  = base ? dataLoader.getRandomIconFor(kind, base) : null;
-    if (pick) icon = pick;
-  } catch (e) {
-    console.warn("[Item Forger] preview icon pick failed:", e);
+
+  const override = html.data('iconOverride');
+  if (override) {
+    icon = override;
+  } else {
+    try {
+      const $sel  = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+      const idx   = Number($sel.data("idx"));
+      const base  = Number.isFinite(idx) ? currentTemplates[idx] : null;
+      const pick  = base ? dataLoader.getRandomIconFor(kind, base) : null;
+      if (pick) icon = pick;
+    } catch (e) {
+      console.warn("[Item Forger] preview icon pick failed:", e);
+    }
   }
 
   const style = `
@@ -768,6 +775,9 @@ return;
             onSelect: (el) => {
               updateHandToggle(el);
               applyAttrDefaultsFromTemplate(el);
+              // Clear any manual icon override when changing base template
+              html.removeData('iconOverride');
+
               const kind = html.find('input[name="itemType"]:checked').val();
               renderPreview(kind, el);                 // ← update preview on selection
               updateCost();                            // ← NEW
@@ -1042,11 +1052,33 @@ $dlg.on('change.ifPrev',
   updateCost();        // ← cost unaffected by requirement, but safe to keep in sync
 });
 
-        // Re-render preview icon when the dial changes (even before templates arrive)
-        html.on("change", 'input[name="itemType"]', (ev) => {
-          const kind = ev.currentTarget.value;
-          updateForKind(kind);
-        });
+// --- Clickable preview image ---
+// Single-click: open FilePicker to choose an image manually
+$preview.off('.iconPick');
+$preview.on('click.iconPick', '#if-preview-icon', async (ev) => {
+  ev.preventDefault();
+  const kind = html.find('input[name="itemType"]:checked').val();
+  const startDir = html.data('iconOverride')
+    || (game.settings?.get("core","defaultImageDirectory") ?? "/");
+
+  const fp = new FilePicker({
+    type: "image",
+    current: startDir,
+    callback: (path) => {
+      html.data('iconOverride', path);
+      renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+    }
+  });
+  fp.render(true);
+});
+
+// Re-render preview icon when the dial changes (even before templates arrive)
+html.on("change", 'input[name="itemType"]', (ev) => {
+  const kind = ev.currentTarget.value;
+  // Clear any manual icon override when switching kind
+  html.removeData('iconOverride');
+  updateForKind(kind);
+});
 
         updateForKind("weapon");
         renderMaterials();
