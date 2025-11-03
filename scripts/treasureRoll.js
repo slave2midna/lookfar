@@ -477,7 +477,7 @@ async function renderTreasureResultDialog(items, budget, config) {
     ...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
   ];
   const qualityObj = allQualities.find(q => q.name === data.quality);
-  const img = "icons/svg/sword.svg";
+  const img = dataLoader.getRandomIconFor("weapon", baseWeapon) || "icons/svg/sword.svg";
 
   // Handle variant damage
   const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
@@ -521,7 +521,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   		...(dataLoader.armorData.armorQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = "icons/svg/statue.svg";
+      const img = dataLoader.getRandomIconFor("armor", baseArmor) || "icons/svg/statue.svg";
       
       itemData = {
         name: data.name,
@@ -547,7 +547,7 @@ async function renderTreasureResultDialog(items, budget, config) {
     	...(dataLoader.shieldsData.shieldQualities[data.origin] || [])
   	  ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = "icons/svg/shield.svg";
+      const img = dataLoader.getRandomIconFor("shield", baseShield) || "icons/svg/shield.svg";
  
       itemData = {
         name: data.name,
@@ -573,7 +573,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   		...(dataLoader.accessoriesData.accessoryQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = "icons/svg/stoned.svg";
+      const img = dataLoader.getRandomIconFor("accessory", baseAccessory) || "icons/svg/stoned.svg";
 
       itemData = {
         name: data.name,
