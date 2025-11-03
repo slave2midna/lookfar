@@ -379,44 +379,43 @@ const buildItemData = (kind, html, {
 </div>`;
 
   function openItemForgeDialog() {
-    const equipmentRoot  = getEquipmentRoot();
-    const qualitiesRoot  = getQualitiesRoot();
+  const equipmentRoot  = getEquipmentRoot();
+  const qualitiesRoot  = getQualitiesRoot();
 
-    const dlg = new Dialog({
-      title: "Item Forger",
-      content,
-      buttons: {
-        forge: {
-  label: "Forge",
-  icon: '<i class="fas fa-hammer"></i>',
-  callback: async (html) => {
-    try {
-      const kind = html.find('input[name="itemType"]:checked').val(); // weapon|armor|shield|accessory
-      if (!kind) return ui.notifications.warn("Choose an item type first.");
+  // HOISTED (shared by render + forge button)
+  let currentTemplates = [];
+  let currentQualities = [];
+  const materials = [];
 
-      // Validate a base template is selected
-      const base = (() => {
-        const $sel = html.find('#templateList [data-selected="1"]').first();
-        const idx  = Number($sel.data("idx"));
-        return Number.isFinite(idx) ? currentTemplates[idx] : null;
-      })();
-      if (!base) return ui.notifications.warn("Select a template first.");
+  const dlg = new Dialog({
+    title: "Item Forger",
+    content,
+    buttons: {
+      forge: {
+        label: "Forge",
+        icon: '<i class="fas fa-hammer"></i>',
+        callback: async (html) => {
+          try {
+            const kind = html.find('input[name="itemType"]:checked').val();
+            if (!kind) return ui.notifications.warn("Choose an item type first.");
 
-      // Enforce materials-origin requirement for non-basic/custom categories
-      if (!validateMaterialsOrigin(html, materials)) return;
+            const base = getSelectedBase(html, currentTemplates);
+            if (!base) return ui.notifications.warn("Select a template first.");
 
-      // Build itemData and create + open the Item
-      const itemData = buildItemData(kind, html, { currentTemplates, currentQualities });
-      const created  = await Item.create(itemData, { renderSheet: true });
-      if (!created) throw new Error("Item creation failed.");
-      ui.notifications.info(`${created.name} forged.`);
-    } catch (err) {
-      console.error("[Item Forger] Forge failed:", err);
-      ui.notifications?.error(`Item Forger: ${err.message || "Failed to forge item."}`);
-    }
-  }
-},
-      default: "forge",
+            if (!validateMaterialsOrigin(html, materials)) return;
+
+            const itemData = buildItemData(kind, html, { currentTemplates, currentQualities });
+            const created  = await Item.create(itemData, { renderSheet: true });
+            if (!created) throw new Error("Item creation failed.");
+            ui.notifications.info(`${created.name} forged.`);
+          } catch (err) {
+            console.error("[Item Forger] Forge failed:", err);
+            ui.notifications?.error(`Item Forger: ${err.message || "Failed to forge item."}`);
+          }
+        }
+      }
+    },
+    default: "forge",
       render: async (html) => {
         const $dlg = html.closest(".window-app");
         const $wc  = $dlg.find(".window-content");
@@ -441,9 +440,9 @@ const buildItemData = (kind, html, {
         const $materialsHint    = html.find("#materialsHint");
         const $preview          = html.find("#itemPreviewLarge");
 
-        let currentTemplates = [];
-        let currentQualities = [];
-        const materials = [];
+        // let currentTemplates = [];
+        // let currentQualities = [];
+        // const materials = [];
 
   // ---- COST: recompute whenever template or quality selection changes ----
   const updateCost = () => {
