@@ -363,20 +363,27 @@ const renderPreview = (kind, selectedEl) => {
   // finally fall back to a generic kind icon.
   let icon = getKindIcon(kind);
 
-  const override = html.data('iconOverride');
-  if (override) {
-    icon = override;
-  } else {
-    try {
-      const $sel  = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-      const idx   = Number($sel.data("idx"));
-      const base  = Number.isFinite(idx) ? currentTemplates[idx] : null;
-      const pick  = base ? dataLoader.getRandomIconFor(kind, base) : null;
-      if (pick) icon = pick;
-    } catch (e) {
-      console.warn("[Item Forger] preview icon pick failed:", e);
-    }
+const override = html.data('iconOverride');
+if (override) {
+  icon = override;
+} else {
+  try {
+    const $sel  = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+    const idx   = Number($sel.data("idx"));
+    const base  = Number.isFinite(idx) ? currentTemplates[idx] : null;
+    const pick  = base ? dataLoader.getRandomIconFor(kind, base) : null;
+    if (pick) icon = pick;
+  } catch (e) {
+    console.warn("[Item Forger] preview icon pick failed:", e);
   }
+}
+
+// remember the directory of whatever image we’re displaying now
+try {
+  const dir = String(icon || "").includes("/")
+    ? String(icon).replace(/\/[^/]*$/, "/") : "/";
+  html.data('lastIconDir', dir);
+} catch { /* noop */ }
 
   const style = `
   <style>
@@ -1065,10 +1072,14 @@ html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
   console.debug('[Item Forger] preview icon clicked');
 
   const kind = html.find('input[name="itemType"]:checked').val();
-  const startDir =
-    html.data('iconOverride')
-    || game.settings?.get?.("core","defaultImageDirectory")
-    || "/";
+
+  // Prefer the last folder we showed; otherwise derive from whatever is displayed now; fallback to "/"
+  const fromOverride = html.data('iconOverride');
+  const fromPreview  = $('#if-preview-icon').attr('src');
+  const derivedDir   = (fromOverride || fromPreview || "").includes("/")
+    ? String(fromOverride || fromPreview).replace(/\/[^/]*$/, "/")
+    : "/";
+  const startDir = html.data('lastIconDir') || derivedDir || "/";
 
   try {
     const fp = new FilePicker({
@@ -1077,6 +1088,8 @@ html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
       callback: (path) => {
         console.debug('[Item Forger] FilePicker selected:', path);
         html.data('iconOverride', path);
+        // remember the folder we picked from for the next click
+        try { html.data('lastIconDir', String(path).replace(/\/[^/]*$/, "/")); } catch {}
         renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
       }
     });
