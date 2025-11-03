@@ -187,17 +187,8 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
 
 /** Mirror preview math to compute weapon outputs from UI. */
 const computeWeaponStats = (base, html) => {
-  const norm = (h) => {
-    const v = String(h ?? "").trim().toLowerCase();
-    if (!v) return null;
-    if (v.includes("2") || v.includes("two") || /(^|[^a-z])2h([^a-z]|$)/.test(v)) return "2";
-    if (v.includes("1") || v.includes("one") || /(^|[^a-z])1h([^a-z]|$)/.test(v)) return "1";
-    if (["twohanded","two-handed"].some(k=>v.includes(k))) return "2";
-    if (["onehanded","one-handed"].some(k=>v.includes(k))) return "1";
-    return null;
-  };
 
-  const baseHand   = norm(base?.hand) || null; // "1" | "2" | null
+  const baseHand   = normHand(base?.hand) || null; // "1" | "2" | null
   const plus1      = html.find('#optPlusOne').is(':checked');
   const plus4      = html.find('#optPlusDamage').is(':checked');
   const flip       = html.find('#optToggleHand').is(':checked');
