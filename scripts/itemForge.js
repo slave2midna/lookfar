@@ -290,7 +290,7 @@ const buildItemData = (kind, html, {
           value: "LOOKFAR"
         },
         summary: {
-          value: `a finely crafted ${base?.category ?? "weapon"}.`
+          value: `A finely crafted ${base?.category ?? "weapon"} weapon.`
         }
       }
     };
@@ -323,11 +323,9 @@ const buildItemData = (kind, html, {
         cost: {
           value: costField
         },
-        source: {
-          value: "LOOKFAR"
-        },
+        source: "LOOKFAR",
         summary: {
-          value: `A set of ${base?.isMartial ? "martial" : "non-martial"} armor that ${qualDesc || "has no special properties."}`
+          value: `A set of finely crafted ${base?.isMartial ? "martial" : "non-martial"} armor.`
         }
       }
     };
@@ -364,7 +362,7 @@ const buildItemData = (kind, html, {
           value: "LOOKFAR"
         },
         summary: {
-          value: `A ${base?.isMartial ? "martial" : "non-martial"} shield that ${qualDesc || "has no special properties."}`
+          value: `A well crafted ${base?.isMartial ? "martial" : "non-martial"} shield.`
         }
       }
     };
@@ -395,7 +393,7 @@ const buildItemData = (kind, html, {
         value: "LOOKFAR"
       },
       summary: {
-        value: `An accessory that ${qualDesc || "has no special properties."}`
+        value: `A well crafted ${base?.name ?? "Accessory"}.`
       }
     }
   };
