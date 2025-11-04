@@ -69,38 +69,17 @@ import { dataLoader } from "./dataLoader.js";
     // resolve material item cost value
     const getTreasureCost = (doc) => toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
 
-    // resolve material origin value  
-    const getTreasureOrigin = (doc) => {
-    // start with the canonical field
-    let v = doc?.system?.origin?.value
-       ?? doc?.system?.origin
-       ?? doc?.system?.keywords?.origin
-       ?? doc?.system?.material?.origin
-       ?? doc?.origin
-       ?? "";
+    // resolve material origin value
+    const getTreasureOrigin = (doc) => String(doc?.system?.origin?.value ?? "").trim().toLowerCase();
 
-    // unwrap common shapes (arrays/objects)
-    if (Array.isArray(v)) v = v.find(e => e != null) ?? "";
-    if (v && typeof v === "object") v = v.key ?? v.id ?? v.type ?? v.name ?? v.value ?? "";
-
-    return String(v).trim().toLowerCase();
-    };
-
-    // unwrap common shapes (arrays/objects)
-    if (Array.isArray(v)) v = v.find(e => e != null) ?? "";
-    if (v && typeof v === "object") v = v.key ?? v.id ?? v.type ?? v.name ?? v.value ?? "";
-
-    return String(v).trim().toLowerCase();
-  };
-
-  // resolve origin requirement for specific quality
-  const getRequiredOriginKey = (html) => {
+    // resolve origin requirement for specific quality
+    const getRequiredOriginKey = (html) => {
     const key = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
     // No origin requirement for "none", "basic", or "custom"
     return (key === "none" || key === "basic" || key === "custom") ? "" : key;
   };
 
-  // --- Item Helpers ------------------------------------------------------------//
+  // --- Item Helpers ------------------------------------------------------------ //
 
   const getSelectedBase = (html, currentTemplates) => {
     const $sel = html.find('#templateList [data-selected="1"]').first();
