@@ -1,381 +1,276 @@
-import { dataLoader } from "./dataLoader.js";
+import {dataLoader} from "./dataLoader.js";
 
-    // load equipment templates
-    const getEquipmentRoot = () =>
-      dataLoader?.equipmentData || dataLoader || {};
+// load equipment templates
+const getEquipmentRoot = () => dataLoader?.equipmentData || dataLoader || {};
 
-    // load quality categories
-    const getQualitiesRoot = () =>
-      dataLoader?.qualitiesData || dataLoader?.qualities || null;
+// load quality categories
+const getQualitiesRoot = () => dataLoader?.qualitiesData || dataLoader?.qualities || null;
 
-    // equipment lists
-    const getWeaponList = d => d?.weapons?.weaponList ?? d?.weaponsData?.weaponList ?? d?.weaponList ?? [];
-    const getArmorList = d => d?.armor?.armorList ?? d?.armorData?.armorList ?? d?.armorList ?? [];
-    const getShieldList = d => d?.shields?.shieldList ?? d?.shieldsData?.shieldList ?? d?.shieldList ?? [];
-    const getAccessoryList = d => d?.accessories?.accessoryList ?? d?.accessoriesData?.accessoryList ?? d?.accessoryList ?? [];
+// equipment lists
+const getWeaponList = d => d?.weapons?.weaponList ?? d?.weaponsData?.weaponList ?? d?.weaponList ?? [];
+const getArmorList = d => d?.armor?.armorList ?? d?.armorData?.armorList ?? d?.armorList ?? [];
+const getShieldList = d => d?.shields?.shieldList ?? d?.shieldsData?.shieldList ?? d?.shieldList ?? [];
+const getAccessoryList = d => d?.accessories?.accessoryList ?? d?.accessoriesData?.accessoryList ?? d?.accessoryList ?? [];
 
-    const getName = r => r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
-    const esc = s => {
-      try {
-        return foundry.utils.escapeHTML(String(s));
-      } catch {
-        return String(s);
-      }
+const getName = r => r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
+const esc = s => {
+  try {
+    return foundry.utils.escapeHTML(String(s));
+  } catch {
+    return String(s);
+  }
+};
+
+const matchesAppliesTo = (q, type) => {
+  const at = Array.isArray(q?.appliesTo) ? q.appliesTo : [];
+  return at.some(x => String(x).toLowerCase() === String(type).toLowerCase());
+};
+
+const qualityDisplayName = (q, type) => {
+  if (type === "weapon") return q.weaponName ?? q.name ?? "(Unnamed)";
+  if (type === "armor") return q.armorName ?? q.name ?? "(Unnamed)";
+  if (type === "shield") return q.shieldName ?? q.name ?? "(Unnamed)";
+  if (type === "accessory") return q.accessoryName ?? q.name ?? "(Unnamed)";
+  return q.name ?? "(Unnamed)";
+};
+
+const normHand = (h) => {
+  const v = String(h ?? "").trim().toLowerCase();
+  if (!v) return null;
+  if (v.includes("2") || v.includes("two") || /(^|[^a-z])2h([^a-z]|$)/.test(v)) return "2";
+  if (v.includes("1") || v.includes("one") || /(^|[^a-z])1h([^a-z]|$)/.test(v)) return "1";
+  if (["twohanded", "two-handed"].some(k => v.includes(k))) return "2";
+  if (["onehanded", "one-handed"].some(k => v.includes(k))) return "1";
+  return null;
+};
+
+// --- Cost Helpers ------------------------------------------------------------ //
+
+const asAttrKey = (s) => {
+  const v = String(s ?? "").toLowerCase();
+  return (v === "mig" || v === "dex" || v === "ins" || v === "wlp") ? v : "";
+};
+
+const toInt = (v) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0;
+};
+
+// resolve equipment.json cost value
+const getEquipCost = (r) => toInt(r?.cost ?? r?.value ?? r?.data?.cost ?? r?.data?.cost?.value ?? 0);
+
+// resolve qualities.json cost value
+const getQualityCost = (q) => toInt(q?.cost ?? 0);
+
+// resolve material item cost value
+const getTreasureCost = (doc) => toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
+
+// resolve material origin value
+const getTreasureOrigin = (doc) => String(doc?.system?.origin?.value ?? "").trim().toLowerCase();
+
+// resolve origin requirement for specific quality
+const getRequiredOriginKey = (html) => {
+  const key = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
+  // No origin requirement for "none", "basic", or "custom"
+  return (key === "none" || key === "basic" || key === "custom") ? "" : key;
+};
+
+// --- Item Helpers ------------------------------------------------------------ //
+
+const getSelectedBase = (html, currentTemplates) => {
+  const $sel = html.find('#templateList [data-selected="1"]').first();
+  const idx = Number($sel.data("idx"));
+  return Number.isFinite(idx) ? currentTemplates[idx] : null;
+};
+
+const getSelectedQualityInfo = (html, currentQualities) => {
+  const catKey = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
+  if (catKey === "custom") {
+    const { eff, cost } = readCustomQuality(html);
+    return {
+      desc: eff || "No quality",
+      cost
     };
-
-    const matchesAppliesTo = (q, type) => {
-      const at = Array.isArray(q?.appliesTo) ? q.appliesTo : [];
-      return at.some(x => String(x).toLowerCase() === String(type).toLowerCase());
+  }
+  if (catKey === "none" || !currentQualities?.length) {
+    return {
+      desc: "No quality",
+      cost: 0
     };
-
-    const qualityDisplayName = (q, type) => {
-      if (type === "weapon") return q.weaponName ?? q.name ?? "(Unnamed)";
-      if (type === "armor") return q.armorName ?? q.name ?? "(Unnamed)";
-      if (type === "shield") return q.shieldName ?? q.name ?? "(Unnamed)";
-      if (type === "accessory") return q.accessoryName ?? q.name ?? "(Unnamed)";
-      return q.name ?? "(Unnamed)";
-    };
-
-    const normHand = (h) => {
-      const v = String(h ?? "").trim().toLowerCase();
-      if (!v) return null;
-      if (v.includes("2") || v.includes("two") || /(^|[^a-z])2h([^a-z]|$)/.test(v)) return "2";
-      if (v.includes("1") || v.includes("one") || /(^|[^a-z])1h([^a-z]|$)/.test(v)) return "1";
-      if (["twohanded", "two-handed"].some(k => v.includes(k))) return "2";
-      if (["onehanded", "one-handed"].some(k => v.includes(k))) return "1";
-      return null;
-    };
-
-    // --- Cost Helpers ------------------------------------------------------------ //
-
-    const asAttrKey = (s) => {
-      const v = String(s ?? "").toLowerCase();
-      return (v === "mig" || v === "dex" || v === "ins" || v === "wlp") ? v : "";
-    };
-
-    const toInt = (v) => {
-      const n = Number(v);
-      return Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0;
-    };
-
-    // resolve equipment.json cost value
-    const getEquipCost = (r) => toInt(r?.cost ?? r?.value ?? r?.data?.cost ?? r?.data?.cost?.value ?? 0);
-
-    // resolve qualities.json cost value
-    const getQualityCost = (q) => toInt(q?.cost ?? 0);
-
-    // resolve material item cost value
-    const getTreasureCost = (doc) => toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
-
-    // resolve material origin value
-    const getTreasureOrigin = (doc) => String(doc?.system?.origin?.value ?? "").trim().toLowerCase();
-
-    // resolve origin requirement for specific quality
-    const getRequiredOriginKey = (html) => {
-    const key = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
-    // No origin requirement for "none", "basic", or "custom"
-    return (key === "none" || key === "basic" || key === "custom") ? "" : key;
+  }
+  const $q = html.find('#qualitiesList [data-selected="1"]').first();
+  const qi = Number($q.data("idx"));
+  const q = Number.isFinite(qi) ? currentQualities[qi] : null;
+  return {
+    desc: q?.description ?? q?.desc ?? "No quality",
+    cost: Number(q?.cost ?? 0) || 0
   };
+};
 
-  // --- Item Helpers ------------------------------------------------------------ //
+const getPreviewIcon = (html, fallback) => {
+  const override = html.data('iconOverride');
+  if (override) return override;
+  const src = html.find('#if-preview-icon').attr('src');
+  return src || fallback || "icons/svg/mystery-man.svg";
+};
 
-  const getSelectedBase = (html, currentTemplates) => {
-    const $sel = html.find('#templateList [data-selected="1"]').first();
-    const idx = Number($sel.data("idx"));
-    return Number.isFinite(idx) ? currentTemplates[idx] : null;
-  };
+const validateMaterialsOrigin = (html, materials) => {
+  const needKey = getRequiredOriginKey(html);
+  if (!needKey) return true;
+  const ok = materials.some(m => String(m.origin) === needKey);
+  if (!ok) ui.notifications?.warn(`This quality requires at least one ${needKey} material.`);
+  return ok;
+};
 
-  const getSelectedQualityInfo = (html, currentQualities) => {
-    const catKey = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
-    if (catKey === "custom") {
-      return {
-        desc: String(html.data('customEffect') ?? "").trim() || "No quality",
-        cost: Math.max(0, Number(html.data('customCost') ?? 0) || 0)
-      };
-    }
-    if (catKey === "none" || !currentQualities?.length) {
-      return {
-        desc: "No quality",
-        cost: 0
-      };
-    }
+// Compute both "worth" (item value) and "craft" (cost to forge now).
+const getCurrentCosts = (html, tmpl, currentQualities) => {
+  const base = getEquipCost(tmpl);
+
+  // Handles quality cost
+  const catKey = String(html.find('#qualitiesCategory').val() || 'none').toLowerCase();
+  let qcost = 0;
+  if (catKey === 'custom') {
+    const { cost } = readCustomQuality(html);
+    qcost = toInt(cost);
+  } else if (catKey !== 'none') {
     const $q = html.find('#qualitiesList [data-selected="1"]').first();
-    const qi = Number($q.data("idx"));
-    const q = Number.isFinite(qi) ? currentQualities[qi] : null;
-    return {
-      desc: q?.description ?? q?.desc ?? "No quality",
-      cost: Number(q?.cost ?? 0) || 0
-    };
-  };
+    const qi = Number($q.data('idx'));
+    const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
+    qcost = getQualityCost(qual);
+  }
 
-  const getPreviewIcon = (html, fallback) => {
-    const override = html.data('iconOverride');
-    if (override) return override;
-    const src = html.find('#if-preview-icon').attr('src');
-    return src || fallback || "icons/svg/mystery-man.svg";
-  };
-
-  const validateMaterialsOrigin = (html, materials) => {
-    const needKey = getRequiredOriginKey(html);
-    if (!needKey) return true;
-    const ok = materials.some(m => String(m.origin) === needKey);
-    if (!ok) ui.notifications?.warn(`This quality requires at least one ${needKey} material.`);
-    return ok;
-  };
-
-  // Compute both "worth" (item value) and "craft" (cost to forge now).
-  const getCurrentCosts = (html, tmpl, currentQualities) => {
-    const base = getEquipCost(tmpl);
-
-    // Handles quality cost
-    const catKey = String(html.find('#qualitiesCategory').val() || 'none').toLowerCase();
-    let qcost = 0;
-    if (catKey === 'custom') {
-      qcost = toInt(html.data('customCost') ?? 0);
-    } else if (catKey !== 'none') {
-      const $q = html.find('#qualitiesList [data-selected="1"]').first();
-      const qi = Number($q.data('idx'));
-      const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
-      qcost = getQualityCost(qual);
-    }
-
-    // Handles weapon surcharges
-    const kind = html.find('input[name="itemType"]:checked').val();
-    let custom = 0;
-    if (kind === 'weapon') {
-      const plus1 = html.find('#optPlusOne').is(':checked');
-      const plus4 = html.find('#optPlusDamage').is(':checked');
-      const eleSel = (html.find('#optElement').val() || 'physical').toString();
-      if (plus1) custom += 100;
-      if (plus4) custom += 200;
-      if (eleSel !== 'physical') custom += 100;
-
-      const baseA = String(tmpl?.attrA ?? '').toUpperCase();
-      const baseB = String(tmpl?.attrB ?? '').toUpperCase();
-      const selA = String(html.find('#optAttrA').val() || baseA).toUpperCase();
-      const selB = String(html.find('#optAttrB').val() || baseB).toUpperCase();
-      const isMatchingNow = selA && selB && (selA === selB);
-      const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
-      if (isMatchingNow && !sameAsOriginalPair) custom += 50;
-    }
-
-    // Handles materials subtotal
-    const materials = html.data('ifMaterials') || [];
-    const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
-
-    // Output seperate cost values
-    const worth = Math.max(0, base + qcost + custom); // saves to crafted item
-    let craft = Math.max(0, worth - matTotal); // shows in dialog
-    if (html.find('#optFee').is(':checked')) craft = Math.ceil(craft * 1.10);
-
-    return {
-      worth,
-      craft
-    };
-  };
-
-  // Recalculate weapon stats based on UI toggles
-  const computeWeaponStats = (base, html) => {
-
-    const baseHand = normHand(base?.hand) || null; // "1" | "2" | null
+  // Handles weapon surcharges
+  const kind = html.find('input[name="itemType"]:checked').val();
+  let custom = 0;
+  if (kind === 'weapon') {
     const plus1 = html.find('#optPlusOne').is(':checked');
     const plus4 = html.find('#optPlusDamage').is(':checked');
-    const flip = html.find('#optToggleHand').is(':checked');
-    const selA = String(html.find('#optAttrA').val() || base?.attrA || "").toUpperCase();
-    const selB = String(html.find('#optAttrB').val() || base?.attrB || "").toUpperCase();
-    const elementVal = (html.find('#optElement').val() || base?.element || "physical").toString();
+    const eleSel = (html.find('#optElement').val() || 'physical').toString();
+    if (plus1) custom += 100;
+    if (plus4) custom += 200;
+    if (eleSel !== 'physical') custom += 100;
 
-    // hands
-    let handsOut = base?.hand || "";
-    if (flip && (baseHand === "1" || baseHand === "2")) {
-      handsOut = (baseHand === "1") ? "two-handed" : "one-handed";
-    }
+    const baseA = String(tmpl?.attrA ?? '').toUpperCase();
+    const baseB = String(tmpl?.attrB ?? '').toUpperCase();
+    const selA = String(html.find('#optAttrA').val() || baseA).toUpperCase();
+    const selB = String(html.find('#optAttrB').val() || baseB).toUpperCase();
+    const isMatchingNow = selA && selB && (selA === selB);
+    const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
+    if (isMatchingNow && !sameAsOriginalPair) custom += 50;
+  }
 
-    // damage & accuracy
-    const handMod = (flip && baseHand === "2") ? -4 :
-      (flip && baseHand === "1") ? +4 :
-      0;
-    const accOut = (Number(base?.accuracy ?? base?.acc ?? 0) || 0) + (plus1 ? 1 : 0);
-    let dmgOut = (Number(base?.damage ?? base?.dmg ?? 0) || 0) + (plus4 ? 4 : 0) + handMod;
+  // Handles materials subtotal
+  const materials = html.data('ifMaterials') || [];
+  const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
 
-    // set "isMartial" true if effective damage >= 10
-    const isMartialEffective = (Number.isFinite(dmgOut) && dmgOut >= 10) || !!base?.isMartial;
+  // Output seperate cost values
+  const worth = Math.max(0, base + qcost + custom); // saves to crafted item
+  let craft = Math.max(0, worth - matTotal); // shows in dialog
+  if (html.find('#optFee').is(':checked')) craft = Math.ceil(craft * 1.10);
 
-    return {
-      hands: handsOut,
-      attrs: {
-        A: selA,
-        B: selB
-      },
-      acc: accOut,
-      dmg: dmgOut,
-      dmgType: elementVal,
-      isMartial: isMartialEffective
-    };
+  return {
+    worth,
+    craft
   };
+};
 
-  // Build itemData for the selected item.
-  const buildItemData = (kind, html, {
-    currentTemplates,
-    currentQualities
-  }) => {
-    const base = getSelectedBase(html, currentTemplates);
-    if (!base) throw new Error("No template selected.");
+// Recalculate weapon stats based on UI toggles
+const computeWeaponStats = (base, html) => {
 
-    const {
-      desc: qualDesc
-    } = getSelectedQualityInfo(html, currentQualities);
-    const img = getPreviewIcon(html, dataLoader.getRandomIconFor(kind, base));
-    const $t = html.find('#templateList [data-selected="1"]').first();
-    const ti = Number($t.data("idx"));
-    const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-    const {
-      worth
-    } = getCurrentCosts(html, tmpl, currentQualities);
-    const costField = worth;
+  const baseHand = normHand(base?.hand) || null; // "1" | "2" | null
+  const plus1 = html.find('#optPlusOne').is(':checked');
+  const plus4 = html.find('#optPlusDamage').is(':checked');
+  const flip = html.find('#optToggleHand').is(':checked');
+  const selA = String(html.find('#optAttrA').val() || base?.attrA || "").toUpperCase();
+  const selB = String(html.find('#optAttrB').val() || base?.attrB || "").toUpperCase();
+  const elementVal = (html.find('#optElement').val() || base?.element || "physical").toString();
 
-    // handle weapon item data.
-    if (kind === "weapon") {
-      const w = computeWeaponStats(base, html);
-      return {
-        name: `Crafted ${base?.name ?? "Weapon"}`,
-        type: "weapon",
-        img,
-        system: {
-          category: {
-            value: base?.category ?? ""
-          },
-          hands: {
-            value: w.hands || ""
-          },
-          type: {
-            value: base?.type ?? ""
-          },
-          attributes: {
-            primary: {
-              value: asAttrKey(w.attrs.A)
-            },
-            secondary: {
-              value: asAttrKey(w.attrs.B)
-            }
-          },
-          accuracy: {
-            value: w.acc
-          },
-          defense: "def", // per spec: DEF for now
-          damageType: {
-            value: w.dmgType || (base?.element ?? "physical")
-          },
-          damage: {
-            value: w.dmg
-          },
-          isMartial: {
-            value: !!w.isMartial
-          },
-          quality: {
-            value: qualDesc || "No quality"
-          },
-          cost: {
-            value: costField
-          },
-          source: {
-            value: "LOOKFAR"
-          },
-          summary: {
-            value: `a finely crafted ${base?.category ?? "weapon"}.`
-          }
-        }
-      };
-    }
+  // hands
+  let handsOut = base?.hand || "";
+  if (flip && (baseHand === "1" || baseHand === "2")) {
+    handsOut = (baseHand === "1") ? "two-handed" : "one-handed";
+  }
 
-    // handle armor item data.  
-    if (kind === "armor") {
-      return {
-        name: `Crafted ${base?.name ?? "Armor"}`,
-        type: "armor",
-        img,
-        system: {
-          def: {
-            attribute: asAttrKey(base?.defAttr || "dex"),
-            value: Number(base?.def ?? 0) || 0
-          },
-          mdef: {
-            attribute: asAttrKey(base?.mdefAttr || "ins"),
-            value: Number(base?.mdef ?? 0) || 0
-          },
-          init: {
-            value: Number(base?.init ?? 0) || 0
-          },
-          isMartial: {
-            value: !!base?.isMartial
-          },
-          quality: {
-            value: qualDesc || "No quality"
-          },
-          cost: {
-            value: costField
-          },
-          source: {
-            value: "LOOKFAR"
-          },
-          summary: {
-            value: `A set of ${base?.isMartial ? "martial" : "non-martial"} armor that ${qualDesc || "has no special properties."}`
-          }
-        }
-      };
-    }
+  // damage & accuracy
+  const handMod = (flip && baseHand === "2") ? -4 :
+    (flip && baseHand === "1") ? +4 :
+    0;
+  const accOut = (Number(base?.accuracy ?? base?.acc ?? 0) || 0) + (plus1 ? 1 : 0);
+  let dmgOut = (Number(base?.damage ?? base?.dmg ?? 0) || 0) + (plus4 ? 4 : 0) + handMod;
 
-    // handle shield item data. 
-    if (kind === "shield") {
-      return {
-        name: `Crafted ${base?.name ?? "Shield"}`,
-        type: "shield",
-        img,
-        system: {
-          def: {
-            attribute: asAttrKey(base?.defAttr || "dex"),
-            value: Number(base?.def ?? 0) || 0
-          },
-          mdef: {
-            attribute: asAttrKey(base?.mdefAttr || "ins"),
-            value: Number(base?.mdef ?? 0) || 0
-          },
-          init: {
-            value: Number(base?.init ?? 0) || 0
-          },
-          isMartial: {
-            value: !!base?.isMartial
-          },
-          quality: {
-            value: qualDesc || "No quality"
-          },
-          cost: {
-            value: costField
-          },
-          source: {
-            value: "LOOKFAR"
-          },
-          summary: {
-            value: `A ${base?.isMartial ? "martial" : "non-martial"} shield that ${qualDesc || "has no special properties."}`
-          }
-        }
-      };
-    }
+  // set "isMartial" true if effective damage >= 10
+  const isMartialEffective = (Number.isFinite(dmgOut) && dmgOut >= 10) || !!base?.isMartial;
 
-    // handle accessory item data.
+  return {
+    hands: handsOut,
+    attrs: {
+      A: selA,
+      B: selB
+    },
+    acc: accOut,
+    dmg: dmgOut,
+    dmgType: elementVal,
+    isMartial: isMartialEffective
+  };
+};
+
+// Build itemData for the selected item.
+const buildItemData = (kind, html, {
+  currentTemplates,
+  currentQualities
+}) => {
+  const base = getSelectedBase(html, currentTemplates);
+  if (!base) throw new Error("No template selected.");
+
+  const {
+    desc: qualDesc
+  } = getSelectedQualityInfo(html, currentQualities);
+  const img = getPreviewIcon(html, dataLoader.getRandomIconFor(kind, base));
+  const $t = html.find('#templateList [data-selected="1"]').first();
+  const ti = Number($t.data("idx"));
+  const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
+  const {
+    worth
+  } = getCurrentCosts(html, tmpl, currentQualities);
+  const costField = worth;
+
+  // handle weapon item data.
+  if (kind === "weapon") {
+    const w = computeWeaponStats(base, html);
     return {
-      name: `Crafted ${base?.name ?? "Accessory"}`,
-      type: "accessory",
+      name: `Crafted ${base?.name ?? "Weapon"}`,
+      type: "weapon",
       img,
       system: {
-        def: {
-          value: Number(base?.def ?? 0) || 0
+        category: {
+          value: base?.category ?? ""
         },
-        mdef: {
-          value: Number(base?.mdef ?? 0) || 0
+        hands: {
+          value: w.hands || ""
         },
-        init: {
-          value: Number(base?.init ?? 0) || 0
+        type: {
+          value: base?.type ?? ""
+        },
+        attributes: {
+          primary: {
+            value: asAttrKey(w.attrs.A)
+          },
+          secondary: {
+            value: asAttrKey(w.attrs.B)
+          }
+        },
+        accuracy: {
+          value: w.acc
+        },
+        defense: "def", // per spec: DEF for now
+        damageType: {
+          value: w.dmgType || (base?.element ?? "physical")
+        },
+        damage: {
+          value: w.dmg
+        },
+        isMartial: {
+          value: !!w.isMartial
         },
         quality: {
           value: qualDesc || "No quality"
@@ -387,32 +282,137 @@ import { dataLoader } from "./dataLoader.js";
           value: "LOOKFAR"
         },
         summary: {
-          value: `An accessory that ${qualDesc || "has no special properties."}`
+          value: `a finely crafted ${base?.category ?? "weapon"}.`
         }
       }
     };
+  }
+
+  // handle armor item data.  
+  if (kind === "armor") {
+    return {
+      name: `Crafted ${base?.name ?? "Armor"}`,
+      type: "armor",
+      img,
+      system: {
+        def: {
+          attribute: asAttrKey(base?.defAttr || "dex"),
+          value: Number(base?.def ?? 0) || 0
+        },
+        mdef: {
+          attribute: asAttrKey(base?.mdefAttr || "ins"),
+          value: Number(base?.mdef ?? 0) || 0
+        },
+        init: {
+          value: Number(base?.init ?? 0) || 0
+        },
+        isMartial: {
+          value: !!base?.isMartial
+        },
+        quality: {
+          value: qualDesc || "No quality"
+        },
+        cost: {
+          value: costField
+        },
+        source: {
+          value: "LOOKFAR"
+        },
+        summary: {
+          value: `A set of ${base?.isMartial ? "martial" : "non-martial"} armor that ${qualDesc || "has no special properties."}`
+        }
+      }
+    };
+  }
+
+  // handle shield item data. 
+  if (kind === "shield") {
+    return {
+      name: `Crafted ${base?.name ?? "Shield"}`,
+      type: "shield",
+      img,
+      system: {
+        def: {
+          attribute: asAttrKey(base?.defAttr || "dex"),
+          value: Number(base?.def ?? 0) || 0
+        },
+        mdef: {
+          attribute: asAttrKey(base?.mdefAttr || "ins"),
+          value: Number(base?.mdef ?? 0) || 0
+        },
+        init: {
+          value: Number(base?.init ?? 0) || 0
+        },
+        isMartial: {
+          value: !!base?.isMartial
+        },
+        quality: {
+          value: qualDesc || "No quality"
+        },
+        cost: {
+          value: costField
+        },
+        source: {
+          value: "LOOKFAR"
+        },
+        summary: {
+          value: `A ${base?.isMartial ? "martial" : "non-martial"} shield that ${qualDesc || "has no special properties."}`
+        }
+      }
+    };
+  }
+
+  // handle accessory item data.
+  return {
+    name: `Crafted ${base?.name ?? "Accessory"}`,
+    type: "accessory",
+    img,
+    system: {
+      def: {
+        value: Number(base?.def ?? 0) || 0
+      },
+      mdef: {
+        value: Number(base?.mdef ?? 0) || 0
+      },
+      init: {
+        value: Number(base?.init ?? 0) || 0
+      },
+      quality: {
+        value: qualDesc || "No quality"
+      },
+      cost: {
+        value: costField
+      },
+      source: {
+        value: "LOOKFAR"
+      },
+      summary: {
+        value: `An accessory that ${qualDesc || "has no special properties."}`
+      }
+    }
   };
+};
 
-  // --- Dialog Behavior ------------------------------------------------------------//
+// --- Dialog Behavior ------------------------------------------------------------//
 
-  const CATEGORY_OPTIONS = [
-    ["Basic", "basic"],
-    ["Custom", "custom"],
-    ["Ardent", "ardent"],
-    ["Aerial", "aerial"],
-    ["Thunderous", "thunderous"],
-    ["Paradox", "paradox"],
-    ["Terrestrial", "terrestrial"],
-    ["Glacial", "glacial"],
-    ["Spiritual", "spiritual"],
-    ["Corrupted", "corrupted"],
-    ["Aquatic", "aquatic"],
-    ["Mechanical", "mechanical"],
-  ];
+const CATEGORY_OPTIONS = [
+  ["Basic", "basic"],
+  ["Custom", "custom"],
+  ["Ardent", "ardent"],
+  ["Aerial", "aerial"],
+  ["Thunderous", "thunderous"],
+  ["Paradox", "paradox"],
+  ["Terrestrial", "terrestrial"],
+  ["Glacial", "glacial"],
+  ["Spiritual", "spiritual"],
+  ["Corrupted", "corrupted"],
+  ["Aquatic", "aquatic"],
+  ["Mechanical", "mechanical"],
+];
 
-  const ATTR_ROW_FIXED_HEIGHT = "30px";
+const ATTR_ROW_FIXED_HEIGHT = "30px";
 
-  const content = `
+const content = `
 <div id="if-body">
   <form>
     <div style="display:flex; gap:4px; align-items:flex-start; min-width:0; margin-bottom:0;">
@@ -526,633 +526,694 @@ import { dataLoader } from "./dataLoader.js";
 </div>
 `;
 
-  // Item Forger Dialog
-  function openItemForgeDialog() {
-    const equipmentRoot = getEquipmentRoot();
-    const qualitiesRoot = getQualitiesRoot();
+// Item Forger Dialog
+function openItemForgeDialog() {
+  const equipmentRoot = getEquipmentRoot();
+  const qualitiesRoot = getQualitiesRoot();
 
-    let currentTemplates = [];
-    let currentQualities = [];
-    const materials = [];
+  let currentTemplates = [];
+  let currentQualities = [];
+  const materials = [];
 
-    const dlg = new Dialog({
-      title: "Item Forger",
-      content,
-      buttons: {
-        forge: {
-          label: "Forge",
-          icon: '<i class="fas fa-hammer"></i>',
-          callback: async (html) => {
-            try {
-              const kind = html.find('input[name="itemType"]:checked').val();
-              if (!kind) return ui.notifications.warn("Choose an item type first.");
-
-              const base = getSelectedBase(html, currentTemplates);
-              if (!base) return ui.notifications.warn("Select a template first.");
-
-              if (!validateMaterialsOrigin(html, materials)) return;
-
-              const itemData = buildItemData(kind, html, {
-                currentTemplates,
-                currentQualities
-              });
-              const created = await Item.create(itemData, {
-                renderSheet: true
-              });
-              if (!created) throw new Error("Item creation failed.");
-              ui.notifications.info(`${created.name} forged.`);
-            } catch (err) {
-              console.error("[Item Forger] Forge failed:", err);
-              ui.notifications?.error(`Item Forger: ${err.message || "Failed to forge item."}`);
-            }
-          }
-        }
-      },
-      default: "forge",
-      render: async (html) => {
-        const $dlg = html.closest(".window-app");
-        const $wc = $dlg.find(".window-content");
-        $wc.css({
-          display: "block",
-          overflow: "visible"
-        });
-        $dlg.css({
-          width: "700px"
-        });
-
-        const relayout = () => {
-          const app2 = ui.windows[Number($dlg.attr("data-appid"))];
-          if (app2?.setPosition) {
-            app2.setPosition({
-              height: "auto"
-            });
-            setTimeout(() => app2.setPosition({
-              height: "auto"
-            }), 0);
-          }
-        };
-        relayout();
-
-        const $templateList = html.find("#templateList");
-        const $qualitiesList = html.find("#qualitiesList");
-        const $qualitiesSelect = html.find("#qualitiesCategory");
-        const $customize = html.find("#customizeArea");
-        const $attrInner = html.find("#attrInner");
-        const $materialsDrop = html.find("#materialsDrop");
-        const $materialsHint = html.find("#materialsHint");
-        const $preview = html.find("#itemPreviewLarge");
-
-        html.data('ifMaterials', materials);
-
-        // update cost when template changes
-        function updateCost() {
-          const $val = html.find('#costValue');
-          const $t = html.find('#templateList [data-selected="1"]').first();
-          const ti = Number($t.data("idx"));
-          const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-          const { craft } = getCurrentCosts(html, tmpl, currentQualities);
-          $val.text(craft);
-        }
-
-        const getNameSafe = (r) => esc(getName(r));
-        const getItemImage = (item) => {
-
-          if (item?.img) return item.img;
-
-          const kind = html.find('input[name="itemType"]:checked').val(); // "weapon" | "armor" | "shield" | "accessory"
-          if (!kind) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
-
-          const templateId = item?.system?.templateId;
-          if (!templateId) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
-
-          // pick a random icon from the manifest
-          const byKindList = {
-            weapon: dataLoader.weaponsData?.weaponList,
-            armor: dataLoader.armorData?.armorList,
-            shield: dataLoader.shieldsData?.shieldList,
-            accessory: dataLoader.accessoriesData?.accessoryList
-          } [kind] || [];
-
-          const base = byKindList.find(e => e?.id === templateId);
-          const img = base ? dataLoader.getRandomIconFor(kind, base) : null;
-          if (img) return img;
-
-          return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
-        };
-
-        // handles attribute selection
-        const applyAttrDefaultsFromTemplate = (selectedEl) => {
-          const kind = html.find('input[name="itemType"]:checked').val();
-          if (kind !== "weapon") return;
-
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
-
-          const $a = html.find('#optAttrA');
-          const $b = html.find('#optAttrB');
-          if (!$a.length || !$b.length) return;
-
-          const allowed = new Set(["MIG", "DEX", "INS", "WLP"]);
-          const a = String(base?.attrA ?? "").toUpperCase();
-          const b = String(base?.attrB ?? "").toUpperCase();
-
-          if (allowed.has(a)) $a.val(a);
-          if (allowed.has(b)) $b.val(b);
-        };
-
-        // handles Preview item card
-        const clip = (v, n = 14) => {
-          const s = String(v ?? "");
-          return s.length > n ? s.slice(0, n - 1) + "…" : s;
-        };
-
-        const addModIfNumber = (val, mod) => {
-          const num = Number(val);
-          return Number.isFinite(num) ? (num + mod) : val;
-        };
-        const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
-
-        function renderPreview(kind, selectedEl, opts = {}) {
-          const rerollIcon = !!opts.rerollIcon;
-
-          // cache for auto-picked icons
-          let iconMap = html.data('autoIconMap');
-          if (!iconMap) {
-            iconMap = {};
-            html.data('autoIconMap', iconMap);
-          }
-
-          // override icon with user pick
-          const override = html.data('iconOverride');
-          const getKindIcon = (k) => ({
-            weapon: "icons/svg/sword.svg",
-            shield: "icons/svg/shield.svg",
-            armor: "icons/svg/statue.svg",
-            accessory: "icons/svg/stoned.svg"
-          } [k] || "icons/svg/mystery-man.svg");
-
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
-          const baseId = base?.id ?? base?._id ?? getName(base);
-          const cacheKey = `${kind}:${String(baseId)}`;
-
-          let icon = getKindIcon(kind);
-
-          if (override) {
-            icon = override;
-          } else {
-            if (!rerollIcon && iconMap[cacheKey]) {
-              icon = iconMap[cacheKey];
-            } else {
-              try {
-                const pick = base ? dataLoader.getRandomIconFor(kind, base) : null;
-                icon = pick || icon;
-              } catch (e) {
-                console.warn("[Item Forger] preview icon pick failed:", e);
-              }
-              iconMap[cacheKey] = icon;
-            }
-          }
+  const dlg = new Dialog({
+    title: "Item Forger",
+    content,
+    buttons: {
+      forge: {
+        label: "Forge",
+        icon: '<i class="fas fa-hammer"></i>',
+        callback: async (html) => {
           try {
-            const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
-            html.data('lastIconDir', dir);
-          } catch {
-            /* noop */
+            const kind = html.find('input[name="itemType"]:checked').val();
+            if (!kind) return ui.notifications.warn("Choose an item type first.");
+
+            const base = getSelectedBase(html, currentTemplates);
+            if (!base) return ui.notifications.warn("Select a template first.");
+
+            if (!validateMaterialsOrigin(html, materials)) return;
+
+            const itemData = buildItemData(kind, html, {
+              currentTemplates,
+              currentQualities
+            });
+            const created = await Item.create(itemData, {
+              renderSheet: true
+            });
+            if (!created) throw new Error("Item creation failed.");
+            ui.notifications.info(`${created.name} forged.`);
+          } catch (err) {
+            console.error("[Item Forger] Forge failed:", err);
+            ui.notifications?.error(`Item Forger: ${err.message || "Failed to forge item."}`);
           }
+        }
+      }
+    },
+    default: "forge",
+    render: async (html) => {
+      const $dlg = html.closest(".window-app");
+      const $wc = $dlg.find(".window-content");
+      $wc.css({
+        display: "block",
+        overflow: "visible"
+      });
+      $dlg.css({
+        width: "700px"
+      });
 
-          // preview item card styling
-          const style = `
+      const relayout = () => {
+        const app2 = ui.windows[Number($dlg.attr("data-appid"))];
+        if (app2?.setPosition) {
+          app2.setPosition({
+            height: "auto"
+          });
+          setTimeout(() => app2.setPosition({
+            height: "auto"
+          }), 0);
+        }
+      };
+      relayout();
+
+      const $templateList = html.find("#templateList");
+      const $qualitiesList = html.find("#qualitiesList");
+      const $qualitiesSelect = html.find("#qualitiesCategory");
+      const $customize = html.find("#customizeArea");
+      const $attrInner = html.find("#attrInner");
+      const $materialsDrop = html.find("#materialsDrop");
+      const $materialsHint = html.find("#materialsHint");
+      const $preview = html.find("#itemPreviewLarge");
+
+      html.data('ifMaterials', materials);
+
+      // update cost when template changes
+      function updateCost() {
+        const $val = html.find('#costValue');
+        const $t = html.find('#templateList [data-selected="1"]').first();
+        const ti = Number($t.data("idx"));
+        const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
+        const {
+          craft
+        } = getCurrentCosts(html, tmpl, currentQualities);
+        $val.text(craft);
+      }
+
+      const getNameSafe = (r) => esc(getName(r));
+      const getItemImage = (item) => {
+
+        if (item?.img) return item.img;
+
+        const kind = html.find('input[name="itemType"]:checked').val(); // "weapon" | "armor" | "shield" | "accessory"
+        if (!kind) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+
+        const templateId = item?.system?.templateId;
+        if (!templateId) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+
+        // pick a random icon from the manifest
+        const byKindList = {
+          weapon: dataLoader.weaponsData?.weaponList,
+          armor: dataLoader.armorData?.armorList,
+          shield: dataLoader.shieldsData?.shieldList,
+          accessory: dataLoader.accessoriesData?.accessoryList
+        } [kind] || [];
+
+        const base = byKindList.find(e => e?.id === templateId);
+        const img = base ? dataLoader.getRandomIconFor(kind, base) : null;
+        if (img) return img;
+
+        return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+      };
+
+      // handles attribute selection
+      const applyAttrDefaultsFromTemplate = (selectedEl) => {
+        const kind = html.find('input[name="itemType"]:checked').val();
+        if (kind !== "weapon") return;
+
+        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+        const idx = Number($sel.data("idx"));
+        const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+
+        const $a = html.find('#optAttrA');
+        const $b = html.find('#optAttrB');
+        if (!$a.length || !$b.length) return;
+
+        const allowed = new Set(["MIG", "DEX", "INS", "WLP"]);
+        const a = String(base?.attrA ?? "").toUpperCase();
+        const b = String(base?.attrB ?? "").toUpperCase();
+
+        if (allowed.has(a)) $a.val(a);
+        if (allowed.has(b)) $b.val(b);
+      };
+
+      // handles Preview item card
+      const clip = (v, n = 14) => {
+        const s = String(v ?? "");
+        return s.length > n ? s.slice(0, n - 1) + "…" : s;
+      };
+
+      const addModIfNumber = (val, mod) => {
+        const num = Number(val);
+        return Number.isFinite(num) ? (num + mod) : val;
+      };
+      const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
+
+      function renderPreview(kind, selectedEl, opts = {}) {
+        const rerollIcon = !!opts.rerollIcon;
+
+        // cache for auto-picked icons
+        let iconMap = html.data('autoIconMap');
+        if (!iconMap) {
+          iconMap = {};
+          html.data('autoIconMap', iconMap);
+        }
+
+        // override icon with user pick
+        const override = html.data('iconOverride');
+        const getKindIcon = (k) => ({
+          weapon: "icons/svg/sword.svg",
+          shield: "icons/svg/shield.svg",
+          armor: "icons/svg/statue.svg",
+          accessory: "icons/svg/stoned.svg"
+        } [k] || "icons/svg/mystery-man.svg");
+
+        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+        const idx = Number($sel.data("idx"));
+        const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+        const baseId = base?.id ?? base?._id ?? getName(base);
+        const cacheKey = `${kind}:${String(baseId)}`;
+
+        let icon = getKindIcon(kind);
+
+        if (override) {
+          icon = override;
+        } else {
+          if (!rerollIcon && iconMap[cacheKey]) {
+            icon = iconMap[cacheKey];
+          } else {
+            try {
+              const pick = base ? dataLoader.getRandomIconFor(kind, base) : null;
+              icon = pick || icon;
+            } catch (e) {
+              console.warn("[Item Forger] preview icon pick failed:", e);
+            }
+            iconMap[cacheKey] = icon;
+          }
+        }
+        try {
+          const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
+          html.data('lastIconDir', dir);
+        } catch {
+          /* noop */
+        }
+
+        // preview item card styling
+        const style = `
   <style>
-    #if-preview-card{
-      width:100%; height:100%;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      gap:8px; padding:6px; box-sizing:border-box;
-    }
-    /* head row to hold the icon */
-    #if-preview-head{
-      display:flex; align-items:center; justify-content:center;
-      gap:6px;
-    }
-    /* icon wrapper to allow absolute-positioned badge */
-    .if-icon-wrap{
-      position:relative;
-      width:32px; height:32px;
-      display:inline-block;
-    }
-    #if-preview-icon{
-  width:32px; height:32px;
-  object-fit:contain; image-rendering:auto; display:block;
-  cursor:pointer; pointer-events:auto;
-}
-    /* the badge that overlaps the icon (uses your system class + positioning) */
-    .if-badge{
-      position:absolute;
-      right:-2px;
-      bottom:-2px;
-      z-index:2;              /* ensure on top of the image */
-      transform:scale(0.9);   /* small shrink so it fits neatly */
-      pointer-events:none;    /* avoid accidental clicks */
-    }
+  #if-preview-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    #if-preview-rows{ width:100%; display:flex; flex-direction:column; gap:4px; }
-    .if-row{ width:100%; text-align:center; font-size:11px; line-height:1.15;
-             white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .if-muted{ opacity:0.7; }
-    .if-tight{ letter-spacing:0.2px; }
-    .if-row-desc{
-      width:100%;
-      text-align:center;
-      font-size:11px;
-      line-height:1.2;
-      white-space:normal;
-      overflow:hidden;
-      padding:4px 8px;
-      box-sizing:border-box;
-    }
-  </style>
+    width: 100%;
+    height: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+    gap: 8px;
+  }
+
+  /* head row to hold the icon */
+  #if-preview-head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* icon wrapper to allow absolute-positioned badge */
+  .if-icon-wrap {
+    position: relative;
+    display: inline-block;
+
+    width: 32px;
+    height: 32px;
+  }
+
+  #if-preview-icon {
+    display: block;
+    width: 32px;
+    height: 32px;
+
+    object-fit: contain;
+    image-rendering: auto;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  /* the badge that overlaps the icon (uses your system class + positioning) */
+  .if-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    z-index: 2;
+
+    transform: scale(0.9);
+    pointer-events: none; /* avoid accidental clicks */
+  }
+
+  #if-preview-rows {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 4px;
+  }
+
+  .if-row {
+    width: 100%;
+    text-align: center;
+
+    font-size: 11px;
+    line-height: 1.15;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .if-muted {
+    opacity: 0.7;
+  }
+
+  .if-tight {
+    letter-spacing: 0.2px;
+  }
+
+  .if-row-desc {
+    width: 100%;
+    text-align: center;
+
+    font-size: 11px;
+    line-height: 1.2;
+
+    white-space: normal;
+    overflow: hidden;
+
+    padding: 4px 8px;
+    box-sizing: border-box;
+  }
+</style>
 `;
 
-          // quality description helper
-          const qdesc = () => {
-            const catKeyNow = String($qualitiesSelect.val() || "none").toLowerCase();
-            if (catKeyNow === "custom") {
-              return String(html.data('customEffect') ?? "").trim(); // committed only
-            }
-            const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
-            const qIdx = Number($qsel.data("idx"));
-            const q = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
-            return q?.description ?? q?.desc ?? "";
-          };
-
-          // dial sanity check
-          const kindNow = html.find('input[name="itemType"]:checked').val();
-          if (kindNow !== kind) {
-            $preview.html(`${style}
-      <div id="if-preview-card">
-        <img id="if-preview-icon" src="${icon}">
-        <div id="if-preview-rows" class="if-muted"><div class="if-row">Preview coming soon…</div></div>
-      </div>
-    `);
-            return;
+        // quality description helper
+        const qdesc = () => {
+          const catKeyNow = String($qualitiesSelect.val() || "none").toLowerCase();
+          if (catKeyNow === "custom") {
+            return readCustomQuality(html).eff;
           }
+          const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+          const qIdx = Number($qsel.data("idx"));
+          const q = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
+          return q?.description ?? q?.desc ?? "";
+        };
 
-          // ---------- ARMOR PREVIEW ----------
-          if (kind === "armor") {
-            // current template selection
-            const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-            const idx = Number($sel.data("idx"));
-            const a = Number.isFinite(idx) ? currentTemplates[idx] : null;
-
-            // pull fields from equipment.json
-            const isMartial = !!a?.isMartial;
-            const defAttr = (a?.defAttr ?? "").toString().toUpperCase();
-            const def = (a?.def ?? "—");
-            const mdefAttr = (a?.mdefAttr ?? "").toString().toUpperCase();
-            const mdef = (a?.mdef ?? "—");
-            const init = (a?.init ?? "—");
-
-            // armor preview stat row
-            const rowArmor = !isMartial ?
-              `<strong>DEF:</strong> ${esc(defAttr)}+${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}` :
-              `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
-
-            // armor preview item card
-            $preview.html(`${style}
-  <div id="if-preview-card">
-    <div id="if-preview-head">
-      <div class="if-icon-wrap">
-        <img id="if-preview-icon" src="${icon}">
-        ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
-      </div>
-    </div>
-    <div id="if-preview-rows">
-      <div class="if-row if-tight">${rowArmor}</div>
-      <div class="if-row-desc">${esc(qdesc())}</div>
-    </div>
-  </div>
-`);
-            return;
-          }
-
-          // ---------- SHIELD PREVIEW ----------
-          if (kind === "shield") {
-            // current template selection
-            const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-            const idx = Number($sel.data("idx"));
-            const s = Number.isFinite(idx) ? currentTemplates[idx] : null;
-
-            // pull fields from equipment.json
-            const isMartial = !!s?.isMartial;
-            const def = (s?.def ?? "—");
-            const mdef = (s?.mdef ?? "—");
-
-            // shield preview stat row
-            const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
-
-            // shield preview item card
-            $preview.html(`${style}
-    <div id="if-preview-card">
-      <div id="if-preview-head">
-        <div class="if-icon-wrap">
-          <img id="if-preview-icon" src="${icon}">
-          ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
-        </div>
-      </div>
-      <div id="if-preview-rows">
-        <div class="if-row if-tight">${rowShield}</div>
-        <div class="if-row-desc">${esc(qdesc())}</div>
-      </div>
-    </div>
-  `);
-            return;
-          }
-
-          // ---------- ACCESSORY PREVIEW ----------
-          if (kind === "accessory") {
-
-            // accessory preview item card
-            $preview.html(`${style}
-    <div id="if-preview-card">
-      <div id="if-preview-head">
-        <div class="if-icon-wrap">
-          <img id="if-preview-icon" src="${icon}">
-        </div>
-      </div>
-      <div id="if-preview-rows">
-        <div class="if-row-desc">${esc(qdesc())}</div>
-      </div>
-    </div>
-  `);
-            return;
-          }
-
-          // ---------- WEAPON PREVIEW ----------
-          if (kind === "weapon") {
-            // current template selection
-            const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-            const idx = Number($sel.data("idx"));
-            const w = Number.isFinite(idx) ? currentTemplates[idx] : null;
-
-            // pull fields from equipment.json
-            const baseHand = normHand(w?.hand) || null; // "1" | "2" | null
-            const baseHandText = handLabel(baseHand ?? (w?.hand ?? "—"));
-            const baseType = w?.type ?? "—";
-            const baseCat = w?.category ?? w?.cat ?? "—";
-            const baseA = (w?.attrA ?? "—").toString().toUpperCase();
-            const baseB = (w?.attrB ?? "—").toString().toUpperCase();
-            const baseAcc = w?.accuracy ?? w?.acc ?? "—";
-            const baseDmg = w?.damage ?? w?.dmg ?? "—";
-            const baseEle = (w?.element ?? "physical").toString();
-
-            // UI OVERRIDES
-            const selA = (html.find('#optAttrA').val() || baseA).toString().toUpperCase();
-            const selB = (html.find('#optAttrB').val() || baseB).toString().toUpperCase();
-            const plus1 = html.find('#optPlusOne').is(':checked');
-            const plus4 = html.find('#optPlusDamage').is(':checked');
-            const flip = html.find('#optToggleHand').is(':checked');
-            const eleSel = (html.find('#optElement').val() || baseEle).toString();
-
-            let dispHand = baseHand;
-            if (flip && (baseHand === "1" || baseHand === "2")) dispHand = baseHand === "1" ? "2" : "1";
-
-            const handMod = (flip && baseHand === "2") ? -4 // "Make 1-handed" → -4 dmg
-              :
-              (flip && baseHand === "1") ? +4 // "Make 2-handed" → +4 dmg
-              :
-              0;
-
-            const dispAcc = plus1 ? addModIfNumber(baseAcc, 1) : baseAcc;
-            const dispDmg = addModIfNumber(plus4 ? addModIfNumber(baseDmg, 4) : baseDmg, handMod);
-            const dispDmgNum = Number(dispDmg);
-            const isMartialEffective = (Number.isFinite(dispDmgNum) && dispDmgNum >= 10) || !!w?.isMartial;
-
-            const dispHandText = handLabel(dispHand ?? baseHandText);
-
-            // weapon preview stat rows
-            const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-            const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} ${eleSel}`;
-
-            // weapon preview item card
-            $preview.html(`${style}
-  <div id="if-preview-card">
-    <div id="if-preview-head">
-      <div class="if-icon-wrap">
-        <img id="if-preview-icon" src="${icon}">
-        ${isMartialEffective ? `<span class="is-martial if-badge"></span>` : ``}
-      </div>
-    </div>
-    <div id="if-preview-rows">
-      <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
-      <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
-      <div class="if-row-desc">${esc(qdesc())}</div>
-    </div>
-  </div>
-`);
-            return;
-          }
-
-          // ---------- item card template → placeholder for now ----------
+        // dial sanity check
+        const kindNow = html.find('input[name="itemType"]:checked').val();
+        if (kindNow !== kind) {
           $preview.html(`${style}
-  <div id="if-preview-card">
-    <img id="if-preview-icon" src="${icon}">
-    <div id="if-preview-rows" class="if-muted"><div class="if-row">Preview coming soon…</div></div>
-  </div>
-`);
+            <div id="if-preview-card">
+              <img id="if-preview-icon" src="${icon}">
+              <div id="if-preview-rows" class="if-muted">
+                <div class="if-row">Preview coming soon…</div>
+              </div>
+            </div>
+          `);
           return;
         }
 
-        // --- Hooks & Wiring ------------------------------------------------------------//
+        // ---------- ARMOR PREVIEW ----------
+        if (kind === "armor") {
+          // current template selection
+          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+          const idx = Number($sel.data("idx"));
+          const a = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-        // handles scroll box selection list
-        const wireSelectableList = ($container, itemSel, {
-          onSelect
-        } = {}) => {
-          const $items = $container.find(itemSel);
-          $items.on("mouseenter", function() {
-            if (this.dataset.selected === "1") return;
-            $(this).css({
-              backgroundColor: "rgba(0,0,0,0.08)"
-            });
-          }).on("mouseleave", function() {
-            if (this.dataset.selected === "1") return;
+          // pull fields from equipment.json
+          const isMartial = !!a?.isMartial;
+          const defAttr = (a?.defAttr ?? "").toString().toUpperCase();
+          const def = (a?.def ?? "—");
+          const mdefAttr = (a?.mdefAttr ?? "").toString().toUpperCase();
+          const mdef = (a?.mdef ?? "—");
+          const init = (a?.init ?? "—");
+
+          // armor preview stat row
+          const rowArmor = !isMartial ?
+            `<strong>DEF:</strong> ${esc(defAttr)}+${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}` :
+            `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
+
+          // armor preview item card
+          $preview.html(`${style}
+              <div id="if-preview-card">
+                <div id="if-preview-head">
+                  <div class="if-icon-wrap">
+                    <img id="if-preview-icon" src="${icon}">
+                    ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
+                  </div>
+                </div>
+                <div id="if-preview-rows">
+                  <div class="if-row if-tight">${rowArmor}</div>
+                  <div class="if-row-desc">${esc(qdesc())}</div>
+                </div>
+              </div>
+            `);
+            return;
+        }
+
+        // ---------- SHIELD PREVIEW ----------
+        if (kind === "shield") {
+          // current template selection
+          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+          const idx = Number($sel.data("idx"));
+          const s = Number.isFinite(idx) ? currentTemplates[idx] : null;
+
+          // pull fields from equipment.json
+          const isMartial = !!s?.isMartial;
+          const def = (s?.def ?? "—");
+          const mdef = (s?.mdef ?? "—");
+
+          // shield preview stat row
+          const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
+
+          // shield preview item card
+          $preview.html(`${style}
+              <div id="if-preview-card">
+                <div id="if-preview-head">
+                  <div class="if-icon-wrap">
+                    <img id="if-preview-icon" src="${icon}">
+                    ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
+                  </div>
+                </div>
+                <div id="if-preview-rows">
+                  <div class="if-row if-tight">${rowShield}</div>
+                  <div class="if-row-desc">${esc(qdesc())}</div>
+                </div>
+              </div>
+            `);
+            return;
+        }
+
+        // ---------- ACCESSORY PREVIEW ----------
+        if (kind === "accessory") {
+
+          // accessory preview item card
+          $preview.html(`${style}
+              <div id="if-preview-card">
+                <div id="if-preview-head">
+                  <div class="if-icon-wrap">
+                    <img id="if-preview-icon" src="${icon}">
+                  </div>
+                </div>
+                <div id="if-preview-rows">
+                  <div class="if-row-desc">${esc(qdesc())}</div>
+                </div>
+              </div>
+            `);
+            return;
+        }
+
+        // ---------- WEAPON PREVIEW ----------
+        if (kind === "weapon") {
+          // current template selection
+          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+          const idx = Number($sel.data("idx"));
+          const w = Number.isFinite(idx) ? currentTemplates[idx] : null;
+
+          // pull fields from equipment.json
+          const baseHand = normHand(w?.hand) || null; // "1" | "2" | null
+          const baseHandText = handLabel(baseHand ?? (w?.hand ?? "—"));
+          const baseType = w?.type ?? "—";
+          const baseCat = w?.category ?? w?.cat ?? "—";
+          const baseA = (w?.attrA ?? "—").toString().toUpperCase();
+          const baseB = (w?.attrB ?? "—").toString().toUpperCase();
+          const baseAcc = w?.accuracy ?? w?.acc ?? "—";
+          const baseDmg = w?.damage ?? w?.dmg ?? "—";
+          const baseEle = (w?.element ?? "physical").toString();
+
+          // UI OVERRIDES
+          const selA = (html.find('#optAttrA').val() || baseA).toString().toUpperCase();
+          const selB = (html.find('#optAttrB').val() || baseB).toString().toUpperCase();
+          const plus1 = html.find('#optPlusOne').is(':checked');
+          const plus4 = html.find('#optPlusDamage').is(':checked');
+          const flip = html.find('#optToggleHand').is(':checked');
+          const eleSel = (html.find('#optElement').val() || baseEle).toString();
+
+          let dispHand = baseHand;
+          if (flip && (baseHand === "1" || baseHand === "2")) dispHand = baseHand === "1" ? "2" : "1";
+
+          const handMod = (flip && baseHand === "2") ? -4 // "Make 1-handed" → -4 dmg
+            :
+            (flip && baseHand === "1") ? +4 // "Make 2-handed" → +4 dmg
+            :
+            0;
+
+          const dispAcc = plus1 ? addModIfNumber(baseAcc, 1) : baseAcc;
+          const dispDmg = addModIfNumber(plus4 ? addModIfNumber(baseDmg, 4) : baseDmg, handMod);
+          const dispDmgNum = Number(dispDmg);
+          const isMartialEffective = (Number.isFinite(dispDmgNum) && dispDmgNum >= 10) || !!w?.isMartial;
+
+          const dispHandText = handLabel(dispHand ?? baseHandText);
+
+          // weapon preview stat rows
+          const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
+          const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} ${eleSel}`;
+
+          // weapon preview item card
+          $preview.html(`${style}
+              <div id="if-preview-card">
+                <div id="if-preview-head">
+                  <div class="if-icon-wrap">
+                    <img id="if-preview-icon" src="${icon}">
+                    ${isMartialEffective ? `<span class="is-martial if-badge"></span>` : ``}
+                  </div>
+                </div>
+                <div id="if-preview-rows">
+                  <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
+                  <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
+                  <div class="if-row-desc">${esc(qdesc())}</div>
+                </div>
+              </div>
+            `);
+            return;
+        }
+
+        // preview template, placeholder for future use
+        // $preview.html(`${style}
+              // <div id="if-preview-card">
+                // <img id="if-preview-icon" src="${icon}">
+                // <div id="if-preview-rows" class="if-muted">
+                  // <div class="if-row">Preview coming soon…</div>
+                // </div>
+              // </div>
+            // `);
+            // return;
+        // }
+
+      // --- Hooks & Wiring ------------------------------------------------------------//
+
+      // handles scroll box selection list
+      const wireSelectableList = ($container, itemSel, {
+        onSelect
+      } = {}) => {
+        const $items = $container.find(itemSel);
+        $items.on("mouseenter", function() {
+          if (this.dataset.selected === "1") return;
+          $(this).css({
+            backgroundColor: "rgba(0,0,0,0.08)"
+          });
+        }).on("mouseleave", function() {
+          if (this.dataset.selected === "1") return;
+          $(this).css({
+            backgroundColor: "",
+            color: ""
+          });
+        });
+        $items.on("click", function() {
+          $container.find(itemSel).each(function() {
+            this.dataset.selected = "";
             $(this).css({
               backgroundColor: "",
               color: ""
             });
           });
-          $items.on("click", function() {
-            $container.find(itemSel).each(function() {
-              this.dataset.selected = "";
-              $(this).css({
-                backgroundColor: "",
-                color: ""
-              });
-            });
-            this.dataset.selected = "1";
-            $(this).css({
-              backgroundColor: "rgba(65,105,225,1)",
-              color: "white"
-            });
-            onSelect?.(this);
+          this.dataset.selected = "1";
+          $(this).css({
+            backgroundColor: "rgba(65,105,225,1)",
+            color: "white"
           });
-          const $first = $items.first();
-          if ($first.length) $first.trigger("click");
+          onSelect?.(this);
+        });
+        const $first = $items.first();
+        if ($first.length) $first.trigger("click");
+      };
+
+      const renderMaterials = () => {
+
+        const needKey = getRequiredOriginKey(html); // e.g., "ardent"
+        const hasReq = !needKey || materials.some(m => String(m.origin) === needKey);
+        
+        // Read custom-quality values
+        const readCustomQuality = (html) => {
+          const eff = String(html.find('#customEffect').val() ?? html.data('customEffect') ?? '').trim();
+          const raw = String(html.find('#customCost').val() ?? html.data('customCost') ?? '');
+          const cost = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+          return { eff, cost };
         };
 
-        const renderMaterials = () => {
+        // Reset hint to default text up front
+        $materialsHint.text("Drag & drop Item documents here (max 5)");
 
-          const needKey = getRequiredOriginKey(html); // e.g., "ardent"
-          const hasReq = !needKey || materials.some(m => String(m.origin) === needKey);
+        // Rebuild thumbnails
+        $materialsDrop.children('img[data-mat="1"]').remove();
 
-          // Reset hint to default text up front
-          $materialsHint.text("Drag & drop Item documents here (max 5)");
+        if (materials.length === 0) {
+          if (needKey) $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
+          $materialsHint.show();
+        } else {
+          $materialsHint.hide();
 
-          // Rebuild thumbnails
-          $materialsDrop.children('img[data-mat="1"]').remove();
+          materials.forEach((m, i) => {
+            const tip = [
+              m.name ? m.name : "",
+              m.origin ? `Origin: ${m.origin}` : "",
+              Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
+            ].filter(Boolean).join(" • ");
 
-          if (materials.length === 0) {
-            if (needKey) $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
-            $materialsHint.show();
-          } else {
-            $materialsHint.hide();
-
-            materials.forEach((m, i) => {
-              const tip = [
-                m.name ? m.name : "",
-                m.origin ? `Origin: ${m.origin}` : "",
-                Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
-              ].filter(Boolean).join(" • ");
-
-              const $img = $(
-                `<img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+            const $img = $(
+              `<img data-mat="1" data-index="${i}" src="${esc(m.img)}"
               title="Click to remove\n${esc(tip)}"
               style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`
-              );
+            );
 
-              $img.on("click", () => {
-                materials.splice(i, 1);
-                html.data('ifMaterials', materials);
-                renderMaterials();
-                updateCost();
-              });
-
-              $materialsDrop.append($img);
-            });
-          }
-
-          // red border communicates material requirement
-          $materialsDrop.css({
-            borderColor: (!hasReq && needKey) ? "red" : "#999"
-          });
-
-          relayout();
-        };
-
-        $materialsDrop
-          .on("dragover", (ev) => {
-            ev.preventDefault();
-            $materialsDrop.css("background", "rgba(65,105,225,0.08)");
-          })
-          .on("dragleave", () => {
-            $materialsDrop.css("background", "");
-          })
-          .on("drop", async (ev) => {
-            ev.preventDefault();
-            $materialsDrop.css("background", "");
-            const dt = ev.originalEvent?.dataTransfer;
-            if (!dt) return;
-            const raw = dt.getData("text/plain");
-            if (!raw) return;
-
-            try {
-              const data = JSON.parse(raw);
-              if (!data?.uuid) return;
-
-              const doc = await fromUuid(data.uuid);
-              if (!doc || doc.documentName !== "Item") {
-                ui.notifications?.warn("Only Item documents can be dropped here.");
-                return;
-              }
-
-              // restrict treasure items
-              if (String(doc.type) !== "treasure") {
-                ui.notifications?.warn("Only Treasure items can be used as materials.");
-                return;
-              }
-
-              if (materials.length >= 5) {
-                ui.notifications?.warn("You can only add up to 5 materials.");
-                return;
-              }
-
-              // Extract origin + cost
-              const matCost = getTreasureCost(doc);
-              const matOrigin = getTreasureOrigin(doc);
-
-              materials.push({
-                uuid: data.uuid,
-                img: getItemImage(doc),
-                name: doc.name,
-                cost: matCost,
-                origin: matOrigin
-              });
+            $img.on("click", () => {
+              materials.splice(i, 1);
               html.data('ifMaterials', materials);
               renderMaterials();
               updateCost();
-            } catch (e) {
-              console.error("[Item Forger] Drop parse failed:", e);
-              ui.notifications?.error("Could not read dropped data.");
-            }
+            });
+
+            $materialsDrop.append($img);
           });
+        }
 
-           function renderTemplates(rows) {
-              currentTemplates = Array.isArray(rows) ? rows : [];
-              if (!currentTemplates.length) {
-                $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
-                const kind = html.find('input[name="itemType"]:checked').val();
-                renderPreview(kind, null);
-                return;
-              }
-              const items = currentTemplates.map((r, i) =>
-                `<div class="if-template" data-idx="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
-              ).join("");
-              $templateList.html(items);
-              wireSelectableList($templateList, ".if-template", {
-                onSelect: (el) => {
-                  updateHandToggle(el);
-                  applyAttrDefaultsFromTemplate(el);
-                  html.removeData('iconOverride');
+        // red border communicates material requirement
+        $materialsDrop.css({
+          borderColor: (!hasReq && needKey) ? "red" : "#999"
+        });
 
-                  const kind = html.find('input[name="itemType"]:checked').val();
-                  renderPreview(kind, el, { rerollIcon: true });
-                  updateCost();
-                }
-              });
+        relayout();
+      };
+
+      $materialsDrop
+        .on("dragover", (ev) => {
+          ev.preventDefault();
+          $materialsDrop.css("background", "rgba(65,105,225,0.08)");
+        })
+        .on("dragleave", () => {
+          $materialsDrop.css("background", "");
+        })
+        .on("drop", async (ev) => {
+          ev.preventDefault();
+          $materialsDrop.css("background", "");
+          const dt = ev.originalEvent?.dataTransfer;
+          if (!dt) return;
+          const raw = dt.getData("text/plain");
+          if (!raw) return;
+
+          try {
+            const data = JSON.parse(raw);
+            if (!data?.uuid) return;
+
+            const doc = await fromUuid(data.uuid);
+            if (!doc || doc.documentName !== "Item") {
+              ui.notifications?.warn("Only Item documents can be dropped here.");
+              return;
             }
 
-        const renderQualities = (type) => {
-          if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
-            $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
-            currentQualities = [];
-            const kind = html.find('input[name="itemType"]:checked').val();
-            renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+            // restrict treasure items
+            if (String(doc.type) !== "treasure") {
+              ui.notifications?.warn("Only Treasure items can be used as materials.");
+              return;
+            }
+
+            if (materials.length >= 5) {
+              ui.notifications?.warn("You can only add up to 5 materials.");
+              return;
+            }
+
+            // Extract origin + cost
+            const matCost = getTreasureCost(doc);
+            const matOrigin = getTreasureOrigin(doc);
+
+            materials.push({
+              uuid: data.uuid,
+              img: getItemImage(doc),
+              name: doc.name,
+              cost: matCost,
+              origin: matOrigin
+            });
+            html.data('ifMaterials', materials);
+            renderMaterials();
             updateCost();
-            return;
+          } catch (e) {
+            console.error("[Item Forger] Drop parse failed:", e);
+            ui.notifications?.error("Could not read dropped data.");
           }
+        });
 
-          const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
+      function renderTemplates(rows) {
+        currentTemplates = Array.isArray(rows) ? rows : [];
+        if (!currentTemplates.length) {
+          $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
+          const kind = html.find('input[name="itemType"]:checked').val();
+          renderPreview(kind, null);
+          return;
+        }
+        const items = currentTemplates.map((r, i) =>
+          `<div class="if-template" data-idx="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
+        ).join("");
+        $templateList.html(items);
+        wireSelectableList($templateList, ".if-template", {
+          onSelect: (el) => {
+            updateHandToggle(el);
+            applyAttrDefaultsFromTemplate(el);
+            html.removeData('iconOverride');
 
-          // handle custom qualities
-          if (catKey === "custom") {
-            currentQualities = [];
+            const kind = html.find('input[name="itemType"]:checked').val();
+            renderPreview(kind, el, {
+              rerollIcon: true
+            });
+            updateCost();
+          }
+        });
+      }
 
-            const effCommitted = String(html.data('customEffect') ?? "Custom effect text");
-            const cstCommitted = toInt(html.data('customCost') ?? 0);
+      const renderQualities = (type) => {
+        if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
+          $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
+          currentQualities = [];
+          const kind = html.find('input[name="itemType"]:checked').val();
+          renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+          updateCost();
+          return;
+        }
 
-            $qualitiesList.html(`
+        const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
+
+        // handle custom qualities
+        if (catKey === "custom") {
+          currentQualities = [];
+
+          const effCommitted = String(html.data('customEffect') ?? "Custom effect text");
+          const cstCommitted = toInt(html.data('customCost') ?? 0);
+
+          $qualitiesList.html(`
     <div id="customQualityWrap"
          style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
 
@@ -1190,86 +1251,86 @@ import { dataLoader } from "./dataLoader.js";
     </div>
   `);
 
-            $qualitiesList
-              .off('.customUX')
-              .on('keydown.customUX', '#customCost', (ev) => {
-                if (ev.key === 'Enter') ev.preventDefault();
-              })
-              .on('keypress.customUX', '#customCost', (ev) => {
-                if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
-              })
-              .on('paste.customUX', '#customCost', (ev) => {
-                ev.preventDefault();
-                const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
-                const digits = txt.replace(/\D+/g, '');
-                const el = ev.currentTarget;
-                const start = el.selectionStart ?? el.value.length;
-                const end = el.selectionEnd ?? el.value.length;
-                el.value = el.value.slice(0, start) + digits + el.value.slice(end);
-              })
-              .on('click.customUX', '#customApply', () => {
-                const eff = String(html.find('#customEffect').val() ?? '').trim();
-                const raw = String(html.find('#customCost').val() ?? '');
-                const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
-                html.find('#customCost').val(cst);
+          $qualitiesList
+            .off('.customUX')
+            .on('keydown.customUX', '#customCost', (ev) => {
+              if (ev.key === 'Enter') ev.preventDefault();
+            })
+            .on('keypress.customUX', '#customCost', (ev) => {
+              if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
+            })
+            .on('paste.customUX', '#customCost', (ev) => {
+              ev.preventDefault();
+              const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
+              const digits = txt.replace(/\D+/g, '');
+              const el = ev.currentTarget;
+              const start = el.selectionStart ?? el.value.length;
+              const end = el.selectionEnd ?? el.value.length;
+              el.value = el.value.slice(0, start) + digits + el.value.slice(end);
+            })
+            .on('click.customUX', '#customApply', () => {
+              const eff = String(html.find('#customEffect').val() ?? '').trim();
+              const raw = String(html.find('#customCost').val() ?? '');
+              const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+              html.find('#customCost').val(cst);
 
-                html.data('customEffect', eff);
-                html.data('customCost', cst);
+              html.data('customEffect', eff);
+              html.data('customCost', cst);
 
-                const kind = html.find('input[name="itemType"]:checked').val();
-                renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-                updateCost();
-              });
-
-            const kind = html.find('input[name="itemType"]:checked').val();
-            renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-            updateCost();
-            return;
-          }
-
-          // show an empty list and no qualities when "none" is set
-          if (catKey === "none") {
-            currentQualities = [];
-            $qualitiesList.html("");
-            const kind = html.find('input[name="itemType"]:checked').val();
-            renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-            updateCost();
-            return;
-          }
-
-          const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
-          currentQualities = catList.filter(q => matchesAppliesTo(q, type));
-
-          if (!currentQualities.length) {
-            $qualitiesList.html("");
-            const kind = html.find('input[name="itemType"]:checked').val();
-            renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-            updateCost();
-            return;
-          }
-
-          const items = currentQualities.map((q, i) =>
-            `<div class="if-quality" data-idx="${i}" style="padding:4px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`
-          ).join("");
-          $qualitiesList.html(items);
-
-          wireSelectableList($qualitiesList, ".if-quality", {
-            onSelect: () => {
               const kind = html.find('input[name="itemType"]:checked').val();
-              renderPreview(
-                kind,
-                html.find('#templateList [data-selected="1"]').first(), {
-                  rerollIcon: true
-                }
-              );
+              renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
               updateCost();
-            }
-          });
-        };
+            });
 
-        const renderAttrs = (type) => {
-          if (type !== "weapon") return $attrInner.html("");
-          $attrInner.html(`
+          const kind = html.find('input[name="itemType"]:checked').val();
+          renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+          updateCost();
+          return;
+        }
+
+        // show an empty list and no qualities when "none" is set
+        if (catKey === "none") {
+          currentQualities = [];
+          $qualitiesList.html("");
+          const kind = html.find('input[name="itemType"]:checked').val();
+          renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+          updateCost();
+          return;
+        }
+
+        const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
+        currentQualities = catList.filter(q => matchesAppliesTo(q, type));
+
+        if (!currentQualities.length) {
+          $qualitiesList.html("");
+          const kind = html.find('input[name="itemType"]:checked').val();
+          renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+          updateCost();
+          return;
+        }
+
+        const items = currentQualities.map((q, i) =>
+          `<div class="if-quality" data-idx="${i}" style="padding:4px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`
+        ).join("");
+        $qualitiesList.html(items);
+
+        wireSelectableList($qualitiesList, ".if-quality", {
+          onSelect: () => {
+            const kind = html.find('input[name="itemType"]:checked').val();
+            renderPreview(
+              kind,
+              html.find('#templateList [data-selected="1"]').first(), {
+                rerollIcon: true
+              }
+            );
+            updateCost();
+          }
+        });
+      };
+
+      const renderAttrs = (type) => {
+        if (type !== "weapon") return $attrInner.html("");
+        $attrInner.html(`
             <label>Attr A:
               <select id="optAttrA" style="max-width:160px;">
                 <option value="MIG">MIG</option><option value="DEX">DEX</option>
@@ -1283,11 +1344,11 @@ import { dataLoader } from "./dataLoader.js";
               </select>
             </label>
           `);
-        };
+      };
 
-        const renderCustomize = (type) => {
-          if (type !== "weapon") return $customize.html(`<div style="opacity:0.8;">No Options</div>`);
-          $customize.html(`
+      const renderCustomize = (type) => {
+        if (type !== "weapon") return $customize.html(`<div style="opacity:0.8;">No Options</div>`);
+        $customize.html(`
             <style>
               #customizeArea label { display:flex; align-items:center; gap:4px; line-height:1; }
               #customizeArea input[type="checkbox"] { transform: scale(0.9); transform-origin: left center; margin:0 4px 0 0; }
@@ -1310,159 +1371,159 @@ import { dataLoader } from "./dataLoader.js";
               </label>
             </div>
           `);
-        };
+      };
 
-        function populateTemplates(kind) {
-          const data = kind === "armor" ? getArmorList(equipmentRoot) :
+      function populateTemplates(kind) {
+        const data = kind === "armor" ? getArmorList(equipmentRoot) :
           kind === "shield" ? getShieldList(equipmentRoot) :
           kind === "accessory" ? getAccessoryList(equipmentRoot) :
           getWeaponList(equipmentRoot);
-          renderTemplates(data);
-        }
+        renderTemplates(data);
+      }
 
-        function updateHandToggle(selectedEl) {
-          const kind = html.find('input[name="itemType"]:checked').val();
-          const $wrap = html.find("#handToggleWrap");
-          const $labelSpan = html.find("#handToggleLabel");
-          const $checkbox = html.find("#optToggleHand");
-          if (kind !== "weapon") return $wrap.hide();
+      function updateHandToggle(selectedEl) {
+        const kind = html.find('input[name="itemType"]:checked').val();
+        const $wrap = html.find("#handToggleWrap");
+        const $labelSpan = html.find("#handToggleLabel");
+        const $checkbox = html.find("#optToggleHand");
+        if (kind !== "weapon") return $wrap.hide();
 
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+        const idx = Number($sel.data("idx"));
+        const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-          const h = normHand(base?.hand); // "1" | "2" | null
-          const cat = String(base?.category ?? base?.cat ?? "").toLowerCase();
-          const restricted = new Set(["brawling", "dagger", "thrown"]);
+        const h = normHand(base?.hand); // "1" | "2" | null
+        const cat = String(base?.category ?? base?.cat ?? "").toLowerCase();
+        const restricted = new Set(["brawling", "dagger", "thrown"]);
 
-          // helper to style disabled fields
-          const setDisabled = (disabled, title = "") => {
+        // helper to style disabled fields
+        const setDisabled = (disabled, title = "") => {
           $checkbox.prop("disabled", disabled);
           if (disabled) $checkbox.prop("checked", false);
           $wrap.css({
-          opacity: disabled ? 0.5 : 1,
-          filter: disabled ? "grayscale(1)" : ""
-        });
+            opacity: disabled ? 0.5 : 1,
+            filter: disabled ? "grayscale(1)" : ""
+          });
           if (title) $wrap.attr("title", title);
-    else $wrap.removeAttr("title");
-  };
+          else $wrap.removeAttr("title");
+        };
 
-  if (h === "2") {
-    // Base is 2H → show "Make 1-handed" and allow it (no restriction)
-    $labelSpan.text("Make 1-handed");
-    $wrap.show();
-    setDisabled(false);
-  } else if (h === "1") {
-    // Base is 1H → show "Make 2-handed"; for certain categories this is not allowed
-    $labelSpan.text("Make 2-handed");
-    $wrap.show();
-    if (restricted.has(cat)) {
-      setDisabled(true, "This category cannot be made 2-handed");
-    } else {
-      setDisabled(false);
+        if (h === "2") {
+          // Base is 2H → show "Make 1-handed" and allow it (no restriction)
+          $labelSpan.text("Make 1-handed");
+          $wrap.show();
+          setDisabled(false);
+        } else if (h === "1") {
+          // Base is 1H → show "Make 2-handed"; for certain categories this is not allowed
+          $labelSpan.text("Make 2-handed");
+          $wrap.show();
+          if (restricted.has(cat)) {
+            setDisabled(true, "This category cannot be made 2-handed");
+          } else {
+            setDisabled(false);
+          }
+        } else {
+          $wrap.hide();
+        }
+      }
+
+      const updateForKind = (kind) => {
+        renderCustomize(kind);
+        renderAttrs(kind);
+        populateTemplates(kind);
+        renderQualities(kind);
+        renderPreview(kind, null);
+        if (kind === "weapon") updateHandToggle();
+        relayout();
+        updateCost();
+      };
+
+      const refreshPreviewFromUI = () => {
+        const kind = html.find('input[name="itemType"]:checked').val();
+        renderPreview(
+          kind,
+          html.find('#templateList [data-selected="1"]').first(), {
+            rerollIcon: false
+          }
+        );
+        updateCost();
+      };
+
+      $dlg.off('.ifPrev');
+      $dlg.on('change.ifPrev',
+        '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
+        refreshPreviewFromUI
+      );
+
+      $qualitiesSelect.on("change", () => {
+        const kind = html.find('input[name="itemType"]:checked').val();
+        renderQualities(kind);
+        renderPreview(
+          kind,
+          html.find('#templateList [data-selected="1"]').first(), {
+            rerollIcon: false
+          }
+        );
+        renderMaterials();
+        updateCost();
+      });
+
+      // Clickable preview image
+      html.off('click.ifIconPick');
+      html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        console.debug('[Item Forger] preview icon clicked');
+
+        const kind = html.find('input[name="itemType"]:checked').val();
+        const fromOverride = html.data('iconOverride');
+        const fromPreview = $('#if-preview-icon').attr('src');
+        const derivedDir = (fromOverride || fromPreview || "").includes("/") ?
+          String(fromOverride || fromPreview).replace(/\/[^/]*$/, "/") :
+          "/";
+        const startDir = html.data('lastIconDir') || derivedDir || "/";
+
+        try {
+          const fp = new FilePicker({
+            type: "image",
+            current: startDir,
+            callback: (path) => {
+              console.debug('[Item Forger] FilePicker selected:', path);
+              html.data('iconOverride', path);
+              try {
+                html.data('lastIconDir', String(path).replace(/\/[^/]*$/, "/"));
+              } catch {}
+              renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+            }
+          });
+          fp.render(true);
+        } catch (err) {
+          console.error('[Item Forger] FilePicker error:', err);
+          ui.notifications?.error('Could not open FilePicker (see console).');
+        }
+      });
+
+      html.on("change", 'input[name="itemType"]', (ev) => {
+        const kind = ev.currentTarget.value;
+        html.removeData('iconOverride');
+        updateForKind(kind);
+      });
+
+      updateForKind("weapon");
+      renderMaterials();
     }
-  } else {
-    $wrap.hide();
-  }
+  }, {
+    resizable: false
+  });
+
+  dlg.render(true);
 }
 
-        const updateForKind = (kind) => {
-          renderCustomize(kind);
-          renderAttrs(kind);
-          populateTemplates(kind);
-          renderQualities(kind);
-          renderPreview(kind, null);
-          if (kind === "weapon") updateHandToggle();
-          relayout();
-          updateCost();
-        };
-
-        const refreshPreviewFromUI = () => {
-          const kind = html.find('input[name="itemType"]:checked').val();
-          renderPreview(
-            kind,
-            html.find('#templateList [data-selected="1"]').first(), {
-              rerollIcon: false
-            }
-          );
-          updateCost();
-        };
-
-        $dlg.off('.ifPrev');
-        $dlg.on('change.ifPrev',
-          '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
-          refreshPreviewFromUI
-        );
-
-        $qualitiesSelect.on("change", () => {
-          const kind = html.find('input[name="itemType"]:checked').val();
-          renderQualities(kind);
-          renderPreview(
-            kind,
-            html.find('#templateList [data-selected="1"]').first(), {
-              rerollIcon: false
-            }
-          );
-          renderMaterials();
-          updateCost();
-        });
-
-        // Clickable preview image
-        html.off('click.ifIconPick');
-        html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-          console.debug('[Item Forger] preview icon clicked');
-
-          const kind = html.find('input[name="itemType"]:checked').val();
-          const fromOverride = html.data('iconOverride');
-          const fromPreview = $('#if-preview-icon').attr('src');
-          const derivedDir = (fromOverride || fromPreview || "").includes("/") ?
-            String(fromOverride || fromPreview).replace(/\/[^/]*$/, "/") :
-            "/";
-          const startDir = html.data('lastIconDir') || derivedDir || "/";
-
-          try {
-            const fp = new FilePicker({
-              type: "image",
-              current: startDir,
-              callback: (path) => {
-                console.debug('[Item Forger] FilePicker selected:', path);
-                html.data('iconOverride', path);
-                try {
-                  html.data('lastIconDir', String(path).replace(/\/[^/]*$/, "/"));
-                } catch {}
-                renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-              }
-            });
-            fp.render(true);
-          } catch (err) {
-            console.error('[Item Forger] FilePicker error:', err);
-            ui.notifications?.error('Could not open FilePicker (see console).');
-          }
-        });
-
-        html.on("change", 'input[name="itemType"]', (ev) => {
-          const kind = ev.currentTarget.value;
-          html.removeData('iconOverride');
-          updateForKind(kind);
-        });
-
-        updateForKind("weapon");
-        renderMaterials();
-      }
-    }, {
-      resizable: false
-    });
-
-    dlg.render(true);
+Hooks.on("lookfarShowItemForgeDialog", () => {
+  try {
+    openItemForgeDialog();
+  } catch (err) {
+    console.error("[Item Forger] failed to open:", err);
+    ui.notifications?.error("Item Forger: failed to open (see console).");
   }
-
-  Hooks.on("lookfarShowItemForgeDialog", () => {
-    try {
-      openItemForgeDialog();
-    } catch (err) {
-      console.error("[Item Forger] failed to open:", err);
-      ui.notifications?.error("Item Forger: failed to open (see console).");
-    }
-  });
+});
