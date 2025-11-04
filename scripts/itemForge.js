@@ -607,16 +607,14 @@ import { dataLoader } from "./dataLoader.js";
         html.data('ifMaterials', materials);
 
         // update cost when template changes
-        const updateCost = () => {
+        function updateCost() {
           const $val = html.find('#costValue');
           const $t = html.find('#templateList [data-selected="1"]').first();
           const ti = Number($t.data("idx"));
           const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-          const {
-            craft
-          } = getCurrentCosts(html, tmpl, currentQualities);
+          const { craft } = getCurrentCosts(html, tmpl, currentQualities);
           $val.text(craft);
-        };
+        }
 
         const getNameSafe = (r) => esc(getName(r));
         const getItemImage = (item) => {
@@ -677,7 +675,7 @@ import { dataLoader } from "./dataLoader.js";
         };
         const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
-        const renderPreview = (kind, selectedEl, opts = {}) => {
+        function renderPreview(kind, selectedEl, opts = {}) {
           const rerollIcon = !!opts.rerollIcon;
 
           // cache for auto-picked icons
@@ -1112,32 +1110,30 @@ import { dataLoader } from "./dataLoader.js";
             }
           });
 
-        const renderTemplates = (rows) => {
-          currentTemplates = Array.isArray(rows) ? rows : [];
-          if (!currentTemplates.length) {
-            $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
-            const kind = html.find('input[name="itemType"]:checked').val();
-            renderPreview(kind, null);
-            return;
-          }
-          const items = currentTemplates.map((r, i) =>
-            `<div class="if-template" data-idx="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
-          ).join("");
-          $templateList.html(items);
-          wireSelectableList($templateList, ".if-template", {
-            onSelect: (el) => {
-              updateHandToggle(el);
-              applyAttrDefaultsFromTemplate(el);
-              html.removeData('iconOverride');
+           function renderTemplates(rows) {
+              currentTemplates = Array.isArray(rows) ? rows : [];
+              if (!currentTemplates.length) {
+                $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
+                const kind = html.find('input[name="itemType"]:checked').val();
+                renderPreview(kind, null);
+                return;
+              }
+              const items = currentTemplates.map((r, i) =>
+                `<div class="if-template" data-idx="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
+              ).join("");
+              $templateList.html(items);
+              wireSelectableList($templateList, ".if-template", {
+                onSelect: (el) => {
+                  updateHandToggle(el);
+                  applyAttrDefaultsFromTemplate(el);
+                  html.removeData('iconOverride');
 
-              const kind = html.find('input[name="itemType"]:checked').val();
-              renderPreview(kind, el, {
-                rerollIcon: true
+                  const kind = html.find('input[name="itemType"]:checked').val();
+                  renderPreview(kind, el, { rerollIcon: true });
+                  updateCost();
+                }
               });
-              updateCost();
             }
-          });
-        };
 
         const renderQualities = (type) => {
           if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
@@ -1318,15 +1314,15 @@ import { dataLoader } from "./dataLoader.js";
           `);
         };
 
-        const populateTemplates = (kind) => {
+        function populateTemplates(kind) {
           const data = kind === "armor" ? getArmorList(equipmentRoot) :
-            kind === "shield" ? getShieldList(equipmentRoot) :
-            kind === "accessory" ? getAccessoryList(equipmentRoot) :
-            getWeaponList(equipmentRoot);
+          kind === "shield" ? getShieldList(equipmentRoot) :
+          kind === "accessory" ? getAccessoryList(equipmentRoot) :
+          getWeaponList(equipmentRoot);
           renderTemplates(data);
-        };
+        }
 
-        const updateHandToggle = (selectedEl) => {
+        function updateHandToggle(selectedEl) {
           const kind = html.find('input[name="itemType"]:checked').val();
           const $wrap = html.find("#handToggleWrap");
           const $labelSpan = html.find("#handToggleLabel");
@@ -1343,34 +1339,34 @@ import { dataLoader } from "./dataLoader.js";
 
           // helper to style disabled fields
           const setDisabled = (disabled, title = "") => {
-            $checkbox.prop("disabled", disabled);
-            if (disabled) $checkbox.prop("checked", false);
-            $wrap.css({
-              opacity: disabled ? 0.5 : 1,
-              filter: disabled ? "grayscale(1)" : ""
-            });
-            if (title) $wrap.attr("title", title);
-            else $wrap.removeAttr("title");
-          };
+          $checkbox.prop("disabled", disabled);
+          if (disabled) $checkbox.prop("checked", false);
+          $wrap.css({
+          opacity: disabled ? 0.5 : 1,
+          filter: disabled ? "grayscale(1)" : ""
+        });
+          if (title) $wrap.attr("title", title);
+    else $wrap.removeAttr("title");
+  };
 
-          if (h === "2") {
-            // Base is 2H → show "Make 1-handed" and allow it (no restriction)
-            $labelSpan.text("Make 1-handed");
-            $wrap.show();
-            setDisabled(false);
-          } else if (h === "1") {
-            // Base is 1H → show "Make 2-handed"; for certain categories this is not allowed
-            $labelSpan.text("Make 2-handed");
-            $wrap.show();
-            if (restricted.has(cat)) {
-              setDisabled(true, "This category cannot be made 2-handed");
-            } else {
-              setDisabled(false);
-            }
-          } else {
-            $wrap.hide();
-          }
-        };
+  if (h === "2") {
+    // Base is 2H → show "Make 1-handed" and allow it (no restriction)
+    $labelSpan.text("Make 1-handed");
+    $wrap.show();
+    setDisabled(false);
+  } else if (h === "1") {
+    // Base is 1H → show "Make 2-handed"; for certain categories this is not allowed
+    $labelSpan.text("Make 2-handed");
+    $wrap.show();
+    if (restricted.has(cat)) {
+      setDisabled(true, "This category cannot be made 2-handed");
+    } else {
+      setDisabled(false);
+    }
+  } else {
+    $wrap.hide();
+  }
+}
 
         const updateForKind = (kind) => {
           renderCustomize(kind);
