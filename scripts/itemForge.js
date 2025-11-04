@@ -1,7 +1,5 @@
 import { dataLoader } from "./dataLoader.js";
 
-(function registerItemForge() {
-
     // load equipment templates
     const getEquipmentRoot = () =>
       dataLoader?.equipmentData || dataLoader || {};
@@ -1468,5 +1466,3 @@ import { dataLoader } from "./dataLoader.js";
       ui.notifications?.error("Item Forger: failed to open (see console).");
     }
   });
-
-})();
