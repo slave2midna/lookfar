@@ -77,6 +77,14 @@ const getRequiredOriginKey = (html) => {
 
 // --- Item Helpers ------------------------------------------------------------ //
 
+// Read custom-quality value
+const readCustomQuality = (html) => {
+  const eff = String(html.find('#customEffect').val() ?? html.data('customEffect') ?? '').trim();
+  const raw = String(html.find('#customCost').val() ?? html.data('customCost') ?? '');
+  const cost = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+  return { eff, cost };
+};
+
 const getSelectedBase = (html, currentTemplates) => {
   const $sel = html.find('#templateList [data-selected="1"]').first();
   const idx = Number($sel.data("idx"));
@@ -1002,18 +1010,7 @@ function openItemForgeDialog() {
             `);
             return;
         }
-
-        // preview template, placeholder for future use
-        // $preview.html(`${style}
-              // <div id="if-preview-card">
-                // <img id="if-preview-icon" src="${icon}">
-                // <div id="if-preview-rows" class="if-muted">
-                  // <div class="if-row">Preview coming soon…</div>
-                // </div>
-              // </div>
-            // `);
-            // return;
-        // }
+      }
 
       // --- Hooks & Wiring ------------------------------------------------------------//
 
@@ -1058,14 +1055,6 @@ function openItemForgeDialog() {
         const needKey = getRequiredOriginKey(html); // e.g., "ardent"
         const hasReq = !needKey || materials.some(m => String(m.origin) === needKey);
         
-        // Read custom-quality values
-        const readCustomQuality = (html) => {
-          const eff = String(html.find('#customEffect').val() ?? html.data('customEffect') ?? '').trim();
-          const raw = String(html.find('#customCost').val() ?? html.data('customCost') ?? '');
-          const cost = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
-          return { eff, cost };
-        };
-
         // Reset hint to default text up front
         $materialsHint.text("Drag & drop Item documents here (max 5)");
 
