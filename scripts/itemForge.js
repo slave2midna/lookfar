@@ -71,8 +71,19 @@ import { dataLoader } from "./dataLoader.js";
 
     // resolve material origin value  
     const getTreasureOrigin = (doc) => {
-      const v = doc?.system?.origin?.value;
-      return String(v ?? "").trim().toLowerCase();
+    // start with the canonical field
+    let v = doc?.system?.origin?.value
+       ?? doc?.system?.origin
+       ?? doc?.system?.keywords?.origin
+       ?? doc?.system?.material?.origin
+       ?? doc?.origin
+       ?? "";
+
+    // unwrap common shapes (arrays/objects)
+    if (Array.isArray(v)) v = v.find(e => e != null) ?? "";
+    if (v && typeof v === "object") v = v.key ?? v.id ?? v.type ?? v.name ?? v.value ?? "";
+
+    return String(v).trim().toLowerCase();
     };
 
     // unwrap common shapes (arrays/objects)
