@@ -62,7 +62,7 @@
     { "id": "poison-immunity", "weaponName": "Bloodiron", "armorName": "Acidward", "shieldName": "Venomite", "accessoryName": "Rose", "cost": 1500, "description": "grants immunity to poison damage.", "appliesTo": ["weapon", "armor", "shield", "accessory"] },
 
     { "id": "omnishield", "weaponName": "Shielded", "armorName": "Orichalcum", "shieldName": "Omni", "accessoryName": "Studded", "cost": 2000, "description": "gives +1 to Defense & Magic Defense.", "appliesTo": ["weapon", "armor", "shield", "accessory"] },
-    { "id": "perfect-health", "weaponName": "Sanctified", "armorName": "Physician's", "shieldName": "", "accessoryName": "Angel's", "cost": 2000, "description": "grants immunity to all status effects.", "appliesTo": ["weapon", "armor", "shield", "accessory"] },
+    { "id": "perfect-health", "weaponName": "Sanctified", "armorName": "Physician's", "shieldName": "Crusader's", "accessoryName": "Angel's", "cost": 2000, "description": "grants immunity to all status effects.", "appliesTo": ["weapon", "armor", "shield", "accessory"] },
 
     { "id": "magical", "weaponName": "Magical", "cost": 100, "description": "targets Magic Defense instead of Defense.", "appliesTo": ["weapon"] },
     { "id": "beast-hunter", "weaponName": "Hunting", "cost": 300, "description": "deals 5 extra damage to beasts.", "appliesTo": ["weapon"] },
