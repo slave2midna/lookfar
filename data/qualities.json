@@ -102,7 +102,7 @@
     { "id": "hunter-humanoids-undead", "weaponName": "Gravebane", "cost": 500, "description": "deals 5 extra damage to humanoids and undead.", "appliesTo": ["weapon"] },
     { "id": "hunter-monsters-plants", "weaponName": "Vilethorn", "cost": 500, "description": "deals 5 extra damage to monsters and plants.", "appliesTo": ["weapon"] },
     { "id": "hunter-monsters-undead", "weaponName": "Shadowsteel", "cost": 500, "description": "deals 5 extra damage to monsters and undead.", "appliesTo": ["weapon"] },
-    { "id": "hunter-plants-undead", "weaponName": "Rotiron", "cost": 500, "description": "deals 5 extra damage to plants and undead.", "appliesTo": ["weapon"] ,
+    { "id": "hunter-plants-undead", "weaponName": "Rotiron", "cost": 500, "description": "deals 5 extra damage to plants and undead.", "appliesTo": ["weapon"] },
 
     { "id": "multi", "weaponName": "Geminisite", "cost": 1000, "description": "gives attacks with this weapon Multi(2).", "appliesTo": ["weapon"] },
     { "id": "inflict-slow", "weaponName": "Tarrynite", "cost": 1500, "description": "causes slow on hit.", "appliesTo": ["weapon"] },
