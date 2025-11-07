@@ -740,7 +740,7 @@ function openMaterialsMiniDialog() {
 
             // Players click to REQUEST removal (host decides)
             $img.on("click", () => {
-              sock?.executeAsGM?.(IF_MSG.MaterialsRemove, /*userId unused*/ null, { index: i });
+              sock?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
             });
 
             $materialsDrop.append($img);
@@ -769,7 +769,7 @@ function openMaterialsMiniDialog() {
           try {
             const data = JSON.parse(raw);
             if (!data?.uuid) return;
-            sock?.executeAsGM?.(IF_MSG.MaterialsAdd, /*userId unused*/ null, { uuid: data.uuid });
+            sock?.executeAsGM?.(IF_MSG.MaterialsAdd, { uuid: data.uuid });
           } catch (e) {
             console.error("[Item Forger] Mini drop parse failed:", e);
           }
