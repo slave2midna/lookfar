@@ -166,6 +166,7 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
     _materials = newList;
     sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
   });
+}
 
 // --- Cost Helpers ------------------------------------------------------------ //
 
