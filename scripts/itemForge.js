@@ -102,30 +102,26 @@ function ensureIFSocket() {
   });
 
   // Everyone: receive authoritative materials
-  sock.register(IF_MSG.MaterialsReplace, (payload) => {
-    _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
-    // Push into whichever dialog(s) are open on this client
-    try {
-      if (isForgeOpen()) {
-        const dlg = ui.windows[_forgeAppId];
-        const html = dlg?.element;
-        if (html?.length) {
-          html.data('ifMaterials', _materials);
-          html.find('#materialsDrop').trigger('repaint');
-        }
-      }
-      if (isMiniOpen()) {
-        const dlg = ui.windows[_miniAppId];
-        const html = dlg?.element;
-        if (html?.length) {
-          html.data('ifMaterials', _materials);
-          html.find('#materialsDrop').trigger('repaint');
-        }
-      }
-    } catch (e) {
-      console.warn("[Item Forger] MaterialsReplace repaint failed:", e);
+sock.register(IF_MSG.MaterialsReplace, (payload) => {
+  _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
+
+  try {
+    // Push into ANY open Item Forger window on this client
+    for (const [id, app] of Object.entries(ui.windows)) {
+      const html = app?.element;
+      if (!html?.length) continue;
+
+      // Only touch windows that have our materials drop zone
+      const $drop = html.find('#materialsDrop');
+      if (!$drop.length) continue;
+
+      html.data('ifMaterials', _materials);
+      $drop.trigger('repaint');
     }
-  });
+  } catch (e) {
+    console.warn("[Item Forger] MaterialsReplace repaint failed:", e);
+  }
+});
 
   // Player proposes ADD (host validates → updates → broadcasts)
   sock.register(IF_MSG.MaterialsAdd, async (payload, msg) => {
