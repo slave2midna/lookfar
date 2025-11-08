@@ -44,6 +44,18 @@ const normHand = (h) => {
   return null;
 };
 
+const getItemForgeVisibility = () => {
+  try {
+    // Expected values: "gmOnly" (default), "public"
+    return game.settings.get("lookfar", "itemForgeVisibility") || "gmOnly";
+  } catch {
+    // If settings aren't ready for some reason, fail safe to GM-only
+    return "gmOnly";
+  }
+};
+
+const isItemForgePublic = () => getItemForgeVisibility() === "public";
+
 // --- Collaboration (FU socket) ----------------------------------------------
 
 // Message names (unique within FU socket handler)
@@ -1804,13 +1816,23 @@ function openItemForgeDialog() {
 Hooks.on("lookfarShowItemForgeDialog", () => {
   try {
     ensureIFSocket();
+
+    const visibility = getItemForgeVisibility(); // "gmOnly" or "public"
+
     if (game.user.isGM) {
-      // GM opens full forge on their own client; players can open minis when they want
+      // GM always gets the full Item Forger dialog
+      openItemForgeDialog();
+      return;
+    }
+
+    if (visibility === "public") {
+      // World setting: Public → non-GMs get the full forge dialog UI
       openItemForgeDialog();
     } else {
-      // Non-GMs open the mini dialog when they trigger this hook themselves
+      // World setting: GM Only → non-GMs see only the mini materials dialog
       openMaterialsMiniDialog();
     }
+
   } catch (err) {
     console.error("[Item Forger] failed to open:", err);
     ui.notifications?.error("Item Forger: failed to open (see console).");
