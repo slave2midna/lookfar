@@ -44,6 +44,134 @@ const normHand = (h) => {
   return null;
 };
 
+// --- Collaboration (FU socket) ----------------------------------------------
+
+// Message names (unique within FU socket handler)
+const IF_MSG = {
+  HostOpen:          "lookfar:itemforge:host-open",
+  HostClose:         "lookfar:itemforge:host-close",
+  OpenMini:          "lookfar:itemforge:open-mini",
+  MaterialsRequest:  "lookfar:itemforge:materials-request",
+  MaterialsReplace:  "lookfar:itemforge:materials-replace",
+  MaterialsAdd:      "lookfar:itemforge:materials-add",
+  MaterialsRemove:   "lookfar:itemforge:materials-remove",
+};
+
+let _forgeAppId = null;      // window id for GM full forge dialog (on this client)
+let _miniAppId  = null;      // window id for player mini dialog (on this client)
+let _hostId     = null;      // userId of the authoritative GM host
+let _materials  = [];        // authoritative list (on host) OR mirrored list (on players)
+let _socketInit = false;
+
+function isForgeOpen() {
+  return !!(_forgeAppId && ui.windows[_forgeAppId]);
+}
+function isMiniOpen() {
+  return !!(_miniAppId && ui.windows[_miniAppId]);
+}
+
+function ensureIFSocket() {
+  if (_socketInit) return;
+  _socketInit = true;
+
+  const sock = game.projectfu?.socket;
+  if (!sock) {
+    console.warn("[Item Forger] FU socket helper not found; collaboration disabled.");
+    return;
+  }
+
+  // A GM has opened the full forge dialog and is now the host
+  sock.register(IF_MSG.HostOpen, (payload) => {
+    _hostId = payload?.hostId ?? null;
+    // If *this* GM is the host, immediately publish current materials to everyone
+    if (game.user.isGM && game.user.id === _hostId) {
+      sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
+    }
+  });
+
+  // Host is closing
+  sock.register(IF_MSG.HostClose, (payload) => {
+    if (_hostId === (payload?.hostId ?? null)) _hostId = null;
+  });
+
+  // A client (mini or fresh joiner) asks the host for the latest materials
+  sock.register(IF_MSG.MaterialsRequest, (_payload, msg) => {
+    if (game.user.isGM && game.user.id === _hostId) {
+      sock.executeForUsers(IF_MSG.MaterialsReplace, [msg.sender], { materials: _materials });
+    }
+  });
+
+  // Everyone: receive authoritative materials
+sock.register(IF_MSG.MaterialsReplace, (payload) => {
+  _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
+
+  try {
+    // Push into ANY open Item Forger window on this client
+    for (const [id, app] of Object.entries(ui.windows)) {
+      const html = app?.element;
+      if (!html?.length) continue;
+
+      // Only touch windows that have our materials drop zone
+      const $drop = html.find('#materialsDrop');
+      if (!$drop.length) continue;
+
+      html.data('ifMaterials', _materials);
+      $drop.trigger('repaint');
+    }
+  } catch (e) {
+    console.warn("[Item Forger] MaterialsReplace repaint failed:", e);
+  }
+});
+
+  // Player proposes ADD (host validates → updates → broadcasts)
+  sock.register(IF_MSG.MaterialsAdd, async (payload, msg) => {
+    if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
+    try {
+      const { uuid } = payload ?? {};
+      if (!uuid) return;
+      if (_materials.length >= 5) return;
+
+      const doc = await fromUuid(uuid);
+      if (!doc || doc.documentName !== "Item") return;
+      if (String(doc.type) !== "treasure") return;
+
+      const entry = {
+        uuid,
+        img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
+        name: doc.name,
+        cost: getTreasureCost(doc),
+        origin: getTreasureOrigin(doc),
+      };
+      _materials = [..._materials, entry].slice(0, 5);
+      sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
+    } catch (e) {
+      console.error("[Item Forger] MaterialsAdd failed:", e);
+    }
+  });
+
+  // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
+  sock.register(IF_MSG.MaterialsRemove, (payload) => {
+    if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
+    const { index, uuid } = payload ?? {};
+    if (!Array.isArray(_materials) || !_materials.length) return;
+
+    let newList = _materials;
+    if (Number.isInteger(index)) {
+      newList = _materials.filter((_m, i) => i !== index);
+    } else if (uuid) {
+      newList = _materials.filter(m => m.uuid !== uuid);
+    }
+    _materials = newList;
+    sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
+  });
+
+  // GM asks everyone to open their mini dialog
+  sock.register(IF_MSG.OpenMini, () => {
+    if (!game.user.isGM) openMaterialsMiniDialog();
+  });
+}
+
+
 // --- Cost Helpers ------------------------------------------------------------ //
 
 const asAttrKey = (s) => {
@@ -532,14 +660,149 @@ const content = `
 </div>
 `;
 
+// --- Mini Materials Dialog (players & observers) -----------------------------
+
+const contentMini = `
+<div id="if-body">
+  <form>
+    <fieldset style="margin:0 0 6px 0;">
+      <legend>Materials</legend>
+      <div id="materialsDrop" aria-label="Materials drop zone"
+           style="min-height:96px; border:1px dashed #999;
+                  display:flex; align-items:center; justify-content:center;
+                  gap:8px; padding:6px; box-sizing:border-box; user-select:none;">
+        <div id="materialsHint" style="opacity:0.6; font-size:12px;">
+          Drag & drop Treasure Items here (max 5)
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</div>
+`;
+
+function openMaterialsMiniDialog() {
+  ensureIFSocket();
+
+  // singleton mini on this client
+  if (isMiniOpen()) {
+    ui.windows[_miniAppId]?.bringToTop?.();
+    return;
+  }
+
+  const dlg = new Dialog({
+    title: "Item Forger — Materials",
+    content: contentMini,
+    buttons: {},
+    render: async (html) => {
+      const appId = Number(html.closest(".window-app").attr("data-appid"));
+      _miniAppId = appId;
+
+      const sock = game.projectfu?.socket;
+      html.data('ifMaterials', _materials || []);
+
+      const $dlg = html.closest(".window-app");
+      $dlg.css({ width: "420px" });
+      const $materialsDrop = html.find("#materialsDrop");
+      const $materialsHint = html.find("#materialsHint");
+
+      const relayout = () => {
+        const app2 = ui.windows[Number($dlg.attr("data-appid"))];
+        if (app2?.setPosition) {
+          app2.setPosition({ height: "auto" });
+          setTimeout(() => app2.setPosition({ height: "auto" }), 0);
+        }
+      };
+
+      const renderMaterialsMini = () => {
+        const list = html.data('ifMaterials') || [];
+        $materialsDrop.children('img[data-mat="1"]').remove();
+
+        if (!list.length) {
+          $materialsHint.text("Drag & drop Treasure Items here (max 5)").show();
+        } else {
+          $materialsHint.hide();
+          list.forEach((m, i) => {
+            const tip = [
+              m.name || "",
+              m.origin ? `Origin: ${m.origin}` : "",
+              Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
+            ].filter(Boolean).join(" • ");
+
+            const $img = $(`
+              <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+                   title="Click to request removal\n${esc(tip)}"
+                   style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">
+            `);
+
+            // Players click to REQUEST removal (host decides)
+            $img.on("click", () => {
+              sock?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
+            });
+
+            $materialsDrop.append($img);
+          });
+        }
+
+        // repaint hook for socket pushes
+        html.find('#materialsDrop').off('repaint').on('repaint', () => {
+          html.data('ifMaterials', _materials);
+          renderMaterialsMini();
+        });
+
+        relayout();
+      };
+
+      // Drag & drop to request ADD (host validates)
+      $materialsDrop
+        .on("dragover", (ev) => {
+          ev.preventDefault();
+          $materialsDrop.css("background", "rgba(65,105,225,0.08)");
+        })
+        .on("dragleave", () => $materialsDrop.css("background", ""))
+        .on("drop", async (ev) => {
+          ev.preventDefault();
+          $materialsDrop.css("background", "");
+          const dt = ev.originalEvent?.dataTransfer;
+          if (!dt) return;
+          const raw = dt.getData("text/plain");
+          if (!raw) return;
+          try {
+            const data = JSON.parse(raw);
+            if (!data?.uuid) return;
+            sock?.executeAsGM?.(IF_MSG.MaterialsAdd, { uuid: data.uuid });
+          } catch (e) {
+            console.error("[Item Forger] Mini drop parse failed:", e);
+          }
+        });
+
+      // Ask the host for the authoritative list immediately
+      if (_hostId)  sock?.executeAsUser?.(IF_MSG.MaterialsRequest, _hostId, {});
+      else if (game.users.activeGM?.id) sock?.executeAsUser?.(IF_MSG.MaterialsRequest, game.users.activeGM.id, {});
+
+      renderMaterialsMini();
+    },
+    close: () => { _miniAppId = null; }
+  }, { resizable: false });
+
+  dlg.render(true);
+}
+
+
 // Item Forger Dialog
 function openItemForgeDialog() {
+  ensureIFSocket();
+
+  // GM full dialog should be singleton on this client
+  if (isForgeOpen()) {
+    ui.windows[_forgeAppId]?.bringToTop?.();
+    return;
+  }
+
   const equipmentRoot = getEquipmentRoot();
   const qualitiesRoot = getQualitiesRoot();
 
   let currentTemplates = [];
   let currentQualities = [];
-  const materials = [];
 
   const dlg = new Dialog({
     title: "Item Forger",
@@ -556,15 +819,11 @@ function openItemForgeDialog() {
             const base = getSelectedBase(html, currentTemplates);
             if (!base) return ui.notifications.warn("Select a template first.");
 
-            if (!validateMaterialsOrigin(html, materials)) return;
+            const mats = html.data('ifMaterials') || [];
+            if (!validateMaterialsOrigin(html, mats)) return;
 
-            const itemData = buildItemData(kind, html, {
-              currentTemplates,
-              currentQualities
-            });
-            const created = await Item.create(itemData, {
-              renderSheet: true
-            });
+            const itemData = buildItemData(kind, html, { currentTemplates, currentQualities });
+            const created = await Item.create(itemData, { renderSheet: true });
             if (!created) throw new Error("Item creation failed.");
             ui.notifications.info(`${created.name} forged.`);
           } catch (err) {
@@ -576,49 +835,58 @@ function openItemForgeDialog() {
     },
     default: "forge",
     render: async (html) => {
+      const appId = Number(html.closest(".window-app").attr("data-appid"));
+      _forgeAppId = appId;
+
+      const sock = game.projectfu?.socket;
+
+      // Become/announce the host if you're a GM (authoritative copy lives here)
+      if (game.user.isGM) {
+        _hostId = game.user.id;
+        // Use our current in-memory list (might be empty on first open)
+        html.data('ifMaterials', _materials);
+        sock?.executeForEveryone?.(IF_MSG.HostOpen, { hostId: game.user.id });
+        // Immediately share the state
+        sock?.executeForEveryone?.(IF_MSG.MaterialsReplace, { materials: _materials });
+      } else {
+        // Non-GM shouldn't have the full dialog; (safety) mirror the list & bail
+        html.data('ifMaterials', _materials);
+      }
+
+      // --- your existing layout/preview/template/qualities wiring stays the same ---
+      // (Keep all of your original code here unchanged EXCEPT the Materials area)
+
+      // Grab handles you already use
       const $dlg = html.closest(".window-app");
-      const $wc = $dlg.find(".window-content");
-      $wc.css({
-        display: "block",
-        overflow: "visible"
-      });
-      $dlg.css({
-        width: "700px"
-      });
+      const $wc  = $dlg.find(".window-content");
+      $wc.css({ display: "block", overflow: "visible" });
+      $dlg.css({ width: "700px" });
 
       const relayout = () => {
         const app2 = ui.windows[Number($dlg.attr("data-appid"))];
         if (app2?.setPosition) {
-          app2.setPosition({
-            height: "auto"
-          });
-          setTimeout(() => app2.setPosition({
-            height: "auto"
-          }), 0);
+          app2.setPosition({ height: "auto" });
+          setTimeout(() => app2.setPosition({ height: "auto" }), 0);
         }
       };
       relayout();
 
-      const $templateList = html.find("#templateList");
-      const $qualitiesList = html.find("#qualitiesList");
+      const $templateList    = html.find("#templateList");
+      const $qualitiesList   = html.find("#qualitiesList");
       const $qualitiesSelect = html.find("#qualitiesCategory");
-      const $customize = html.find("#customizeArea");
-      const $attrInner = html.find("#attrInner");
-      const $materialsDrop = html.find("#materialsDrop");
-      const $materialsHint = html.find("#materialsHint");
-      const $preview = html.find("#itemPreviewLarge");
+      const $customize       = html.find("#customizeArea");
+      const $attrInner       = html.find("#attrInner");
+      const $materialsDrop   = html.find("#materialsDrop");
+      const $materialsHint   = html.find("#materialsHint");
+      const $preview         = html.find("#itemPreviewLarge");
 
-      html.data('ifMaterials', materials);
-
-      // update cost when template changes
+      // COST updater (unchanged)
       function updateCost() {
         const $val = html.find('#costValue');
-        const $t = html.find('#templateList [data-selected="1"]').first();
-        const ti = Number($t.data("idx"));
+        const $t   = html.find('#templateList [data-selected="1"]').first();
+        const ti   = Number($t.data("idx"));
         const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-        const {
-          craft
-        } = getCurrentCosts(html, tmpl, currentQualities);
+        const { craft } = getCurrentCosts(html, tmpl, currentQualities);
         $val.text(craft);
       }
 
@@ -1048,67 +1316,66 @@ function openItemForgeDialog() {
         if ($first.length) $first.trigger("click");
       };
 
+      // === Materials UI (GM authoritative editing) ===========================
       const renderMaterials = () => {
+        const mats  = html.data('ifMaterials') || [];
+        const needKey = getRequiredOriginKey(html);
+        const hasReq  = !needKey || mats.some(m => String(m.origin) === needKey);
 
-        const needKey = getRequiredOriginKey(html); // e.g., "ardent"
-        const hasReq = !needKey || materials.some(m => String(m.origin) === needKey);
-        
-        // Reset hint to default text up front
+        // Reset hint
         $materialsHint.text("Drag & drop Item documents here (max 5)");
-
-        // Rebuild thumbnails
+        // Clean and rebuild thumbnails
         $materialsDrop.children('img[data-mat="1"]').remove();
 
-        if (materials.length === 0) {
+        if (!mats.length) {
           if (needKey) $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
           $materialsHint.show();
         } else {
           $materialsHint.hide();
+          mats.forEach((m, i) => {
+            const tip = [ m.name || "", m.origin ? `Origin: ${m.origin}` : "", Number.isFinite(m.cost) ? `Cost: ${m.cost}` : "" ]
+              .filter(Boolean).join(" • ");
 
-          materials.forEach((m, i) => {
-            const tip = [
-              m.name ? m.name : "",
-              m.origin ? `Origin: ${m.origin}` : "",
-              Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
-            ].filter(Boolean).join(" • ");
+            const $img = $(`<img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+                title="Click to remove\n${esc(tip)}"
+                style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`);
 
-            const $img = $(
-              `<img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-              title="Click to remove\n${esc(tip)}"
-              style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`
-            );
-
+            // Only host GM can mutate, then broadcast
             $img.on("click", () => {
-              materials.splice(i, 1);
-              html.data('ifMaterials', materials);
-              renderMaterials();
-              updateCost();
+              if (!(game.user.isGM && game.user.id === _hostId)) return;
+              _materials = _materials.filter((_m, idx) => idx !== i);
+              html.data('ifMaterials', _materials);
+              game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
             });
 
             $materialsDrop.append($img);
           });
         }
 
-        // red border communicates material requirement
-        $materialsDrop.css({
-          borderColor: (!hasReq && needKey) ? "red" : "#999"
+        $materialsDrop.css({ borderColor: (!hasReq && needKey) ? "red" : "#999" });
+
+        // repaint hook (socket pushes call this)
+        html.find('#materialsDrop').off('repaint').on('repaint', () => {
+          html.data('ifMaterials', _materials);
+          renderMaterials();
+          updateCost();
         });
 
         relayout();
       };
 
+      // GM drag & drop adds directly (then broadcasts)
       $materialsDrop
         .on("dragover", (ev) => {
           ev.preventDefault();
           $materialsDrop.css("background", "rgba(65,105,225,0.08)");
         })
-        .on("dragleave", () => {
-          $materialsDrop.css("background", "");
-        })
+        .on("dragleave", () => $materialsDrop.css("background", ""))
         .on("drop", async (ev) => {
           ev.preventDefault();
           $materialsDrop.css("background", "");
-          const dt = ev.originalEvent?.dataTransfer;
+          if (!(game.user.isGM && game.user.id === _hostId)) return; // only host accepts
+          const dt  = ev.originalEvent?.dataTransfer;
           if (!dt) return;
           const raw = dt.getData("text/plain");
           if (!raw) return;
@@ -1118,36 +1385,25 @@ function openItemForgeDialog() {
             if (!data?.uuid) return;
 
             const doc = await fromUuid(data.uuid);
-            if (!doc || doc.documentName !== "Item") {
-              ui.notifications?.warn("Only Item documents can be dropped here.");
-              return;
-            }
+            if (!doc || doc.documentName !== "Item")  return ui.notifications?.warn("Only Item documents can be dropped here.");
+            if (String(doc.type) !== "treasure")      return ui.notifications?.warn("Only Treasure items can be used as materials.");
+            if (_materials.length >= 5)               return ui.notifications?.warn("You can only add up to 5 materials.");
 
-            // restrict treasure items
-            if (String(doc.type) !== "treasure") {
-              ui.notifications?.warn("Only Treasure items can be used as materials.");
-              return;
-            }
-
-            if (materials.length >= 5) {
-              ui.notifications?.warn("You can only add up to 5 materials.");
-              return;
-            }
-
-            // Extract origin + cost
-            const matCost = getTreasureCost(doc);
-            const matOrigin = getTreasureOrigin(doc);
-
-            materials.push({
+            const entry = {
               uuid: data.uuid,
-              img: getItemImage(doc),
+              img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
               name: doc.name,
-              cost: matCost,
-              origin: matOrigin
-            });
-            html.data('ifMaterials', materials);
+              cost: getTreasureCost(doc),
+              origin: getTreasureOrigin(doc)
+            };
+
+            _materials = [..._materials, entry].slice(0, 5);
+            html.data('ifMaterials', _materials);
             renderMaterials();
             updateCost();
+
+            // broadcast authoritative update
+            game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
           } catch (e) {
             console.error("[Item Forger] Drop parse failed:", e);
             ui.notifications?.error("Could not read dropped data.");
@@ -1498,19 +1754,47 @@ function openItemForgeDialog() {
 
       updateForKind("weapon");
       renderMaterials();
+
+      // Ask host for authoritative list if somehow we're not the host (safety)
+      if (!(game.user.isGM && game.user.id === _hostId)) {
+        const targetHost = _hostId || game.users.activeGM?.id;
+        if (targetHost) game.projectfu?.socket?.executeAsUser(IF_MSG.MaterialsRequest, targetHost, {});
+      }
+    },
+    close: async () => {
+      try {
+        if (game.user.isGM && game.user.id === _hostId) {
+          game.projectfu?.socket?.executeForEveryone(IF_MSG.HostClose, { hostId: game.user.id });
+        }
+      } finally {
+        _forgeAppId = null;
+      }
     }
-  }, {
-    resizable: false
-  });
+  }, { resizable: false });
+
+  // Non-GM safety: strip Forge button if they somehow open it
+  if (!game.user.isGM) {
+    dlg.data.buttons = {};
+    dlg.data.default = null;
+  }
 
   dlg.render(true);
 }
 
 Hooks.on("lookfarShowItemForgeDialog", () => {
   try {
-    openItemForgeDialog();
+    ensureIFSocket();
+    if (game.user.isGM) {
+      // GM opens full forge and asks everyone to open their mini
+      openItemForgeDialog();
+      game.projectfu?.socket?.executeForEveryone(IF_MSG.OpenMini, {});
+    } else {
+      // Players open only the mini
+      openMaterialsMiniDialog();
+    }
   } catch (err) {
     console.error("[Item Forger] failed to open:", err);
     ui.notifications?.error("Item Forger: failed to open (see console).");
   }
 });
+
