@@ -50,7 +50,6 @@ const normHand = (h) => {
 const IF_MSG = {
   HostOpen:          "lookfar:itemforge:host-open",
   HostClose:         "lookfar:itemforge:host-close",
-  OpenMini:          "lookfar:itemforge:open-mini",
   MaterialsRequest:  "lookfar:itemforge:materials-request",
   MaterialsReplace:  "lookfar:itemforge:materials-replace",
   MaterialsAdd:      "lookfar:itemforge:materials-add",
@@ -62,6 +61,7 @@ let _miniAppId  = null;      // window id for player mini dialog (on this client
 let _hostId     = null;      // userId of the authoritative GM host
 let _materials  = [];        // authoritative list (on host) OR mirrored list (on players)
 let _socketInit = false;
+let _requiredOriginKey = ""; // current origin requirement (from GM's quality selection)
 
 function isForgeOpen() {
   return !!(_forgeAppId && ui.windows[_forgeAppId]);
@@ -85,7 +85,7 @@ function ensureIFSocket() {
     _hostId = payload?.hostId ?? null;
     // If *this* GM is the host, immediately publish current materials to everyone
     if (game.user.isGM && game.user.id === _hostId) {
-      sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
+      sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
     }
   });
 
@@ -97,13 +97,14 @@ function ensureIFSocket() {
   // A client (mini or fresh joiner) asks the host for the latest materials
   sock.register(IF_MSG.MaterialsRequest, (_payload, msg) => {
     if (game.user.isGM && game.user.id === _hostId) {
-      sock.executeForUsers(IF_MSG.MaterialsReplace, [msg.sender], { materials: _materials });
+      sock.executeForUsers(IF_MSG.MaterialsReplace, [msg.sender], { materials: _materials, originReq: _requiredOriginKey });
     }
   });
 
   // Everyone: receive authoritative materials
 sock.register(IF_MSG.MaterialsReplace, (payload) => {
   _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
+  _requiredOriginKey = String(payload?.originReq || "").toLowerCase();
 
   try {
     // Push into ANY open Item Forger window on this client
@@ -116,6 +117,7 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
       if (!$drop.length) continue;
 
       html.data('ifMaterials', _materials);
+      html.data('ifRequiredOriginKey', _requiredOriginKey);
       $drop.trigger('repaint');
     }
   } catch (e) {
@@ -143,7 +145,7 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
         origin: getTreasureOrigin(doc),
       };
       _materials = [..._materials, entry].slice(0, 5);
-      sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
+      sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
     } catch (e) {
       console.error("[Item Forger] MaterialsAdd failed:", e);
     }
@@ -162,15 +164,9 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
       newList = _materials.filter(m => m.uuid !== uuid);
     }
     _materials = newList;
-    sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
-  });
-
-  // GM asks everyone to open their mini dialog
-  sock.register(IF_MSG.OpenMini, () => {
-    if (!game.user.isGM) openMaterialsMiniDialog();
+    sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
   });
 }
-
 
 // --- Cost Helpers ------------------------------------------------------------ //
 
@@ -699,6 +695,7 @@ function openMaterialsMiniDialog() {
 
       const sock = game.projectfu?.socket;
       html.data('ifMaterials', _materials || []);
+      html.data('ifRequiredOriginKey', _requiredOriginKey || "");
 
       const $dlg = html.closest(".window-app");
       $dlg.css({ width: "420px" });
@@ -714,43 +711,55 @@ function openMaterialsMiniDialog() {
       };
 
       const renderMaterialsMini = () => {
-        const list = html.data('ifMaterials') || [];
-        $materialsDrop.children('img[data-mat="1"]').remove();
+  const list    = html.data('ifMaterials') || [];
+  const needKey = String(html.data('ifRequiredOriginKey') || "").toLowerCase();
+  const hasReq  = !needKey || list.some(m => String(m.origin) === needKey);
 
-        if (!list.length) {
-          $materialsHint.text("Drag & drop Treasure Items here (max 5)").show();
-        } else {
-          $materialsHint.hide();
-          list.forEach((m, i) => {
-            const tip = [
-              m.name || "",
-              m.origin ? `Origin: ${m.origin}` : "",
-              Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
-            ].filter(Boolean).join(" • ");
+  $materialsDrop.children('img[data-mat="1"]').remove();
 
-            const $img = $(`
-              <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-                   title="Click to request removal\n${esc(tip)}"
-                   style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">
-            `);
+  if (!list.length) {
+    if (needKey) {
+      $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
+    } else {
+      $materialsHint.text("Drag & drop Treasure Items here (max 5)");
+    }
+    $materialsHint.show();
+  } else {
+    $materialsHint.hide();
+    list.forEach((m, i) => {
+      const tip = [
+        m.name || "",
+        m.origin ? `Origin: ${m.origin}` : "",
+        Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
+      ].filter(Boolean).join(" • ");
 
-            // Players click to REQUEST removal (host decides)
-            $img.on("click", () => {
-              sock?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
-            });
+      const $img = $(`
+        <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+             title="Click to request removal\n${esc(tip)}"
+             style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">
+      `);
 
-            $materialsDrop.append($img);
-          });
-        }
+      // Players click to REQUEST removal (host decides)
+      $img.on("click", () => {
+        sock?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
+      });
 
-        // repaint hook for socket pushes
-        html.find('#materialsDrop').off('repaint').on('repaint', () => {
-          html.data('ifMaterials', _materials);
-          renderMaterialsMini();
-        });
+      $materialsDrop.append($img);
+    });
+  }
 
-        relayout();
-      };
+  // Match main dialog: red border when requirement not satisfied
+  $materialsDrop.css({ borderColor: (!hasReq && needKey) ? "red" : "#999" });
+
+  // repaint hook for socket pushes
+  html.find('#materialsDrop').off('repaint').on('repaint', () => {
+    html.data('ifMaterials', _materials);
+    html.data('ifRequiredOriginKey', _requiredOriginKey);
+    renderMaterialsMini();
+  });
+
+  relayout();
+};
 
       // Drag & drop to request ADD (host validates)
       $materialsDrop
@@ -847,7 +856,7 @@ function openItemForgeDialog() {
         html.data('ifMaterials', _materials);
         sock?.executeForEveryone?.(IF_MSG.HostOpen, { hostId: game.user.id });
         // Immediately share the state
-        sock?.executeForEveryone?.(IF_MSG.MaterialsReplace, { materials: _materials });
+        sock?.executeForEveryone?.(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
       } else {
         // Non-GM shouldn't have the full dialog; (safety) mirror the list & bail
         html.data('ifMaterials', _materials);
@@ -1322,6 +1331,9 @@ function openItemForgeDialog() {
         const needKey = getRequiredOriginKey(html);
         const hasReq  = !needKey || mats.some(m => String(m.origin) === needKey);
 
+        _requiredOriginKey = needKey;
+        html.data('ifRequiredOriginKey', _requiredOriginKey);
+
         // Reset hint
         $materialsHint.text("Drag & drop Item documents here (max 5)");
         // Clean and rebuild thumbnails
@@ -1345,7 +1357,7 @@ function openItemForgeDialog() {
               if (!(game.user.isGM && game.user.id === _hostId)) return;
               _materials = _materials.filter((_m, idx) => idx !== i);
               html.data('ifMaterials', _materials);
-              game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
+              game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
             });
 
             $materialsDrop.append($img);
@@ -1403,7 +1415,7 @@ function openItemForgeDialog() {
             updateCost();
 
             // broadcast authoritative update
-            game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials });
+            game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
           } catch (e) {
             console.error("[Item Forger] Drop parse failed:", e);
             ui.notifications?.error("Could not read dropped data.");
@@ -1709,6 +1721,14 @@ function openItemForgeDialog() {
         );
         renderMaterials();
         updateCost();
+
+        // Broadcast new origin requirement so minis can update border/hint
+        if (game.user.isGM && game.user.id === _hostId) {
+          game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+            materials: _materials,
+            originReq: _requiredOriginKey
+          });
+        }
       });
 
       // Clickable preview image
@@ -1785,11 +1805,10 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
   try {
     ensureIFSocket();
     if (game.user.isGM) {
-      // GM opens full forge and asks everyone to open their mini
+      // GM opens full forge on their own client; players can open minis when they want
       openItemForgeDialog();
-      game.projectfu?.socket?.executeForEveryone(IF_MSG.OpenMini, {});
     } else {
-      // Players open only the mini
+      // Non-GMs open the mini dialog when they trigger this hook themselves
       openMaterialsMiniDialog();
     }
   } catch (err) {
@@ -1797,4 +1816,3 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
     ui.notifications?.error("Item Forger: failed to open (see console).");
   }
 });
-
