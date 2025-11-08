@@ -744,7 +744,11 @@ function openMaterialsMiniDialog() {
         }
 
         // repaint hook for socket pushes
-        html.find('#materialsDrop').off('repaint').on('repaint', renderMaterialsMini);
+        html.find('#materialsDrop').off('repaint').on('repaint', () => {
+          html.data('ifMaterials', _materials);
+          renderMaterialsMini();
+        });
+
         relayout();
       };
 
