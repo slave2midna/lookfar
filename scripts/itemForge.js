@@ -348,8 +348,12 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
 
   // Output seperate cost values
   const worth = Math.max(0, base + qcost + custom); // saves to crafted item
-  let craft = Math.max(0, worth - matTotal); // shows in dialog
-  if (html.find('#optFee').is(':checked')) {
+  let craft = Math.max(0, worth - matTotal);        // shows in dialog
+
+  // Apply a 10% fee by default, unless "No Fee" is checked.
+  // Fee is applied after all surcharges and materials, rounded down.
+  const noFee = html.find('#optFee').is(':checked');
+  if (!noFee) {
     craft = Math.floor(craft * 1.10);
   }
 
@@ -357,7 +361,6 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
     worth,
     craft
   };
-};
 
 // Playtest damage: +2 damage per full 1000 worth (no fee)
 const getVariantDamageBonus = (worth) => {
@@ -697,7 +700,7 @@ const content = `
         <fieldset>
           <legend>Cost</legend>
           <div id="costRow"
-               style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:23px;">
+               style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:24px;">
             <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
             <span id="costValue"
                   style="display:inline-block; width:4ch; text-align:left;
