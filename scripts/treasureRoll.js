@@ -1,6 +1,8 @@
 import { dataLoader } from "./dataLoader.js";
 import { cacheManager } from "./cacheManager.js";
 
+let _treasureGenDialog = null;
+
 // Random Generation Utility
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -747,6 +749,15 @@ Hooks.once("renderDialog", (_app, html) => {
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
   (async () => {
+
+	// --- Singleton guard for the Generator dialog
+    if (!rerollConfig) {
+        if (_treasureGenDialog && _treasureGenDialog.rendered) {
+          _treasureGenDialog.bringToTop();
+          return;
+        }
+      }
+	  
     // Keywords 
     const { origin: originKeywords, nature: natureKeywords, detail: detailKeywords, taste: tasteKeywords } = dataLoader.keywordData;
 
@@ -996,6 +1007,9 @@ Hooks.once("ready", () => {
         });
       }
     }
+  },
+  close: () => {
+    _treasureGenDialog = null;
   }
 });
 
