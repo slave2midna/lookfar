@@ -1927,55 +1927,54 @@ $qualitiesList.html(items);
       }
 
       function updatePlusOneToggle(selectedEl) {
-        const kind = html.find('input[name="itemType"]:checked').val();
-        const $cb = html.find('#optPlusOne');
-        const $label = $cb.closest('label');
+  const kind = html.find('input[name="itemType"]:checked').val();
+  const $cb = html.find('#optPlusOne');
+  const $label = $cb.closest('label');
 
-        // If this client is a locked player, always keep this disabled & greyed out
-        if (!game.user.isGM && lockControlsForPlayer) {
-          $cb.prop('checked', false)
-             .prop('disabled', true);
-          $label
-            .attr('title', 'Only the GM can modify this option.')
-            .css({ opacity: 0.5, filter: 'grayscale(1)' });
-          return;
-        }
+  // If this client is a locked player, keep current checked state but disable & grey it out
+  if (!game.user.isGM && lockControlsForPlayer) {
+    $cb.prop('disabled', true);
+    $label
+      .attr('title', 'Only the GM can modify this option.')
+      .css({ opacity: 0.5, filter: 'grayscale(1)' });
+    return;
+  }
 
-        // Non-weapons: just reset to normal
-        if (kind !== "weapon") {
-          $cb.prop('disabled', false);
-          $label.css({ opacity: 1, filter: "" }).attr('title', '');
-          return;
-        }
+  // Non-weapons: just reset to normal
+  if (kind !== "weapon") {
+    $cb.prop('disabled', false);
+    $label.css({ opacity: 1, filter: "" }).attr('title', '');
+    return;
+  }
 
-        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-        const idx = Number($sel.data("idx"));
-        const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx = Number($sel.data("idx"));
+  const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-        if (!base) {
-          // No template selected → reset
-          $cb.prop('disabled', false);
-          $label.css({ opacity: 1, filter: "" }).attr('title', '');
-          return;
-        }
+  if (!base) {
+    // No template selected → reset
+    $cb.prop('disabled', false);
+    $label.css({ opacity: 1, filter: "" }).attr('title', '');
+    return;
+  }
 
-        const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
-        const hasBasePlusOne = baseAcc >= 1; // treat any >=1 as "already has +1"
+  const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
+  const hasBasePlusOne = baseAcc >= 1; // treat any >=1 as "already has +1"
 
-        if (hasBasePlusOne) {
-          // Hard-disable the toggle and grey it out
-          $cb.prop('checked', false).prop('disabled', true);
-          $label
-            .attr('title', 'This weapon already has +1 Accuracy from its base profile.')
-            .css({ opacity: 0.5, filter: 'grayscale(1)' });
-        } else {
-          // Make sure it's usable and visually normal
-          $cb.prop('disabled', false);
-          $label
-            .attr('title', '')
-            .css({ opacity: 1, filter: '' });
-        }
-      }
+  if (hasBasePlusOne) {
+    // Hard-disable the toggle and grey it out
+    $cb.prop('checked', false).prop('disabled', true);
+    $label
+      .attr('title', 'This weapon already has +1 Accuracy from its base profile.')
+      .css({ opacity: 0.5, filter: 'grayscale(1)' });
+  } else {
+    // Make sure it's usable and visually normal
+    $cb.prop('disabled', false);
+    $label
+      .attr('title', '')
+      .css({ opacity: 1, filter: '' });
+  }
+}
 
       const updateForKind = (kind, state = null) => {
   renderCustomize(kind);
