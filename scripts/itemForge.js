@@ -1148,7 +1148,6 @@ function openItemForgeDialog() {
 
         const override   = html.data('iconOverride');
         const savedPath  = html.data('iconPath');
-        const isHostGM   = game.user.isGM && game.user.id === _hostId;
 
         const getKindIcon = (k) => ({
           weapon: "icons/svg/sword.svg",
@@ -1166,27 +1165,32 @@ function openItemForgeDialog() {
         let icon = getKindIcon(kind);
 
         if (override) {
-          // GM-chosen custom icon
-          icon = override;
-          html.data('iconPath', icon);
-        } else if (savedPath) {
-          // Path that came from GM via socket
-          icon = savedPath;
-        } else if (isHostGM && base) {
-          // Host GM picks a random icon once for this base+kind
-          if (!rerollIcon && iconMap[cacheKey]) {
-            icon = iconMap[cacheKey];
-          } else {
-            try {
-              const pick = dataLoader.getRandomIconFor(kind, base);
-              icon = pick || icon;
-            } catch (e) {
-              console.warn("[Item Forger] preview icon pick failed:", e);
-            }
-            iconMap[cacheKey] = icon;
-          }
-          html.data('iconPath', icon);
-        }
+  // GM-chosen custom icon (always authoritative)
+  icon = override;
+  html.data('iconPath', icon);
+
+} else if (savedPath) {
+  // Path that came from ANY client via socket or previous roll
+  // Always respected unless a GM override is present.
+  icon = savedPath;
+
+} else if (base && (!restrictInputs || isHostGM)) {
+  // In collaborative mode (restrictInputs === false), ANY user can roll
+  // a random icon when interacting with the forge (last-touch wins).
+  // In restricted mode, only the host GM may do this.
+  if (!rerollIcon && iconMap[cacheKey]) {
+    icon = iconMap[cacheKey];
+  } else {
+    try {
+      const pick = dataLoader.getRandomIconFor(kind, base);
+      icon = pick || icon;
+    } catch (e) {
+      console.warn("[Item Forger] preview icon pick failed:", e);
+    }
+    iconMap[cacheKey] = icon;
+  }
+  html.data('iconPath', icon);
+}
 
         try {
           const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
@@ -1660,8 +1664,10 @@ $templateList.html(items);
     applyAttrDefaultsFromTemplate(el);
     html.removeData('iconOverride');
 
-    // Only the host GM is allowed to roll a new random icon
-    if (game.user.isGM && game.user.id === _hostId) {
+    // Clear any previous auto-picked icon so we can roll a new one:
+    // - In collab mode (restrictInputs === false), ANY user can do this.
+    // - In restricted mode, only the host GM may do it.
+    if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
       html.removeData('iconPath');
     }
 
