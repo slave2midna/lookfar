@@ -46,7 +46,7 @@ const normHand = (h) => {
 
 // --- Setting Helpers ----------------------------------------------
 
-// Item Forge visibility settings
+// Item Forge visibility
 const getItemForgeVisibility = () => {
   try {
     return game.settings.get("lookfar", "itemForgeVisibility") || "gmOnly";
@@ -65,7 +65,7 @@ const areForgeInputsGmOnly = () => {
   }
 };
 
-// Playtest damage rules toggle
+// Playtest damage rules
 const useVariantDamageRules = () => {
   try {
     return !!game.settings.get("lookfar", "useVariantDamageRules");
@@ -114,7 +114,6 @@ function ensureIFSocket() {
   // A GM has opened the full forge dialog and is now the host
   sock.register(IF_MSG.HostOpen, (payload) => {
     _hostId = payload?.hostId ?? null;
-    // If *this* GM is the host, immediately publish current materials to everyone
     if (game.user.isGM && game.user.id === _hostId) {
       sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
     }
@@ -361,6 +360,7 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
     worth,
     craft
   };
+};
 
 // Playtest damage: +2 damage per full 1000 worth (no fee)
 const getVariantDamageBonus = (worth) => {
