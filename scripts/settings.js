@@ -10,7 +10,31 @@ export const LookfarSettings = {
         public: game.i18n.localize("LOOKFAR.Settings.ResultVisibility.Choices.Public"),
         gmOnly: game.i18n.localize("LOOKFAR.Settings.ResultVisibility.Choices.GMOnly")
       },
-      default: "public"
+      default: "public",
+      requiresReload: true
+    });
+
+    game.settings.register("lookfar", "itemForgeVisibility", {
+      name: "Item Forge Visibility",
+      hint: "Choose whether the item forge dialog options are public or GM only.",
+      scope: "world",
+      config: true,
+      type: String,
+      choices: {
+        public: "Public",
+        gmOnly: "GM Only"
+      },
+      default: "gmOnly",
+      requiresReload: true
+    });
+
+    game.settings.register("lookfar", "itemForgeRestrictInputs", {
+      name: "Restrict Item Forge Inputs",
+      hint: "When enabled, only GMs can change Item Forger options.",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false
     });
 
     game.settings.register("lookfar", "enableKeywords", {
@@ -151,3 +175,7 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
+
+
+
