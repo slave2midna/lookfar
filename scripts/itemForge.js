@@ -2045,9 +2045,11 @@ html.find('#optAttrA').val(state.attrA || 'MIG');
 html.find('#optAttrB').val(state.attrB || 'MIG');
 html.find('#optFee').prop('checked', !!state.fee);
 
-    // Custom quality persistence
+    if (kind === "weapon") {
+      updatePlusOneToggle();  // re-enforce base-accuracy rule after applying state
+    }
     if (typeof state.customEffect === "string") {
-      html.data('customEffect', state.customEffect);
+      html.data('customEffect', state.customEffect); // Custom quality persistence
     }
     if (typeof state.customCost !== "undefined") {
       html.data('customCost', toInt(state.customCost));
