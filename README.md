@@ -10,13 +10,13 @@ Please note that licensed Fabula Ultima content is not provided with this system
 
 | Features               |                                                                                                                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Travel Roll Helper** | Adds a travel button to tools UI for Gamemasters to perform Travel Checks, generate dangers and discoveries. Includes a popup with suggestions for improv, located by project FU toolbar. |
+| **Travel Roll Helper** | Adds a travel button to tools UI for Users and Gamemasters to perform Travel Checks, generate dangers and discoveries. Includes a popup with suggestions for improv, located by project FU toolbar. |
 | **Treasure Generator** | Adds a treasure button to tools UI for Gamemasters to generate loot based on party level and reward budget. Loot generated can be kept as items in foundry to be given to players. |
-| **_Customizable Settings_** | Allows GMs to adjust settings like group level and travel roll visibility for group participation in Travel Rolls. |
-| **_Wayfarer Skills_**      | Influences dice rolls for travel checks, based on character traits. Enables text entry to credit Wayfarers in game, highlighting their importance. |
+| **Custom Item Forger** | Adds an item forger the tools UI for Gamemasters and Users to collaborate and build custom items based on the core and playtest rules. Settings can be changed to restrict this function. |
 
-You can call the travel Roll Helper via: `game.lookfar.showTravelCheckDialog();`
+You can call the travel Check Helper via: `game.lookfar.showTravelCheckDialog();`
 You can call the treasure Roll Helper via: `game.lookfar.showTreasureRollDialog();`
+You can call the item forge Helper via: `game.lookfar.showItemForgerDialog();`
 
 **Manifest URL:** `https://github.com//slave2midna/lookfar/releases/latest/download/module.json`
 
@@ -32,3 +32,4 @@ Major thanks to the following contributors:
 
 - **Design Feedback and CSS Improvements**: Various design improvements and feedback provided by the amazing [spyrella](https://github.com/spyrella).
 - **Original Creator and Module Dev**: Original Lookfar GM Assistant tool created by [why Cookie Rocket](https://github.com/infrastructureaxolotl).
+- **Special Thanks**: Special thanks to [Unarekin](https://github.com/Unarekin), [Shourn](https://github.com/Shourn), [Lamegel](https://github.com/lamegal), and [Elemental-Re](https://github.com/Element-Re) for their support with the API and Translations. 
