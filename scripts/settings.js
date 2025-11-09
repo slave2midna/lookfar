@@ -28,6 +28,15 @@ export const LookfarSettings = {
       requiresReload: true
     });
 
+    game.settings.register("lookfar", "itemForgeRestrictInputsToGM", {
+      name: "Restrict Item Forge Inputs to GM Only",
+      hint: "When enabled, only GMs can change Item Forger options. Players can still add/remove materials.",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false
+    });
+
     game.settings.register("lookfar", "enableKeywords", {
       name: game.i18n.localize("LOOKFAR.Settings.EnableKeywords.Name"),
       hint: game.i18n.localize("LOOKFAR.Settings.EnableKeywords.Hint"),
@@ -166,4 +175,5 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
 
