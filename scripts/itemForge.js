@@ -1191,13 +1191,13 @@ function openItemForgeDialog() {
   /* the badge that overlaps the icon (uses your system class + positioning) */
   .if-badge {
     position: absolute;
-    right: -2px;
-    bottom: -2px;
+    left: -2px;
+    top: -2px;
     z-index: 2;
 
     transform: scale(0.9);
     pointer-events: none; /* avoid accidental clicks */
-  }
+ }
 
   #if-preview-rows {
     display: flex;
