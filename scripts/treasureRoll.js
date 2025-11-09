@@ -101,7 +101,10 @@ function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamage
     nameParts = [];
     value = base.value;
 
-    hasPlusOne = Math.random() < 0.5;
+    const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
+    const canPlusOne = baseAcc !== 1; // accuracy 1 weapons can’t be +1
+
+    hasPlusOne = canPlusOne && (Math.random() < 0.5);
     appliedElement = Math.random() < 0.5 ? getRandom(elements) : null;
     isMaster = useVariantDamageRules ? false : (Math.random() < 0.5);
     const q = Math.random() < 0.5 ? getRandom(availableQualities) : null;
@@ -113,7 +116,6 @@ function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamage
     if (isMaster && !useVariantDamageRules) { nameParts.push("Master"); value += 200; }
 
   } while (!hasPlusOne && quality === "None" && !appliedElement && !(isMaster && !useVariantDamageRules));
-
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
@@ -489,6 +491,10 @@ async function renderTreasureResultDialog(items, budget, config) {
   const prefix = (data.isMaster && !variantEnabled)
     ? `A masterwork ${baseWeapon?.category || "unknown"} weapon`
     : `A ${baseWeapon?.category || "unknown"} weapon`
+
+  // Handle +1 accuracy variants
+  const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
+  const plusOneBonus = (data.hasPlusOne && baseAcc !== 1) ? 1 : 0;	
 
   itemData = {
     name: data.name,
