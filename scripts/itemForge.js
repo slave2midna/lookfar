@@ -349,7 +349,9 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
   // Output seperate cost values
   const worth = Math.max(0, base + qcost + custom); // saves to crafted item
   let craft = Math.max(0, worth - matTotal); // shows in dialog
-  if (html.find('#optFee').is(':checked')) craft = Math.ceil(craft * 1.10);
+  if (html.find('#optFee').is(':checked')) {
+    craft = Math.floor(craft * 1.10);
+  }
 
   return {
     worth,
@@ -695,7 +697,7 @@ const content = `
         <fieldset>
           <legend>Cost</legend>
           <div id="costRow"
-               style="font-size:14px; line-height:1; display:inline-flex; align-items:center;">
+               style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:22px;">
             <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
             <span id="costValue"
                   style="display:inline-block; width:6ch; text-align:left;
@@ -703,7 +705,7 @@ const content = `
                          font-feature-settings:'tnum';">0</span>
             <label style="display:inline-flex; align-items:center; font-size:14px; white-space:nowrap;">
               <input type="checkbox" id="optFee" style="margin-right:4px;">
-              <span>Fee?</span>
+              <span>Add Fee</span>
             </label>
           </div>
         </fieldset>
