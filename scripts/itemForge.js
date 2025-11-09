@@ -700,7 +700,7 @@ const content = `
                style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:22px;">
             <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
             <span id="costValue"
-                  style="display:inline-block; width:6ch; text-align:left;
+                  style="display:inline-block; width:4ch; text-align:left;
                          font-variant-numeric: tabular-nums;
                          font-feature-settings:'tnum';">0</span>
             <label style="display:inline-flex; align-items:center; font-size:14px; white-space:nowrap;">
