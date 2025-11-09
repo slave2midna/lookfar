@@ -1027,6 +1027,8 @@ function openItemForgeDialog() {
           ? toInt($customCost.val())
           : toInt(html.data('customCost') ?? 0);
 
+        const iconPath = html.data('iconPath') || "";
+
         return {
           kind,
           templateIdx,
@@ -1040,7 +1042,8 @@ function openItemForgeDialog() {
           attrB,
           fee,
           customEffect,
-          customCost
+          customCost,
+          iconPath
         };
       };
 
@@ -1128,45 +1131,55 @@ function openItemForgeDialog() {
       function renderPreview(kind, selectedEl, opts = {}) {
         const rerollIcon = !!opts.rerollIcon;
 
-        // cache for auto-picked icons
+        // cache for auto-picked icons (GM only)
         let iconMap = html.data('autoIconMap');
         if (!iconMap) {
           iconMap = {};
           html.data('autoIconMap', iconMap);
         }
 
-        // override icon with user pick
-        const override = html.data('iconOverride');
+        const override   = html.data('iconOverride');
+        const savedPath  = html.data('iconPath');
+        const isHostGM   = game.user.isGM && game.user.id === _hostId;
+
         const getKindIcon = (k) => ({
           weapon: "icons/svg/sword.svg",
           shield: "icons/svg/shield.svg",
           armor: "icons/svg/statue.svg",
           accessory: "icons/svg/stoned.svg"
-        } [k] || "icons/svg/mystery-man.svg");
+        }[k] || "icons/svg/mystery-man.svg");
 
         const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-        const idx = Number($sel.data("idx"));
+        const idx  = Number($sel.data("idx"));
         const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
-        const baseId = base?.id ?? base?._id ?? getName(base);
+        const baseId   = base?.id ?? base?._id ?? getName(base);
         const cacheKey = `${kind}:${String(baseId)}`;
 
         let icon = getKindIcon(kind);
 
         if (override) {
+          // GM-chosen custom icon
           icon = override;
-        } else {
+          html.data('iconPath', icon);
+        } else if (savedPath) {
+          // Path that came from GM via socket
+          icon = savedPath;
+        } else if (isHostGM && base) {
+          // Host GM picks a random icon once for this base+kind
           if (!rerollIcon && iconMap[cacheKey]) {
             icon = iconMap[cacheKey];
           } else {
             try {
-              const pick = base ? dataLoader.getRandomIconFor(kind, base) : null;
+              const pick = dataLoader.getRandomIconFor(kind, base);
               icon = pick || icon;
             } catch (e) {
               console.warn("[Item Forger] preview icon pick failed:", e);
             }
             iconMap[cacheKey] = icon;
           }
+          html.data('iconPath', icon);
         }
+
         try {
           const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
           html.data('lastIconDir', dir);
@@ -1635,9 +1648,10 @@ $templateList.html(items);
   initialIndex,
   onSelect: (el) => {
     updateHandToggle(el);
-    updatePlusOneToggle(el);          // NEW
+    updatePlusOneToggle(el);
     applyAttrDefaultsFromTemplate(el);
     html.removeData('iconOverride');
+    html.removeData('iconPath'); 
 
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, el, { rerollIcon: true });
@@ -1993,13 +2007,9 @@ $qualitiesList.html(items);
   applyLockState();
 };
 
-        // Cosmetic: disable "clickable" cursor on preview icon for locked users
+        // Disable "clickable" cursor on preview icon for non-GM users.
         const $icon = html.find('#if-preview-icon');
-        if (lockControlsForPlayer) {
-          $icon.css('cursor', 'default');
-        } else {
-          $icon.css('cursor', 'pointer');
-        }
+        $icon.css('cursor', game.user.isGM ? 'pointer' : 'default');
 
       const refreshPreviewFromUI = () => {
         const kind = html.find('input[name="itemType"]:checked').val();
@@ -2009,7 +2019,7 @@ $qualitiesList.html(items);
           { rerollIcon: false }
         );
         updateCost();
-        broadcastForgeState(); // NEW: sync all basic UI toggles
+        broadcastForgeState();
       };
 
       // ------------- SOCKET-DRIVEN UI STATE -------------------
@@ -2026,6 +2036,15 @@ $qualitiesList.html(items);
     // Ensure the category select matches first, so renderQualities uses it
     if (state.qualitiesCategory) {
       $qualitiesSelect.val(state.qualitiesCategory);
+    }
+
+    // Adopt the GM's chosen iconPath (random or custom)
+    if (state.iconPath) {
+      html.data('iconPath', state.iconPath);
+      if (!game.user.isGM) {
+        // Players should never keep their own override
+        html.removeData('iconOverride');
+      }
     }
 
     // Build customize/attrs/templates/qualities with the given state
@@ -2117,7 +2136,7 @@ $dlg.on('change.ifPrev',
       // Clickable preview image
       html.off('click.ifIconPick');
 html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
-  if (lockControlsForPlayer) return;
+  if (!game.user.isGM) return; 
 
   ev.preventDefault();
   ev.stopPropagation();
@@ -2142,6 +2161,7 @@ html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
                 html.data('lastIconDir', String(path).replace(/\/[^/]*$/, "/"));
               } catch {}
               renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+              broadcastForgeState();
             }
           });
           fp.render(true);
