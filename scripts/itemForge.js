@@ -46,7 +46,7 @@ const normHand = (h) => {
 
 // --- Setting Helpers ----------------------------------------------
 
-// Item Forge visibility settings
+// Item Forge visibility
 const getItemForgeVisibility = () => {
   try {
     return game.settings.get("lookfar", "itemForgeVisibility") || "gmOnly";
@@ -65,7 +65,7 @@ const areForgeInputsGmOnly = () => {
   }
 };
 
-// Playtest damage rules toggle
+// Playtest damage rules
 const useVariantDamageRules = () => {
   try {
     return !!game.settings.get("lookfar", "useVariantDamageRules");
@@ -114,7 +114,6 @@ function ensureIFSocket() {
   // A GM has opened the full forge dialog and is now the host
   sock.register(IF_MSG.HostOpen, (payload) => {
     _hostId = payload?.hostId ?? null;
-    // If *this* GM is the host, immediately publish current materials to everyone
     if (game.user.isGM && game.user.id === _hostId) {
       sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
     }
@@ -348,8 +347,14 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
 
   // Output seperate cost values
   const worth = Math.max(0, base + qcost + custom); // saves to crafted item
-  let craft = Math.max(0, worth - matTotal); // shows in dialog
-  if (html.find('#optFee').is(':checked')) craft = Math.ceil(craft * 1.10);
+  let craft = Math.max(0, worth - matTotal);        // shows in dialog
+
+  // Apply a 10% fee by default, unless "No Fee" is checked.
+  // Fee is applied after all surcharges and materials, rounded down.
+  const noFee = html.find('#optFee').is(':checked');
+  if (!noFee) {
+    craft = Math.floor(craft * 1.10);
+  }
 
   return {
     worth,
@@ -695,15 +700,15 @@ const content = `
         <fieldset>
           <legend>Cost</legend>
           <div id="costRow"
-               style="font-size:14px; line-height:1; display:inline-flex; align-items:center;">
+               style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:25px;">
             <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
             <span id="costValue"
-                  style="display:inline-block; width:6ch; text-align:left;
+                  style="display:inline-block; width:4ch; text-align:left;
                          font-variant-numeric: tabular-nums;
                          font-feature-settings:'tnum';">0</span>
             <label style="display:inline-flex; align-items:center; font-size:14px; white-space:nowrap;">
               <input type="checkbox" id="optFee" style="margin-right:4px;">
-              <span>Fee?</span>
+              <span>No Fee</span>
             </label>
           </div>
         </fieldset>
