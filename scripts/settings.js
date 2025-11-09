@@ -28,7 +28,7 @@ export const LookfarSettings = {
       requiresReload: true
     });
 
-    game.settings.register("lookfar", "itemForgeRestrictInputsToGM", {
+    game.settings.register("lookfar", "itemForgeRestrictInputs", {
       name: "Restrict Item Forge Inputs",
       hint: "When enabled, only GMs can change Item Forger options.",
       scope: "world",
@@ -175,6 +175,7 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
 
 
 
