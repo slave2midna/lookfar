@@ -1019,6 +1019,8 @@ Hooks.once("ready", () => {
   }
 });
 
+_treasureGenDialog = genDialog;
+
 Hooks.once("renderDialog", (app, html) => {
   if (!html.find || !html.find("#itemCount").length) return;
 
