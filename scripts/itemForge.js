@@ -59,7 +59,7 @@ const isItemForgePublic = () => getItemForgeVisibility() === "public";
 // Item Forge input restrictions
 const areForgeInputsGmOnly = () => {
   try {
-    return !!game.settings.get("lookfar", "itemForgeRestrictInputsToGM");
+    return !!game.settings.get("lookfar", "itemForgeRestrictInputs");
   } catch {
     return false;
   }
