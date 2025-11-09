@@ -66,6 +66,7 @@ const IF_MSG = {
   MaterialsReplace:  "lookfar:itemforge:materials-replace",
   MaterialsAdd:      "lookfar:itemforge:materials-add",
   MaterialsRemove:   "lookfar:itemforge:materials-remove",
+  UIStateReplace:    "lookfar:itemforge:ui-state-replace",
 };
 
 let _forgeAppId = null;      // window id for GM full forge dialog (on this client)
@@ -164,6 +165,7 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
   });
 
   // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
+    // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
   sock.register(IF_MSG.MaterialsRemove, (payload) => {
     if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
     const { index, uuid } = payload ?? {};
@@ -177,6 +179,25 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
     }
     _materials = newList;
     sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
+  });
+
+  // NEW: UI state replace (item type, template, qualities, toggles, etc.)
+  sock.register(IF_MSG.UIStateReplace, (payload) => {
+    // Only care about this when the forge is public
+    if (!isItemForgePublic()) return;
+    const state = payload?.state;
+    if (!state) return;
+
+    try {
+      // Call the handler attached by each full Item Forger dialog
+      for (const app of Object.values(ui.windows)) {
+        if (typeof app?._applyForgeStateFromSocket === "function") {
+          app._applyForgeStateFromSocket(state);
+        }
+      }
+    } catch (e) {
+      console.warn("[Item Forger] UIStateReplace apply failed:", e);
+    }
   });
 }
 
@@ -901,6 +922,69 @@ function openItemForgeDialog() {
       const $materialsHint   = html.find("#materialsHint");
       const $preview         = html.find("#itemPreviewLarge");
 
+            // --- NEW: shared UI state helpers (only used when visibility is "Public") ---
+      let suppressStateBroadcast = false;
+
+      const collectForgeState = () => {
+        const kind = html.find('input[name="itemType"]:checked').val() || "weapon";
+
+        const $t = html.find('#templateList [data-selected="1"]').first();
+        const tIdxRaw = Number($t.data("idx"));
+        const templateIdx = Number.isFinite(tIdxRaw) ? tIdxRaw : null;
+
+        const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
+        let qualityIdx = null;
+        if (catKey !== "none" && catKey !== "custom") {
+          const $q = html.find('#qualitiesList [data-selected="1"]').first();
+          const qIdxRaw = Number($q.data("idx"));
+          qualityIdx = Number.isFinite(qIdxRaw) ? qIdxRaw : null;
+        }
+
+        const plusOne     = html.find('#optPlusOne').is(':checked');
+        const plusDamage  = html.find('#optPlusDamage').is(':checked');
+        const toggleHand  = html.find('#optToggleHand').is(':checked');
+        const element     = (html.find('#optElement').val() || 'physical').toString();
+        const attrA       = (html.find('#optAttrA').val() || '').toString();
+        const attrB       = (html.find('#optAttrB').val() || '').toString();
+        const fee         = html.find('#optFee').is(':checked');
+
+        // Custom quality; if inputs not present, fall back to stored data
+        const $customEffect = html.find('#customEffect');
+        const $customCost   = html.find('#customCost');
+        const customEffect  = $customEffect.length
+          ? String($customEffect.val() ?? '').trim()
+          : String(html.data('customEffect') ?? '').trim();
+        const customCost    = $customCost.length
+          ? toInt($customCost.val())
+          : toInt(html.data('customCost') ?? 0);
+
+        return {
+          kind,
+          templateIdx,
+          qualitiesCategory: catKey,
+          qualityIdx,
+          plusOne,
+          plusDamage,
+          toggleHand,
+          element,
+          attrA,
+          attrB,
+          fee,
+          customEffect,
+          customCost
+        };
+      };
+
+      const broadcastForgeState = () => {
+        if (!isItemForgePublic()) return;
+        if (suppressStateBroadcast) return;
+        const sock = game.projectfu?.socket;
+        if (!sock) return;
+
+        const state = collectForgeState();
+        sock.executeForEveryone(IF_MSG.UIStateReplace, { state });
+      };
+
       // COST updater (unchanged)
       function updateCost() {
         const $val = html.find('#costValue');
@@ -1303,7 +1387,8 @@ function openItemForgeDialog() {
 
       // handles scroll box selection list
       const wireSelectableList = ($container, itemSel, {
-        onSelect
+        onSelect,
+        initialIndex
       } = {}) => {
         const $items = $container.find(itemSel);
         $items.on("mouseenter", function() {
@@ -1333,7 +1418,9 @@ function openItemForgeDialog() {
           });
           onSelect?.(this);
         });
-        const $first = $items.first();
+        const $first = Number.isInteger(initialIndex)
+          ? $items.eq(initialIndex)
+          : $items.first();
         if ($first.length) $first.trigger("click");
       };
 
@@ -1434,7 +1521,7 @@ function openItemForgeDialog() {
           }
         });
 
-      function renderTemplates(rows) {
+      function renderTemplates(rows, initialIndex = null) {
         currentTemplates = Array.isArray(rows) ? rows : [];
         if (!currentTemplates.length) {
           $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
@@ -1443,25 +1530,25 @@ function openItemForgeDialog() {
           return;
         }
         const items = currentTemplates.map((r, i) =>
-          `<div class="if-template" data-idx="${i}" data-name="${getNameSafe(r)}" style="padding:4px; cursor:pointer;">${getNameSafe(r)}</div>`
+          `<div class="if-template" data-idx="${i}" ...>${getNameSafe(r)}</div>`
         ).join("");
         $templateList.html(items);
         wireSelectableList($templateList, ".if-template", {
+          initialIndex,
           onSelect: (el) => {
             updateHandToggle(el);
             applyAttrDefaultsFromTemplate(el);
             html.removeData('iconOverride');
 
             const kind = html.find('input[name="itemType"]:checked').val();
-            renderPreview(kind, el, {
-              rerollIcon: true
-            });
+            renderPreview(kind, el, { rerollIcon: true });
             updateCost();
+            broadcastForgeState();
           }
         });
       }
 
-      const renderQualities = (type) => {
+      const renderQualities = (type, initialIndex = null, state = null) => {
         if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
           $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
           currentQualities = [];
@@ -1477,8 +1564,15 @@ function openItemForgeDialog() {
         if (catKey === "custom") {
           currentQualities = [];
 
-          const effCommitted = String(html.data('customEffect') ?? "Custom effect text");
-          const cstCommitted = toInt(html.data('customCost') ?? 0);
+          const effCommitted = state
+            ? String(state.customEffect ?? "").trim()
+            : String(html.data('customEffect') ?? "Custom effect text");
+          const cstCommitted = state
+            ? toInt(state.customCost ?? 0)
+            : toInt(html.data('customCost') ?? 0);
+
+          html.data('customEffect', effCommitted);
+          html.data('customCost', cstCommitted);
 
           $qualitiesList.html(`
     <div id="customQualityWrap"
@@ -1519,81 +1613,84 @@ function openItemForgeDialog() {
   `);
 
           $qualitiesList
-            .off('.customUX')
-            .on('keydown.customUX', '#customCost', (ev) => {
-              if (ev.key === 'Enter') ev.preventDefault();
-            })
-            .on('keypress.customUX', '#customCost', (ev) => {
-              if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
-            })
-            .on('paste.customUX', '#customCost', (ev) => {
-              ev.preventDefault();
-              const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
-              const digits = txt.replace(/\D+/g, '');
-              const el = ev.currentTarget;
-              const start = el.selectionStart ?? el.value.length;
-              const end = el.selectionEnd ?? el.value.length;
-              el.value = el.value.slice(0, start) + digits + el.value.slice(end);
-            })
-            .on('click.customUX', '#customApply', () => {
-              const eff = String(html.find('#customEffect').val() ?? '').trim();
-              const raw = String(html.find('#customCost').val() ?? '');
-              const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
-              html.find('#customCost').val(cst);
+      .off('.customUX')
+      .on('keydown.customUX', '#customCost', (ev) => {
+        if (ev.key === 'Enter') ev.preventDefault();
+      })
+      .on('keypress.customUX', '#customCost', (ev) => {
+        if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
+      })
+      .on('paste.customUX', '#customCost', (ev) => {
+        ev.preventDefault();
+        const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
+        const digits = txt.replace(/\D+/g, '');
+        const el = ev.currentTarget;
+        const start = el.selectionStart ?? el.value.length;
+        const end = el.selectionEnd ?? el.value.length;
+        el.value = el.value.slice(0, start) + digits + el.value.slice(end);
+      })
+      .on('click.customUX', '#customApply', () => {
+        const eff = String(html.find('#customEffect').val() ?? '').trim();
+        const raw = String(html.find('#customCost').val() ?? '');
+        const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+        html.find('#customCost').val(cst);
 
-              html.data('customEffect', eff);
-              html.data('customCost', cst);
+        html.data('customEffect', eff);
+        html.data('customCost', cst);
 
-              const kind = html.find('input[name="itemType"]:checked').val();
-              renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-              updateCost();
-            });
+        const kindNow = html.find('input[name="itemType"]:checked').val();
+        renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+        updateCost();
+        broadcastForgeState();
+      });
 
-          const kind = html.find('input[name="itemType"]:checked').val();
-          renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-          updateCost();
-          return;
-        }
+    const kindNow = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+    updateCost();
+    return;
+  }
 
-        // show an empty list and no qualities when "none" is set
-        if (catKey === "none") {
-          currentQualities = [];
-          $qualitiesList.html("");
-          const kind = html.find('input[name="itemType"]:checked').val();
-          renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-          updateCost();
-          return;
-        }
+  if (catKey === "none") {
+    currentQualities = [];
+    $qualitiesList.html("");
+    const kindNow = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+    updateCost();
+    return;
+  }
 
-        const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
-        currentQualities = catList.filter(q => matchesAppliesTo(q, type));
+  const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
+  currentQualities = catList.filter(q => matchesAppliesTo(q, type));
 
-        if (!currentQualities.length) {
-          $qualitiesList.html("");
-          const kind = html.find('input[name="itemType"]:checked').val();
-          renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
-          updateCost();
-          return;
-        }
+  if (!currentQualities.length) {
+    $qualitiesList.html("");
+    const kindNow = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+    updateCost();
+    return;
+  }
 
-        const items = currentQualities.map((q, i) =>
-          `<div class="if-quality" data-idx="${i}" style="padding:4px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(qualityDisplayName(q, type))}</div>`
-        ).join("");
-        $qualitiesList.html(items);
+  const items = currentQualities.map((q, i) => `
+    <div class="if-quality" data-idx="${i}">
+      ${esc(qualityDisplayName(q, type))}
+    </div>
+  `).join("");
+  $qualitiesList.html(items);
 
-        wireSelectableList($qualitiesList, ".if-quality", {
-          onSelect: () => {
-            const kind = html.find('input[name="itemType"]:checked').val();
-            renderPreview(
-              kind,
-              html.find('#templateList [data-selected="1"]').first(), {
-                rerollIcon: true
-              }
-            );
-            updateCost();
-          }
-        });
-      };
+  wireSelectableList($qualitiesList, ".if-quality", {
+    initialIndex,
+    onSelect: () => {
+      const kindNow = html.find('input[name="itemType"]:checked').val();
+      renderPreview(
+        kindNow,
+        html.find('#templateList [data-selected="1"]').first(),
+        { rerollIcon: true }
+      );
+      updateCost();
+      broadcastForgeState();
+    }
+  });
+};
 
       const renderAttrs = (type) => {
         if (type !== "weapon") return $attrInner.html("");
@@ -1640,12 +1737,17 @@ function openItemForgeDialog() {
           `);
       };
 
-      function populateTemplates(kind) {
+      function populateTemplates(kind, state = null) {
         const data = kind === "armor" ? getArmorList(equipmentRoot) :
           kind === "shield" ? getShieldList(equipmentRoot) :
           kind === "accessory" ? getAccessoryList(equipmentRoot) :
           getWeaponList(equipmentRoot);
-        renderTemplates(data);
+
+        const initialIndex = state && Number.isFinite(state.templateIdx)
+          ? state.templateIdx
+          : null;
+
+        renderTemplates(data, initialIndex);
       }
 
       function updateHandToggle(selectedEl) {
@@ -1694,28 +1796,82 @@ function openItemForgeDialog() {
         }
       }
 
-      const updateForKind = (kind) => {
+      const updateForKind = (kind, state = null) => {
         renderCustomize(kind);
         renderAttrs(kind);
-        populateTemplates(kind);
-        renderQualities(kind);
+
+        if (state?.qualitiesCategory) {
+          $qualitiesSelect.val(state.qualitiesCategory);
+        }
+
+        populateTemplates(kind, state);
+        renderQualities(kind, state?.qualityIdx ?? null, state);
         renderPreview(kind, null);
         if (kind === "weapon") updateHandToggle();
         relayout();
         updateCost();
-      };
+      }
 
       const refreshPreviewFromUI = () => {
         const kind = html.find('input[name="itemType"]:checked').val();
         renderPreview(
           kind,
-          html.find('#templateList [data-selected="1"]').first(), {
-            rerollIcon: false
-          }
+          html.find('#templateList [data-selected="1"]').first(),
+          { rerollIcon: false }
         );
         updateCost();
+        broadcastForgeState(); // NEW: sync all basic UI toggles
       };
 
+      // ------------- SOCKET-DRIVEN UI STATE -------------------
+      const applyForgeState = (state) => {
+        if (!state) return;
+        suppressStateBroadcast = true;
+        try {
+          const kind = state.kind || "weapon";
+
+          // Set item type radio
+          html.find('input[name="itemType"]').prop('checked', false);
+          html.find(`input[name="itemType"][value="${kind}"]`).prop('checked', true);
+
+          // Ensure the category select matches first, so renderQualities uses it
+          if (state.qualitiesCategory) {
+            $qualitiesSelect.val(state.qualitiesCategory);
+          }
+
+          // Build customize/attrs/templates/qualities with the given state
+          updateForKind(kind, state);
+
+          // Weapon / cost toggles
+          html.find('#optPlusOne').prop('checked', !!state.plusOne);
+          html.find('#optPlusDamage').prop('checked', !!state.plusDamage);
+          html.find('#optToggleHand').prop('checked', !!state.toggleHand);
+          html.find('#optElement').val(state.element || 'physical');
+          html.find('#optAttrA').val(state.attrA || 'MIG');
+          html.find('#optAttrB').val(state.attrB || 'MIG');
+          html.find('#optFee').prop('checked', !!state.fee);
+
+          // Custom quality persistence
+          if (typeof state.customEffect === "string") {
+            html.data('customEffect', state.customEffect);
+          }
+          if (typeof state.customCost !== "undefined") {
+            html.data('customCost', toInt(state.customCost));
+          }
+
+          // Re-render preview & cost (this will *not* rebroadcast because of the flag)
+          refreshPreviewFromUI();
+        } finally {
+          suppressStateBroadcast = false;
+        }
+      };
+
+      // Expose for the socket handler in ensureIFSocket
+      dlg._applyForgeStateFromSocket = (state) => {
+        // Only full dialogs care; minis never set this property
+        applyForgeState(state);
+      };
+      
       $dlg.off('.ifPrev');
       $dlg.on('change.ifPrev',
         '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
@@ -1741,6 +1897,7 @@ function openItemForgeDialog() {
             originReq: _requiredOriginKey
           });
         }
+        broadcastForgeState();
       });
 
       // Clickable preview image
@@ -1782,6 +1939,7 @@ function openItemForgeDialog() {
         const kind = ev.currentTarget.value;
         html.removeData('iconOverride');
         updateForKind(kind);
+        broadcastForgeState();
       });
 
       updateForKind("weapon");
