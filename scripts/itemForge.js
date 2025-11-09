@@ -44,19 +44,28 @@ const normHand = (h) => {
   return null;
 };
 
+// --- Setting Helpers ----------------------------------------------
+
+// Item Forge visibility settings
 const getItemForgeVisibility = () => {
   try {
-    // Expected values: "gmOnly" (default), "public"
     return game.settings.get("lookfar", "itemForgeVisibility") || "gmOnly";
   } catch {
-    // If settings aren't ready for some reason, fail safe to GM-only
     return "gmOnly";
   }
 };
-
 const isItemForgePublic = () => getItemForgeVisibility() === "public";
 
-// --- Collaboration (FU socket) ----------------------------------------------
+// Item Forge input restrictions
+const areForgeInputsGmOnly = () => {
+  try {
+    return !!game.settings.get("lookfar", "itemForgeRestrictInputsToGM");
+  } catch {
+    return false;
+  }
+};
+
+// --- FU Socket Helpers ----------------------------------------------
 
 // Message names (unique within FU socket handler)
 const IF_MSG = {
@@ -922,7 +931,15 @@ function openItemForgeDialog() {
       const $materialsHint   = html.find("#materialsHint");
       const $preview         = html.find("#itemPreviewLarge");
 
-            // --- NEW: shared UI state helpers (only used when visibility is "Public") ---
+      // Hides Fee? checkbox for non-GM users
+      if (!game.user.isGM) {
+        html.find('#optFee').closest('label').hide();
+      }
+
+      // Locks all Item Forge inputs for non-GM users
+      const lockControlsForPlayer = !game.user.isGM && isItemForgePublic() && areForgeInputsGmOnly();
+
+      // --- Shared Forge UI state helpers (only used when visibility is "Public") ---
       let suppressStateBroadcast = false;
 
       const collectForgeState = () => {
@@ -1387,42 +1404,35 @@ function openItemForgeDialog() {
 
       // handles scroll box selection list
       const wireSelectableList = ($container, itemSel, {
-        onSelect,
-        initialIndex
-      } = {}) => {
-        const $items = $container.find(itemSel);
-        $items.on("mouseenter", function() {
-          if (this.dataset.selected === "1") return;
-          $(this).css({
-            backgroundColor: "rgba(0,0,0,0.08)"
-          });
-        }).on("mouseleave", function() {
-          if (this.dataset.selected === "1") return;
-          $(this).css({
-            backgroundColor: "",
-            color: ""
-          });
-        });
-        $items.on("click", function() {
-          $container.find(itemSel).each(function() {
-            this.dataset.selected = "";
-            $(this).css({
-              backgroundColor: "",
-              color: ""
-            });
-          });
-          this.dataset.selected = "1";
-          $(this).css({
-            backgroundColor: "rgba(65,105,225,1)",
-            color: "white"
-          });
-          onSelect?.(this);
-        });
-        const $first = Number.isInteger(initialIndex)
-          ? $items.eq(initialIndex)
-          : $items.first();
-        if ($first.length) $first.trigger("click");
-      };
+  onSelect,
+  initialIndex,
+  blockClicks = false      // NEW
+} = {}) => {
+  const $items = $container.find(itemSel);
+  $items.on("mouseenter", function() {
+    if (this.dataset.selected === "1") return;
+    $(this).css({ backgroundColor: "rgba(0,0,0,0.08)" });
+  }).on("mouseleave", function() {
+    if (this.dataset.selected === "1") return;
+    $(this).css({ backgroundColor: "", color: "" });
+  });
+  $items.on("click", function() {
+    if (blockClicks) return;  // NEW: ignore player clicks when locked
+
+    $container.find(itemSel).each(function() {
+      this.dataset.selected = "";
+      $(this).css({ backgroundColor: "", color: "" });
+    });
+    this.dataset.selected = "1";
+    $(this).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" });
+    onSelect?.(this);
+  });
+
+  const $first = Number.isInteger(initialIndex)
+    ? $items.eq(initialIndex)
+    : $items.first();
+  if ($first.length) $first.trigger("click");
+};
 
       // === Materials UI (GM authoritative editing) ===========================
       const renderMaterials = () => {
@@ -1551,18 +1561,19 @@ $img.on("click", () => {
         ).join("");
         $templateList.html(items);
         wireSelectableList($templateList, ".if-template", {
-          initialIndex,
-          onSelect: (el) => {
-            updateHandToggle(el);
-            applyAttrDefaultsFromTemplate(el);
-            html.removeData('iconOverride');
+  initialIndex,
+  onSelect: (el) => {
+    updateHandToggle(el);
+    applyAttrDefaultsFromTemplate(el);
+    html.removeData('iconOverride');
 
-            const kind = html.find('input[name="itemType"]:checked').val();
-            renderPreview(kind, el, { rerollIcon: true });
-            updateCost();
-            broadcastForgeState();
-          }
-        });
+    const kind = html.find('input[name="itemType"]:checked').val();
+    renderPreview(kind, el, { rerollIcon: true });
+    updateCost();
+    broadcastForgeState();
+  },
+  blockClicks: lockControlsForPlayer   // NEW
+});
       }
 
       const renderQualities = (type, initialIndex = null, state = null) => {
@@ -1647,19 +1658,21 @@ $img.on("click", () => {
         el.value = el.value.slice(0, start) + digits + el.value.slice(end);
       })
       .on('click.customUX', '#customApply', () => {
-        const eff = String(html.find('#customEffect').val() ?? '').trim();
-        const raw = String(html.find('#customCost').val() ?? '');
-        const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
-        html.find('#customCost').val(cst);
+  if (lockControlsForPlayer) return;   // NEW
 
-        html.data('customEffect', eff);
-        html.data('customCost', cst);
+  const eff = String(html.find('#customEffect').val() ?? '').trim();
+  const raw = String(html.find('#customCost').val() ?? '');
+  const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+  html.find('#customCost').val(cst);
 
-        const kindNow = html.find('input[name="itemType"]:checked').val();
-        renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-        updateCost();
-        broadcastForgeState();
-      });
+  html.data('customEffect', eff);
+  html.data('customCost', cst);
+
+  const kindNow = html.find('input[name="itemType"]:checked').val();
+  renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+  updateCost();
+  broadcastForgeState();
+});
 
     const kindNow = html.find('input[name="itemType"]:checked').val();
     renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
@@ -1695,18 +1708,19 @@ $img.on("click", () => {
   $qualitiesList.html(items);
 
   wireSelectableList($qualitiesList, ".if-quality", {
-    initialIndex,
-    onSelect: () => {
-      const kindNow = html.find('input[name="itemType"]:checked').val();
-      renderPreview(
-        kindNow,
-        html.find('#templateList [data-selected="1"]').first(),
-        { rerollIcon: true }
-      );
-      updateCost();
-      broadcastForgeState();
-    }
-  });
+  initialIndex,
+  onSelect: () => {
+    const kindNow = html.find('input[name="itemType"]:checked').val();
+    renderPreview(
+      kindNow,
+      html.find('#templateList [data-selected="1"]').first(),
+      { rerollIcon: true }
+    );
+    updateCost();
+    broadcastForgeState();
+  },
+  blockClicks: lockControlsForPlayer   // NEW
+});
 };
 
       const renderAttrs = (type) => {
@@ -1901,38 +1915,47 @@ $img.on("click", () => {
       };
       
       $dlg.off('.ifPrev');
-      $dlg.on('change.ifPrev',
-        '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
-        refreshPreviewFromUI
-      );
+$dlg.on('change.ifPrev',
+  '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
+  (ev) => {
+    if (lockControlsForPlayer) {
+      // Don’t let players in restricted mode change these
+      ev.preventDefault();
+      return;
+    }
+    refreshPreviewFromUI();
+  }
+);
 
       $qualitiesSelect.on("change", () => {
-        const kind = html.find('input[name="itemType"]:checked').val();
-        renderQualities(kind);
-        renderPreview(
-          kind,
-          html.find('#templateList [data-selected="1"]').first(), {
-            rerollIcon: false
-          }
-        );
-        renderMaterials();
-        updateCost();
+  if (lockControlsForPlayer) return;   // NEW
 
-        // Broadcast new origin requirement so minis can update border/hint
-        if (game.user.isGM && game.user.id === _hostId) {
-          game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-            materials: _materials,
-            originReq: _requiredOriginKey
-          });
-        }
-        broadcastForgeState();
-      });
+  const kind = html.find('input[name="itemType"]:checked').val();
+  renderQualities(kind);
+  renderPreview(
+    kind,
+    html.find('#templateList [data-selected="1"]').first(),
+    { rerollIcon: false }
+  );
+  renderMaterials();
+  updateCost();
+
+  if (game.user.isGM && game.user.id === _hostId) {
+    game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+      materials: _materials,
+      originReq: _requiredOriginKey
+    });
+  }
+  broadcastForgeState();
+});
 
       // Clickable preview image
       html.off('click.ifIconPick');
-      html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
+html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
+  if (lockControlsForPlayer) return;  // NEW: players can’t change icons in restricted mode
+
+  ev.preventDefault();
+  ev.stopPropagation();
         console.debug('[Item Forger] preview icon clicked');
 
         const kind = html.find('input[name="itemType"]:checked').val();
@@ -1964,11 +1987,15 @@ $img.on("click", () => {
       });
 
       html.on("change", 'input[name="itemType"]', (ev) => {
-        const kind = ev.currentTarget.value;
-        html.removeData('iconOverride');
-        updateForKind(kind);
-        broadcastForgeState();
-      });
+  if (lockControlsForPlayer) {
+    ev.preventDefault();
+    return;
+  }
+  const kind = ev.currentTarget.value;
+  html.removeData('iconOverride');
+  updateForKind(kind);
+  broadcastForgeState();
+});
 
       updateForKind("weapon");
       renderMaterials();
