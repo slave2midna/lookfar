@@ -1027,7 +1027,8 @@ function openItemForgeDialog() {
           ? toInt($customCost.val())
           : toInt(html.data('customCost') ?? 0);
 
-        const iconPath = html.data('iconPath') || "";
+        const previewSrc = html.find('#if-preview-icon').attr('src') || "";
+        const iconPath = html.data('iconPath') || previewSrc || "";
 
         return {
           kind,
@@ -1930,6 +1931,16 @@ $qualitiesList.html(items);
         const $cb = html.find('#optPlusOne');
         const $label = $cb.closest('label');
 
+        // If this client is a locked player, always keep this disabled & greyed out
+        if (!game.user.isGM && lockControlsForPlayer) {
+          $cb.prop('checked', false)
+             .prop('disabled', true);
+          $label
+            .attr('title', 'Only the GM can modify this option.')
+            .css({ opacity: 0.5, filter: 'grayscale(1)' });
+          return;
+        }
+
         // Non-weapons: just reset to normal
         if (kind !== "weapon") {
           $cb.prop('disabled', false);
@@ -2077,7 +2088,17 @@ html.find('#optFee').prop('checked', !!state.fee);
     // Re-render preview & cost (this will *not* rebroadcast because of the flag)
     refreshPreviewFromUI();
 
-    // NEW: recompute materials origin requirement locally
+    // Ensure the preview icon exactly matches the GM's choice
+    if (state.iconPath) {
+      html.data('iconPath', state.iconPath);
+      try {
+        $preview.find('#if-preview-icon').attr('src', state.iconPath);
+      } catch (e) {
+        console.warn("[Item Forger] Failed to apply synced iconPath:", e);
+      }
+    }
+
+    // recompute materials origin requirement locally
     renderMaterials();
 
     // NEW: if this client is the host GM, rebroadcast MaterialsReplace
