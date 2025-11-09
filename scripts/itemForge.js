@@ -84,6 +84,7 @@ const IF_MSG = {
   MaterialsReplace:  "lookfar:itemforge:materials-replace",
   MaterialsAdd:      "lookfar:itemforge:materials-add",
   MaterialsRemove:   "lookfar:itemforge:materials-remove",
+  MaterialsNotify:   "lookfar:itemforge:materials-notify",
   UIStateReplace:    "lookfar:itemforge:ui-state-replace",
 };
 
@@ -110,6 +111,12 @@ function ensureIFSocket() {
     console.warn("[Item Forger] FU socket helper not found; collaboration disabled.");
     return;
   }
+
+   // warning notifier so the host can ping specific clients
+   sock.register(IF_MSG.MaterialsNotify, (payload) => {
+    const text = payload?.text;
+    if (text) ui.notifications?.warn(text);
+  });
 
   // A GM has opened the full forge dialog and is now the host
   sock.register(IF_MSG.HostOpen, (payload) => {
@@ -158,6 +165,19 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
   // Player proposes ADD (host validates → updates → broadcasts)
   sock.register(IF_MSG.MaterialsAdd, async (payload, msg) => {
     if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
+
+    // Helper: warn the user who attempted the add (or fallback to host)
+    const warnUser = (text) => {
+      const targetId = msg?.sender;
+      if (targetId && game.projectfu?.socket) {
+        // Show the warning only on the client who initiated the drag
+        game.projectfu.socket.executeForUsers(IF_MSG.MaterialsNotify, [targetId], { text });
+      } else {
+        // Fallback: host sees the warning (shouldn’t happen often)
+        ui.notifications?.warn(text);
+      }
+    };
+
     try {
       const { uuid } = payload ?? {};
       if (!uuid) return;
@@ -169,14 +189,14 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
 
       const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
       if (qty <= 0) {
-        ui.notifications?.warn("You do not have any more of this item.");
+        warnUser("You do not have any more of this item.");
         return;
       }
 
       // How many times this uuid is already in the materials list
       const alreadyUsed = _materials.filter(m => m.uuid === uuid).length;
       if (alreadyUsed >= qty) {
-        ui.notifications?.warn("You do not have any more of this item.");
+        warnUser("You do not have any more of this item.");
         return;
       }
 
@@ -186,7 +206,7 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
         name: doc.name,
         cost: getTreasureCost(doc),
         origin: getTreasureOrigin(doc),
-        quantity: qty            // optional, for future UI use
+        quantity: qty
       };
 
       _materials = [..._materials, entry].slice(0, 5);
