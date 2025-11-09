@@ -1448,16 +1448,24 @@ function openItemForgeDialog() {
               .filter(Boolean).join(" • ");
 
             const $img = $(`<img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-                title="Click to remove\n${esc(tip)}"
-                style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`);
+    title="Click to remove\n${esc(tip)}"
+    style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`);
 
-            // Only host GM can mutate, then broadcast
-            $img.on("click", () => {
-              if (!(game.user.isGM && game.user.id === _hostId)) return;
-              _materials = _materials.filter((_m, idx) => idx !== i);
-              html.data('ifMaterials', _materials);
-              game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
-            });
+$img.on("click", () => {
+  // If this client is NOT the host GM, send a remove request instead
+  if (!(game.user.isGM && game.user.id === _hostId)) {
+    game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
+    return;
+  }
+
+  // Host GM mutates & broadcasts
+  _materials = _materials.filter((_m, idx) => idx !== i);
+  html.data('ifMaterials', _materials);
+  game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+    materials: _materials,
+    originReq: _requiredOriginKey
+  });
+});
 
             $materialsDrop.append($img);
           });
@@ -1477,49 +1485,58 @@ function openItemForgeDialog() {
 
       // GM drag & drop adds directly (then broadcasts)
       $materialsDrop
-        .on("dragover", (ev) => {
-          ev.preventDefault();
-          $materialsDrop.css("background", "rgba(65,105,225,0.08)");
-        })
-        .on("dragleave", () => $materialsDrop.css("background", ""))
         .on("drop", async (ev) => {
-          ev.preventDefault();
-          $materialsDrop.css("background", "");
-          if (!(game.user.isGM && game.user.id === _hostId)) return; // only host accepts
-          const dt  = ev.originalEvent?.dataTransfer;
-          if (!dt) return;
-          const raw = dt.getData("text/plain");
-          if (!raw) return;
+  ev.preventDefault();
+  $materialsDrop.css("background", "");
+  const dt  = ev.originalEvent?.dataTransfer;
+  if (!dt) return;
+  const raw = dt.getData("text/plain");
+  if (!raw) return;
 
-          try {
-            const data = JSON.parse(raw);
-            if (!data?.uuid) return;
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    console.error("[Item Forger] Drop parse failed (JSON):", e);
+    return;
+  }
+  if (!data?.uuid) return;
 
-            const doc = await fromUuid(data.uuid);
-            if (!doc || doc.documentName !== "Item")  return ui.notifications?.warn("Only Item documents can be dropped here.");
-            if (String(doc.type) !== "treasure")      return ui.notifications?.warn("Only Treasure items can be used as materials.");
-            if (_materials.length >= 5)               return ui.notifications?.warn("You can only add up to 5 materials.");
+  // If this client is NOT the host GM, propose the add to the GM instead
+  if (!(game.user.isGM && game.user.id === _hostId)) {
+    game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsAdd, { uuid: data.uuid });
+    return;
+  }
 
-            const entry = {
-              uuid: data.uuid,
-              img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
-              name: doc.name,
-              cost: getTreasureCost(doc),
-              origin: getTreasureOrigin(doc)
-            };
+  // Host GM branch: validate, mutate, broadcast
+  try {
+    const doc = await fromUuid(data.uuid);
+    if (!doc || doc.documentName !== "Item")  return ui.notifications?.warn("Only Item documents can be dropped here.");
+    if (String(doc.type) !== "treasure")      return ui.notifications?.warn("Only Treasure items can be used as materials.");
+    if (_materials.length >= 5)               return ui.notifications?.warn("You can only add up to 5 materials.");
 
-            _materials = [..._materials, entry].slice(0, 5);
-            html.data('ifMaterials', _materials);
-            renderMaterials();
-            updateCost();
+    const entry = {
+      uuid: data.uuid,
+      img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
+      name: doc.name,
+      cost: getTreasureCost(doc),
+      origin: getTreasureOrigin(doc)
+    };
 
-            // broadcast authoritative update
-            game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
-          } catch (e) {
-            console.error("[Item Forger] Drop parse failed:", e);
-            ui.notifications?.error("Could not read dropped data.");
-          }
-        });
+    _materials = [..._materials, entry].slice(0, 5);
+    html.data('ifMaterials', _materials);
+    renderMaterials();
+    updateCost();
+
+    game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+      materials: _materials,
+      originReq: _requiredOriginKey
+    });
+  } catch (e) {
+    console.error("[Item Forger] Drop parse failed:", e);
+    ui.notifications?.error("Could not read dropped data.");
+  }
+});
 
       function renderTemplates(rows, initialIndex = null) {
         currentTemplates = Array.isArray(rows) ? rows : [];
@@ -1825,46 +1842,57 @@ function openItemForgeDialog() {
 
       // ------------- SOCKET-DRIVEN UI STATE -------------------
       const applyForgeState = (state) => {
-        if (!state) return;
-        suppressStateBroadcast = true;
-        try {
-          const kind = state.kind || "weapon";
+  if (!state) return;
+  suppressStateBroadcast = true;
+  try {
+    const kind = state.kind || "weapon";
 
-          // Set item type radio
-          html.find('input[name="itemType"]').prop('checked', false);
-          html.find(`input[name="itemType"][value="${kind}"]`).prop('checked', true);
+    // Set item type radio
+    html.find('input[name="itemType"]').prop('checked', false);
+    html.find(`input[name="itemType"][value="${kind}"]`).prop('checked', true);
 
-          // Ensure the category select matches first, so renderQualities uses it
-          if (state.qualitiesCategory) {
-            $qualitiesSelect.val(state.qualitiesCategory);
-          }
+    // Ensure the category select matches first, so renderQualities uses it
+    if (state.qualitiesCategory) {
+      $qualitiesSelect.val(state.qualitiesCategory);
+    }
 
-          // Build customize/attrs/templates/qualities with the given state
-          updateForKind(kind, state);
+    // Build customize/attrs/templates/qualities with the given state
+    updateForKind(kind, state);
 
-          // Weapon / cost toggles
-          html.find('#optPlusOne').prop('checked', !!state.plusOne);
-          html.find('#optPlusDamage').prop('checked', !!state.plusDamage);
-          html.find('#optToggleHand').prop('checked', !!state.toggleHand);
-          html.find('#optElement').val(state.element || 'physical');
-          html.find('#optAttrA').val(state.attrA || 'MIG');
-          html.find('#optAttrB').val(state.attrB || 'MIG');
-          html.find('#optFee').prop('checked', !!state.fee);
+    // Weapon / cost toggles
+    html.find('#optPlusOne').prop('checked', !!state.plusOne);
+    html.find('#optPlusDamage').prop('checked', !!state.plusDamage);
+    html.find('#optToggleHand').prop('checked', !!state.toggleHand);
+    html.find('#optElement').val(state.element || 'physical');
+    html.find('#optAttrA').val(state.attrA || 'MIG');
+    html.find('#optAttrB').val(state.attrB || 'MIG');
+    html.find('#optFee').prop('checked', !!state.fee);
 
-          // Custom quality persistence
-          if (typeof state.customEffect === "string") {
-            html.data('customEffect', state.customEffect);
-          }
-          if (typeof state.customCost !== "undefined") {
-            html.data('customCost', toInt(state.customCost));
-          }
+    // Custom quality persistence
+    if (typeof state.customEffect === "string") {
+      html.data('customEffect', state.customEffect);
+    }
+    if (typeof state.customCost !== "undefined") {
+      html.data('customCost', toInt(state.customCost));
+    }
 
-          // Re-render preview & cost (this will *not* rebroadcast because of the flag)
-          refreshPreviewFromUI();
-        } finally {
-          suppressStateBroadcast = false;
-        }
-      };
+    // Re-render preview & cost (this will *not* rebroadcast because of the flag)
+    refreshPreviewFromUI();
+
+    // NEW: recompute materials origin requirement locally
+    renderMaterials();
+
+    // NEW: if this client is the host GM, rebroadcast MaterialsReplace
+    if (game.user.isGM && game.user.id === _hostId) {
+      game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+        materials: _materials,
+        originReq: _requiredOriginKey
+      });
+    }
+  } finally {
+    suppressStateBroadcast = false;
+  }
+};
 
       // Expose for the socket handler in ensureIFSocket
       dlg._applyForgeStateFromSocket = (state) => {
