@@ -1,5 +1,7 @@
 import { dataLoader } from "./dataLoader.js";
 
+let _travelCheckDialog = null;
+
 // Function to set default "Discovery" rolltable options. Will update for multiple table settings.
 function getRollTableChoices() {
   const choices = { default: game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") }; // Add "Default" option
@@ -125,87 +127,98 @@ function showTravelCheckDialog() {
   </form>
 `;
   
-  new Dialog({
-  title: game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.Title"),
-  content: formHtml,
-  buttons: {
-    roll: {
-      icon: '<i class="fas fa-check"></i>',
-      callback: (html) => {
-        const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
-const groupLevel = html.find("#groupLevel").val();
-const treasureHunterLevel = html.find("#treasureHunterLevelInput").val();
-const wellTraveled = html.find("#wellTraveled").is(":checked");
+    const dlg = new Dialog({
+    title: game.i18n.localize("LOOKFAR.Dialogs.TravelCheck.Title"),
+    content: formHtml,
+    buttons: {
+      roll: {
+        icon: '<i class="fas fa-check"></i>',
+        callback: (html) => {
+          const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
+          const groupLevel = html.find("#groupLevel").val();
+          const treasureHunterLevel = html.find("#treasureHunterLevelInput").val();
+          const wellTraveled = html.find("#wellTraveled").is(":checked");
 
-// Store these values
-localStorage.setItem("lookfar-groupLevel", groupLevel);
-localStorage.setItem("lookfar-treasureHunterLevel", treasureHunterLevel);
-localStorage.setItem("lookfar-wellTraveled", wellTraveled);
+          // Store these values
+          localStorage.setItem("lookfar-groupLevel", groupLevel);
+          localStorage.setItem("lookfar-treasureHunterLevel", treasureHunterLevel);
+          localStorage.setItem("lookfar-wellTraveled", wellTraveled);
 
-handleRoll(selectedDifficulty, html);
+          handleRoll(selectedDifficulty, html);
+        },
       },
     },
-  },
-  default: "roll",
-  render: (html) => {
-    // Restore previous values
-const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
-const savedTreasureHunterLevel = parseInt(localStorage.getItem("lookfar-treasureHunterLevel") || "0");
-const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
+    default: "roll",
+    render: (html) => {
+      // Restore previous values
+      const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
+      const savedTreasureHunterLevel = parseInt(localStorage.getItem("lookfar-treasureHunterLevel") || "0");
+      const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
 
-// Restore Group Level dropdown
-html.find("#groupLevel").val(savedGroupLevel);
+      // Restore Group Level dropdown
+      html.find("#groupLevel").val(savedGroupLevel);
 
-// Restore Treasure Hunter stars
-html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
-html.find("#treasureHunterLevel i").each(function () {
-  const starVal = Number($(this).data("value"));
-  $(this)
-    .removeClass("fa-solid fa-regular")
-    .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
-});
-
-    // Treasure Hunter logic
-    const stars = html.find("#treasureHunterLevel i");
-    stars.on("click", function () {
-      const clickedValue = Number($(this).data("value"));
-      const currentValue = Number(html.find("#treasureHunterLevelInput").val());
-      const newValue = (clickedValue === currentValue) ? 0 : clickedValue;
-
-      html.find("#treasureHunterLevelInput").val(newValue);
-
-      stars.each(function () {
+      // Restore Treasure Hunter stars
+      html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
+      html.find("#treasureHunterLevel i").each(function () {
         const starVal = Number($(this).data("value"));
         $(this)
           .removeClass("fa-solid fa-regular")
-          .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
+          .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
       });
-    });
 
-   // Well-Traveled checkbox logic
-html.find("#wellTraveled").on("change", (e) => {
-  const isChecked = e.target.checked;
-  const diceMap = {
-    d8: "d6",
-    d10: "d8",
-    d12: "d10",
-    d20: "d12"
-  };
+      // Treasure Hunter logic
+      const stars = html.find("#treasureHunterLevel i");
+      stars.on("click", function () {
+        const clickedValue = Number($(this).data("value"));
+        const currentValue = Number(html.find("#treasureHunterLevelInput").val());
+        const newValue = (clickedValue === currentValue) ? 0 : clickedValue;
 
-  html.find(".dice-display").each(function () {
-    const original = $(this).data("original");
-    $(this).text(isChecked ? (diceMap[original] || original) : original);
+        html.find("#treasureHunterLevelInput").val(newValue);
+
+        stars.each(function () {
+          const starVal = Number($(this).data("value"));
+          $(this)
+            .removeClass("fa-solid fa-regular")
+            .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
+        });
+      });
+
+      // Well-Traveled checkbox logic
+      html.find("#wellTraveled").on("change", (e) => {
+        const isChecked = e.target.checked;
+        const diceMap = {
+          d8: "d6",
+          d10: "d8",
+          d12: "d10",
+          d20: "d12"
+        };
+
+        html.find(".dice-display").each(function () {
+          const original = $(this).data("original");
+          $(this).text(isChecked ? (diceMap[original] || original) : original);
+        });
+      });
+
+      // Restore Well-Traveled checkbox and immediately trigger dice display update
+      html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
+    },
+    close: () => {
+      _travelCheckDialog = null;
+    }
   });
-});
 
-// Restore Well-Traveled checkbox and immediately trigger dice display update
-html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
-  },
-  close: () => {}
-}).render(true);
+  _travelCheckDialog = dlg;
+  dlg.render(true);
 }
-// ⬇️ Move this outside the function definition
+
+// Move this outside the function definition
 Hooks.on("lookfarShowTravelCheckDialog", () => {
+  // Singleton per client: if already open, just bring it to front
+  if (_travelCheckDialog && _travelCheckDialog.rendered) {
+    _travelCheckDialog.bringToTop();
+    return;
+  }
   showTravelCheckDialog();
 });
 
@@ -665,5 +678,6 @@ async function generateDiscovery() {
   ${generateKeywords()}
 `;
 }
+
 
 
