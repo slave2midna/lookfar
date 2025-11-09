@@ -84,6 +84,7 @@ const IF_MSG = {
   MaterialsReplace:  "lookfar:itemforge:materials-replace",
   MaterialsAdd:      "lookfar:itemforge:materials-add",
   MaterialsRemove:   "lookfar:itemforge:materials-remove",
+  MaterialsNotify:   "lookfar:itemforge:materials-notify",
   UIStateReplace:    "lookfar:itemforge:ui-state-replace",
 };
 
@@ -110,6 +111,12 @@ function ensureIFSocket() {
     console.warn("[Item Forger] FU socket helper not found; collaboration disabled.");
     return;
   }
+
+   // warning notifier so the host can ping specific clients
+   sock.register(IF_MSG.MaterialsNotify, (payload) => {
+    const text = payload?.text;
+    if (text) ui.notifications?.warn(text);
+  });
 
   // A GM has opened the full forge dialog and is now the host
   sock.register(IF_MSG.HostOpen, (payload) => {
@@ -158,6 +165,19 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
   // Player proposes ADD (host validates → updates → broadcasts)
   sock.register(IF_MSG.MaterialsAdd, async (payload, msg) => {
     if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
+
+    // Helper: warn the user who attempted the add (or fallback to host)
+    const warnUser = (text) => {
+      const targetId = msg?.sender;
+      if (targetId && game.projectfu?.socket) {
+        // Show the warning only on the client who initiated the drag
+        game.projectfu.socket.executeForUsers(IF_MSG.MaterialsNotify, [targetId], { text });
+      } else {
+        // Fallback: host sees the warning (shouldn’t happen often)
+        ui.notifications?.warn(text);
+      }
+    };
+
     try {
       const { uuid } = payload ?? {};
       if (!uuid) return;
@@ -167,13 +187,28 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
       if (!doc || doc.documentName !== "Item") return;
       if (String(doc.type) !== "treasure") return;
 
+      const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
+      if (qty <= 0) {
+        warnUser("You do not have any more of this item.");
+        return;
+      }
+
+      // How many times this uuid is already in the materials list
+      const alreadyUsed = _materials.filter(m => m.uuid === uuid).length;
+      if (alreadyUsed >= qty) {
+        warnUser("You do not have any more of this item.");
+        return;
+      }
+
       const entry = {
         uuid,
         img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
         name: doc.name,
         cost: getTreasureCost(doc),
         origin: getTreasureOrigin(doc),
+        quantity: qty
       };
+
       _materials = [..._materials, entry].slice(0, 5);
       sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
     } catch (e) {
@@ -908,6 +943,38 @@ function openItemForgeDialog() {
             const mats = html.data('ifMaterials') || [];
             if (!validateMaterialsOrigin(html, mats)) return false;
 
+            // Only the host GM should ever actually consume items
+            if (game.user.isGM && game.user.id === _hostId && Array.isArray(mats) && mats.length) {
+              // Count usage per uuid
+              const usageByUuid = {};
+              for (const m of mats) {
+                if (!m?.uuid) continue;
+                usageByUuid[m.uuid] = (usageByUuid[m.uuid] || 0) + 1;
+              }
+
+              // First pass: verify all quantities are sufficient
+              for (const [uuid, used] of Object.entries(usageByUuid)) {
+                const doc = await fromUuid(uuid);
+                if (!doc || doc.documentName !== "Item") continue;
+                const currQty = Number(doc.system?.quantity?.value ?? 0) || 0;
+                if (currQty < used) {
+                  ui.notifications?.error(
+                    `Not enough quantity of ${doc.name} to forge (need ${used}, have ${currQty}).`
+                  );
+                  return false;  // keep dialog open
+                }
+              }
+
+              // Second pass: actually subtract
+              for (const [uuid, used] of Object.entries(usageByUuid)) {
+                const doc = await fromUuid(uuid);
+                if (!doc || doc.documentName !== "Item") continue;
+                const currQty = Number(doc.system?.quantity?.value ?? 0) || 0;
+                const newQty = Math.max(0, currQty - used);
+                await doc.update({ "system.quantity.value": newQty });
+              }
+            }
+
             const itemData = buildItemData(kind, html, { currentTemplates, currentQualities });
             const created = await Item.create(itemData, { renderSheet: true });
             if (!created) throw new Error("Item creation failed.");
@@ -915,6 +982,7 @@ function openItemForgeDialog() {
           } catch (err) {
             console.error("[Item Forger] Forge failed:", err);
             ui.notifications?.error(`Item Forger: ${err.message || "Failed to forge item."}`);
+            return false;
           }
         }
       }
@@ -1631,16 +1699,30 @@ $img.on("click", () => {
   // Host GM branch: validate, mutate, broadcast
   try {
     const doc = await fromUuid(data.uuid);
-    if (!doc || doc.documentName !== "Item")  return ui.notifications?.warn("Only Item documents can be dropped here.");
-    if (String(doc.type) !== "treasure")      return ui.notifications?.warn("Only Treasure items can be used as materials.");
-    if (_materials.length >= 5)               return ui.notifications?.warn("You can only add up to 5 materials.");
+    if (!doc || doc.documentName !== "Item")
+      return ui.notifications?.warn("Only Item documents can be dropped here.");
+    if (String(doc.type) !== "treasure")
+      return ui.notifications?.warn("Only Treasure items can be used as materials.");
+    if (_materials.length >= 5)
+      return ui.notifications?.warn("You can only add up to 5 materials.");
+
+    const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
+    if (qty <= 0) {
+      return ui.notifications?.warn("You do not have any more of this item.");
+    }
+
+    const alreadyUsed = _materials.filter(m => m.uuid === data.uuid).length;
+    if (alreadyUsed >= qty) {
+      return ui.notifications?.warn("You do not have any more of this item.");
+    }
 
     const entry = {
       uuid: data.uuid,
       img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
       name: doc.name,
       cost: getTreasureCost(doc),
-      origin: getTreasureOrigin(doc)
+      origin: getTreasureOrigin(doc),
+      quantity: qty           // optional
     };
 
     _materials = [..._materials, entry].slice(0, 5);
