@@ -1635,6 +1635,7 @@ $templateList.html(items);
   initialIndex,
   onSelect: (el) => {
     updateHandToggle(el);
+    updatePlusOneToggle(el);          // NEW
     applyAttrDefaultsFromTemplate(el);
     html.removeData('iconOverride');
 
@@ -1643,7 +1644,7 @@ $templateList.html(items);
     updateCost();
     broadcastForgeState();
   },
-  blockClicks: lockControlsForPlayer   // NEW
+  blockClicks: lockControlsForPlayer
 });
       }
 
@@ -1906,20 +1907,72 @@ $qualitiesList.html(items);
         }
       }
 
+      function updatePlusOneToggle(selectedEl) {
+        const kind = html.find('input[name="itemType"]:checked').val();
+        const $cb = html.find('#optPlusOne');
+        const $label = $cb.closest('label');
+
+        // Non-weapons: just reset to normal
+        if (kind !== "weapon") {
+          $cb.prop('disabled', false);
+          $label.css({ opacity: 1, filter: "" }).attr('title', '');
+          return;
+        }
+
+        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+        const idx = Number($sel.data("idx"));
+        const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+
+        if (!base) {
+          // No template selected → reset
+          $cb.prop('disabled', false);
+          $label.css({ opacity: 1, filter: "" }).attr('title', '');
+          return;
+        }
+
+        const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
+        const hasBasePlusOne = baseAcc >= 1; // treat any >=1 as "already has +1"
+
+        if (hasBasePlusOne) {
+          // Hard-disable the toggle and grey it out
+          $cb.prop('checked', false).prop('disabled', true);
+          $label
+            .attr('title', 'This weapon already has +1 Accuracy from its base profile.')
+            .css({ opacity: 0.5, filter: 'grayscale(1)' });
+        } else {
+          // Make sure it's usable and visually normal
+          $cb.prop('disabled', false);
+          $label
+            .attr('title', '')
+            .css({ opacity: 1, filter: '' });
+        }
+      }
+
       const updateForKind = (kind, state = null) => {
   renderCustomize(kind);
   renderAttrs(kind);
 
   // When Playtest Damage Rules are enabled, completely disable the +4 Damage toggle
-  if (kind === "weapon" && useVariantDamageRules()) {
+  if (kind === "weapon") {
     const $pd = html.find('#optPlusDamage');
-    $pd.prop('checked', false)
-       .prop('disabled', true)
-       .closest('label')
-       .attr(
-         'title',
-         'Playtest Damage Rules: damage scales with item cost instead of using the +4 Damage toggle.'
-       );
+    const $pdLabel = $pd.closest('label');
+
+    if (useVariantDamageRules()) {
+      $pd.prop('checked', false)
+         .prop('disabled', true);
+      $pdLabel
+        .attr(
+          'title',
+          'Playtest Damage Rules: damage scales with item cost instead of using the +4 Damage toggle.'
+        )
+        .css({ opacity: 0.5, filter: 'grayscale(1)' });   // NEW: grey out label
+    } else {
+      // Restore normal behavior when variant rules are off
+      $pd.prop('disabled', false);
+      $pdLabel
+        .attr('title', '')
+        .css({ opacity: 1, filter: '' });
+    }
   }
 
   if (state?.qualitiesCategory) {
@@ -1929,7 +1982,12 @@ $qualitiesList.html(items);
   populateTemplates(kind, state);
   renderQualities(kind, state?.qualityIdx ?? null, state);
   renderPreview(kind, null);
-  if (kind === "weapon") updateHandToggle();
+
+  if (kind === "weapon") {
+    updateHandToggle();
+    updatePlusOneToggle();    // NEW: enforce +1 Acc rule on initial weapon load
+  }
+
   relayout();
   updateCost();
   applyLockState();
