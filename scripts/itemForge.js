@@ -700,7 +700,7 @@ const content = `
         <fieldset>
           <legend>Cost</legend>
           <div id="costRow"
-               style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:24px;">
+               style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:25px;">
             <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
             <span id="costValue"
                   style="display:inline-block; width:4ch; text-align:left;
