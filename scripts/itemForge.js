@@ -604,9 +604,8 @@ const content = `
             </div>
             <div style="flex:1 1 auto; min-width:0;">
               <div id="templateList" aria-label="Template list"
-     style="height:100px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
-  <div>Loading…</div>
-</div>
+                   style="height:100px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
+                <div>Loading…</div>
               </div>
             </div>
           </div>
