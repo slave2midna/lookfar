@@ -969,6 +969,9 @@ function openItemForgeDialog() {
       // Locks all Item Forge inputs for non-GM users
       const lockControlsForPlayer = !game.user.isGM && isItemForgePublic() && areForgeInputsGmOnly();
 
+      const restrictInputs = areForgeInputsGmOnly();
+      const isHostGM = game.user.isGM && game.user.id === _hostId;
+
       // Apply "read-only" lock to all forge controls for watching players
       const applyLockState = () => {
         if (!lockControlsForPlayer) return;
@@ -1051,7 +1054,11 @@ function openItemForgeDialog() {
       const broadcastForgeState = () => {
         if (!isItemForgePublic()) return;
         if (suppressStateBroadcast) return;
-        if (!(game.user.isGM && game.user.id === _hostId)) return;
+
+        // If inputs are restricted, only the host GM is allowed to broadcast.
+        // If inputs are NOT restricted, any user may broadcast (GM or player),
+        // and the last user to touch a control "wins".
+        if (restrictInputs && !isHostGM) return;
 
         const sock = game.projectfu?.socket;
         if (!sock) return;
