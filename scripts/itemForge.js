@@ -1742,11 +1742,14 @@ if (catKey === "custom") {
   }
 
   const items = currentQualities.map((q, i) => `
-    <div class="if-quality" data-idx="${i}">
+  <div class="if-quality" data-idx="${i}">
+    <span class="if-quality-label"
+          style="display:inline-block; padding-left:4px; width:100%; box-sizing:border-box;">
       ${esc(qualityDisplayName(q, type))}
-    </div>
-  `).join("");
-  $qualitiesList.html(items);
+    </span>
+  </div>
+`).join("");
+$qualitiesList.html(items);
 
   wireSelectableList($qualitiesList, ".if-quality", {
   initialIndex,
