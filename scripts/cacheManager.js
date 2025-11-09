@@ -62,11 +62,29 @@ export const cacheManager = {
 
   // Clear the Folder (Used on Startup or via Macro)
   async clearCacheFolder() {
-    const folder = await this.getOrCreateCacheFolder();
-    const items = game.items.filter(i => i.folder?.id === folder.id);
-    for (const item of items) await item.delete();
-    console.log(`[Lookfar] Cleared ${items.length} cached items from "${folder.name}".`);
-  },
+  const activeGM = game.users?.activeGM;
+  if (!activeGM || game.user.id !== activeGM.id) {
+    return;
+  }
+
+  const folder = await this.getOrCreateCacheFolder();
+  if (!folder) return;
+
+  const items = game.items.filter(i => i.folder?.id === folder.id);
+  if (!items.length) {
+    console.log("[Lookfar] No cached items to clear.");
+    return;
+  }
+
+  try {
+    await Item.deleteDocuments(items.map(i => i.id));
+    console.log(
+      `[Lookfar] Cleared ${items.length} cached items from "${folder.name}".`
+    );
+  } catch (err) {
+    console.warn("[Lookfar] Failed to clear loot cache (GM-only operation):", err);
+  }
+},
 
   // ------- UI Hiding Implementation -------
 
@@ -165,4 +183,5 @@ Hooks.once("init", async () => {
 // Auto-Clear Cache on World Load
 Hooks.once("ready", async () => {
   await cacheManager.clearCacheFolder();
+
 });
