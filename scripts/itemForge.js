@@ -1017,6 +1017,8 @@ function openItemForgeDialog() {
       const broadcastForgeState = () => {
         if (!isItemForgePublic()) return;
         if (suppressStateBroadcast) return;
+        if (!(game.user.isGM && game.user.id === _hostId)) return;
+
         const sock = game.projectfu?.socket;
         if (!sock) return;
 
