@@ -939,6 +939,28 @@ function openItemForgeDialog() {
       // Locks all Item Forge inputs for non-GM users
       const lockControlsForPlayer = !game.user.isGM && isItemForgePublic() && areForgeInputsGmOnly();
 
+      // Apply "read-only" lock to all forge controls for watching players
+      const applyLockState = () => {
+        if (!lockControlsForPlayer) return;
+
+     // Item type radios
+     html.find('input[name="itemType"]').prop('disabled', true);
+
+     // Weapon customize + attrs + fee
+     html.find('#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee')
+         .prop('disabled', true);
+
+     // Qualities category select
+     html.find('#qualitiesCategory').prop('disabled', true);
+
+     // Custom quality controls (if present)
+     html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
+   };
+
+    // Initial pass (in case some controls exist already)
+    applyLockState();
+
+
       // --- Shared Forge UI state helpers (only used when visibility is "Public") ---
       let suppressStateBroadcast = false;
 
@@ -1403,35 +1425,49 @@ function openItemForgeDialog() {
       // --- Hooks & Wiring ------------------------------------------------------------//
 
       // handles scroll box selection list
-      const wireSelectableList = ($container, itemSel, {
+const wireSelectableList = ($container, itemSel, {
   onSelect,
   initialIndex,
-  blockClicks = false      // NEW
+  blockClicks = false
 } = {}) => {
   const $items = $container.find(itemSel);
-  $items.on("mouseenter", function() {
-    if (this.dataset.selected === "1") return;
-    $(this).css({ backgroundColor: "rgba(0,0,0,0.08)" });
-  }).on("mouseleave", function() {
-    if (this.dataset.selected === "1") return;
-    $(this).css({ backgroundColor: "", color: "" });
-  });
-  $items.on("click", function() {
-    if (blockClicks) return;  // NEW: ignore player clicks when locked
 
+  // helper: select an element programmatically
+  const applySelection = (el, triggerCallback = true) => {
     $container.find(itemSel).each(function() {
       this.dataset.selected = "";
       $(this).css({ backgroundColor: "", color: "" });
     });
-    this.dataset.selected = "1";
-    $(this).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" });
-    onSelect?.(this);
+    if (!el) return;
+    el.dataset.selected = "1";
+    $(el).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" });
+    if (triggerCallback) onSelect?.(el);
+  };
+
+  $items.on("mouseenter", function() {
+    if (this.dataset.selected === "1") return;
+    if (blockClicks) return; // no hover styling when locked
+    $(this).css({ backgroundColor: "rgba(0,0,0,0.08)" });
+  }).on("mouseleave", function() {
+    if (this.dataset.selected === "1") return;
+    if (blockClicks) return; // no hover styling when locked
+    $(this).css({ backgroundColor: "", color: "" });
   });
 
-  const $first = Number.isInteger(initialIndex)
+  $items.on("click", function(ev) {
+    if (blockClicks) {
+      ev.preventDefault();
+      ev.stopImmediatePropagation?.();
+      return;
+    }
+    applySelection(this, true);
+  });
+
+  // initial selection (used by both GM and non-GM when socket sends a state)
+  const $initial = Number.isInteger(initialIndex)
     ? $items.eq(initialIndex)
     : $items.first();
-  if ($first.length) $first.trigger("click");
+  if ($initial.length) applySelection($initial[0], true);
 };
 
       // === Materials UI (GM authoritative editing) ===========================
@@ -1589,20 +1625,20 @@ $img.on("click", () => {
         const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
 
         // handle custom qualities
-        if (catKey === "custom") {
-          currentQualities = [];
+if (catKey === "custom") {
+  currentQualities = [];
 
-          const effCommitted = state
-            ? String(state.customEffect ?? "").trim()
-            : String(html.data('customEffect') ?? "Custom effect text");
-          const cstCommitted = state
-            ? toInt(state.customCost ?? 0)
-            : toInt(html.data('customCost') ?? 0);
+  const effCommitted = state
+    ? String(state.customEffect ?? "").trim()
+    : String(html.data('customEffect') ?? "Custom effect text");
+  const cstCommitted = state
+    ? toInt(state.customCost ?? 0)
+    : toInt(html.data('customCost') ?? 0);
 
-          html.data('customEffect', effCommitted);
-          html.data('customCost', cstCommitted);
+  html.data('customEffect', effCommitted);
+  html.data('customCost', cstCommitted);
 
-          $qualitiesList.html(`
+  $qualitiesList.html(`
     <div id="customQualityWrap"
          style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
 
@@ -1640,8 +1676,13 @@ $img.on("click", () => {
     </div>
   `);
 
-          $qualitiesList
-      .off('.customUX')
+         // Immediately lock custom inputs when in restricted mode
+  if (lockControlsForPlayer) {
+    html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
+  }
+
+  $qualitiesList
+    .off('.customUX')
       .on('keydown.customUX', '#customCost', (ev) => {
         if (ev.key === 'Enter') ev.preventDefault();
       })
@@ -1841,7 +1882,8 @@ $img.on("click", () => {
         if (kind === "weapon") updateHandToggle();
         relayout();
         updateCost();
-      }
+        applyLockState();
+      };
 
       const refreshPreviewFromUI = () => {
         const kind = html.find('input[name="itemType"]:checked').val();
@@ -1919,8 +1961,8 @@ $dlg.on('change.ifPrev',
   '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
   (ev) => {
     if (lockControlsForPlayer) {
-      // Don’t let players in restricted mode change these
       ev.preventDefault();
+      ev.stopImmediatePropagation?.();
       return;
     }
     refreshPreviewFromUI();
@@ -1928,7 +1970,7 @@ $dlg.on('change.ifPrev',
 );
 
       $qualitiesSelect.on("change", () => {
-  if (lockControlsForPlayer) return;   // NEW
+  if (lockControlsForPlayer) return;
 
   const kind = html.find('input[name="itemType"]:checked').val();
   renderQualities(kind);
@@ -1952,7 +1994,7 @@ $dlg.on('change.ifPrev',
       // Clickable preview image
       html.off('click.ifIconPick');
 html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
-  if (lockControlsForPlayer) return;  // NEW: players can’t change icons in restricted mode
+  if (lockControlsForPlayer) return;
 
   ev.preventDefault();
   ev.stopPropagation();
