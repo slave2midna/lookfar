@@ -906,7 +906,7 @@ function openItemForgeDialog() {
             if (!base) return ui.notifications.warn("Select a template first.");
 
             const mats = html.data('ifMaterials') || [];
-            if (!validateMaterialsOrigin(html, mats)) return;
+            if (!validateMaterialsOrigin(html, mats)) return false;
 
             const itemData = buildItemData(kind, html, { currentTemplates, currentQualities });
             const created = await Item.create(itemData, { renderSheet: true });
@@ -947,6 +947,17 @@ function openItemForgeDialog() {
       const $wc  = $dlg.find(".window-content");
       $wc.css({ display: "block", overflow: "visible" });
       $dlg.css({ width: "700px" });
+
+      // Button safety helper
+      const setForgeEnabled = (enabled) => {
+        const $btn = $dlg.find('button[data-button="forge"]');
+        if (!$btn.length) return;
+        $btn.prop('disabled', !enabled);
+        $btn.css({
+          opacity: enabled ? 1 : 0.5,
+          filter: enabled ? "" : "grayscale(1)"
+        });
+      };
 
       const relayout = () => {
         const app2 = ui.windows[Number($dlg.attr("data-appid"))];
@@ -1578,6 +1589,9 @@ $img.on("click", () => {
         }
 
         $materialsDrop.css({ borderColor: (!hasReq && needKey) ? "red" : "#999" });
+
+        // Enable/disable Forge button based on whether requirement is satisfied
+        setForgeEnabled(hasReq);
 
         // repaint hook (socket pushes call this)
         html.find('#materialsDrop').off('repaint').on('repaint', () => {
