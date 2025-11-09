@@ -1895,6 +1895,14 @@ $qualitiesList.html(items);
         applyLockState();
       };
 
+        // Cosmetic: disable "clickable" cursor on preview icon for locked users
+        const $icon = html.find('#if-preview-icon');
+        if (lockControlsForPlayer) {
+          $icon.css('cursor', 'default');
+        } else {
+          $icon.css('cursor', 'pointer');
+        }
+
       const refreshPreviewFromUI = () => {
         const kind = html.find('input[name="itemType"]:checked').val();
         renderPreview(
