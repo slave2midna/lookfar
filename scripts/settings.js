@@ -15,7 +15,7 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "itemForgeVisibility", {
-      name: "Item Forge Visibility",
+      name: "Item Forger Visibility",
       hint: "Choose whether the item forge dialog options are public or GM only.",
       scope: "world",
       config: true,
@@ -175,6 +175,7 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
 
 
 
