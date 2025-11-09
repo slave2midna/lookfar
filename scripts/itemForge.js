@@ -65,6 +65,15 @@ const areForgeInputsGmOnly = () => {
   }
 };
 
+// Playtest damage rules toggle
+const useVariantDamageRules = () => {
+  try {
+    return !!game.settings.get("lookfar", "useVariantDamageRules");
+  } catch {
+    return false;
+  }
+};
+
 // --- FU Socket Helpers ----------------------------------------------
 
 // Message names (unique within FU socket handler)
@@ -348,15 +357,24 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
   };
 };
 
+// Playtest damage: +2 damage per full 1000 worth (no fee)
+const getVariantDamageBonus = (worth) => {
+  if (!useVariantDamageRules()) return 0;
+  const tier = Math.floor(toInt(worth) / 1000); // 0–999 → 0, 1000–1999 → 1, etc.
+  return tier > 0 ? tier * 2 : 0;               // each tier is +2 damage
+};
+
 // Recalculate weapon stats based on UI toggles
-const computeWeaponStats = (base, html) => {
+const computeWeaponStats = (base, html, worthOverride) => {
+
+  const variant = useVariantDamageRules();
 
   const baseHand = normHand(base?.hand) || null; // "1" | "2" | null
   const plus1 = html.find('#optPlusOne').is(':checked');
   const plus4 = html.find('#optPlusDamage').is(':checked');
-  const flip = html.find('#optToggleHand').is(':checked');
-  const selA = String(html.find('#optAttrA').val() || base?.attrA || "").toUpperCase();
-  const selB = String(html.find('#optAttrB').val() || base?.attrB || "").toUpperCase();
+  const flip  = html.find('#optToggleHand').is(':checked');
+  const selA  = String(html.find('#optAttrA').val() || base?.attrA || "").toUpperCase();
+  const selB  = String(html.find('#optAttrB').val() || base?.attrB || "").toUpperCase();
   const elementVal = (html.find('#optElement').val() || base?.element || "physical").toString();
 
   // hands
@@ -367,13 +385,27 @@ const computeWeaponStats = (base, html) => {
 
   // damage & accuracy
   const handMod = (flip && baseHand === "2") ? -4 :
-    (flip && baseHand === "1") ? +4 :
-    0;
-  const accOut = (Number(base?.accuracy ?? base?.acc ?? 0) || 0) + (plus1 ? 1 : 0);
-  let dmgOut = (Number(base?.damage ?? base?.dmg ?? 0) || 0) + (plus4 ? 4 : 0) + handMod;
+                  (flip && baseHand === "1") ? +4 :
+                  0;
 
-  // set "isMartial" true if effective damage >= 10
-  const isMartialEffective = (Number.isFinite(dmgOut) && dmgOut >= 10) || !!base?.isMartial;
+  const accOut = (Number(base?.accuracy ?? base?.acc ?? 0) || 0) + (plus1 ? 1 : 0);
+
+  let dmgOut = (Number(base?.damage ?? base?.dmg ?? 0) || 0)
+             + (plus4 ? 4 : 0)        // this will effectively never apply when variant rules are on, because the checkbox is disabled
+             + handMod;
+
+  // Variant rules: add scaling bonus based on worth (no fee)
+  if (variant) {
+    const worthVal = toInt(worthOverride);
+    dmgOut += getVariantDamageBonus(worthVal);
+  }
+
+  // isMartial:
+  // - NORMAL: true if dmg >= 10 OR base is already martial.
+  // - VARIANT: do NOT auto-upgrade based on damage; just respect base.isMartial.
+  const isMartialEffective = variant
+    ? !!base?.isMartial
+    : ((Number.isFinite(dmgOut) && dmgOut >= 10) || !!base?.isMartial);
 
   return {
     hands: handsOut,
@@ -403,14 +435,12 @@ const buildItemData = (kind, html, {
   const $t = html.find('#templateList [data-selected="1"]').first();
   const ti = Number($t.data("idx"));
   const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-  const {
-    worth
-  } = getCurrentCosts(html, tmpl, currentQualities);
+  const { worth } = getCurrentCosts(html, tmpl, currentQualities);
   const costField = worth;
 
   // handle weapon item data.
   if (kind === "weapon") {
-    const w = computeWeaponStats(base, html);
+    const w = computeWeaponStats(base, html, worth);
     return {
       name: `Crafted ${base?.name ?? "Weapon"}`,
       type: "weapon",
@@ -1359,69 +1389,67 @@ function openItemForgeDialog() {
         }
 
         // ---------- WEAPON PREVIEW ----------
-        if (kind === "weapon") {
-          // current template selection
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const w = Number.isFinite(idx) ? currentTemplates[idx] : null;
+if (kind === "weapon") {
+  // current template selection
+  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx  = Number($sel.data("idx"));
+  const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-          // pull fields from equipment.json
-          const baseHand = normHand(w?.hand) || null; // "1" | "2" | null
-          const baseHandText = handLabel(baseHand ?? (w?.hand ?? "—"));
-          const baseType = w?.type ?? "—";
-          const baseCat = w?.category ?? w?.cat ?? "—";
-          const baseA = (w?.attrA ?? "—").toString().toUpperCase();
-          const baseB = (w?.attrB ?? "—").toString().toUpperCase();
-          const baseAcc = w?.accuracy ?? w?.acc ?? "—";
-          const baseDmg = w?.damage ?? w?.dmg ?? "—";
-          const baseEle = (w?.element ?? "physical").toString();
+  // guard
+  if (!base) {
+    $preview.html(`${style}
+      <div id="if-preview-card">
+        <img id="if-preview-icon" src="${icon}">
+        <div id="if-preview-rows" class="if-muted">
+          <div class="if-row">Select a weapon template…</div>
+        </div>
+      </div>
+    `);
+    return;
+  }
 
-          // UI OVERRIDES
-          const selA = (html.find('#optAttrA').val() || baseA).toString().toUpperCase();
-          const selB = (html.find('#optAttrB').val() || baseB).toString().toUpperCase();
-          const plus1 = html.find('#optPlusOne').is(':checked');
-          const plus4 = html.find('#optPlusDamage').is(':checked');
-          const flip = html.find('#optToggleHand').is(':checked');
-          const eleSel = (html.find('#optElement').val() || baseEle).toString();
+  // pull fields from equipment.json
+  const baseHand     = normHand(base?.hand) || null; // "1" | "2" | null
+  const baseHandText = handLabel(baseHand ?? (base?.hand ?? "—"));
+  const baseType     = base?.type ?? "—";
+  const baseCat      = base?.category ?? base?.cat ?? "—";
 
-          let dispHand = baseHand;
-          if (flip && (baseHand === "1" || baseHand === "2")) dispHand = baseHand === "1" ? "2" : "1";
+  // Compute worth for preview (base + quality + surcharges, no fee)
+  let worthForPreview = 0;
+  try {
+    const { worth } = getCurrentCosts(html, base, currentQualities);
+    worthForPreview = worth;
+  } catch {
+    worthForPreview = 0;
+  }
 
-          const handMod = (flip && baseHand === "2") ? -4 // "Make 1-handed" → -4 dmg
-            :
-            (flip && baseHand === "1") ? +4 // "Make 2-handed" → +4 dmg
-            :
-            0;
+  // Let the shared routine do all the damage / martial logic
+  const stats   = computeWeaponStats(base, html, worthForPreview);
+  const handNorm = normHand(stats.hands) || baseHand;
+  const dispHandText = handLabel(handNorm ?? baseHandText);
 
-          const dispAcc = plus1 ? addModIfNumber(baseAcc, 1) : baseAcc;
-          const dispDmg = addModIfNumber(plus4 ? addModIfNumber(baseDmg, 4) : baseDmg, handMod);
-          const dispDmgNum = Number(dispDmg);
-          const isMartialEffective = (Number.isFinite(dispDmgNum) && dispDmgNum >= 10) || !!w?.isMartial;
+  // weapon preview stat rows
+  const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
+  const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+ ${stats.acc} | HR+${stats.dmg} ${stats.dmgType}`;
 
-          const dispHandText = handLabel(dispHand ?? baseHandText);
-
-          // weapon preview stat rows
-          const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-          const row2 = `【${selA} + ${selB}】+ ${dispAcc} | HR+${dispDmg} ${eleSel}`;
-
-          // weapon preview item card
-          $preview.html(`${style}
-              <div id="if-preview-card">
-                <div id="if-preview-head">
-                  <div class="if-icon-wrap">
-                    <img id="if-preview-icon" src="${icon}">
-                    ${isMartialEffective ? `<span class="is-martial if-badge"></span>` : ``}
-                  </div>
-                </div>
-                <div id="if-preview-rows">
-                  <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
-                  <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
-                  <div class="if-row-desc">${esc(qdesc())}</div>
-                </div>
-              </div>
-            `);
-            return;
-        }
+  // weapon preview item card
+  $preview.html(`${style}
+      <div id="if-preview-card">
+        <div id="if-preview-head">
+          <div class="if-icon-wrap">
+            <img id="if-preview-icon" src="${icon}">
+            ${stats.isMartial ? `<span class="is-martial if-badge"></span>` : ``}
+          </div>
+        </div>
+        <div id="if-preview-rows">
+          <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
+          <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
+          <div class="if-row-desc">${esc(qdesc())}</div>
+        </div>
+      </div>
+    `);
+  return;
+}
       }
 
       // --- Hooks & Wiring ------------------------------------------------------------//
@@ -1879,21 +1907,33 @@ $qualitiesList.html(items);
       }
 
       const updateForKind = (kind, state = null) => {
-        renderCustomize(kind);
-        renderAttrs(kind);
+  renderCustomize(kind);
+  renderAttrs(kind);
 
-        if (state?.qualitiesCategory) {
-          $qualitiesSelect.val(state.qualitiesCategory);
-        }
+  // When Playtest Damage Rules are enabled, completely disable the +4 Damage toggle
+  if (kind === "weapon" && useVariantDamageRules()) {
+    const $pd = html.find('#optPlusDamage');
+    $pd.prop('checked', false)
+       .prop('disabled', true)
+       .closest('label')
+       .attr(
+         'title',
+         'Playtest Damage Rules: damage scales with item cost instead of using the +4 Damage toggle.'
+       );
+  }
 
-        populateTemplates(kind, state);
-        renderQualities(kind, state?.qualityIdx ?? null, state);
-        renderPreview(kind, null);
-        if (kind === "weapon") updateHandToggle();
-        relayout();
-        updateCost();
-        applyLockState();
-      };
+  if (state?.qualitiesCategory) {
+    $qualitiesSelect.val(state.qualitiesCategory);
+  }
+
+  populateTemplates(kind, state);
+  renderQualities(kind, state?.qualityIdx ?? null, state);
+  renderPreview(kind, null);
+  if (kind === "weapon") updateHandToggle();
+  relayout();
+  updateCost();
+  applyLockState();
+};
 
         // Cosmetic: disable "clickable" cursor on preview icon for locked users
         const $icon = html.find('#if-preview-icon');
@@ -1934,13 +1974,18 @@ $qualitiesList.html(items);
     updateForKind(kind, state);
 
     // Weapon / cost toggles
-    html.find('#optPlusOne').prop('checked', !!state.plusOne);
-    html.find('#optPlusDamage').prop('checked', !!state.plusDamage);
-    html.find('#optToggleHand').prop('checked', !!state.toggleHand);
-    html.find('#optElement').val(state.element || 'physical');
-    html.find('#optAttrA').val(state.attrA || 'MIG');
-    html.find('#optAttrB').val(state.attrB || 'MIG');
-    html.find('#optFee').prop('checked', !!state.fee);
+html.find('#optPlusOne').prop('checked', !!state.plusOne);
+
+// Only honor plusDamage when NOT using variant rules
+if (!useVariantDamageRules()) {
+  html.find('#optPlusDamage').prop('checked', !!state.plusDamage);
+}
+
+html.find('#optToggleHand').prop('checked', !!state.toggleHand);
+html.find('#optElement').val(state.element || 'physical');
+html.find('#optAttrA').val(state.attrA || 'MIG');
+html.find('#optAttrB').val(state.attrB || 'MIG');
+html.find('#optFee').prop('checked', !!state.fee);
 
     // Custom quality persistence
     if (typeof state.customEffect === "string") {
