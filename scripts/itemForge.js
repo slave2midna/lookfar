@@ -1027,6 +1027,9 @@ function openItemForgeDialog() {
           ? toInt($customCost.val())
           : toInt(html.data('customCost') ?? 0);
 
+        const previewSrc = html.find('#if-preview-icon').attr('src') || "";
+        const iconPath = html.data('iconPath') || previewSrc || "";
+
         return {
           kind,
           templateIdx,
@@ -1040,7 +1043,8 @@ function openItemForgeDialog() {
           attrB,
           fee,
           customEffect,
-          customCost
+          customCost,
+          iconPath
         };
       };
 
@@ -1128,45 +1132,55 @@ function openItemForgeDialog() {
       function renderPreview(kind, selectedEl, opts = {}) {
         const rerollIcon = !!opts.rerollIcon;
 
-        // cache for auto-picked icons
+        // cache for auto-picked icons (GM only)
         let iconMap = html.data('autoIconMap');
         if (!iconMap) {
           iconMap = {};
           html.data('autoIconMap', iconMap);
         }
 
-        // override icon with user pick
-        const override = html.data('iconOverride');
+        const override   = html.data('iconOverride');
+        const savedPath  = html.data('iconPath');
+        const isHostGM   = game.user.isGM && game.user.id === _hostId;
+
         const getKindIcon = (k) => ({
           weapon: "icons/svg/sword.svg",
           shield: "icons/svg/shield.svg",
           armor: "icons/svg/statue.svg",
           accessory: "icons/svg/stoned.svg"
-        } [k] || "icons/svg/mystery-man.svg");
+        }[k] || "icons/svg/mystery-man.svg");
 
         const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-        const idx = Number($sel.data("idx"));
+        const idx  = Number($sel.data("idx"));
         const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
-        const baseId = base?.id ?? base?._id ?? getName(base);
+        const baseId   = base?.id ?? base?._id ?? getName(base);
         const cacheKey = `${kind}:${String(baseId)}`;
 
         let icon = getKindIcon(kind);
 
         if (override) {
+          // GM-chosen custom icon
           icon = override;
-        } else {
+          html.data('iconPath', icon);
+        } else if (savedPath) {
+          // Path that came from GM via socket
+          icon = savedPath;
+        } else if (isHostGM && base) {
+          // Host GM picks a random icon once for this base+kind
           if (!rerollIcon && iconMap[cacheKey]) {
             icon = iconMap[cacheKey];
           } else {
             try {
-              const pick = base ? dataLoader.getRandomIconFor(kind, base) : null;
+              const pick = dataLoader.getRandomIconFor(kind, base);
               icon = pick || icon;
             } catch (e) {
               console.warn("[Item Forger] preview icon pick failed:", e);
             }
             iconMap[cacheKey] = icon;
           }
+          html.data('iconPath', icon);
         }
+
         try {
           const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
           html.data('lastIconDir', dir);
@@ -1214,7 +1228,7 @@ function openItemForgeDialog() {
 
     object-fit: contain;
     image-rendering: auto;
-    cursor: pointer;
+    cursor: default;
     pointer-events: auto;
   }
 
@@ -1635,9 +1649,14 @@ $templateList.html(items);
   initialIndex,
   onSelect: (el) => {
     updateHandToggle(el);
-    updatePlusOneToggle(el);          // NEW
+    updatePlusOneToggle(el);
     applyAttrDefaultsFromTemplate(el);
     html.removeData('iconOverride');
+
+    // Only the host GM is allowed to roll a new random icon
+    if (game.user.isGM && game.user.id === _hostId) {
+      html.removeData('iconPath');
+    }
 
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, el, { rerollIcon: true });
@@ -1908,45 +1927,54 @@ $qualitiesList.html(items);
       }
 
       function updatePlusOneToggle(selectedEl) {
-        const kind = html.find('input[name="itemType"]:checked').val();
-        const $cb = html.find('#optPlusOne');
-        const $label = $cb.closest('label');
+  const kind = html.find('input[name="itemType"]:checked').val();
+  const $cb = html.find('#optPlusOne');
+  const $label = $cb.closest('label');
 
-        // Non-weapons: just reset to normal
-        if (kind !== "weapon") {
-          $cb.prop('disabled', false);
-          $label.css({ opacity: 1, filter: "" }).attr('title', '');
-          return;
-        }
+  // If this client is a locked player, keep current checked state but disable & grey it out
+  if (!game.user.isGM && lockControlsForPlayer) {
+    $cb.prop('disabled', true);
+    $label
+      .attr('title', 'Only the GM can modify this option.')
+      .css({ opacity: 0.5, filter: 'grayscale(1)' });
+    return;
+  }
 
-        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-        const idx = Number($sel.data("idx"));
-        const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+  // Non-weapons: just reset to normal
+  if (kind !== "weapon") {
+    $cb.prop('disabled', false);
+    $label.css({ opacity: 1, filter: "" }).attr('title', '');
+    return;
+  }
 
-        if (!base) {
-          // No template selected → reset
-          $cb.prop('disabled', false);
-          $label.css({ opacity: 1, filter: "" }).attr('title', '');
-          return;
-        }
+  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+  const idx = Number($sel.data("idx"));
+  const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-        const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
-        const hasBasePlusOne = baseAcc >= 1; // treat any >=1 as "already has +1"
+  if (!base) {
+    // No template selected → reset
+    $cb.prop('disabled', false);
+    $label.css({ opacity: 1, filter: "" }).attr('title', '');
+    return;
+  }
 
-        if (hasBasePlusOne) {
-          // Hard-disable the toggle and grey it out
-          $cb.prop('checked', false).prop('disabled', true);
-          $label
-            .attr('title', 'This weapon already has +1 Accuracy from its base profile.')
-            .css({ opacity: 0.5, filter: 'grayscale(1)' });
-        } else {
-          // Make sure it's usable and visually normal
-          $cb.prop('disabled', false);
-          $label
-            .attr('title', '')
-            .css({ opacity: 1, filter: '' });
-        }
-      }
+  const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
+  const hasBasePlusOne = baseAcc >= 1; // treat any >=1 as "already has +1"
+
+  if (hasBasePlusOne) {
+    // Hard-disable the toggle and grey it out
+    $cb.prop('checked', false).prop('disabled', true);
+    $label
+      .attr('title', 'This weapon already has +1 Accuracy from its base profile.')
+      .css({ opacity: 0.5, filter: 'grayscale(1)' });
+  } else {
+    // Make sure it's usable and visually normal
+    $cb.prop('disabled', false);
+    $label
+      .attr('title', '')
+      .css({ opacity: 1, filter: '' });
+  }
+}
 
       const updateForKind = (kind, state = null) => {
   renderCustomize(kind);
@@ -1993,14 +2021,6 @@ $qualitiesList.html(items);
   applyLockState();
 };
 
-        // Cosmetic: disable "clickable" cursor on preview icon for locked users
-        const $icon = html.find('#if-preview-icon');
-        if (lockControlsForPlayer) {
-          $icon.css('cursor', 'default');
-        } else {
-          $icon.css('cursor', 'pointer');
-        }
-
       const refreshPreviewFromUI = () => {
         const kind = html.find('input[name="itemType"]:checked').val();
         renderPreview(
@@ -2009,7 +2029,7 @@ $qualitiesList.html(items);
           { rerollIcon: false }
         );
         updateCost();
-        broadcastForgeState(); // NEW: sync all basic UI toggles
+        broadcastForgeState();
       };
 
       // ------------- SOCKET-DRIVEN UI STATE -------------------
@@ -2026,6 +2046,15 @@ $qualitiesList.html(items);
     // Ensure the category select matches first, so renderQualities uses it
     if (state.qualitiesCategory) {
       $qualitiesSelect.val(state.qualitiesCategory);
+    }
+
+    // Adopt the GM's chosen iconPath (random or custom)
+    if (state.iconPath) {
+      html.data('iconPath', state.iconPath);
+      if (!game.user.isGM) {
+        // Players should never keep their own override
+        html.removeData('iconOverride');
+      }
     }
 
     // Build customize/attrs/templates/qualities with the given state
@@ -2058,7 +2087,17 @@ html.find('#optFee').prop('checked', !!state.fee);
     // Re-render preview & cost (this will *not* rebroadcast because of the flag)
     refreshPreviewFromUI();
 
-    // NEW: recompute materials origin requirement locally
+    // Ensure the preview icon exactly matches the GM's choice
+    if (state.iconPath) {
+      html.data('iconPath', state.iconPath);
+      try {
+        $preview.find('#if-preview-icon').attr('src', state.iconPath);
+      } catch (e) {
+        console.warn("[Item Forger] Failed to apply synced iconPath:", e);
+      }
+    }
+
+    // recompute materials origin requirement locally
     renderMaterials();
 
     // NEW: if this client is the host GM, rebroadcast MaterialsReplace
@@ -2117,7 +2156,7 @@ $dlg.on('change.ifPrev',
       // Clickable preview image
       html.off('click.ifIconPick');
 html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
-  if (lockControlsForPlayer) return;
+  if (!game.user.isGM) return; 
 
   ev.preventDefault();
   ev.stopPropagation();
@@ -2142,6 +2181,7 @@ html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
                 html.data('lastIconDir', String(path).replace(/\/[^/]*$/, "/"));
               } catch {}
               renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+              broadcastForgeState();
             }
           });
           fp.render(true);
