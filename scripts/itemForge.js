@@ -1227,7 +1227,7 @@ function openItemForgeDialog() {
 
     object-fit: contain;
     image-rendering: auto;
-    cursor: pointer;
+    cursor: default;
     pointer-events: auto;
   }
 
@@ -1651,7 +1651,11 @@ $templateList.html(items);
     updatePlusOneToggle(el);
     applyAttrDefaultsFromTemplate(el);
     html.removeData('iconOverride');
-    html.removeData('iconPath'); 
+
+    // Only the host GM is allowed to roll a new random icon
+    if (game.user.isGM && game.user.id === _hostId) {
+      html.removeData('iconPath');
+    }
 
     const kind = html.find('input[name="itemType"]:checked').val();
     renderPreview(kind, el, { rerollIcon: true });
@@ -2006,10 +2010,6 @@ $qualitiesList.html(items);
   updateCost();
   applyLockState();
 };
-
-        // Disable "clickable" cursor on preview icon for non-GM users.
-        const $icon = html.find('#if-preview-icon');
-        $icon.css('cursor', game.user.isGM ? 'pointer' : 'default');
 
       const refreshPreviewFromUI = () => {
         const kind = html.find('input[name="itemType"]:checked').val();
