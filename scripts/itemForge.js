@@ -604,8 +604,9 @@ const content = `
             </div>
             <div style="flex:1 1 auto; min-width:0;">
               <div id="templateList" aria-label="Template list"
-                   style="height:100px; overflow-y:auto; border:1px solid #999; padding:4px; box-sizing:border-box;">
-                <div>Loading…</div>
+     style="height:100px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
+  <div>Loading…</div>
+</div>
               </div>
             </div>
           </div>
@@ -1592,10 +1593,15 @@ $img.on("click", () => {
           renderPreview(kind, null);
           return;
         }
-        const items = currentTemplates.map((r, i) =>
-          `<div class="if-template" data-idx="${i}" ...>${getNameSafe(r)}</div>`
-        ).join("");
-        $templateList.html(items);
+        const items = currentTemplates.map((r, i) => `
+  <div class="if-template" data-idx="${i}">
+    <span class="if-template-label"
+          style="display:inline-block; padding-left:4px; width:100%; box-sizing:border-box;">
+      ${getNameSafe(r)}
+    </span>
+  </div>
+`).join("");
+$templateList.html(items);
         wireSelectableList($templateList, ".if-template", {
   initialIndex,
   onSelect: (el) => {
