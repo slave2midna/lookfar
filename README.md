@@ -32,5 +32,5 @@ Major thanks to the following contributors:
 
 - **Design Feedback and CSS Improvements**: Various design improvements and feedback provided by the amazing [spyrella](https://github.com/spyrella).
 - **Original Creator and Module Dev**: Original Lookfar GM Assistant tool created by [why Cookie Rocket](https://github.com/infrastructureaxolotl).
-- **Localization & Translations**: Thanks to [Lamegel](https://github.com/lamegal) & [Zakarik](https://github.com/Zakarik) for their work on provided translations.
-- **Special Thanks**: Special thanks to [Unarekin](https://github.com/Unarekin), [Shourn](https://github.com/Shourn), and [Elemental-Re](https://github.com/Element-Re) for their support with the API.
+- **Localization & Translations**: [Lamegel](https://github.com/lamegal) & [Zakarik](https://github.com/Zakarik) for their work on additional translations.
+- **API Assistance**: [Unarekin](https://github.com/Unarekin), [Shourn](https://github.com/Shourn), and [Elemental-Re](https://github.com/Element-Re) for answering all my API questions.
