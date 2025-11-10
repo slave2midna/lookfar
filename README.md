@@ -10,9 +10,9 @@ Please note that licensed Fabula Ultima content is not provided with this system
 
 | Features               |                                                                                                                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Travel Roll Helper** | Adds a travel button to tools UI for Users and Gamemasters to perform Travel Checks, generate dangers and discoveries. Includes a popup with suggestions for improv, located by project FU toolbar. |
+| **Travel Check** | Adds a travel button to tools UI for Users and Gamemasters to perform Travel Checks, generate dangers and discoveries. Includes a popup with suggestions for improv, located by project FU toolbar. |
 | **Treasure Generator** | Adds a treasure button to tools UI for Gamemasters to generate loot based on party level and reward budget. Loot generated can be kept as items in foundry to be given to players. |
-| **Custom Item Forger** | Adds an item forger the tools UI for Gamemasters and Users to collaborate and build custom items based on the core and playtest rules. Settings can be changed to restrict this function. |
+| **Item Forger** | Adds an item forger the tools UI for Gamemasters and Users to collaborate and build custom items based on the core and playtest rules. Settings can be changed to restrict this function. |
 
 You can call the travel Check Helper via: `game.lookfar.showTravelCheckDialog();`
 You can call the treasure Roll Helper via: `game.lookfar.showTreasureRollDialog();`
