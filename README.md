@@ -2,11 +2,11 @@
 
 ![fu-sitecover.jpg](https://trello.com/1/cards/64db0994c4a8791322c8b2e2/attachments/64f476a7f1dc332714f44c8c/download/fu-sitecover.jpg)
 
-Hello and welcome to Lookfar! A GM Assistant module for [Foundry VTT](https://foundryvtt.com/). This module is designed to help make travel events and discoveries easier to manage while playing [Fabula Ultima](https://www.needgames.it/fabula-ultima-en/) by [Need Games](https://www.needgames.it/).
+Hello and welcome to Lookfar! A GM Assistant module for [Foundry VTT](https://foundryvtt.com/). This module is designed to help make travel events and discoveries easier to manage while playing [Fabula Ultima](https://www.needgames.it/fabula-ultima-en/) by [Need Games](https://www.needgames.it/). It also provides quick and efficient methods of generating loot and rare equipment for players on the fly.
 
 Please note that licensed Fabula Ultima content is not provided with this system. As an endeavour of the League of Fabulous Developers, this module adheres to RoosterEma's guidelines and strives to ensure that the core book and supplements remain essential to player and GM experience.
 
-**Note:** This module is a WIP and can change at any time. At the current moment, it requires the Fabula Ultima system. It is actively being tested on Foundry v13, and any issues on v12 are unforseen.
+**Note:** This module is a WIP and can change at any time. At the current moment, it requires the [Project FU](https://github.com/League-of-Fabulous-Developers/FoundryVTT-Fabula-Ultima) Fabula Ultima system (v4.0+). It is actively being tested on Foundry v13, and is unsupported for Foundry v12 or any earlier version of PFU.
 
 | Features               |                                                                                                                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -15,7 +15,9 @@ Please note that licensed Fabula Ultima content is not provided with this system
 | **Item Forger** | Adds an item forger the tools UI for Gamemasters and Users to collaborate and build custom items based on the core and playtest rules. Settings can be changed to restrict this function. |
 
 You can call the travel Check Helper via: `game.lookfar.showTravelCheckDialog();`
+
 You can call the treasure Roll Helper via: `game.lookfar.showTreasureRollDialog();`
+
 You can call the item forge Helper via: `game.lookfar.showItemForgerDialog();`
 
 **Manifest URL:** `https://github.com//slave2midna/lookfar/releases/latest/download/module.json`
