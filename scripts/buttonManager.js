@@ -7,56 +7,52 @@ function getItemForgeEditMode() {
   }
 }
 
-// Read feature toggle settings
 function getLookfarTools() {
-  const disableTravelCheck    = game.settings.get("lookfar", "disableTravelCheck");
-  const disableTreasureRoll   = game.settings.get("lookfar", "disableTreasureGenerator");
-  const disableDungeonBuilder = game.settings.get("lookfar", "disableDungeonBuilder");
-  const disableItemForger     = game.settings.get("lookfar", "disableItemForger");
-
   const tools = [];
+
+  // ---------------------------------------------------------------------------
   // Global Tools
-  // Travel Check Button (hidden if disabled)
-  if (!disableTravelCheck) {
+  // ---------------------------------------------------------------------------
+
+  // Travel Check Button
+  tools.push({
+    name: "LOOKFAR.Button.TravelCheck.Name",
+    icon: "fa-solid fa-person-hiking",
+    onClick: () => Hooks.call("lookfarShowTravelCheckDialog")
+  });
+
+  // ---------------------------------------------------------------------------
+  // GM-only tools
+  // ---------------------------------------------------------------------------
+  if (game.user.isGM) {
+    
+    // Treasure Roll Button
     tools.push({
-      name: "LOOKFAR.Button.TravelCheck.Name",
-      icon: "fa-solid fa-person-hiking",
-      onClick: () => Hooks.call("lookfarShowTravelCheckDialog")
+      name: "Treasure Roll",
+      icon: "fa-solid fa-gem",
+      onClick: () => Hooks.call("lookfarShowTreasureRollDialog")
+    });
+
+    // Dungeon Builder Button
+    tools.push({
+      name: "Dungeon Builder",
+      icon: "fa-solid fa-dungeon",
+      onClick: () => Hooks.call("lookfarShowDungeonBuilderDialog")
     });
   }
 
-  // GM-only tools
-  if (game.user.isGM) {
-    // Treasure Roll Button (hidden if disabled)
-    if (!disableTreasureRoll) {
-      tools.push({
-        name: "Treasure Roll",
-        icon: "fa-solid fa-gem",
-        onClick: () => Hooks.call("lookfarShowTreasureRollDialog")
-      });
-    }
+  // Item Forger Button
+  const mode = getItemForgeEditMode(); // "public" | "gmOnly" | "locked" | "hidden"
 
-    // Dungeon Builder Button (hidden if disabled)
-    if (!disableDungeonBuilder) {
-      tools.push({
-        name: "Dungeon Builder",
-        icon: "fa-solid fa-dungeon",
-        onClick: () => Hooks.call("lookfarShowDungeonBuilderDialog")
-      });
-    }
-  }
+  // Non-GM users: hide the button entirely when mode is "hidden"
+  const hideForPlayer = (!game.user.isGM && mode === "hidden");
 
-  // Item Forge Button
-  if (!disableItemForger) {
-    const mode = getItemForgeEditMode(); // "public" | "gmOnly" | "locked" | "hidden"
-    if (!game.user.isGM && mode === "hidden") {
-    } else {
-      tools.push({
-        name: "Item Forger",
-        icon: "fa-solid fa-hammer",
-        onClick: () => Hooks.call("lookfarShowItemForgeDialog")
-      });
-    }
+  if (!hideForPlayer) {
+    tools.push({
+      name: "Item Forger",
+      icon: "fa-solid fa-hammer",
+      onClick: () => Hooks.call("lookfarShowItemForgeDialog")
+    });
   }
 
   // Placeholder for future buttons
