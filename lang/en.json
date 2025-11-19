@@ -38,11 +38,6 @@
   }
 },
 
-  "ItemForgeRestrictInputs": {
-    "Name": "Restrict Item Forger Inputs",
-    "Hint": "When enabled, only GMs can change Item Forger options."
-  },
-
   "EnableKeywords": {
     "Name": "Enable Keywords",
     "Hint": "Enable keywords when generating travel check results."
@@ -85,8 +80,6 @@
 
   "DefaultRollTable": "Lookfar Defaults"
 },
-
-
 
 
 
@@ -460,6 +453,7 @@
 
   }
 }
+
 
 
 
