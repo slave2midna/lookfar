@@ -17,37 +17,74 @@
 
 
     "__SECTION__Settings": "=== Settings ===",
-    "Settings": {
-      "ResultVisibility": {
-        "Name": "Result Visibility",
-        "Hint": "Choose whether results and chat outputs are public or GM only.",
-        "Choices": {
-          "Public": "Public",
-          "GMOnly": "GM Only"
-        }
-      },
-      "EnableKeywords": {
-        "Name": "Enable Keywords",
-        "Hint": "Enable keywords when generating travel check results."
-      },
-      "DiscoveryEffectTable": {
-        "Name": "Discovery Effect Roll Table",
-        "Hint": "Select the Roll Table to use for generating discovery effects."
-      },
-      "DiscoverySourceTable": {
-        "Name": "Discovery Source Roll Table",
-        "Hint": "Select the Roll Table to use for generating discovery sources."
-      },
-      "DangerThreatTable": {
-        "Name": "Danger Threat Roll Table",
-        "Hint": "Select the Roll Table to use for generating danger threats."
-      },
-      "DangerSourceTable": {
-        "Name": "Danger Source Roll Table",
-        "Hint": "Select the Roll Table to use for generating danger sources."
-      },
-      "DefaultRollTable": "Lookfar Defaults"
-    },
+"Settings": {
+  "ResultVisibility": {
+    "Name": "Result Visibility",
+    "Hint": "Choose whether results and chat outputs are public or GM only.",
+    "Choices": {
+      "Public": "Public",
+      "GMOnly": "GM Only"
+    }
+  },
+
+  "EnableKeywords": {
+    "Name": "Enable Keywords",
+    "Hint": "Enable keywords when generating travel check results."
+  },
+
+  "UseVariantTravelRules": {
+    "Name": "Use Variant Travel Rules",
+    "Hint": "Placeholder setting: Toggles alternative travel mechanics (currently unused)."
+  },
+
+  "UseVariantDamageRules": {
+    "Name": "Use Playtest Damage Rules",
+    "Hint": "When generating new weapons, damage will be based on new playtest rules."
+  },
+
+  "DisableDungeonBuilder": {
+    "Name": "Disable Dungeon Builder",
+    "Hint": "Hide and disable the Lookfar Dungeon Builder feature."
+  },
+
+  "DisableItemForger": {
+    "Name": "Disable Item Forger",
+    "Hint": "Hide and disable the Lookfar Item Forger feature."
+  },
+
+  "DisableTravelCheck": {
+    "Name": "Disable Travel Check",
+    "Hint": "Hide and disable the Lookfar Travel Check feature."
+  },
+
+  "DisableTreasureGenerator": {
+    "Name": "Disable Treasure Generator",
+    "Hint": "Hide and disable the Lookfar Treasure Generator feature."
+  },
+
+  "DiscoveryEffectTable": {
+    "Name": "Discovery Effect Roll Table",
+    "Hint": "Select the Roll Table to use for generating discovery effects."
+  },
+
+  "DiscoverySourceTable": {
+    "Name": "Discovery Source Roll Table",
+    "Hint": "Select the Roll Table to use for generating discovery sources."
+  },
+
+  "DangerThreatTable": {
+    "Name": "Danger Threat Roll Table",
+    "Hint": "Select the Roll Table to use for generating danger threats."
+  },
+
+  "DangerSourceTable": {
+    "Name": "Danger Source Roll Table",
+    "Hint": "Select the Roll Table to use for generating danger sources."
+  },
+
+  "DefaultRollTable": "Lookfar Defaults"
+},
+
 
 
 
@@ -421,3 +458,4 @@
 
   }
 }
+
