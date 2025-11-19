@@ -15,22 +15,22 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "itemForgeVisibility", {
-      name: "Item Forger Visibility",
-      hint: "Choose whether the item forge dialog options are public or GM only.",
+      name: game.i18n.localize("LOOKFAR.Settings.ItemForgeVisibility.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.ItemForgeVisibility.Hint"),
       scope: "world",
       config: true,
       type: String,
       choices: {
-        public: "Public",
-        gmOnly: "GM Only"
+        public: game.i18n.localize("LOOKFAR.Settings.ItemForgeVisibility.Choices.Public"),
+        gmOnly: game.i18n.localize("LOOKFAR.Settings.ItemForgeVisibility.Choices.GMOnly")
       },
       default: "gmOnly",
       requiresReload: true
     });
 
     game.settings.register("lookfar", "itemForgeRestrictInputs", {
-      name: "Restrict Item Forge Inputs",
-      hint: "When enabled, only GMs can change Item Forger options.",
+      name: game.i18n.localize("LOOKFAR.Settings.ItemForgeRestrictInputs.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.ItemForgeRestrictInputs.Hint"),
       scope: "world",
       config: true,
       type: Boolean,
@@ -64,7 +64,7 @@ export const LookfarSettings = {
       type: Boolean
     });
 
-     // ---- Feature Toggles ---------------------------------------
+    // ---- Feature Toggles ---------------------------------------
 
     game.settings.register("lookfar", "disableDungeonBuilder", {
       name: game.i18n.localize("LOOKFAR.Settings.DisableDungeonBuilder.Name"),
@@ -152,8 +152,8 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "customTreasureRollTable", {
-      name: "Custom Treasure Roll Table",
-      hint: "Select the Roll Table to use for generating custom treasure.",
+      name: game.i18n.localize("LOOKFAR.Settings.CustomTreasureRollTable.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.CustomTreasureRollTable.Hint"),
       scope: "world",
       config: true,
       type: String,
@@ -189,7 +189,8 @@ export const LookfarSettings = {
 
     for (const fullKey of keys) {
       const setting = reg.get(fullKey);
-      if (setting) setting.choices = rollTableChoices;
+      const cfg = setting;
+      if (cfg) cfg.choices = rollTableChoices;
     }
   }
 };
@@ -217,4 +218,3 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
-
