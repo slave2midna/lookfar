@@ -63,6 +63,48 @@ export const LookfarSettings = {
       default: false,
       type: Boolean
     });
+
+    // ---- Feature Toggles ----------------------------------------------------
+
+    game.settings.register("lookfar", "disableDungeonBuilder", {
+      name: "Disable Dungeon Builder",
+      hint: "Hide and disable the Lookfar Dungeon Builder feature.",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false,
+      requiresReload: true
+    });
+
+    game.settings.register("lookfar", "disableItemForger", {
+      name: "Disable Item Forger",
+      hint: "Hide and disable the Lookfar Item Forger feature.",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false,
+      requiresReload: true
+    });
+
+    game.settings.register("lookfar", "disableTravelCheck", {
+      name: "Disable Travel Check",
+      hint: "Hide and disable the Lookfar Travel Check feature.",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false,
+      requiresReload: true
+    });
+
+    game.settings.register("lookfar", "disableTreasureGenerator", {
+      name: "Disable Treasure Generator",
+      hint: "Hide and disable the Lookfar Treasure Generator feature.",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false,
+      requiresReload: true
+    });
   },
 
   registerDynamicRollTableSettings() {
@@ -175,8 +217,3 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
-
-
-
-
-
