@@ -1124,88 +1124,90 @@ export function openDungeonBuilderDialog() {
             );
             pinnedGen.draw(last.options);
 
-            // --- Draggable party trackers on pinned map ---
+                        // --- Draggable party trackers on pinned map ---
             try {
               const trackerLayer = pinnedIcons;
               if (trackerLayer) {
-                const trackerDefs = [
-                  { id: "db-tracker-red",    color: "red" },
-                  { id: "db-tracker-blue",   color: "blue" },
-                  { id: "db-tracker-green",  color: "green" },
-                  { id: "db-tracker-purple", color: "purple" }
-                ];
+                // Defer until after layout so clientWidth/clientHeight are correct
+                requestAnimationFrame(() => {
+                  const trackerDefs = [
+                    { id: "db-tracker-red",    color: "red" },
+                    { id: "db-tracker-blue",   color: "blue" },
+                    { id: "db-tracker-green",  color: "green" },
+                    { id: "db-tracker-purple", color: "purple" }
+                  ];
 
-                console.log("[Dungeon Builder] tracker layer size",
-                  trackerLayer.clientWidth, trackerLayer.clientHeight);
+                  const iconSize = 18;
+                  const margin = 6;
+                  let currentTop = margin;
 
-                const iconSize = 18;
-                const margin = 6;
-                let currentTop = margin;
+                  const dragState = { icon: null, offsetX: 0, offsetY: 0 };
 
-                const dragState = { icon: null, offsetX: 0, offsetY: 0 };
-
-                const onMouseMove = (ev) => {
-                  if (!dragState.icon) return;
-                  const rect = trackerLayer.getBoundingClientRect();
-
-                  let newLeft = ev.clientX - rect.left - dragState.offsetX;
-                  let newTop  = ev.clientY - rect.top  - dragState.offsetY;
-
-                  const maxX = trackerLayer.clientWidth  - dragState.icon.offsetWidth;
-                  const maxY = trackerLayer.clientHeight - dragState.icon.offsetHeight;
-
-                  newLeft = Math.max(0, Math.min(newLeft, maxX));
-                  newTop  = Math.max(0, Math.min(newTop,  maxY));
-
-                  dragState.icon.style.left = `${newLeft}px`;
-                  dragState.icon.style.top  = `${newTop}px`;
-                };
-
-                const endDrag = () => {
-                  if (!dragState.icon) return;
-                  dragState.icon.style.cursor = "grab";
-                  dragState.icon = null;
-                  document.removeEventListener("mousemove", onMouseMove);
-                  document.removeEventListener("mouseup", endDrag);
-                };
-
-                // Place them along the right edge, but fully inside the overlay
-                let baseLeft = trackerLayer.clientWidth - iconSize - margin;
-                if (!Number.isFinite(baseLeft) || baseLeft < margin) {
-                  baseLeft = margin;
-                }
-
-                trackerDefs.forEach((def) => {
-                  const icon = document.createElement("i");
-                  // Use a guaranteed visible person icon instead of image-portrait
-                  icon.className = "fa-solid fa-person";
-                  icon.dataset.trackerId = def.id;
-
-                  icon.style.position = "absolute";
-                  icon.style.left     = `${baseLeft}px`;
-                  icon.style.top      = `${currentTop}px`;
-                  icon.style.fontSize = `${iconSize}px`;
-                  icon.style.lineHeight = "1";
-                  icon.style.color    = def.color;
-                  icon.style.cursor   = "grab";
-                  icon.style.pointerEvents = "auto";
-                  icon.style.zIndex   = "10";
-
-                  trackerLayer.appendChild(icon);
-                  console.log("[Dungeon Builder] created tracker", def.id);
-
-                  currentTop += iconSize + 4;
-
-                  icon.addEventListener("mousedown", (ev) => {
-                    ev.preventDefault();
+                  const onMouseMove = (ev) => {
+                    if (!dragState.icon) return;
                     const rect = trackerLayer.getBoundingClientRect();
-                    dragState.icon = icon;
-                    dragState.offsetX = ev.clientX - (rect.left + icon.offsetLeft);
-                    dragState.offsetY = ev.clientY - (rect.top  + icon.offsetTop);
-                    icon.style.cursor = "grabbing";
 
-                    document.addEventListener("mousemove", onMouseMove);
-                    document.addEventListener("mouseup", endDrag);
+                    let newLeft = ev.clientX - rect.left - dragState.offsetX;
+                    let newTop  = ev.clientY - rect.top  - dragState.offsetY;
+
+                    const maxX = trackerLayer.clientWidth  - dragState.icon.offsetWidth;
+                    const maxY = trackerLayer.clientHeight - dragState.icon.offsetHeight;
+
+                    newLeft = Math.max(0, Math.min(newLeft, maxX));
+                    newTop  = Math.max(0, Math.min(newTop,  maxY));
+
+                    dragState.icon.style.left = `${newLeft}px`;
+                    dragState.icon.style.top  = `${newTop}px`;
+                  };
+
+                  const endDrag = () => {
+                    if (!dragState.icon) return;
+                    dragState.icon.style.cursor = "grab";
+                    dragState.icon = null;
+                    document.removeEventListener("mousemove", onMouseMove);
+                    document.removeEventListener("mouseup", endDrag);
+                  };
+
+                  // Place them along the top-right edge, but fully inside the overlay
+                  let baseLeft = trackerLayer.clientWidth - iconSize - margin;
+                  if (!Number.isFinite(baseLeft) || baseLeft < margin) {
+                    baseLeft = trackerLayer.clientWidth > 0
+                      ? trackerLayer.clientWidth - iconSize - margin
+                      : margin;
+                  }
+
+                  trackerDefs.forEach((def) => {
+                    const icon = document.createElement("i");
+                    // Use the requested icon for party markers
+                    icon.className = "fa-solid fa-person-dress-simple";
+                    icon.dataset.trackerId = def.id;
+
+                    icon.style.position = "absolute";
+                    icon.style.left     = `${baseLeft}px`;
+                    icon.style.top      = `${currentTop}px`;
+                    icon.style.fontSize = `${iconSize}px`;
+                    icon.style.lineHeight = "1";
+                    icon.style.color    = def.color;
+                    icon.style.cursor   = "grab";
+                    icon.style.pointerEvents = "auto";
+                    icon.style.zIndex   = "10";
+
+                    trackerLayer.appendChild(icon);
+                    console.log("[Dungeon Builder] created tracker", def.id);
+
+                    currentTop += iconSize + 4;
+
+                    icon.addEventListener("mousedown", (ev) => {
+                      ev.preventDefault();
+                      const rect = trackerLayer.getBoundingClientRect();
+                      dragState.icon = icon;
+                      dragState.offsetX = ev.clientX - (rect.left + icon.offsetLeft);
+                      dragState.offsetY = ev.clientY - (rect.top  + icon.offsetTop);
+                      icon.style.cursor = "grabbing";
+
+                      document.addEventListener("mousemove", onMouseMove);
+                      document.addEventListener("mouseup", endDrag);
+                    });
                   });
                 });
               }
