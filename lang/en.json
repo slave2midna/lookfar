@@ -27,14 +27,16 @@
     }
   },
 
-  "ItemForgeVisibility": {
-    "Name": "Item Forger Visibility",
-    "Hint": "Choose whether the Item Forger dialog options are public or GM only.",
-    "Choices": {
-      "Public": "Public",
-      "GMOnly": "GM Only"
-    }
-  },
+  "ItemForgeEditMode": {
+  "Name": "Item Forge Edit Mode",
+  "Hint": "Change how interacting with the Item Forger works for users.",
+  "Choices": {
+    "Public": "Public",
+    "GMOnly": "GM Only",
+    "Locked": "Locked",
+    "Hidden": "Hidden"
+  }
+},
 
   "ItemForgeRestrictInputs": {
     "Name": "Restrict Item Forger Inputs",
@@ -478,5 +480,6 @@
 
   }
 }
+
 
 
