@@ -47,8 +47,8 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "useVariantTravelRules", {
-      name: "Use Variant Travel Rules",
-      hint: "Placeholder setting: Toggles alternative travel mechanics (currently unused).",
+      name: game.i18n.localize("LOOKFAR.Settings.UseVariantTravelRules.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.UseVariantTravelRules.Hint"),
       scope: "world",
       config: true,
       default: false,
@@ -56,19 +56,19 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "useVariantDamageRules", {
-      name: "Use Playtest Damage Rules",
-      hint: "When generating new weapons, damage will be based on new playtest rules.",
+      name: game.i18n.localize("LOOKFAR.Settings.UseVariantDamageRules.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.UseVariantDamageRules.Hint"),
       scope: "world",
       config: true,
       default: false,
       type: Boolean
     });
 
-    // ---- Feature Toggles ----------------------------------------------------
+     // ---- Feature Toggles ---------------------------------------
 
     game.settings.register("lookfar", "disableDungeonBuilder", {
-      name: "Disable Dungeon Builder",
-      hint: "Hide and disable the Lookfar Dungeon Builder feature.",
+      name: game.i18n.localize("LOOKFAR.Settings.DisableDungeonBuilder.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.DisableDungeonBuilder.Hint"),
       scope: "world",
       config: true,
       type: Boolean,
@@ -77,8 +77,8 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "disableItemForger", {
-      name: "Disable Item Forger",
-      hint: "Hide and disable the Lookfar Item Forger feature.",
+      name: game.i18n.localize("LOOKFAR.Settings.DisableItemForger.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.DisableItemForger.Hint"),
       scope: "world",
       config: true,
       type: Boolean,
@@ -87,8 +87,8 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "disableTravelCheck", {
-      name: "Disable Travel Check",
-      hint: "Hide and disable the Lookfar Travel Check feature.",
+      name: game.i18n.localize("LOOKFAR.Settings.DisableTravelCheck.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.DisableTravelCheck.Hint"),
       scope: "world",
       config: true,
       type: Boolean,
@@ -97,8 +97,8 @@ export const LookfarSettings = {
     });
 
     game.settings.register("lookfar", "disableTreasureGenerator", {
-      name: "Disable Treasure Generator",
-      hint: "Hide and disable the Lookfar Treasure Generator feature.",
+      name: game.i18n.localize("LOOKFAR.Settings.DisableTreasureGenerator.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.DisableTreasureGenerator.Hint"),
       scope: "world",
       config: true,
       type: Boolean,
@@ -217,3 +217,4 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
