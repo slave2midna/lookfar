@@ -1,28 +1,59 @@
-function getLookfarTools() {
-  const tools = [
-    {
-      // Travel Check Button
-      name: 'LOOKFAR.Button.TravelCheck.Name',
-      icon: 'fa-solid fa-person-hiking',
-      onClick: () => Hooks.call('lookfarShowTravelCheckDialog'),
-    }
-  ];
+// Read Item Forge edit mode setting
+function getItemForgeEditMode() {
+  try {
+    return game.settings.get("lookfar", "itemForgeEditMode") || "gmOnly";
+  } catch {
+    return "gmOnly";
+  }
+}
 
-  // Treasure Roll Button (GM-only)
+function getLookfarTools() {
+  const tools = [];
+
+  // ---------------------------------------------------------------------------
+  // Global Tools
+  // ---------------------------------------------------------------------------
+
+  // Travel Check Button
+  tools.push({
+    name: "LOOKFAR.Button.TravelCheck.Name",
+    icon: "fa-solid fa-person-hiking",
+    onClick: () => Hooks.call("lookfarShowTravelCheckDialog")
+  });
+
+  // ---------------------------------------------------------------------------
+  // GM-only tools
+  // ---------------------------------------------------------------------------
   if (game.user.isGM) {
+    
+    // Treasure Roll Button
     tools.push({
       name: "Treasure Roll",
-      icon: 'fa-solid fa-gem',
-      onClick: () => Hooks.call('lookfarShowTreasureRollDialog'),
+      icon: "fa-solid fa-gem",
+      onClick: () => Hooks.call("lookfarShowTreasureRollDialog")
+    });
+
+    // Dungeon Builder Button
+    tools.push({
+      name: "Dungeon Builder",
+      icon: "fa-solid fa-dungeon",
+      onClick: () => Hooks.call("lookfarShowDungeonBuilderDialog")
     });
   }
 
   // Item Forger Button
-  tools.push({
-    name: "Item Forger",
-    icon: "fa-solid fa-hammer",
-    onClick: () => Hooks.call("lookfarShowItemForgeDialog"),
-  });
+  const mode = getItemForgeEditMode(); // "public" | "gmOnly" | "locked" | "hidden"
+
+  // Non-GM users: hide the button entirely when mode is "hidden"
+  const hideForPlayer = (!game.user.isGM && mode === "hidden");
+
+  if (!hideForPlayer) {
+    tools.push({
+      name: "Item Forger",
+      icon: "fa-solid fa-hammer",
+      onClick: () => Hooks.call("lookfarShowItemForgeDialog")
+    });
+  }
 
   // Placeholder for future buttons
   // tools.push({

@@ -46,24 +46,26 @@ const normHand = (h) => {
 
 // --- Setting Helpers ----------------------------------------------
 
-// Item Forge visibility
-const getItemForgeVisibility = () => {
+// Item Forge edit mode
+const getItemForgeEditMode = () => {
   try {
-    return game.settings.get("lookfar", "itemForgeVisibility") || "gmOnly";
+    return game.settings.get("lookfar", "itemForgeEditMode") || "gmOnly";
   } catch {
     return "gmOnly";
   }
 };
-const isItemForgePublic = () => getItemForgeVisibility() === "public";
 
-// Item Forge input restrictions
-const areForgeInputsGmOnly = () => {
-  try {
-    return !!game.settings.get("lookfar", "itemForgeRestrictInputs");
-  } catch {
-    return false;
-  }
+// Public mode: collabortive, allows players and GM to control dialog
+const isItemForgeSharedMode = () => {
+  const mode = getItemForgeEditMode();
+  return mode === "public" || mode === "locked";
 };
+
+// Locked mode: full dialog for players, but controls are read-only
+const isItemForgeLockedMode = () => getItemForgeEditMode() === "locked";
+
+// Hidden mode: players should see no button and no dialogs at all
+const isItemForgeHiddenMode = () => getItemForgeEditMode() === "hidden";
 
 // Playtest damage rules
 const useVariantDamageRules = () => {
@@ -233,10 +235,9 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
     sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
   });
 
-  // NEW: UI state replace (item type, template, qualities, toggles, etc.)
+  // UI state replace (item type, template, qualities, toggles, etc.)
   sock.register(IF_MSG.UIStateReplace, (payload) => {
-    // Only care about this when the forge is public
-    if (!isItemForgePublic()) return;
+    if (!isItemForgeSharedMode()) return;
     const state = payload?.state;
     if (!state) return;
 
@@ -1045,15 +1046,14 @@ function openItemForgeDialog() {
       const $materialsHint   = html.find("#materialsHint");
       const $preview         = html.find("#itemPreviewLarge");
 
-      // Hides Fee? checkbox for non-GM users
+      // Hide fee checkbox for non-GM users
       if (!game.user.isGM) {
         html.find('#optFee').closest('label').hide();
       }
 
-      // Locks all Item Forge inputs for non-GM users
-      const lockControlsForPlayer = !game.user.isGM && isItemForgePublic() && areForgeInputsGmOnly();
-
-      const restrictInputs = areForgeInputsGmOnly();
+      // Locked mode: non-GMs see full dialog but controls are read-only
+      const lockControlsForPlayer = !game.user.isGM && isItemForgeLockedMode();
+      const restrictInputs = isItemForgeLockedMode();
       const isHostGM = game.user.isGM && game.user.id === _hostId;
 
       // Apply "read-only" lock to all forge controls for watching players
@@ -1136,12 +1136,11 @@ function openItemForgeDialog() {
       };
 
       const broadcastForgeState = () => {
-        if (!isItemForgePublic()) return;
+        if (!isItemForgeSharedMode()) return;
         if (suppressStateBroadcast) return;
 
-        // If inputs are restricted, only the host GM is allowed to broadcast.
-        // If inputs are NOT restricted, any user may broadcast (GM or player),
-        // and the last user to touch a control "wins".
+        // Locked mode: only the host GM is allowed to broadcast.
+        // Public mode: any user may broadcast (GM or player),
         if (restrictInputs && !isHostGM) return;
 
         const sock = game.projectfu?.socket;
@@ -2349,20 +2348,30 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
   try {
     ensureIFSocket();
 
-    const visibility = getItemForgeVisibility(); // "gmOnly" or "public"
+    const mode = getItemForgeEditMode(); // "public" | "gmOnly" | "locked" | "hidden"
 
+    // GM always gets the full Item Forge dialog, regardless of mode
     if (game.user.isGM) {
-      // GM always gets the full Item Forger dialog
       openItemForgeDialog();
       return;
     }
 
-    if (visibility === "public") {
-      // World setting: Public → non-GMs get the full forge dialog UI
+    // Hidden: players should not see any Item Forge UI at all
+    if (mode === "hidden") {
+      // No alert, just silently ignore the request
+      return;
+    }
+
+    // Public & Locked: players get the full forge dialog
+    if (mode === "public" || mode === "locked") {
       openItemForgeDialog();
-    } else {
-      // World setting: GM Only → non-GMs see only the mini materials dialog
+      return;
+    }
+
+    // GM Only: players get only the mini materials dialog
+    if (mode === "gmOnly") {
       openMaterialsMiniDialog();
+      return;
     }
 
   } catch (err) {

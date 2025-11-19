@@ -1,5 +1,4 @@
 // cacheManager.js
-// Minimal, proven hider/manager for the Lookfar Loot Cache (mirrors your working dataLoader.js behavior)
 
 // ---- Constants ----
 const LOOKFAR_FLAG_SCOPE   = "lookfar";
@@ -20,10 +19,15 @@ export const cacheManager = {
   },
 
   async getOrCreateCacheFolder() {
-    // 1) Prefer by flag; fallback by exact name "Lookfar Loot Cache"
-    let folder =
-      game.folders.find(f => f?.type === "Item" && f.getFlag?.(LOOKFAR_FLAG_SCOPE, "system") === LOOKFAR_CACHE_SYSTEM) ??
-      game.folders.find(f => f?.type === "Item" && f.name === LOOKFAR_CACHE_NAME);
+  if (!game?.folders || typeof game.folders.find !== "function") {
+    console.warn("[Lookfar] Folders collection not ready yet; skipping cache folder ensure for now.");
+    return null;
+  }
+
+  // 1) Set Cache folder by flag; or exact name
+  let folder =
+    game.folders.find(f => f?.type === "Item" && f.getFlag?.(LOOKFAR_FLAG_SCOPE, "system") === LOOKFAR_CACHE_SYSTEM) ??
+    game.folders.find(f => f?.type === "Item" && f.name === LOOKFAR_CACHE_NAME);
 
     // 2) Create if missing
     if (!folder) {
@@ -38,7 +42,7 @@ export const cacheManager = {
       console.log("[Lookfar] Created loot cache folder:", folder.name);
     }
 
-    // 3) Normalize flags & secure ownership every time (handles older worlds)
+    // 3) Secure folder ownership
     try {
       if (folder.getFlag?.(LOOKFAR_FLAG_SCOPE, "system") !== LOOKFAR_CACHE_SYSTEM) {
         await folder.setFlag?.(LOOKFAR_FLAG_SCOPE, "system", LOOKFAR_CACHE_SYSTEM);
@@ -54,13 +58,13 @@ export const cacheManager = {
       console.warn("[Lookfar] Could not normalize cache folder flags/ownership", e);
     }
 
-    // 4) Ensure the UI hider is installed (idempotent & resilient)
+    // 4) Ensure the UI hider is installed
     this._installCacheHider();
 
     return folder;
   },
 
-  // Clear the Folder (Used on Startup or via Macro)
+  // Clear the Folder on startup (can be triggered by macro)
   async clearCacheFolder() {
   const activeGM = game.users?.activeGM;
   if (!activeGM || game.user.id !== activeGM.id) {
@@ -86,11 +90,11 @@ export const cacheManager = {
   }
 },
 
-  // ------- UI Hiding Implementation -------
+  // ------- Hooks & Wiring -------
 
   _installCacheHider() {
     try {
-      // Always (re)inject CSS with the current folder id (handles ID changes)
+      // Always (re)inject CSS with the current folder id
       this._injectHiderStyle();
 
       if (this._hooksInstalled) return;
@@ -149,9 +153,6 @@ export const cacheManager = {
       style.id = LOOKFAR_STYLE_ID;
       document.head.appendChild(style);
     }
-
-    // v13 Items tab is section#items.sidebar-tab
-    // Hide the folder row AND any item rows inside that folder
     style.textContent = `
       section#items li[data-folder-id="${folderId}"] { display: none !important; }
     `;
@@ -162,13 +163,11 @@ export const cacheManager = {
     const folderId = folder?.id;
     if (!folderId) return;
 
-    const rootEl = htmlLike?.[0] ?? htmlLike; // jQuery or HTMLElement
+    const rootEl = htmlLike?.[0] ?? htmlLike;
     if (!(rootEl instanceof Element)) return;
 
-    // Remove the folder row itself
     rootEl.querySelectorAll(`li.folder[data-folder-id="${folderId}"]`).forEach(el => el.remove());
 
-    // Remove any item rows that belong to that folder
     rootEl.querySelectorAll(`li[data-folder-id="${folderId}"]`).forEach(el => {
       if (!el.classList.contains("folder")) el.remove();
     });
@@ -183,5 +182,4 @@ Hooks.once("init", async () => {
 // Auto-Clear Cache on World Load
 Hooks.once("ready", async () => {
   await cacheManager.clearCacheFolder();
-
 });
