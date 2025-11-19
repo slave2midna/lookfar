@@ -56,6 +56,7 @@ export const LookfarSettings = {
       default: false,
       type: Boolean
     });
+  },
 
   registerDynamicRollTableSettings() {
     // Initial choices at registration time (will be kept fresh by hooks below)
@@ -168,6 +169,7 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
 
 
 
