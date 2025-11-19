@@ -58,26 +58,6 @@
     "Hint": "When generating new weapons, damage will be based on new playtest rules."
   },
 
-  "DisableDungeonBuilder": {
-    "Name": "Disable Dungeon Builder",
-    "Hint": "Hide and disable the Lookfar Dungeon Builder feature."
-  },
-
-  "DisableItemForger": {
-    "Name": "Disable Item Forger",
-    "Hint": "Hide and disable the Lookfar Item Forger feature."
-  },
-
-  "DisableTravelCheck": {
-    "Name": "Disable Travel Check",
-    "Hint": "Hide and disable the Lookfar Travel Check feature."
-  },
-
-  "DisableTreasureGenerator": {
-    "Name": "Disable Treasure Generator",
-    "Hint": "Hide and disable the Lookfar Treasure Generator feature."
-  },
-
   "DiscoveryEffectTable": {
     "Name": "Discovery Effect Roll Table",
     "Hint": "Select the Roll Table to use for generating discovery effects."
@@ -480,6 +460,7 @@
 
   }
 }
+
 
 
 
