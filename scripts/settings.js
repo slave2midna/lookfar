@@ -14,15 +14,17 @@ export const LookfarSettings = {
       requiresReload: true
     });
 
-    game.settings.register("lookfar", "itemForgeVisibility", {
-      name: game.i18n.localize("LOOKFAR.Settings.ItemForgeVisibility.Name"),
-      hint: game.i18n.localize("LOOKFAR.Settings.ItemForgeVisibility.Hint"),
+    game.settings.register("lookfar", "itemForgeEditMode", {
+      name: game.i18n.localize("LOOKFAR.Settings.ItemForgeEditMode.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.ItemForgeEditMode.Hint"),
       scope: "world",
       config: true,
       type: String,
       choices: {
-        public: game.i18n.localize("LOOKFAR.Settings.ItemForgeVisibility.Choices.Public"),
-        gmOnly: game.i18n.localize("LOOKFAR.Settings.ItemForgeVisibility.Choices.GMOnly")
+        public: game.i18n.localize("LOOKFAR.Settings.ItemForgeEditMode.Choices.Public"),
+        gmOnly: game.i18n.localize("LOOKFAR.Settings.ItemForgeEditMode.Choices.GMOnly"),
+        locked: game.i18n.localize("LOOKFAR.Settings.ItemForgeEditMode.Choices.Locked"),
+        hidden: game.i18n.localize("LOOKFAR.Settings.ItemForgeEditMode.Choices.Hidden")
       },
       default: "gmOnly",
       requiresReload: true
@@ -218,3 +220,4 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
