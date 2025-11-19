@@ -2358,7 +2358,7 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
 
     // Hidden: players should not see any Item Forge UI at all
     if (mode === "hidden") {
-      ui.notifications?.warn("Item Forger is currently hidden for players.");
+      // No alert, just silently ignore the request
       return;
     }
 
