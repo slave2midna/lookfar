@@ -57,49 +57,6 @@ export const LookfarSettings = {
       type: Boolean
     });
 
-    // ---- Feature Toggles ---------------------------------------
-
-    game.settings.register("lookfar", "disableDungeonBuilder", {
-      name: game.i18n.localize("LOOKFAR.Settings.DisableDungeonBuilder.Name"),
-      hint: game.i18n.localize("LOOKFAR.Settings.DisableDungeonBuilder.Hint"),
-      scope: "world",
-      config: true,
-      type: Boolean,
-      default: false,
-      requiresReload: true
-    });
-
-    game.settings.register("lookfar", "disableItemForger", {
-      name: game.i18n.localize("LOOKFAR.Settings.DisableItemForger.Name"),
-      hint: game.i18n.localize("LOOKFAR.Settings.DisableItemForger.Hint"),
-      scope: "world",
-      config: true,
-      type: Boolean,
-      default: false,
-      requiresReload: true
-    });
-
-    game.settings.register("lookfar", "disableTravelCheck", {
-      name: game.i18n.localize("LOOKFAR.Settings.DisableTravelCheck.Name"),
-      hint: game.i18n.localize("LOOKFAR.Settings.DisableTravelCheck.Hint"),
-      scope: "world",
-      config: true,
-      type: Boolean,
-      default: false,
-      requiresReload: true
-    });
-
-    game.settings.register("lookfar", "disableTreasureGenerator", {
-      name: game.i18n.localize("LOOKFAR.Settings.DisableTreasureGenerator.Name"),
-      hint: game.i18n.localize("LOOKFAR.Settings.DisableTreasureGenerator.Hint"),
-      scope: "world",
-      config: true,
-      type: Boolean,
-      default: false,
-      requiresReload: true
-    });
-  },
-
   registerDynamicRollTableSettings() {
     // Initial choices at registration time (will be kept fresh by hooks below)
     const rollTableChoices = LookfarSettings.getRollTableChoices();
@@ -211,5 +168,6 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
 
 
