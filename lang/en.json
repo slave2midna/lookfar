@@ -27,6 +27,20 @@
     }
   },
 
+  "ItemForgeVisibility": {
+    "Name": "Item Forger Visibility",
+    "Hint": "Choose whether the Item Forger dialog options are public or GM only.",
+    "Choices": {
+      "Public": "Public",
+      "GMOnly": "GM Only"
+    }
+  },
+
+  "ItemForgeRestrictInputs": {
+    "Name": "Restrict Item Forger Inputs",
+    "Hint": "When enabled, only GMs can change Item Forger options."
+  },
+
   "EnableKeywords": {
     "Name": "Enable Keywords",
     "Hint": "Enable keywords when generating travel check results."
@@ -82,8 +96,14 @@
     "Hint": "Select the Roll Table to use for generating danger sources."
   },
 
+  "CustomTreasureRollTable": {
+    "Name": "Custom Treasure Roll Table",
+    "Hint": "Select the Roll Table to use for generating custom treasure."
+  },
+
   "DefaultRollTable": "Lookfar Defaults"
 },
+
 
 
 
@@ -458,4 +478,5 @@
 
   }
 }
+
 
