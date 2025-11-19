@@ -1,12 +1,21 @@
+// Read Item Forge edit mode setting
+function getItemForgeEditMode() {
+  try {
+    return game.settings.get("lookfar", "itemForgeEditMode") || "gmOnly";
+  } catch {
+    return "gmOnly";
+  }
+}
+
+// Read feature toggle settings
 function getLookfarTools() {
-  // Read feature toggle settings (falls back to defaults from settings.js)
-  const disableTravelCheck      = game.settings.get("lookfar", "disableTravelCheck");
-  const disableTreasureRoll     = game.settings.get("lookfar", "disableTreasureGenerator");
-  const disableDungeonBuilder   = game.settings.get("lookfar", "disableDungeonBuilder");
-  const disableItemForger       = game.settings.get("lookfar", "disableItemForger");
+  const disableTravelCheck    = game.settings.get("lookfar", "disableTravelCheck");
+  const disableTreasureRoll   = game.settings.get("lookfar", "disableTreasureGenerator");
+  const disableDungeonBuilder = game.settings.get("lookfar", "disableDungeonBuilder");
+  const disableItemForger     = game.settings.get("lookfar", "disableItemForger");
 
   const tools = [];
-
+  // Global Tools
   // Travel Check Button (hidden if disabled)
   if (!disableTravelCheck) {
     tools.push({
@@ -37,13 +46,17 @@ function getLookfarTools() {
     }
   }
 
-  // Item Forger Button (available to all users, hidden if disabled)
+  // Item Forge Button
   if (!disableItemForger) {
-    tools.push({
-      name: "Item Forger",
-      icon: "fa-solid fa-hammer",
-      onClick: () => Hooks.call("lookfarShowItemForgeDialog")
-    });
+    const mode = getItemForgeEditMode(); // "public" | "gmOnly" | "locked" | "hidden"
+    if (!game.user.isGM && mode === "hidden") {
+    } else {
+      tools.push({
+        name: "Item Forger",
+        icon: "fa-solid fa-hammer",
+        onClick: () => Hooks.call("lookfarShowItemForgeDialog")
+      });
+    }
   }
 
   // Placeholder for future buttons
