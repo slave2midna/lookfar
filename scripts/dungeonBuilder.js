@@ -891,16 +891,17 @@ const dialogContent = `
     <div style="display:flex; gap:8px; margin-bottom:6px; width:100%;">
       <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
         <legend style="font-weight:bold; padding:0 4px;">Paths</legend>
-        <div style="line-height:1.4%;">
+        <!-- line-height fixed (no %) and labels updated to Open/Closed -->
+        <div style="line-height:1.4;">
           <div>
             <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; vertical-align:middle;"></span>
-            <span style="vertical-align:middle;">Cleared</span>
+            <span style="vertical-align:middle;">Open</span>
             &nbsp;&nbsp;
             <span style="position:relative; display:inline-block; margin-left:8px; vertical-align:middle;">
               <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; position:relative; vertical-align:middle;">
                 <span style="position:absolute; left:50%; top:-5px; height:10px; border-left:1px solid #000; transform:translateX(-50%);"></span>
               </span>
-              <span style="vertical-align:middle;">Blocked</span>
+              <span style="vertical-align:middle;">Closed</span>
             </span>
           </div>
           <div style="margin-top:2px;">
@@ -1176,7 +1177,8 @@ export function openDungeonBuilderDialog() {
 
                 trackerDefs.forEach((def) => {
                   const icon = document.createElement("i");
-                  icon.className = "fa-solid fa-image-portrait";
+                  // Use a guaranteed visible person icon instead of image-portrait
+                  icon.className = "fa-solid fa-person";
                   icon.dataset.trackerId = def.id;
 
                   icon.style.position = "absolute";
