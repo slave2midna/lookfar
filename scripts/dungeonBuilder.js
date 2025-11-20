@@ -891,13 +891,13 @@ const dialogContent = `
     <div style="display:flex; gap:8px; margin-bottom:6px; width:100%;">
       <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
         <legend style="font-weight:bold; padding:0 4px;">Paths</legend>
-        <!-- line-height fixed (no %) and labels updated to Open/Closed -->
         <div style="line-height:1.4;">
           <div>
             <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; vertical-align:middle;"></span>
             <span style="vertical-align:middle;">Open</span>
-            &nbsp;&nbsp;
-            <span style="position:relative; display:inline-block; margin-left:8px; vertical-align:middle;">
+          </div>
+          <div style="margin-top:2px;">
+            <span style="position:relative; display:inline-block; margin-left:0; vertical-align:middle;">
               <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; position:relative; vertical-align:middle;">
                 <span style="position:absolute; left:50%; top:-5px; height:10px; border-left:1px solid #000; transform:translateX(-50%);"></span>
               </span>
@@ -917,13 +917,32 @@ const dialogContent = `
           <div>
             <i class="fa-sharp fa-solid fa-circle" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Feature</span>
-            &nbsp;&nbsp;
+          </div>
+          <div style="margin-top:2px;">
             <i class="fa-sharp fa-solid fa-triangle" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Danger</span>
           </div>
           <div style="margin-top:2px;">
             <i class="fa-sharp fa-solid fa-diamond" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Treasure</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+        <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
+        <div style="line-height:1.4;">
+          <div>
+            <span style="font-weight:bold;">Current:</span>
+            <span id="dungeon-builder-seed-current">—</span>
+          </div>
+          <div style="margin-top:2px;">
+            <label style="display:block;">
+              <span style="font-weight:bold;">Input:</span>
+              <input type="text"
+                     id="dungeon-builder-seed-input"
+                     style="width:100%; box-sizing:border-box; margin-top:2px; font-size:11px;">
+            </label>
           </div>
         </div>
       </fieldset>
@@ -1062,6 +1081,9 @@ export function openDungeonBuilderDialog() {
       const egressCheckbox  = $html.find("#dungeon-builder-opt-egress")[0];
       const stairsCheckbox  = $html.find("#dungeon-builder-opt-stairs")[0];
 
+      const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
+      const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
+
       if (lastState && lastState.options) {
         const opt = lastState.options;
         if (keysCheckbox)    keysCheckbox.checked    = !!opt.useKeys;
@@ -1071,12 +1093,18 @@ export function openDungeonBuilderDialog() {
         if (stairsCheckbox)  stairsCheckbox.checked  = !!opt.useStairs;
       }
 
+      if (lastState && typeof lastState.seed === "number") {
+        const s = String(lastState.seed >>> 0);
+        if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+        if (seedInputField && !seedInputField.value) seedInputField.value = s;
+      }
+
       const getOptions = () => ({
-        useKeys:   !!keysCheckbox?.checked,
-        usePatrols:!!patrolsCheckbox?.checked,
-        useTraps:  !!trapsCheckbox?.checked,
-        useEgress: !!egressCheckbox?.checked,
-        useStairs: !!stairsCheckbox?.checked
+        useKeys:    !!keysCheckbox?.checked,
+        usePatrols: !!patrolsCheckbox?.checked,
+        useTraps:   !!trapsCheckbox?.checked,
+        useEgress:  !!egressCheckbox?.checked,
+        useStairs:  !!stairsCheckbox?.checked
       });
 
       const $pinBtn      = $html.find("#dungeon-builder-pin-btn");
@@ -1092,9 +1120,27 @@ export function openDungeonBuilderDialog() {
 
       $generateBtn.on("click", () => {
         const options = getOptions();
-        const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+
+        let seed;
+        const raw = seedInputField?.value?.trim();
+        if (raw) {
+          const parsed = Number(raw);
+          if (Number.isFinite(parsed) && parsed >= 0) {
+            seed = parsed >>> 0;
+          } else {
+            ui.notifications?.warn?.("Invalid seed; using random instead.");
+            seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+          }
+        } else {
+          seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+        }
+
         redrawWith(options, seed);
         _lastDungeonState = { seed, options };
+
+        const s = String(seed >>> 0);
+        if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+        if (seedInputField && !raw) seedInputField.value = s;
       });
 
       $pinBtn.on("click", () => {
@@ -1124,7 +1170,7 @@ export function openDungeonBuilderDialog() {
             );
             pinnedGen.draw(last.options);
 
-                        // --- Draggable party trackers on pinned map ---
+            // --- Draggable party trackers on pinned map ---
             try {
               const trackerLayer = pinnedIcons;
               if (trackerLayer) {
@@ -1269,11 +1315,18 @@ export function openDungeonBuilderDialog() {
       // Initial draw: restore last state if present, otherwise roll fresh
       if (lastState && lastState.options && typeof lastState.seed === "number") {
         redrawWith(lastState.options, lastState.seed);
+        const s = String(lastState.seed >>> 0);
+        if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+        if (seedInputField && !seedInputField.value) seedInputField.value = s;
       } else {
         const options = getOptions();
         const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
         redrawWith(options, seed);
         _lastDungeonState = { seed, options };
+
+        const s = String(seed >>> 0);
+        if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+        if (seedInputField && !seedInputField.value) seedInputField.value = s;
       }
     },
     close: () => {
