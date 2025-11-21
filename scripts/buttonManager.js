@@ -37,7 +37,7 @@ function getLookfarTools() {
     tools.push({
       name: "Dungeon Builder",
       icon: "fa-solid fa-dungeon",
-      onClick: () => Hooks.call("lookfarShowDungeonBuilderDialog")
+      onClick: () => Hooks.call("lookfarShowDungeonMapperDialog")
     });
   }
 
@@ -70,3 +70,4 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
   for (const tool of getLookfarTools()) tools.push(tool);
   return tools;
 });
+
