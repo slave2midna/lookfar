@@ -16,7 +16,7 @@ let _lastDungeonState = null;
 let _builderAppId     = null;
 
 // ----- Core generator class -----
-class DungeonBuilderGenerator {
+class DungeonMapper {
   constructor(ctx, width, height, iconLayer, seed = null) {
     this.ctx = ctx;
     this.width = width;
@@ -995,9 +995,9 @@ const pinnedDialogContent = `
 
 // ----- Main dialog function (module-style, not macro) -----
 
-export function openDungeonBuilderDialog() {
+export function openDungeonMapper() {
   if (!game.user.isGM) {
-    ui.notifications?.warn?.("Dungeon Builder is GM-only.");
+    ui.notifications?.warn?.("Dungeon Mapper is GM-only.");
     return;
   }
 
@@ -1008,7 +1008,7 @@ export function openDungeonBuilderDialog() {
   }
 
   const dlg = new Dialog({
-    title: "Dungeon Builder",
+    title: "Dungeon Mapper",
     content: dialogContent,
     buttons: {},
     render: function(html) {
@@ -1023,7 +1023,7 @@ export function openDungeonBuilderDialog() {
 
       const lastState = _lastDungeonState || null;
 
-      const generator = new DungeonBuilderGenerator(
+      const generator = new DungeonMapper(
         ctx,
         canvas.width,
         canvas.height,
@@ -1110,7 +1110,7 @@ export function openDungeonBuilderDialog() {
             const pinnedCtx     = pinnedCanvas.getContext("2d");
             const pinnedIcons   = $p.find("#dungeon-builder-pinned-icons")[0];
 
-            const pinnedGen = new DungeonBuilderGenerator(
+            const pinnedGen = new DungeonMapper(
               pinnedCtx,
               pinnedCanvas.width,
               pinnedCanvas.height,
@@ -1188,7 +1188,7 @@ export function openDungeonBuilderDialog() {
                     icon.style.zIndex   = "10";
 
                     trackerLayer.appendChild(icon);
-                    console.log("[Dungeon Builder] created tracker", def.id);
+                    console.log("[Dungeon Mapper] created tracker", def.id);
 
                     currentTop += iconSize + 4;
 
@@ -1207,7 +1207,7 @@ export function openDungeonBuilderDialog() {
                 });
               }
             } catch (e) {
-              console.warn("[Dungeon Builder] could not create trackers", e);
+              console.warn("[Dungeon Mapper] could not create trackers", e);
             }
             // --- end draggable party trackers ---
 
@@ -1230,19 +1230,19 @@ export function openDungeonBuilderDialog() {
 
         pinnedDialog.render(true);
 
-        // Close the main Dungeon Builder dialog when pinning
+        // Close the main Dungeon Mapper dialog when pinning
         const win = ui?.windows?.[generatorAppId];
         if (win && typeof win.close === "function") {
           try {
             win.close();
           } catch (e) {
-            console.warn("[Dungeon Builder] ui.windows[appId].close() failed", e);
+            console.warn("[Dungeon Mapper] ui.windows[appId].close() failed", e);
           }
         } else if (typeof app.close === "function") {
           try {
             app.close();
           } catch (e) {
-            console.warn("[Dungeon Builder] app.close() failed", e);
+            console.warn("[Dungeon Mapper] app.close() failed", e);
           }
         }
 
@@ -1252,13 +1252,13 @@ export function openDungeonBuilderDialog() {
             $window.remove();
           }
         } catch (e) {
-          console.warn("[Dungeon Builder] hard DOM removal failed", e);
+          console.warn("[Dungeon Mapper] hard DOM removal failed", e);
         }
       });
 
       $saveBtn.on("click", () => {
         // Placeholder for future integration (journal entry, note, etc.)
-        console.log("[Dungeon Builder] Save clicked (not yet implemented).");
+        console.log("[Dungeon Mapper] Save clicked (not yet implemented).");
       });
 
       // Initial draw: restore last state if present, otherwise roll fresh
@@ -1287,12 +1287,12 @@ export function openDungeonBuilderDialog() {
   dlg.render(true);
 }
 
-// Hook: wired by buttonManager.js via Hooks.call("lookfarShowDungeonBuilderDialog")
-Hooks.on("lookfarShowDungeonBuilderDialog", () => {
+// Hook: wired by buttonManager.js via Hooks.call("lookfarShowDungeonMapperDialog")
+Hooks.on("lookfarShowDungeonMapperDialog", () => {
   try {
-    openDungeonBuilderDialog();
+    openDungeonMapper();
   } catch (err) {
-    console.error("[Dungeon Builder] failed to open:", err);
-    ui.notifications?.error("Dungeon Builder: failed to open (see console).");
+    console.error("[Dungeon Mapper] failed to open:", err);
+    ui.notifications?.error("Dungeon Mapper: failed to open (see console).");
   }
 });
