@@ -943,13 +943,28 @@ const dialogContent = `
     <div style="display:flex; gap:8px; margin-top:4px; width:100%;">
       <!-- Generate -->
       <fieldset style="flex:2; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
-        <div style="margin-top:2px; line-height:1.4; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px;">
-          <label><input type="checkbox" id="dungeon-builder-opt-keys"> Keys</label>
-          <label><input type="checkbox" id="dungeon-builder-opt-patrols"> Patrols</label>
-          <label><input type="checkbox" id="dungeon-builder-opt-traps"> Traps</label>
-        </div>
-      </fieldset>
+  <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
+  <div style="margin-top:2px; line-height:1.4; display:flex; justify-content:center; align-items:center; gap:6px;">
+    <button type="button"
+            id="dungeon-builder-opt-keys"
+            title="Keys"
+            style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+      <i class="fa-solid fa-key" style="font-size:14px;"></i>
+    </button>
+    <button type="button"
+            id="dungeon-builder-opt-patrols"
+            title="Patrols"
+            style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+      <i class="fa-solid fa-skull" style="font-size:14px;"></i>
+    </button>
+    <button type="button"
+            id="dungeon-builder-opt-traps"
+            title="Traps"
+            style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+      <i class="fa-solid fa-land-mine-on" style="font-size:14px;"></i>
+    </button>
+  </div>
+</fieldset>
 
       <!-- Shape -->
       <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
@@ -1036,14 +1051,14 @@ export function openDungeonMapper() {
         lastState && typeof lastState.seed === "number" ? lastState.seed : null
       );
 
-      const keysCheckbox    = $html.find("#dungeon-builder-opt-keys")[0];
-      const patrolsCheckbox = $html.find("#dungeon-builder-opt-patrols")[0];
-      const trapsCheckbox   = $html.find("#dungeon-builder-opt-traps")[0];
+      const keysButton    = $html.find("#dungeon-builder-opt-keys")[0];
+const patrolsButton = $html.find("#dungeon-builder-opt-patrols")[0];
+const trapsButton   = $html.find("#dungeon-builder-opt-traps")[0];
 
-      const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
-      const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
+const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
+const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
 
-      const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
+const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
 
 if (seedCopyBtn && seedCurrentSpan) {
   seedCopyBtn.addEventListener("click", async () => {
@@ -1057,7 +1072,6 @@ if (seedCopyBtn && seedCurrentSpan) {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(value);
       } else {
-        // Fallback for older browsers / weird environments
         const ta = document.createElement("textarea");
         ta.value = value;
         ta.style.position = "fixed";
@@ -1076,12 +1090,48 @@ if (seedCopyBtn && seedCurrentSpan) {
   });
 }
 
-      if (lastState && lastState.options) {
-        const opt = lastState.options;
-        if (keysCheckbox)    keysCheckbox.checked    = !!opt.useKeys;
-        if (patrolsCheckbox) patrolsCheckbox.checked = !!opt.usePatrols;
-        if (trapsCheckbox)   trapsCheckbox.checked   = !!opt.useTraps;
-      }
+// generate-options state (backed by lastState if present)
+let genOptions = {
+  useKeys:    !!(lastState?.options?.useKeys),
+  usePatrols: !!(lastState?.options?.usePatrols),
+  useTraps:   !!(lastState?.options?.useTraps)
+};
+
+      // --- Generate option buttons (multi-toggle) ---
+const genButtons = {
+  useKeys:    keysButton,
+  usePatrols: patrolsButton,
+  useTraps:   trapsButton
+};
+
+const updateGenButtons = () => {
+  for (const [key, btn] of Object.entries(genButtons)) {
+    if (!btn) continue;
+    const active = !!genOptions[key];
+    if (active) {
+      btn.style.background  = "#ccc";
+      btn.style.borderColor = "#555";
+      btn.style.boxShadow   = "inset 0 0 3px rgba(0,0,0,0.5)";
+    } else {
+      btn.style.background  = "#eee";
+      btn.style.borderColor = "#888";
+      btn.style.boxShadow   = "none";
+    }
+  }
+};
+
+Object.entries(genButtons).forEach(([key, btn]) => {
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    genOptions[key] = !genOptions[key]; // toggle on/off
+    updateGenButtons();
+  });
+});
+
+// initialize button states from genOptions / lastState
+updateGenButtons();
+// --- end generate option buttons ---
+      
 
       // --- Shape toggle buttons (single active) ---
       const shapeButtons = {
@@ -1124,10 +1174,10 @@ if (seedCopyBtn && seedCurrentSpan) {
       // --- end shape toggle buttons ---
 
       const getOptions = () => ({
-        useKeys:    !!keysCheckbox?.checked,
-        usePatrols: !!patrolsCheckbox?.checked,
-        useTraps:   !!trapsCheckbox?.checked
-      });
+  useKeys:    !!genOptions.useKeys,
+  usePatrols: !!genOptions.usePatrols,
+  useTraps:   !!genOptions.useTraps
+});
 
       const $generateBtn = $html.find("#dungeon-builder-generate-btn");
       const $saveBtn     = $html.find("#dungeon-builder-save-btn");
