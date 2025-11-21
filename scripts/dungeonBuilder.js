@@ -932,23 +932,18 @@ const dialogContent = `
       </fieldset>
 
       <!-- Seed -->
-      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
-        <div style="line-height:1.4;">
-          <div>
-            <span style="font-weight:bold;">Current:</span>
-            <span id="dungeon-builder-seed-current">—</span>
-          </div>
-          <div style="margin-top:2px;">
-            <label style="display:block;">
-              <span style="font-weight:bold;">Input:</span>
-              <input type="text"
-                     id="dungeon-builder-seed-input"
-                     style="width:100%; box-sizing:border-box; margin-top:2px; font-size:11px;">
-            </label>
-          </div>
-        </div>
-      </fieldset>
+<fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+  <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
+  <div style="line-height:1.4; text-align:center;">
+    <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
+    <div style="margin-top:4px;">
+      <input type="text"
+             id="dungeon-builder-seed-input"
+             placeholder="Enter seed (optional)"
+             style="width:100%; box-sizing:border-box; font-size:11px;">
+    </div>
+  </div>
+</fieldset>
     </div>
 
     <fieldset style="margin:4px 0 0 0; padding:6px 8px; border:1px solid #aaa; width:100%;">
@@ -1137,7 +1132,6 @@ export function openDungeonBuilderDialog() {
 
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
-        if (seedInputField && !raw) seedInputField.value = s;
       });
 
       $pinBtn.on("click", () => {
@@ -1315,7 +1309,6 @@ export function openDungeonBuilderDialog() {
 
         const s = String(lastState.seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
-        if (seedInputField && !seedInputField.value) seedInputField.value = s;
       } else {
         const options = getOptions();
         const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
