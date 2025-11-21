@@ -939,7 +939,7 @@ const dialogContent = `
     <div style="margin-top:4px;">
       <input type="text"
              id="dungeon-builder-seed-input"
-             placeholder="Enter seed (optional)"
+             placeholder="Enter seed"
              style="width:100%; box-sizing:border-box; font-size:11px;">
     </div>
   </div>
@@ -989,48 +989,6 @@ const pinnedDialogContent = `
     </canvas>
     <div id="dungeon-builder-pinned-icons"
          style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:auto;"></div>
-  </div>
-
-  <div style="margin-top:8px; font-size:12px; width:100%; margin-left:auto; margin-right:auto; text-align:left;">
-    <div style="display:flex; gap:8px; margin-bottom:0; width:100%;">
-      <fieldset style="flex:1; padding:4px 6px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Paths</legend>
-        <div style="line-height:1.3;">
-          <div>
-            <span style="display:inline-block; width:24px; border-top:1px solid #000; margin-right:4px; vertical-align:middle;"></span>
-            <span style="vertical-align:middle;">Cleared</span>
-            &nbsp;&nbsp;
-            <span style="position:relative; display:inline-block; margin-left:6px; vertical-align:middle;">
-              <span style="display:inline-block; width:24px; border-top:1px solid #000; margin-right:4px; position:relative; vertical-align:middle;">
-                <span style="position:absolute; left:50%; top:-5px; height:10px; border-left:1px solid #000; transform:translateX(-50%);"></span>
-              </span>
-              <span style="vertical-align:middle;">Blocked</span>
-            </span>
-          </div>
-          <div style="margin-top:2px;">
-            <span style="display:inline-block; width:24px; border-top:1px dashed #000; margin-right:4px; vertical-align:middle;"></span>
-            <span style="vertical-align:middle;">Secret</span>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset style="flex:1; padding:4px 6px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Points</legend>
-        <div style="line-height:1.3;">
-          <div>
-            <i class="fa-sharp fa-solid fa-circle" style="font-size:11px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Feature</span>
-            &nbsp;&nbsp;
-            <i class="fa-sharp fa-solid fa-triangle" style="font-size:11px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Danger</span>
-          </div>
-          <div style="margin-top:2px;">
-            <i class="fa-sharp fa-solid fa-diamond" style="font-size:11px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Treasure</span>
-          </div>
-        </div>
-      </fieldset>
-    </div>
   </div>
 </div>
 `;
@@ -1317,7 +1275,6 @@ export function openDungeonBuilderDialog() {
 
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
-        if (seedInputField && !seedInputField.value) seedInputField.value = s;
       }
     },
     close: () => {
