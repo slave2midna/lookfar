@@ -41,8 +41,6 @@ class DungeonMapper {
     this.useKeys    = false;
     this.usePatrols = false;
     this.useTraps   = false;
-    this.useEgress  = false;
-    this.useStairs  = false;
 
     // Key locations
     this.key1Index = null;
@@ -112,9 +110,7 @@ class DungeonMapper {
   draw({
     useKeys    = false,
     usePatrols = false,
-    useTraps   = false,
-    useEgress  = false,
-    useStairs  = false
+    useTraps   = false
   } = {}) {
     const ctx = this.ctx;
 
@@ -133,13 +129,9 @@ class DungeonMapper {
     this.useKeys    = useKeys;
     this.usePatrols = usePatrols;
     this.useTraps   = useTraps;
-    this.useEgress  = useEgress;
-    this.useStairs  = useStairs;
 
-    this.key1Index   = null;
-    this.key2Index   = null;
-    this.exitIndex   = null;
-    this.stairsIndex = null;
+    this.key1Index = null;
+    this.key2Index = null;
 
     // Assign roles + labels
     const points = this._assignPointTypesAndLabels();
@@ -149,23 +141,13 @@ class DungeonMapper {
       this._assignKeys(points);
     }
 
-    // Egress (entrance/exit arrows)
-    if (this.useEgress) {
-      this._assignEgress(points);
-    }
-
-    // Stairs
-    if (this.useStairs) {
-      this._assignStairs(points);
-    }
-
     // Choose lines
     const lines = this._chooseRandomLines(points);
 
     // Draw lines on canvas
     this._drawLines(points, lines);
 
-    // Draw node shapes + labels + stairs + egress
+    // Draw node shapes + labels
     this._drawPoints(points);
   }
 
@@ -660,51 +642,51 @@ class DungeonMapper {
 
     for (let li = 0; li < count; li++) {
       const [i, j] = lines[li];
-const a = points[i];
-const b = points[j];
+      const a = points[i];
+      const b = points[j];
 
-const isSecret = li === secretIndex;
-const isDoor   = doorIndices.has(li);
-const isPatrol = this.usePatrols && patrolIndices.has(li);
-const isTrap   = this.useTraps   && trapIndices.has(li);
+      const isSecret = li === secretIndex;
+      const isDoor   = doorIndices.has(li);
+      const isPatrol = this.usePatrols && patrolIndices.has(li);
+      const isTrap   = this.useTraps   && trapIndices.has(li);
 
-// Base geometry
-const dx  = b.x - a.x;
-const dy  = b.y - a.y;
-const len = Math.hypot(dx, dy) || 1;
-const nx  = -dy / len;
-const ny  =  dx / len;
+      // Base geometry
+      const dx  = b.x - a.x;
+      const dy  = b.y - a.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx  = -dy / len;
+      const ny  =  dx / len;
 
-// Defaults: full segment
-let ax = a.x;
-let ay = a.y;
-let bx = b.x;
-let by = b.y;
+      // Defaults: full segment
+      let ax = a.x;
+      let ay = a.y;
+      let bx = b.x;
+      let by = b.y;
 
-// If this path has a patrol icon, shorten the line so it doesn't pass under the icon
-if (isPatrol) {
-  // Roughly half the icon size + a little padding
-  const patrolGap = 12; // tweak (10–14) to taste
+      // If this path has a patrol icon, shorten the line so it doesn't pass under the icon
+      if (isPatrol) {
+        // Roughly skull radius + some padding so it visually clears the icon
+        const patrolGap = 18; // tweak 16–20 to taste
 
-  const ux = dx / len;
-  const uy = dy / len;
+        const ux = dx / len;
+        const uy = dy / len;
 
-  ax = a.x + ux * patrolGap;
-  ay = a.y + uy * patrolGap;
-  bx = b.x - ux * patrolGap;
-  by = b.y - uy * patrolGap;
-}
+        ax = a.x + ux * patrolGap;
+        ay = a.y + uy * patrolGap;
+        bx = b.x - ux * patrolGap;
+        by = b.y - uy * patrolGap;
+      }
 
-ctx.beginPath();
-ctx.setLineDash(isSecret ? [8, 6] : []);
-ctx.moveTo(ax, ay);
-ctx.lineTo(bx, by);
-ctx.stroke();
-ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.setLineDash(isSecret ? [8, 6] : []);
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+      ctx.setLineDash([]);
 
-// Midpoint (still the true midpoint for icon placement)
-const mx = (a.x + b.x) / 2;
-const my = (a.y + b.y) / 2;
+      // Midpoint (still the true midpoint for icon placement)
+      const mx = (a.x + b.x) / 2;
+      const my = (a.y + b.y) / 2;
 
       if (isDoor) {
         const tickLen = 12;
@@ -824,13 +806,6 @@ const my = (a.y + b.y) / 2;
       ctx.fillText(String(number), x, y + yOffset);
       ctx.restore();
     });
-
-    if (this.useStairs) {
-      this._drawStairs(points);
-    }
-    if (this.useEgress) {
-      this._drawEgress(points);
-    }
   }
 
   _drawStairs(points) {
@@ -962,34 +937,34 @@ const dialogContent = `
       </fieldset>
 
       <!-- Seed -->
-<fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-  <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
-  <div style="line-height:1.4; text-align:center;">
-    <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
-      <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
-      <button type="button"
-              id="dungeon-builder-seed-copy"
-              style="width:20px; height:20px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-        <i class="fa-solid fa-copy" style="font-size:10px;"></i>
-      </button>
-    </div>
-    <div style="margin-top:4px;">
-      <input type="text"
-             id="dungeon-builder-seed-input"
-             placeholder="Enter seed"
-             style="width:100%; box-sizing:border-box; font-size:11px;">
-    </div>
-  </div>
-</fieldset>
+      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+        <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
+        <div style="line-height:1.4; text-align:center;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
+            <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
+            <button type="button"
+                    id="dungeon-builder-seed-copy"
+                    style="width:20px; height:20px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <i class="fa-solid fa-copy" style="font-size:10px;"></i>
+            </button>
+          </div>
+          <div style="margin-top:4px;">
+            <input type="text"
+                   id="dungeon-builder-seed-input"
+                   placeholder="Enter seed"
+                   style="width:100%; box-sizing:border-box; font-size:11px;">
+          </div>
+        </div>
+      </fieldset>
+    </div> <!-- end flex row for Paths / Points / Seed -->
 
+    <!-- Generate row (own full-width fieldset) -->
     <fieldset style="margin:4px 0 0 0; padding:6px 8px; border:1px solid #aaa; width:100%;">
       <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
       <div style="margin-top:2px; line-height:1.4; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px;">
         <label><input type="checkbox" id="dungeon-builder-opt-keys"> Keys</label>
         <label><input type="checkbox" id="dungeon-builder-opt-patrols"> Patrols</label>
         <label><input type="checkbox" id="dungeon-builder-opt-traps"> Traps</label>
-        <label><input type="checkbox" id="dungeon-builder-opt-egress"> Egress</label>
-        <label><input type="checkbox" id="dungeon-builder-opt-stairs"> Stairs</label>
       </div>
     </fieldset>
   </div>
@@ -1050,8 +1025,6 @@ export function openDungeonMapper() {
       const keysCheckbox    = $html.find("#dungeon-builder-opt-keys")[0];
       const patrolsCheckbox = $html.find("#dungeon-builder-opt-patrols")[0];
       const trapsCheckbox   = $html.find("#dungeon-builder-opt-traps")[0];
-      const egressCheckbox  = $html.find("#dungeon-builder-opt-egress")[0];
-      const stairsCheckbox  = $html.find("#dungeon-builder-opt-stairs")[0];
 
       const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
       const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
@@ -1094,16 +1067,12 @@ if (seedCopyBtn && seedCurrentSpan) {
         if (keysCheckbox)    keysCheckbox.checked    = !!opt.useKeys;
         if (patrolsCheckbox) patrolsCheckbox.checked = !!opt.usePatrols;
         if (trapsCheckbox)   trapsCheckbox.checked   = !!opt.useTraps;
-        if (egressCheckbox)  egressCheckbox.checked  = !!opt.useEgress;
-        if (stairsCheckbox)  stairsCheckbox.checked  = !!opt.useStairs;
       }
 
       const getOptions = () => ({
         useKeys:    !!keysCheckbox?.checked,
         usePatrols: !!patrolsCheckbox?.checked,
-        useTraps:   !!trapsCheckbox?.checked,
-        useEgress:  !!egressCheckbox?.checked,
-        useStairs:  !!stairsCheckbox?.checked
+        useTraps:   !!trapsCheckbox?.checked
       });
 
       const $generateBtn = $html.find("#dungeon-builder-generate-btn");
