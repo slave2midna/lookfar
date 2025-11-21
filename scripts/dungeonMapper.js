@@ -622,8 +622,9 @@ class DungeonMapper {
     const shuffledIndices = this._shuffle(indices.slice());
 
     const secretIndex = shuffledIndices.shift();
+    the_result = shuffledIndices.slice(0, Math.min(2, count - 1));
     const maxDoorLines = Math.min(2, count - 1);
-    const doorIndices = new Set(shuffledIndices.slice(0, maxDoorLines));
+    const doorIndices = new Set(the_result);
 
     let patrolIndices = new Set();
     if (this.usePatrols && count > 0) {
@@ -1047,6 +1048,109 @@ export function openDungeonMapper() {
         generator.draw(options);
       };
 
+      // --- Draggable party trackers on main map ---
+      let setupTrackers = () => {};
+      try {
+        const trackerLayer = iconLayer;
+        if (trackerLayer) {
+          const trackerDefs = [
+            { id: "db-tracker-red",    color: "red" },
+            { id: "db-tracker-blue",   color: "blue" },
+            { id: "db-tracker-green",  color: "green" },
+            { id: "db-tracker-purple", color: "purple" }
+          ];
+
+          const iconSize = 18;
+          const margin = 6;
+
+          const dragState = { icon: null, offsetX: 0, offsetY: 0 };
+
+          const onMouseMove = (ev) => {
+            if (!dragState.icon) return;
+            const rect = trackerLayer.getBoundingClientRect();
+
+            let newLeft = ev.clientX - rect.left - dragState.offsetX;
+            let newTop  = ev.clientY - rect.top  - dragState.offsetY;
+
+            const maxX = trackerLayer.clientWidth  - dragState.icon.offsetWidth;
+            const maxY = trackerLayer.clientHeight - dragState.icon.offsetHeight;
+
+            newLeft = Math.max(0, Math.min(newLeft, maxX));
+            newTop  = Math.max(0, Math.min(newTop,  maxY));
+
+            dragState.icon.style.left = `${newLeft}px`;
+            dragState.icon.style.top  = `${newTop}px`;
+          };
+
+          const endDrag = () => {
+            if (!dragState.icon) return;
+            dragState.icon.style.cursor = "grab";
+            dragState.icon = null;
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", endDrag);
+          };
+
+          setupTrackers = (resetPositions = false) => {
+            const rectWidth  = trackerLayer.clientWidth;
+            const rectHeight = trackerLayer.clientHeight;
+            if (!rectWidth || !rectHeight) return;
+
+            let baseLeft = rectWidth - iconSize - margin;
+            if (!Number.isFinite(baseLeft) || baseLeft < margin) {
+              baseLeft = rectWidth > 0 ? rectWidth - iconSize - margin : margin;
+            }
+
+            let currentTop = margin;
+
+            trackerDefs.forEach((def) => {
+              let icon = trackerLayer.querySelector(`[data-tracker-id="${def.id}"]`);
+
+              if (!icon) {
+                icon = document.createElement("i");
+                icon.className = "fa-solid fa-person-dress-simple";
+                icon.dataset.trackerId = def.id;
+
+                icon.style.position = "absolute";
+                icon.style.fontSize = `${iconSize}px`;
+                icon.style.lineHeight = "1";
+                icon.style.color    = def.color;
+                icon.style.cursor   = "grab";
+                icon.style.pointerEvents = "auto";
+                icon.style.zIndex   = "10";
+
+                icon.addEventListener("mousedown", (ev) => {
+                  ev.preventDefault();
+                  const rect = trackerLayer.getBoundingClientRect();
+                  dragState.icon = icon;
+                  dragState.offsetX = ev.clientX - (rect.left + icon.offsetLeft);
+                  dragState.offsetY = ev.clientY - (rect.top  + icon.offsetTop);
+                  icon.style.cursor = "grabbing";
+
+                  document.addEventListener("mousemove", onMouseMove);
+                  document.addEventListener("mouseup", endDrag);
+                });
+
+                trackerLayer.appendChild(icon);
+                console.log("[Dungeon Mapper] created tracker", def.id);
+              }
+
+              if (resetPositions) {
+                icon.style.left = `${baseLeft}px`;
+                icon.style.top  = `${currentTop}px`;
+              }
+
+              currentTop += iconSize + 4;
+            });
+          };
+
+          // Initial placement once layout is ready
+          requestAnimationFrame(() => setupTrackers(true));
+        }
+      } catch (e) {
+        console.warn("[Dungeon Mapper] could not create trackers", e);
+      }
+      // --- end draggable party trackers ---
+
       $generateBtn.on("click", () => {
         const options = getOptions();
 
@@ -1069,107 +1173,17 @@ export function openDungeonMapper() {
 
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+
+        // Reset trackers on every generate
+        if (typeof setupTrackers === "function") {
+          requestAnimationFrame(() => setupTrackers(true));
+        }
       });
 
       $saveBtn.on("click", () => {
         // Placeholder for future integration (journal entry, note, etc.)
         console.log("[Dungeon Mapper] Save clicked (not yet implemented).");
       });
-
-      // --- Draggable party trackers on main map ---
-      try {
-        const trackerLayer = iconLayer;
-        if (trackerLayer) {
-          // Avoid duplicating trackers if dialog is somehow re-rendered
-          const existing = trackerLayer.querySelector("[data-tracker-id='db-tracker-red']");
-          if (!existing) {
-            requestAnimationFrame(() => {
-              const trackerDefs = [
-                { id: "db-tracker-red",    color: "red" },
-                { id: "db-tracker-blue",   color: "blue" },
-                { id: "db-tracker-green",  color: "green" },
-                { id: "db-tracker-purple", color: "purple" }
-              ];
-
-              const iconSize = 18;
-              const margin = 6;
-              let currentTop = margin;
-
-              const dragState = { icon: null, offsetX: 0, offsetY: 0 };
-
-              const onMouseMove = (ev) => {
-                if (!dragState.icon) return;
-                const rect = trackerLayer.getBoundingClientRect();
-
-                let newLeft = ev.clientX - rect.left - dragState.offsetX;
-                let newTop  = ev.clientY - rect.top  - dragState.offsetY;
-
-                const maxX = trackerLayer.clientWidth  - dragState.icon.offsetWidth;
-                const maxY = trackerLayer.clientHeight - dragState.icon.offsetHeight;
-
-                newLeft = Math.max(0, Math.min(newLeft, maxX));
-                newTop  = Math.max(0, Math.min(newTop,  maxY));
-
-                dragState.icon.style.left = `${newLeft}px`;
-                dragState.icon.style.top  = `${newTop}px`;
-              };
-
-              const endDrag = () => {
-                if (!dragState.icon) return;
-                dragState.icon.style.cursor = "grab";
-                dragState.icon = null;
-                document.removeEventListener("mousemove", onMouseMove);
-                document.removeEventListener("mouseup", endDrag);
-              };
-
-              // Place them along the top-right edge, but fully inside the overlay
-              let baseLeft = trackerLayer.clientWidth - iconSize - margin;
-              if (!Number.isFinite(baseLeft) || baseLeft < margin) {
-                baseLeft = trackerLayer.clientWidth > 0
-                  ? trackerLayer.clientWidth - iconSize - margin
-                  : margin;
-              }
-
-              trackerDefs.forEach((def) => {
-                const icon = document.createElement("i");
-                // Use the requested icon for party markers
-                icon.className = "fa-solid fa-person-dress-simple";
-                icon.dataset.trackerId = def.id;
-
-                icon.style.position = "absolute";
-                icon.style.left     = `${baseLeft}px`;
-                icon.style.top      = `${currentTop}px`;
-                icon.style.fontSize = `${iconSize}px`;
-                icon.style.lineHeight = "1";
-                icon.style.color    = def.color;
-                icon.style.cursor   = "grab";
-                icon.style.pointerEvents = "auto";
-                icon.style.zIndex   = "10";
-
-                trackerLayer.appendChild(icon);
-                console.log("[Dungeon Mapper] created tracker", def.id);
-
-                currentTop += iconSize + 4;
-
-                icon.addEventListener("mousedown", (ev) => {
-                  ev.preventDefault();
-                  const rect = trackerLayer.getBoundingClientRect();
-                  dragState.icon = icon;
-                  dragState.offsetX = ev.clientX - (rect.left + icon.offsetLeft);
-                  dragState.offsetY = ev.clientY - (rect.top  + icon.offsetTop);
-                  icon.style.cursor = "grabbing";
-
-                  document.addEventListener("mousemove", onMouseMove);
-                  document.addEventListener("mouseup", endDrag);
-                });
-              });
-            });
-          }
-        }
-      } catch (e) {
-        console.warn("[Dungeon Mapper] could not create trackers", e);
-      }
-      // --- end draggable party trackers ---
 
       // Initial draw: restore last state if present, otherwise roll fresh
       if (lastState && lastState.options && typeof lastState.seed === "number") {
