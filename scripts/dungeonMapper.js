@@ -317,22 +317,33 @@ class DungeonMapper {
     }
     this.goalIndex = gIdx;
 
-    const middleNumbers = this._shuffle([4, 5]);
+    // Build numeric labels based on shape size.
+// - Pentagon  (5 sides): [4]   -> S, 2, 3, 4, G(5)
+// - Hexagon   (6 sides): [4,5] -> S, 2, 3, 4, 5, G(6)
+// - Heptagon  (7 sides): [4,5,6]
+// - Octagon   (8 sides): [4,5,6,7]
+// We cap at 7 so if we ever add larger shapes, we don't spawn infinite labels.
+const numericLabels = [];
+const maxNumeric = Math.min(sides - 1, 7);
+for (let n = 4; n <= maxNumeric; n++) {
+  numericLabels.push(n);
+}
 
-    // Assign labels
-    pointsWithTypes[sIdx].number = "S";
-    if (twoIdx   !== null && pointsWithTypes[twoIdx])   pointsWithTypes[twoIdx].number   = 2;
-    if (threeIdx !== null && pointsWithTypes[threeIdx]) pointsWithTypes[threeIdx].number = 3;
-    if (gIdx     !== null && pointsWithTypes[gIdx])     pointsWithTypes[gIdx].number     = "G";
+const middleNumbers = this._shuffle(numericLabels);
 
-    for (const idx of remainingAfter3) {
-      if (idx === gIdx) continue;
-      const n = middleNumbers.shift();
-      if (n !== undefined && pointsWithTypes[idx]) {
-        pointsWithTypes[idx].number = n;
-      }
-    }
+// Assign labels
+pointsWithTypes[sIdx].number = "S";
+if (twoIdx   !== null && pointsWithTypes[twoIdx])   pointsWithTypes[twoIdx].number   = 2;
+if (threeIdx !== null && pointsWithTypes[threeIdx]) pointsWithTypes[threeIdx].number = 3;
+if (gIdx     !== null && pointsWithTypes[gIdx])     pointsWithTypes[gIdx].number     = "G";
 
+for (const idx of remainingAfter3) {
+  if (idx === gIdx) continue;
+  const n = middleNumbers.shift();
+  if (n !== undefined && pointsWithTypes[idx]) {
+    pointsWithTypes[idx].number = n;
+  }
+}
     return pointsWithTypes;
   }
 
