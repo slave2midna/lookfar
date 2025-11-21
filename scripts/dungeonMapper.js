@@ -957,23 +957,27 @@ const dialogContent = `
         <div style="margin-top:2px; display:flex; justify-content:center; align-items:center; gap:6px;">
           <button type="button"
                   id="dungeon-builder-shape-pent"
+                  title="Pentagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-solid fa-pentagon" style="font-size:14px;"></i>
+            <i class="fa-sharp fa-solid fa-pentagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
           <button type="button"
                   id="dungeon-builder-shape-hex"
+                  title="Hexagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-solid fa-hexagon" style="font-size:14px;"></i>
+            <i class="fa-sharp fa-solid fa-hexagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
           <button type="button"
                   id="dungeon-builder-shape-sept"
+                  title="Septagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-solid fa-septagon" style="font-size:14px;"></i>
+            <i class="fa-sharp fa-solid fa-septagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
           <button type="button"
                   id="dungeon-builder-shape-oct"
+                  title="Octagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-solid fa-octagon" style="font-size:14px;"></i>
+            <i class="fa-sharp fa-solid fa-octagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
         </div>
       </fieldset>
@@ -1078,6 +1082,46 @@ if (seedCopyBtn && seedCurrentSpan) {
         if (patrolsCheckbox) patrolsCheckbox.checked = !!opt.usePatrols;
         if (trapsCheckbox)   trapsCheckbox.checked   = !!opt.useTraps;
       }
+
+      // --- Shape toggle buttons (single active) ---
+      const shapeButtons = {
+        pent: $html.find("#dungeon-builder-shape-pent")[0],
+        hex:  $html.find("#dungeon-builder-shape-hex")[0],
+        sept: $html.find("#dungeon-builder-shape-sept")[0],
+        oct:  $html.find("#dungeon-builder-shape-oct")[0]
+      };
+
+      // Default active shape (can change later when wiring into generation)
+      let activeShape = "hex";
+
+      const updateShapeButtons = () => {
+        for (const [key, btn] of Object.entries(shapeButtons)) {
+          if (!btn) continue;
+          if (key === activeShape) {
+            btn.style.background  = "#ccc";
+            btn.style.borderColor = "#555";
+            btn.style.boxShadow   = "inset 0 0 3px rgba(0,0,0,0.5)";
+          } else {
+            btn.style.background  = "#eee";
+            btn.style.borderColor = "#888";
+            btn.style.boxShadow   = "none";
+          }
+        }
+      };
+
+      Object.entries(shapeButtons).forEach(([key, btn]) => {
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+          if (activeShape === key) return; // already active
+          activeShape = key;
+          updateShapeButtons();
+          // later: wire activeShape into generator here
+        });
+      });
+
+      // Initialize active state
+      updateShapeButtons();
+      // --- end shape toggle buttons ---
 
       const getOptions = () => ({
         useKeys:    !!keysCheckbox?.checked,
