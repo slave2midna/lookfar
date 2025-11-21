@@ -33,23 +33,23 @@ class DungeonMapper {
     this.points = this._computePoints();
 
     this.startIndex = null;
-    this.twoIndex = null;
+    this.twoIndex   = null;
     this.threeIndex = null;
-    this.goalIndex = null;
+    this.goalIndex  = null;
 
     // Options
-    this.useKeys = false;
+    this.useKeys    = false;
     this.usePatrols = false;
-    this.useTraps = false;
-    this.useEgress = false;
-    this.useStairs = false;
+    this.useTraps   = false;
+    this.useEgress  = false;
+    this.useStairs  = false;
 
     // Key locations
     this.key1Index = null;
     this.key2Index = null;
 
     // Egress & stairs
-    this.exitIndex = null;
+    this.exitIndex   = null;
     this.stairsIndex = null;
 
     // Seeded RNG
@@ -68,9 +68,9 @@ class DungeonMapper {
   _rng() {
     // mulberry32
     let t = this._rngState += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), (t | 61));
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   }
 
   _shuffle(arr) {
@@ -110,11 +110,11 @@ class DungeonMapper {
 
   // Main entry point
   draw({
-    useKeys = false,
+    useKeys    = false,
     usePatrols = false,
-    useTraps = false,
-    useEgress = false,
-    useStairs = false
+    useTraps   = false,
+    useEgress  = false,
+    useStairs  = false
   } = {}) {
     const ctx = this.ctx;
 
@@ -124,20 +124,21 @@ class DungeonMapper {
     // Clear canvas
     ctx.clearRect(0, 0, this.width, this.height);
 
-    // Clear overlay icons
+    // Clear ONLY map icons (not party trackers)
     if (this.iconLayer) {
-      this.iconLayer.innerHTML = "";
+      const mapIcons = this.iconLayer.querySelectorAll('[data-layer="map-icon"]');
+      mapIcons.forEach(el => el.remove());
     }
 
-    this.useKeys = useKeys;
+    this.useKeys    = useKeys;
     this.usePatrols = usePatrols;
-    this.useTraps = useTraps;
-    this.useEgress = useEgress;
-    this.useStairs = useStairs;
+    this.useTraps   = useTraps;
+    this.useEgress  = useEgress;
+    this.useStairs  = useStairs;
 
-    this.key1Index = null;
-    this.key2Index = null;
-    this.exitIndex = null;
+    this.key1Index   = null;
+    this.key2Index   = null;
+    this.exitIndex   = null;
     this.stairsIndex = null;
 
     // Assign roles + labels
@@ -211,7 +212,7 @@ class DungeonMapper {
       : null;
 
     this.startIndex = sIdx;
-    this.twoIndex = twoIdx;
+    this.twoIndex   = twoIdx;
 
     const remaining = markedIndices.filter(i => i !== sIdx && i !== twoIdx);
 
@@ -247,9 +248,9 @@ class DungeonMapper {
 
     // S / G instead of Start / Goal
     pointsWithTypes[sIdx].number = "S";
-    if (twoIdx !== null) pointsWithTypes[twoIdx].number = 2;
+    if (twoIdx   !== null) pointsWithTypes[twoIdx].number   = 2;
     if (threeIdx !== null) pointsWithTypes[threeIdx].number = 3;
-    if (gIdx !== null) pointsWithTypes[gIdx].number = "G";
+    if (gIdx     !== null) pointsWithTypes[gIdx].number     = "G";
 
     for (const idx of remainingAfter3) {
       if (idx === gIdx) continue;
@@ -386,6 +387,7 @@ class DungeonMapper {
     const d3 = cross(p2.x, p2.y, q2.x, q2.y, p1.x, p1.y);
     const d4 = cross(p2.x, p2.y, q2.x, q2.y, q1.x, q1.y);
 
+    // Collinear case: treat as non-crossing here
     if ((d1 === 0 && d2 === 0 && d3 === 0 && d4 === 0)) {
       return false;
     }
@@ -395,10 +397,12 @@ class DungeonMapper {
 
   _allMarkedConnected(edges, markedIndices) {
     if (markedIndices.length === 0) return true;
+
     const adj = new Map();
     for (const idx of markedIndices) {
       adj.set(idx, []);
     }
+
     for (const [a, b] of edges) {
       if (adj.has(a) && adj.has(b)) {
         adj.get(a).push(b);
@@ -556,11 +560,11 @@ class DungeonMapper {
     className,
     x,
     y,
-    sizePx = 14,
-    color = "black",
+    sizePx   = 14,
+    color    = "black",
     extraClass = "",
-    offsetX = 0,
-    offsetY = 0
+    offsetX  = 0,
+    offsetY  = 0
   ) {
     if (!this.iconLayer) return;
 
@@ -575,10 +579,13 @@ class DungeonMapper {
 
     icon.style.transform = `translate(-50%, -50%) translate(${offsetX}px, ${offsetY}px)`;
 
-    icon.style.fontSize = `${sizePx}px`;
-    icon.style.lineHeight = "1";
+    icon.style.fontSize      = `${sizePx}px`;
+    icon.style.lineHeight    = "1";
     icon.style.pointerEvents = "none";
-    icon.style.color = color;
+    icon.style.color         = color;
+
+    // Mark as a map icon so we can clear them without deleting trackers
+    icon.dataset.layer = "map-icon";
 
     this.iconLayer.appendChild(icon);
   }
@@ -621,10 +628,9 @@ class DungeonMapper {
     const indices = Array.from({ length: count }, (_, i) => i);
     const shuffledIndices = this._shuffle(indices.slice());
 
-    const secretIndex = shuffledIndices.shift();
-    the_result = shuffledIndices.slice(0, Math.min(2, count - 1));
-    const maxDoorLines = Math.min(2, count - 1);
-    const doorIndices = new Set(the_result);
+    const secretIndex   = shuffledIndices.shift();
+    const maxDoorLines  = Math.min(2, count - 1);
+    const doorIndices   = new Set(shuffledIndices.slice(0, maxDoorLines));
 
     let patrolIndices = new Set();
     if (this.usePatrols && count > 0) {
@@ -658,9 +664,9 @@ class DungeonMapper {
       const b = points[j];
 
       const isSecret = li === secretIndex;
-      const isDoor = doorIndices.has(li);
+      const isDoor   = doorIndices.has(li);
       const isPatrol = this.usePatrols && patrolIndices.has(li);
-      const isTrap = this.useTraps && trapIndices.has(li);
+      const isTrap   = this.useTraps   && trapIndices.has(li);
 
       ctx.beginPath();
       ctx.setLineDash(isSecret ? [8, 6] : []);
@@ -675,7 +681,7 @@ class DungeonMapper {
       const dy = b.y - a.y;
       const len = Math.hypot(dx, dy) || 1;
       const nx = -dy / len;
-      const ny = dx / len;
+      const ny =  dx / len;
 
       if (isDoor) {
         const tickLen = 12;
@@ -784,9 +790,9 @@ class DungeonMapper {
 
       ctx.save();
       ctx.font = "16px sans-serif";
-      ctx.textAlign = "center";
+      ctx.textAlign   = "center";
       ctx.textBaseline = "middle";
-      ctx.fillStyle = "black";
+      ctx.fillStyle   = "black";
 
       if (number === "S" || number === "G") {
         ctx.font = "bold 16px sans-serif";
@@ -833,7 +839,7 @@ class DungeonMapper {
   }
 
   _drawEgress(points) {
-    const r = this.nodeRadius;
+    const r  = this.nodeRadius;
     const cx = this.centerX;
     const cy = this.centerY;
 
@@ -842,8 +848,8 @@ class DungeonMapper {
       const vx = s.x - cx;
       const vy = s.y - cy;
       const len = Math.hypot(vx, vy) || 1;
-      const ux = vx / len;
-      const uy = vy / len;
+      const ux  = vx / len;
+      const uy  = vy / len;
 
       const tailX = s.x + ux * (r + 8);
       const tailY = s.y + uy * (r + 8);
@@ -858,8 +864,8 @@ class DungeonMapper {
       const vx = p.x - cx;
       const vy = p.y - cy;
       const len = Math.hypot(vx, vy) || 1;
-      const ux = vx / len;
-      const uy = vy / len;
+      const ux  = vx / len;
+      const uy  = vy / len;
 
       const tailX = p.x + ux * (r + 2);
       const tailY = p.y + uy * (r + 2);
@@ -999,7 +1005,7 @@ export function openDungeonMapper() {
 
       const $html = html;
       const canvas = $html.find("#dungeon-builder-canvas")[0];
-      const ctx = canvas.getContext("2d");
+      const ctx    = canvas.getContext("2d");
       const iconLayer = $html.find("#dungeon-builder-icons")[0];
 
       const lastState = _lastDungeonState || null;
@@ -1031,11 +1037,11 @@ export function openDungeonMapper() {
       }
 
       const getOptions = () => ({
-        useKeys:   !!keysCheckbox?.checked,
-        usePatrols:!!patrolsCheckbox?.checked,
-        useTraps:  !!trapsCheckbox?.checked,
-        useEgress: !!egressCheckbox?.checked,
-        useStairs: !!stairsCheckbox?.checked
+        useKeys:    !!keysCheckbox?.checked,
+        usePatrols: !!patrolsCheckbox?.checked,
+        useTraps:   !!trapsCheckbox?.checked,
+        useEgress:  !!egressCheckbox?.checked,
+        useStairs:  !!stairsCheckbox?.checked
       });
 
       const $generateBtn = $html.find("#dungeon-builder-generate-btn");
@@ -1049,7 +1055,7 @@ export function openDungeonMapper() {
       };
 
       // --- Draggable party trackers on main map ---
-      let setupTrackers = () => {};
+      let resetPartyTrackers = null;
       try {
         const trackerLayer = iconLayer;
         if (trackerLayer) {
@@ -1061,7 +1067,7 @@ export function openDungeonMapper() {
           ];
 
           const iconSize = 18;
-          const margin = 6;
+          const margin   = 6;
 
           const dragState = { icon: null, offsetX: 0, offsetY: 0 };
 
@@ -1090,38 +1096,26 @@ export function openDungeonMapper() {
             document.removeEventListener("mouseup", endDrag);
           };
 
-          setupTrackers = (resetPositions = false) => {
-            const rectWidth  = trackerLayer.clientWidth;
-            const rectHeight = trackerLayer.clientHeight;
-            if (!rectWidth || !rectHeight) return;
-
-            let baseLeft = rectWidth - iconSize - margin;
-            if (!Number.isFinite(baseLeft) || baseLeft < margin) {
-              baseLeft = rectWidth > 0 ? rectWidth - iconSize - margin : margin;
-            }
-
-            let currentTop = margin;
-
+          const ensureTrackers = () => {
             trackerDefs.forEach((def) => {
               let icon = trackerLayer.querySelector(`[data-tracker-id="${def.id}"]`);
-
               if (!icon) {
                 icon = document.createElement("i");
                 icon.className = "fa-solid fa-person-dress-simple";
                 icon.dataset.trackerId = def.id;
 
-                icon.style.position = "absolute";
-                icon.style.fontSize = `${iconSize}px`;
-                icon.style.lineHeight = "1";
-                icon.style.color    = def.color;
-                icon.style.cursor   = "grab";
+                icon.style.position      = "absolute";
+                icon.style.fontSize      = `${iconSize}px`;
+                icon.style.lineHeight    = "1";
+                icon.style.color         = def.color;
+                icon.style.cursor        = "grab";
                 icon.style.pointerEvents = "auto";
-                icon.style.zIndex   = "10";
+                icon.style.zIndex        = "10";
 
                 icon.addEventListener("mousedown", (ev) => {
                   ev.preventDefault();
                   const rect = trackerLayer.getBoundingClientRect();
-                  dragState.icon = icon;
+                  dragState.icon    = icon;
                   dragState.offsetX = ev.clientX - (rect.left + icon.offsetLeft);
                   dragState.offsetY = ev.clientY - (rect.top  + icon.offsetTop);
                   icon.style.cursor = "grabbing";
@@ -1133,18 +1127,35 @@ export function openDungeonMapper() {
                 trackerLayer.appendChild(icon);
                 console.log("[Dungeon Mapper] created tracker", def.id);
               }
+            });
+          };
 
-              if (resetPositions) {
-                icon.style.left = `${baseLeft}px`;
-                icon.style.top  = `${currentTop}px`;
-              }
+          const resetImpl = () => {
+            const rectWidth = trackerLayer.clientWidth;
+            if (!rectWidth) return;
 
+            ensureTrackers();
+
+            let baseLeft = rectWidth - iconSize - margin;
+            if (!Number.isFinite(baseLeft) || baseLeft < margin) {
+              baseLeft = rectWidth > 0 ? rectWidth - iconSize - margin : margin;
+            }
+
+            let currentTop = margin;
+
+            trackerDefs.forEach((def) => {
+              const icon = trackerLayer.querySelector(`[data-tracker-id="${def.id}"]`);
+              if (!icon) return;
+              icon.style.left = `${baseLeft}px`;
+              icon.style.top  = `${currentTop}px`;
               currentTop += iconSize + 4;
             });
           };
 
+          resetPartyTrackers = resetImpl;
+
           // Initial placement once layout is ready
-          requestAnimationFrame(() => setupTrackers(true));
+          requestAnimationFrame(() => resetImpl());
         }
       } catch (e) {
         console.warn("[Dungeon Mapper] could not create trackers", e);
@@ -1174,9 +1185,9 @@ export function openDungeonMapper() {
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
 
-        // Reset trackers on every generate
-        if (typeof setupTrackers === "function") {
-          requestAnimationFrame(() => setupTrackers(true));
+        // Reset trackers on every generate (without deleting them)
+        if (typeof resetPartyTrackers === "function") {
+          resetPartyTrackers();
         }
       });
 
