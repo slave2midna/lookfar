@@ -16,7 +16,7 @@ let _lastDungeonState = null;
 let _builderAppId     = null;
 
 // ----- Core generator class -----
-class DungeonBuilderGenerator {
+class DungeonMapper {
   constructor(ctx, width, height, iconLayer, seed = null) {
     this.ctx = ctx;
     this.width = width;
@@ -889,15 +889,16 @@ const dialogContent = `
   <div style="margin-top:8px; font-size:12px; width:100%; margin-left:auto; margin-right:auto; text-align:left;">
 
     <div style="display:flex; gap:8px; margin-bottom:6px; width:100%;">
+      <!-- Paths -->
       <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
         <legend style="font-weight:bold; padding:0 4px;">Paths</legend>
-        <!-- line-height fixed (no %) and labels updated to Open/Closed -->
         <div style="line-height:1.4;">
           <div>
             <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; vertical-align:middle;"></span>
             <span style="vertical-align:middle;">Open</span>
-            &nbsp;&nbsp;
-            <span style="position:relative; display:inline-block; margin-left:8px; vertical-align:middle;">
+          </div>
+          <div style="margin-top:2px;">
+            <span style="position:relative; display:inline-block; vertical-align:middle;">
               <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; position:relative; vertical-align:middle;">
                 <span style="position:absolute; left:50%; top:-5px; height:10px; border-left:1px solid #000; transform:translateX(-50%);"></span>
               </span>
@@ -911,13 +912,15 @@ const dialogContent = `
         </div>
       </fieldset>
 
+      <!-- Points -->
       <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
         <legend style="font-weight:bold; padding:0 4px;">Points</legend>
         <div style="line-height:1.4;">
           <div>
             <i class="fa-sharp fa-solid fa-circle" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Feature</span>
-            &nbsp;&nbsp;
+          </div>
+          <div style="margin-top:2px;">
             <i class="fa-sharp fa-solid fa-triangle" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Danger</span>
           </div>
@@ -927,6 +930,20 @@ const dialogContent = `
           </div>
         </div>
       </fieldset>
+
+      <!-- Seed -->
+<fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+  <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
+  <div style="line-height:1.4; text-align:center;">
+    <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
+    <div style="margin-top:4px;">
+      <input type="text"
+             id="dungeon-builder-seed-input"
+             placeholder="Enter seed"
+             style="width:100%; box-sizing:border-box; font-size:11px;">
+    </div>
+  </div>
+</fieldset>
     </div>
 
     <fieldset style="margin:4px 0 0 0; padding:6px 8px; border:1px solid #aaa; width:100%;">
@@ -973,56 +990,14 @@ const pinnedDialogContent = `
     <div id="dungeon-builder-pinned-icons"
          style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:auto;"></div>
   </div>
-
-  <div style="margin-top:8px; font-size:12px; width:100%; margin-left:auto; margin-right:auto; text-align:left;">
-    <div style="display:flex; gap:8px; margin-bottom:0; width:100%;">
-      <fieldset style="flex:1; padding:4px 6px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Paths</legend>
-        <div style="line-height:1.3;">
-          <div>
-            <span style="display:inline-block; width:24px; border-top:1px solid #000; margin-right:4px; vertical-align:middle;"></span>
-            <span style="vertical-align:middle;">Cleared</span>
-            &nbsp;&nbsp;
-            <span style="position:relative; display:inline-block; margin-left:6px; vertical-align:middle;">
-              <span style="display:inline-block; width:24px; border-top:1px solid #000; margin-right:4px; position:relative; vertical-align:middle;">
-                <span style="position:absolute; left:50%; top:-5px; height:10px; border-left:1px solid #000; transform:translateX(-50%);"></span>
-              </span>
-              <span style="vertical-align:middle;">Blocked</span>
-            </span>
-          </div>
-          <div style="margin-top:2px;">
-            <span style="display:inline-block; width:24px; border-top:1px dashed #000; margin-right:4px; vertical-align:middle;"></span>
-            <span style="vertical-align:middle;">Secret</span>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset style="flex:1; padding:4px 6px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Points</legend>
-        <div style="line-height:1.3;">
-          <div>
-            <i class="fa-sharp fa-solid fa-circle" style="font-size:11px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Feature</span>
-            &nbsp;&nbsp;
-            <i class="fa-sharp fa-solid fa-triangle" style="font-size:11px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Danger</span>
-          </div>
-          <div style="margin-top:2px;">
-            <i class="fa-sharp fa-solid fa-diamond" style="font-size:11px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Treasure</span>
-          </div>
-        </div>
-      </fieldset>
-    </div>
-  </div>
 </div>
 `;
 
 // ----- Main dialog function (module-style, not macro) -----
 
-export function openDungeonBuilderDialog() {
+export function openDungeonMapper() {
   if (!game.user.isGM) {
-    ui.notifications?.warn?.("Dungeon Builder is GM-only.");
+    ui.notifications?.warn?.("Dungeon Mapper is GM-only.");
     return;
   }
 
@@ -1033,7 +1008,7 @@ export function openDungeonBuilderDialog() {
   }
 
   const dlg = new Dialog({
-    title: "Dungeon Builder",
+    title: "Dungeon Mapper",
     content: dialogContent,
     buttons: {},
     render: function(html) {
@@ -1048,7 +1023,7 @@ export function openDungeonBuilderDialog() {
 
       const lastState = _lastDungeonState || null;
 
-      const generator = new DungeonBuilderGenerator(
+      const generator = new DungeonMapper(
         ctx,
         canvas.width,
         canvas.height,
@@ -1061,6 +1036,9 @@ export function openDungeonBuilderDialog() {
       const trapsCheckbox   = $html.find("#dungeon-builder-opt-traps")[0];
       const egressCheckbox  = $html.find("#dungeon-builder-opt-egress")[0];
       const stairsCheckbox  = $html.find("#dungeon-builder-opt-stairs")[0];
+
+      const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
+      const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
 
       if (lastState && lastState.options) {
         const opt = lastState.options;
@@ -1092,9 +1070,26 @@ export function openDungeonBuilderDialog() {
 
       $generateBtn.on("click", () => {
         const options = getOptions();
-        const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+
+        let seed;
+        const raw = seedInputField?.value?.trim();
+        if (raw) {
+          const parsed = Number(raw);
+          if (Number.isFinite(parsed) && parsed >= 0) {
+            seed = parsed >>> 0;
+          } else {
+            ui.notifications?.warn?.("Invalid seed; using random instead.");
+            seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+          }
+        } else {
+          seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+        }
+
         redrawWith(options, seed);
         _lastDungeonState = { seed, options };
+
+        const s = String(seed >>> 0);
+        if (seedCurrentSpan) seedCurrentSpan.textContent = s;
       });
 
       $pinBtn.on("click", () => {
@@ -1115,7 +1110,7 @@ export function openDungeonBuilderDialog() {
             const pinnedCtx     = pinnedCanvas.getContext("2d");
             const pinnedIcons   = $p.find("#dungeon-builder-pinned-icons")[0];
 
-            const pinnedGen = new DungeonBuilderGenerator(
+            const pinnedGen = new DungeonMapper(
               pinnedCtx,
               pinnedCanvas.width,
               pinnedCanvas.height,
@@ -1193,7 +1188,7 @@ export function openDungeonBuilderDialog() {
                     icon.style.zIndex   = "10";
 
                     trackerLayer.appendChild(icon);
-                    console.log("[Dungeon Builder] created tracker", def.id);
+                    console.log("[Dungeon Mapper] created tracker", def.id);
 
                     currentTop += iconSize + 4;
 
@@ -1212,7 +1207,7 @@ export function openDungeonBuilderDialog() {
                 });
               }
             } catch (e) {
-              console.warn("[Dungeon Builder] could not create trackers", e);
+              console.warn("[Dungeon Mapper] could not create trackers", e);
             }
             // --- end draggable party trackers ---
 
@@ -1235,19 +1230,19 @@ export function openDungeonBuilderDialog() {
 
         pinnedDialog.render(true);
 
-        // Close the main Dungeon Builder dialog when pinning
+        // Close the main Dungeon Mapper dialog when pinning
         const win = ui?.windows?.[generatorAppId];
         if (win && typeof win.close === "function") {
           try {
             win.close();
           } catch (e) {
-            console.warn("[Dungeon Builder] ui.windows[appId].close() failed", e);
+            console.warn("[Dungeon Mapper] ui.windows[appId].close() failed", e);
           }
         } else if (typeof app.close === "function") {
           try {
             app.close();
           } catch (e) {
-            console.warn("[Dungeon Builder] app.close() failed", e);
+            console.warn("[Dungeon Mapper] app.close() failed", e);
           }
         }
 
@@ -1257,23 +1252,29 @@ export function openDungeonBuilderDialog() {
             $window.remove();
           }
         } catch (e) {
-          console.warn("[Dungeon Builder] hard DOM removal failed", e);
+          console.warn("[Dungeon Mapper] hard DOM removal failed", e);
         }
       });
 
       $saveBtn.on("click", () => {
         // Placeholder for future integration (journal entry, note, etc.)
-        console.log("[Dungeon Builder] Save clicked (not yet implemented).");
+        console.log("[Dungeon Mapper] Save clicked (not yet implemented).");
       });
 
       // Initial draw: restore last state if present, otherwise roll fresh
       if (lastState && lastState.options && typeof lastState.seed === "number") {
         redrawWith(lastState.options, lastState.seed);
+
+        const s = String(lastState.seed >>> 0);
+        if (seedCurrentSpan) seedCurrentSpan.textContent = s;
       } else {
         const options = getOptions();
         const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
         redrawWith(options, seed);
         _lastDungeonState = { seed, options };
+
+        const s = String(seed >>> 0);
+        if (seedCurrentSpan) seedCurrentSpan.textContent = s;
       }
     },
     close: () => {
@@ -1286,12 +1287,12 @@ export function openDungeonBuilderDialog() {
   dlg.render(true);
 }
 
-// Hook: wired by buttonManager.js via Hooks.call("lookfarShowDungeonBuilderDialog")
-Hooks.on("lookfarShowDungeonBuilderDialog", () => {
+// Hook: wired by buttonManager.js via Hooks.call("lookfarShowDungeonMapperDialog")
+Hooks.on("lookfarShowDungeonMapperDialog", () => {
   try {
-    openDungeonBuilderDialog();
+    openDungeonMapper();
   } catch (err) {
-    console.error("[Dungeon Builder] failed to open:", err);
-    ui.notifications?.error("Dungeon Builder: failed to open (see console).");
+    console.error("[Dungeon Mapper] failed to open:", err);
+    ui.notifications?.error("Dungeon Mapper: failed to open (see console).");
   }
 });

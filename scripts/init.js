@@ -5,7 +5,7 @@ import { dataLoader } from "./dataLoader.js";
 import "./travelRoll.js";
 import "./treasureRoll.js";
 import "./itemForge.js";
-import "./dungeonBuilder.js";
+import "./dungeonMapper.js";
 import "./buttonManager.js";
 
 Hooks.once("init", async () => {
@@ -24,3 +24,4 @@ Hooks.once("ready", () => {
   // Register dynamic settings that require game ready
   LookfarSettings.registerDynamicRollTableSettings();
 });
+
