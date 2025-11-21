@@ -657,34 +657,15 @@ class DungeonMapper {
       const nx  = -dy / len;
       const ny  =  dx / len;
 
-      // Defaults: full segment
-      let ax = a.x;
-      let ay = a.y;
-      let bx = b.x;
-      let by = b.y;
-
-      // If this path has a patrol icon, shorten the line so it doesn't pass under the icon
-      if (isPatrol) {
-        // Roughly skull radius + some padding so it visually clears the icon
-        const patrolGap = 18; // tweak 16–20 to taste
-
-        const ux = dx / len;
-        const uy = dy / len;
-
-        ax = a.x + ux * patrolGap;
-        ay = a.y + uy * patrolGap;
-        bx = b.x - ux * patrolGap;
-        by = b.y - uy * patrolGap;
-      }
-
+      // Simple full segment
       ctx.beginPath();
       ctx.setLineDash(isSecret ? [8, 6] : []);
-      ctx.moveTo(ax, ay);
-      ctx.lineTo(bx, by);
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Midpoint (still the true midpoint for icon placement)
+      // Midpoint for decorations
       const mx = (a.x + b.x) / 2;
       const my = (a.y + b.y) / 2;
 
@@ -958,15 +939,35 @@ const dialogContent = `
       </fieldset>
     </div> <!-- end flex row for Paths / Points / Seed -->
 
-    <!-- Generate row (own full-width fieldset) -->
-    <fieldset style="margin:4px 0 0 0; padding:6px 8px; border:1px solid #aaa; width:100%;">
-      <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
-      <div style="margin-top:2px; line-height:1.4; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px;">
-        <label><input type="checkbox" id="dungeon-builder-opt-keys"> Keys</label>
-        <label><input type="checkbox" id="dungeon-builder-opt-patrols"> Patrols</label>
-        <label><input type="checkbox" id="dungeon-builder-opt-traps"> Traps</label>
-      </div>
-    </fieldset>
+    <!-- Generate + Shape row -->
+    <div style="display:flex; gap:8px; margin-top:4px; width:100%;">
+      <!-- Generate -->
+      <fieldset style="flex:2; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+        <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
+        <div style="margin-top:2px; line-height:1.4; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px;">
+          <label><input type="checkbox" id="dungeon-builder-opt-keys"> Keys</label>
+          <label><input type="checkbox" id="dungeon-builder-opt-patrols"> Patrols</label>
+          <label><input type="checkbox" id="dungeon-builder-opt-traps"> Traps</label>
+        </div>
+      </fieldset>
+
+      <!-- Shape -->
+      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+        <legend style="font-weight:bold; padding:0 4px;">Shape</legend>
+        <div style="margin-top:2px; display:flex; justify-content:center; align-items:center; gap:6px;">
+          <button type="button"
+                  id="dungeon-builder-shape-hex"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-sharp fa-regular fa-hexagon" style="font-size:14px;"></i>
+          </button>
+          <button type="button"
+                  id="dungeon-builder-shape-oct"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-sharp fa-regular fa-octagon" style="font-size:14px;"></i>
+          </button>
+        </div>
+      </fieldset>
+    </div>
   </div>
 
   <div style="margin-top:8px; width:100%; display:flex; gap:4px;">
