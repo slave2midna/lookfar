@@ -956,19 +956,28 @@ const dialogContent = `
         <legend style="font-weight:bold; padding:0 4px;">Shape</legend>
         <div style="margin-top:2px; display:flex; justify-content:center; align-items:center; gap:6px;">
           <button type="button"
+                  id="dungeon-builder-shape-pent"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-sharp fa-solid fa-pentagon" style="font-size:14px;"></i>
+          </button>
+          <button type="button"
                   id="dungeon-builder-shape-hex"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-regular fa-hexagon" style="font-size:14px;"></i>
+            <i class="fa-sharp fa-solid fa-hexagon" style="font-size:14px;"></i>
+          </button>
+          <button type="button"
+                  id="dungeon-builder-shape-sept"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-sharp fa-solid fa-septagon" style="font-size:14px;"></i>
           </button>
           <button type="button"
                   id="dungeon-builder-shape-oct"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-regular fa-octagon" style="font-size:14px;"></i>
+            <i class="fa-sharp fa-solid fa-octagon" style="font-size:14px;"></i>
           </button>
         </div>
       </fieldset>
     </div>
-  </div>
 
   <div style="margin-top:8px; width:100%; display:flex; gap:4px;">
     <button type="button"
