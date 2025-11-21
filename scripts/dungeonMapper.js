@@ -1026,9 +1026,9 @@ const dialogContent = `
           </button>
           <button type="button"
                   id="dungeon-builder-shape-sept"
-                  title="Septagon"
+                  title="Heptagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-septagon" style="font-size:14px; transform:translateX(1px);"></i>
+            <i class="fa-solid fa-Heptagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
           <button type="button"
                   id="dungeon-builder-shape-oct"
