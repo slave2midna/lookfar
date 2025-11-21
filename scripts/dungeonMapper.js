@@ -885,7 +885,7 @@ const dialogContent = `
                    id="dungeon-builder-path-open-count"
                    value="3"
                    min="0"
-                   max="9"
+                   max="3"
                    style="width:2em; text-align:center; margin-right:4px;">
             <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; vertical-align:middle;"></span>
             <span style="vertical-align:middle;">Open</span>
@@ -896,7 +896,7 @@ const dialogContent = `
                    id="dungeon-builder-path-closed-count"
                    value="2"
                    min="0"
-                   max="9"
+                   max="3"
                    style="width:2em; text-align:center; margin-right:4px;">
             <span style="position:relative; display:inline-block; vertical-align:middle;">
               <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; position:relative; vertical-align:middle;">
@@ -911,7 +911,7 @@ const dialogContent = `
                    id="dungeon-builder-path-secret-count"
                    value="1"
                    min="0"
-                   max="9"
+                   max="3"
                    style="width:2em; text-align:center; margin-right:4px;">
             <span style="display:inline-block; width:28px; border-top:1px dashed #000; margin-right:4px; vertical-align:middle;"></span>
             <span style="vertical-align:middle;">Secret</span>
@@ -929,7 +929,7 @@ const dialogContent = `
                    id="dungeon-builder-point-feature-count"
                    value="3"
                    min="0"
-                   max="9"
+                   max="3"
                    style="width:2em; text-align:center; margin-right:4px;">
             <i class="fa-sharp fa-solid fa-circle" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Feature</span>
@@ -940,7 +940,7 @@ const dialogContent = `
                    id="dungeon-builder-point-danger-count"
                    value="2"
                    min="0"
-                   max="9"
+                   max="3"
                    style="width:2em; text-align:center; margin-right:4px;">
             <i class="fa-sharp fa-solid fa-triangle" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Danger</span>
@@ -951,7 +951,7 @@ const dialogContent = `
                    id="dungeon-builder-point-treasure-count"
                    value="1"
                    min="0"
-                   max="9"
+                   max="3"
                    style="width:2em; text-align:center; margin-right:4px;">
             <i class="fa-sharp fa-solid fa-diamond" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Treasure</span>
@@ -1094,86 +1094,230 @@ export function openDungeonMapper() {
       );
 
       const keysButton    = $html.find("#dungeon-builder-opt-keys")[0];
-const patrolsButton = $html.find("#dungeon-builder-opt-patrols")[0];
-const trapsButton   = $html.find("#dungeon-builder-opt-traps")[0];
+      const patrolsButton = $html.find("#dungeon-builder-opt-patrols")[0];
+      const trapsButton   = $html.find("#dungeon-builder-opt-traps")[0];
 
-const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
-const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
+      const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
+      const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
+      const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
 
-const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
+      // Numeric inputs for paths and points
+      const pathOpenInput    = $html.find("#dungeon-builder-path-open-count")[0];
+      const pathClosedInput  = $html.find("#dungeon-builder-path-closed-count")[0];
+      const pathSecretInput  = $html.find("#dungeon-builder-path-secret-count")[0];
 
-if (seedCopyBtn && seedCurrentSpan) {
-  seedCopyBtn.addEventListener("click", async () => {
-    const value = seedCurrentSpan.textContent?.trim();
-    if (!value || value === "—") {
-      ui.notifications?.warn?.("No seed to copy yet.");
-      return;
-    }
+      const pointFeatureInput  = $html.find("#dungeon-builder-point-feature-count")[0];
+      const pointDangerInput   = $html.find("#dungeon-builder-point-danger-count")[0];
+      const pointTreasureInput = $html.find("#dungeon-builder-point-treasure-count")[0];
 
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(value);
-      } else {
-        const ta = document.createElement("textarea");
-        ta.value = value;
-        ta.style.position = "fixed";
-        ta.style.left = "-9999px";
-        document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
+      // Shape config: sides + defaults per shape
+      const SHAPE_CONFIG = {
+        pent: {
+          sides: 5,
+          points: { feature: 3, danger: 1, treasure: 1 },
+          paths:  { open: 2, closed: 1, secret: 1 }
+        },
+        hex: {
+          sides: 6,
+          points: { feature: 3, danger: 2, treasure: 1 },
+          paths:  { open: 3, closed: 2, secret: 1 }
+        },
+        sept: {
+          sides: 7,
+          points: { feature: 3, danger: 2, treasure: 2 },
+          paths:  { open: 2, closed: 3, secret: 2 }
+        },
+        oct: {
+          sides: 8,
+          points: { feature: 3, danger: 3, treasure: 2 },
+          paths:  { open: 3, closed: 3, secret: 2 }
+        }
+      };
+
+      const pathGroupInputs = {
+        open:   pathOpenInput,
+        closed: pathClosedInput,
+        secret: pathSecretInput
+      };
+
+      const pointGroupInputs = {
+        feature:  pointFeatureInput,
+        danger:   pointDangerInput,
+        treasure: pointTreasureInput
+      };
+
+      // Clamp to [0,3] and return numeric value
+      const clampField = (input) => {
+        if (!input) return 0;
+        let v = parseInt(input.value, 10);
+        if (Number.isNaN(v)) v = 0;
+        if (v < 0) v = 0;
+        if (v > 3) v = 3;
+        input.value = String(v);
+        return v;
+      };
+
+      // Current active shape
+      let activeShape = "hex";
+
+      const getShapeConfig = () => SHAPE_CONFIG[activeShape] || SHAPE_CONFIG.hex;
+
+      // Apply default values for a given shape
+      const applyShapeDefaults = (shapeKey) => {
+        const cfg = SHAPE_CONFIG[shapeKey] || SHAPE_CONFIG.hex;
+        activeShape = shapeKey;
+
+        // Points
+        if (pointFeatureInput)  pointFeatureInput.value  = cfg.points.feature;
+        if (pointDangerInput)   pointDangerInput.value   = cfg.points.danger;
+        if (pointTreasureInput) pointTreasureInput.value = cfg.points.treasure;
+
+        // Paths
+        if (pathOpenInput)   pathOpenInput.value   = cfg.paths.open;
+        if (pathClosedInput) pathClosedInput.value = cfg.paths.closed;
+        if (pathSecretInput) pathSecretInput.value = cfg.paths.secret;
+      };
+
+      // Enforce per-group total <= sides, adjusting other fields if needed
+      const enforceGroupTotals = (groupInputs, changedKey = null) => {
+        const cfg = getShapeConfig();
+        const maxTotal = cfg.sides;
+
+        const values = {};
+        let total = 0;
+
+        const allKeys = Object.keys(groupInputs).filter(k => groupInputs[k]);
+
+        for (const key of allKeys) {
+          const input = groupInputs[key];
+          const v = clampField(input);
+          values[key] = v;
+          total += v;
+        }
+
+        if (total <= maxTotal) return;
+
+        let overflow = total - maxTotal;
+
+        // Priority: all other fields first, then the changed field last (if provided)
+        let priority = allKeys;
+        if (changedKey && allKeys.includes(changedKey)) {
+          priority = allKeys.filter(k => k !== changedKey);
+          priority.push(changedKey);
+        }
+
+        while (overflow > 0) {
+          let adjustedThisPass = false;
+
+          for (const key of priority) {
+            if (overflow <= 0) break;
+            if (values[key] > 0) {
+              values[key]--;
+              overflow--;
+              adjustedThisPass = true;
+              if (overflow <= 0) break;
+            }
+          }
+
+          if (!adjustedThisPass) break; // can't reduce any further
+        }
+
+        // Push adjusted values back into inputs
+        for (const key of allKeys) {
+          const input = groupInputs[key];
+          if (!input) continue;
+          input.value = String(values[key] ?? 0);
+        }
+      };
+
+      // Wire change handlers for all numeric inputs
+      for (const [key, input] of Object.entries(pathGroupInputs)) {
+        if (!input) continue;
+        input.addEventListener("change", () => enforceGroupTotals(pathGroupInputs, key));
       }
-      ui.notifications?.info?.("Seed copied to clipboard.");
-    } catch (err) {
-      console.error("[Dungeon Mapper] Failed to copy seed:", err);
-      ui.notifications?.error?.("Failed to copy seed to clipboard.");
-    }
-  });
-}
 
-// generate-options state (backed by lastState if present)
-let genOptions = {
-  useKeys:    !!(lastState?.options?.useKeys),
-  usePatrols: !!(lastState?.options?.usePatrols),
-  useTraps:   !!(lastState?.options?.useTraps)
-};
+      for (const [key, input] of Object.entries(pointGroupInputs)) {
+        if (!input) continue;
+        input.addEventListener("change", () => enforceGroupTotals(pointGroupInputs, key));
+      }
+
+      // Initialize numeric inputs to current shape defaults (hex by default)
+      applyShapeDefaults(activeShape);
+      enforceGroupTotals(pathGroupInputs);
+      enforceGroupTotals(pointGroupInputs);
+
+      // Seed copy handler
+      if (seedCopyBtn && seedCurrentSpan) {
+        seedCopyBtn.addEventListener("click", async () => {
+          const value = seedCurrentSpan.textContent?.trim();
+          if (!value || value === "—") {
+            ui.notifications?.warn?.("No seed to copy yet.");
+            return;
+          }
+
+          try {
+            if (navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(value);
+            } else {
+              const ta = document.createElement("textarea");
+              ta.value = value;
+              ta.style.position = "fixed";
+              ta.style.left = "-9999px";
+              document.body.appendChild(ta);
+              ta.focus();
+              ta.select();
+              document.execCommand("copy");
+              document.body.removeChild(ta);
+            }
+            ui.notifications?.info?.("Seed copied to clipboard.");
+          } catch (err) {
+            console.error("[Dungeon Mapper] Failed to copy seed:", err);
+            ui.notifications?.error?.("Failed to copy seed to clipboard.");
+          }
+        });
+      }
+
+      // generate-options state (backed by lastState if present)
+      let genOptions = {
+        useKeys:    !!(lastState?.options?.useKeys),
+        usePatrols: !!(lastState?.options?.usePatrols),
+        useTraps:   !!(lastState?.options?.useTraps)
+      };
 
       // --- Generate option buttons (multi-toggle) ---
-const genButtons = {
-  useKeys:    keysButton,
-  usePatrols: patrolsButton,
-  useTraps:   trapsButton
-};
+      const genButtons = {
+        useKeys:    keysButton,
+        usePatrols: patrolsButton,
+        useTraps:   trapsButton
+      };
 
-const updateGenButtons = () => {
-  for (const [key, btn] of Object.entries(genButtons)) {
-    if (!btn) continue;
-    const active = !!genOptions[key];
-    if (active) {
-      btn.style.background  = "#ccc";
-      btn.style.borderColor = "#555";
-      btn.style.boxShadow   = "inset 0 0 3px rgba(0,0,0,0.5)";
-    } else {
-      btn.style.background  = "#eee";
-      btn.style.borderColor = "#888";
-      btn.style.boxShadow   = "none";
-    }
-  }
-};
+      const updateGenButtons = () => {
+        for (const [key, btn] of Object.entries(genButtons)) {
+          if (!btn) continue;
+          const active = !!genOptions[key];
+          if (active) {
+            btn.style.background  = "#ccc";
+            btn.style.borderColor = "#555";
+            btn.style.boxShadow   = "inset 0 0 3px rgba(0,0,0,0.5)";
+          } else {
+            btn.style.background  = "#eee";
+            btn.style.borderColor = "#888";
+            btn.style.boxShadow   = "none";
+          }
+        }
+      };
 
-Object.entries(genButtons).forEach(([key, btn]) => {
-  if (!btn) return;
-  btn.addEventListener("click", () => {
-    genOptions[key] = !genOptions[key]; // toggle on/off
-    updateGenButtons();
-  });
-});
+      Object.entries(genButtons).forEach(([key, btn]) => {
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+          genOptions[key] = !genOptions[key]; // toggle on/off
+          updateGenButtons();
+        });
+      });
 
-// initialize button states from genOptions / lastState
-updateGenButtons();
-// --- end generate option buttons ---
-      
+      // initialize button states from genOptions / lastState
+      updateGenButtons();
+      // --- end generate option buttons ---
 
       // --- Shape toggle buttons (single active) ---
       const shapeButtons = {
@@ -1182,9 +1326,6 @@ updateGenButtons();
         sept: $html.find("#dungeon-builder-shape-sept")[0],
         oct:  $html.find("#dungeon-builder-shape-oct")[0]
       };
-
-      // Default active shape (can change later when wiring into generation)
-      let activeShape = "hex";
 
       const updateShapeButtons = () => {
         for (const [key, btn] of Object.entries(shapeButtons)) {
@@ -1205,21 +1346,24 @@ updateGenButtons();
         if (!btn) return;
         btn.addEventListener("click", () => {
           if (activeShape === key) return; // already active
+          applyShapeDefaults(key);        // reset inputs to that shape's defaults
+          enforceGroupTotals(pathGroupInputs);
+          enforceGroupTotals(pointGroupInputs);
           activeShape = key;
           updateShapeButtons();
-          // later: wire activeShape into generator here
+          // (shape wiring into generator will come later)
         });
       });
 
-      // Initialize active state
+      // Initialize active shape button state
       updateShapeButtons();
       // --- end shape toggle buttons ---
 
       const getOptions = () => ({
-  useKeys:    !!genOptions.useKeys,
-  usePatrols: !!genOptions.usePatrols,
-  useTraps:   !!genOptions.useTraps
-});
+        useKeys:    !!genOptions.useKeys,
+        usePatrols: !!genOptions.usePatrols,
+        useTraps:   !!genOptions.useTraps
+      });
 
       const $generateBtn = $html.find("#dungeon-builder-generate-btn");
       const $saveBtn     = $html.find("#dungeon-builder-save-btn");
