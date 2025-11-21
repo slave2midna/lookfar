@@ -30,26 +30,22 @@ class DungeonMapper {
     // Node "radius" used for egress/stairs offsets (approx 64px overall node size)
     this.nodeRadius = 32;
 
-    this.points = this._computePoints();
-
     this.startIndex = null;
-    this.twoIndex = null;
+    this.twoIndex   = null;
     this.threeIndex = null;
-    this.goalIndex = null;
+    this.goalIndex  = null;
 
     // Options
-    this.useKeys = false;
+    this.useKeys    = false;
     this.usePatrols = false;
-    this.useTraps = false;
-    this.useEgress = false;
-    this.useStairs = false;
+    this.useTraps   = false;
 
     // Key locations
     this.key1Index = null;
     this.key2Index = null;
 
     // Egress & stairs
-    this.exitIndex = null;
+    this.exitIndex   = null;
     this.stairsIndex = null;
 
     // Seeded RNG
@@ -60,7 +56,7 @@ class DungeonMapper {
   _initRNG(seed) {
     const baseSeed = (seed != null)
       ? seed >>> 0
-      : (Date.now() ^ (Math.floor(Math.random() * 0xFFFFFFFF))) >>> 0;
+      : (Date.now() ^ (Math.floor(Math.random() * (0xFFFFFFFF >>> 0)))) >>> 0;
     this.seed = baseSeed;
     this._rngState = baseSeed;
   }
@@ -68,9 +64,9 @@ class DungeonMapper {
   _rng() {
     // mulberry32
     let t = this._rngState += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), (t | 61));
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   }
 
   _shuffle(arr) {
@@ -86,35 +82,41 @@ class DungeonMapper {
     this._initRNG(seed);
   }
 
-  // Precompute 7 point positions: 6 outer in a hex, 1 center
-  _computePoints() {
+  // Precompute point positions: N outer vertices + optional center
+  _computePoints(sides = 6, includeCenter = true) {
     const cx = this.centerX;
     const cy = this.centerY;
     const radius = Math.min(this.width, this.height) * 0.36;
 
     const points = [];
 
-    // 6 outer points (indices 0–5)
-    for (let i = 0; i < 6; i++) {
-      const angle = -Math.PI / 2 + i * (Math.PI / 3); // start at top, go around
+    // outer points (indices 0..sides-1)
+    for (let i = 0; i < sides; i++) {
+      const angle = -Math.PI / 2 + i * ((2 * Math.PI) / sides); // start at top, go around
       const x = cx + radius * Math.cos(angle);
       const y = cy + radius * Math.sin(angle);
       points.push({ id: i + 1, x, y });
     }
 
-    // center point (index 6, id 7)
-    points.push({ id: 7, x: cx, y: cy });
+    if (includeCenter) {
+      points.push({ id: sides + 1, x: cx, y: cy });
+    }
 
     return points;
   }
 
   // Main entry point
   draw({
-    useKeys = false,
-    usePatrols = false,
-    useTraps = false,
-    useEgress = false,
-    useStairs = false
+    useKeys       = false,
+    usePatrols    = false,
+    useTraps      = false,
+    sides         = 6,
+    featureCount  = 3,
+    dangerCount   = 2,
+    treasureCount = 1,
+    pathOpen      = 3,
+    pathClosed    = 2,
+    pathSecret    = 1
   } = {}) {
     const ctx = this.ctx;
 
@@ -124,64 +126,129 @@ class DungeonMapper {
     // Clear canvas
     ctx.clearRect(0, 0, this.width, this.height);
 
-    // Clear overlay icons
+    // Clear ONLY map icons (not party trackers)
     if (this.iconLayer) {
-      this.iconLayer.innerHTML = "";
+      const mapIcons = this.iconLayer.querySelectorAll('[data-layer="map-icon"]');
+      mapIcons.forEach(el => el.remove());
     }
 
-    this.useKeys = useKeys;
+    this.useKeys    = useKeys;
     this.usePatrols = usePatrols;
-    this.useTraps = useTraps;
-    this.useEgress = useEgress;
-    this.useStairs = useStairs;
+    this.useTraps   = useTraps;
 
-    this.key1Index = null;
-    this.key2Index = null;
-    this.exitIndex = null;
-    this.stairsIndex = null;
+    this.key1Index  = null;
+    this.key2Index  = null;
+    this.startIndex = null;
+    this.twoIndex   = null;
+    this.threeIndex = null;
+    this.goalIndex  = null;
 
-    // Assign roles + labels
-    const points = this._assignPointTypesAndLabels();
+    // Shape definition
+    const includeCenter = true;
+    const points = this._computePoints(sides, includeCenter);
+
+    // Assign point types based on counts
+    const pointsWithTypes = this._assignPointTypesAndLabels(
+      points,
+      sides,
+      includeCenter,
+      {
+        feature:  featureCount,
+        danger:   dangerCount,
+        treasure: treasureCount
+      }
+    );
 
     // Keys
     if (this.useKeys) {
-      this._assignKeys(points);
+      this._assignKeys(pointsWithTypes);
     }
 
-    // Egress (entrance/exit arrows)
-    if (this.useEgress) {
-      this._assignEgress(points);
-    }
+    // Choose lines based on path totals
+    const allLines = this._getAllPossibleLines(pointsWithTypes, sides, includeCenter);
+    const totalRequestedPaths = Math.max(0, (pathOpen || 0) + (pathClosed || 0) + (pathSecret || 0));
+    const desiredPathCount = Math.min(totalRequestedPaths || 1, allLines.length || 1);
 
-    // Stairs
-    if (this.useStairs) {
-      this._assignStairs(points);
-    }
+    const lines = this._chooseRandomLines(
+      pointsWithTypes,
+      sides,
+      includeCenter,
+      desiredPathCount
+    );
 
-    // Choose lines
-    const lines = this._chooseRandomLines(points);
+    // Draw lines with path-type counts
+    this._drawLines(
+      pointsWithTypes,
+      lines,
+      {
+        open:   pathOpen,
+        closed: pathClosed,
+        secret: pathSecret
+      }
+    );
 
-    // Draw lines on canvas
-    this._drawLines(points, lines);
-
-    // Draw node shapes + labels + stairs + egress
-    this._drawPoints(points);
+    // Draw node shapes + labels
+    this._drawPoints(pointsWithTypes);
   }
 
-  _assignPointTypesAndLabels() {
-    const types = ["feature", "feature", "feature", "danger", "danger", "treasure", "blank"];
-    const shuffledTypes = this._shuffle(types);
+  _assignPointTypesAndLabels(points, sides, includeCenter, counts) {
+    let featureCount  = Math.max(0, counts.feature  ?? 0);
+    let dangerCount   = Math.max(0, counts.danger   ?? 0);
+    let treasureCount = Math.max(0, counts.treasure ?? 0);
 
-    const pointsWithTypes = this.points.map((p, idx) => {
-      const type = shuffledTypes[idx];
+    let totalMarked = featureCount + dangerCount + treasureCount;
+    const maxNodes  = points.length;
+
+    // Ensure at least one marked node
+    if (totalMarked <= 0) {
+      featureCount = 1;
+      dangerCount  = 0;
+      treasureCount = 0;
+      totalMarked  = 1;
+    }
+
+    // Clamp to available nodes
+    if (totalMarked > maxNodes) {
+      totalMarked = maxNodes;
+    }
+
+    // Distribute counts so they sum to totalMarked
+    let remaining = totalMarked;
+    let f = Math.min(featureCount,  remaining); remaining -= f;
+    let d = Math.min(dangerCount,   remaining); remaining -= d;
+    let t = Math.min(treasureCount, remaining); remaining -= t;
+
+    // If there's leftover (because input sums were too small), dump into features
+    if (remaining > 0) {
+      f += remaining;
+      remaining = 0;
+    }
+
+    const typePool = [];
+    for (let i = 0; i < f; i++) typePool.push("feature");
+    for (let i = 0; i < d; i++) typePool.push("danger");
+    for (let i = 0; i < t; i++) typePool.push("treasure");
+
+    const shuffledTypes = this._shuffle(typePool);
+
+    // Choose which indices are marked
+    const allIndices   = [...Array(points.length).keys()];
+    const shuffledIdx  = this._shuffle(allIndices);
+    const markedIndices = shuffledIdx.slice(0, totalMarked);
+
+    const typeByIndex = new Map();
+    markedIndices.forEach((idx, i) => {
+      const tp = shuffledTypes[i] ?? "feature";
+      typeByIndex.set(idx, tp);
+    });
+
+    const pointsWithTypes = points.map((p, idx) => {
+      const type = typeByIndex.has(idx) ? typeByIndex.get(idx) : "blank";
       return { ...p, type, number: null };
     });
 
-    let markedIndices = pointsWithTypes
-      .map((p, idx) => (p.type === "blank" ? -1 : idx))
-      .filter(idx => idx !== -1);
-
-    const allLines = this._getAllPossibleLines();
+    // Now we need adjacency graph to assign S/2/3/G
+    const allLines = this._getAllPossibleLines(pointsWithTypes, sides, includeCenter);
 
     const neighborsOf = (idx) => {
       const result = [];
@@ -192,18 +259,26 @@ class DungeonMapper {
       return result;
     };
 
+    let marked = markedIndices.slice();
+
+    if (!marked.length) {
+      // In the pathological case, mark the first point
+      marked = [0];
+      pointsWithTypes[0].type = "feature";
+    }
+
     // Choose Start index
     let sIdx = null;
-    for (const cand of markedIndices) {
-      const neigh = neighborsOf(cand).filter(n => markedIndices.includes(n));
+    for (const cand of marked) {
+      const neigh = neighborsOf(cand).filter(n => marked.includes(n));
       if (neigh.length > 0) {
         sIdx = cand;
         break;
       }
     }
-    if (sIdx === null) sIdx = markedIndices[0];
+    if (sIdx === null) sIdx = marked[0];
 
-    const sNeighbors = neighborsOf(sIdx).filter(n => markedIndices.includes(n) && n !== sIdx);
+    const sNeighbors = neighborsOf(sIdx).filter(n => marked.includes(n) && n !== sIdx);
 
     // Pick 2
     let twoIdx = sNeighbors.length
@@ -211,29 +286,29 @@ class DungeonMapper {
       : null;
 
     this.startIndex = sIdx;
-    this.twoIndex = twoIdx;
+    this.twoIndex   = twoIdx;
 
-    const remaining = markedIndices.filter(i => i !== sIdx && i !== twoIdx);
+    const remainingAfterS2 = marked.filter(i => i !== sIdx && i !== twoIdx);
 
     // Pick 3 (adjacent to Start or 2 if possible)
     const twoNeighbors = (twoIdx !== null)
-      ? neighborsOf(twoIdx).filter(n => markedIndices.includes(n) && n !== twoIdx)
+      ? neighborsOf(twoIdx).filter(n => marked.includes(n) && n !== twoIdx)
       : [];
 
-    const threeCandidates = remaining.filter(
+    const threeCandidates = remainingAfterS2.filter(
       i => sNeighbors.includes(i) || twoNeighbors.includes(i)
     );
 
     let threeIdx = null;
     if (threeCandidates.length > 0) {
       threeIdx = threeCandidates[Math.floor(this._rng() * threeCandidates.length)];
-    } else if (remaining.length > 0) {
-      threeIdx = remaining[0];
+    } else if (remainingAfterS2.length > 0) {
+      threeIdx = remainingAfterS2[0];
     }
 
     this.threeIndex = threeIdx;
 
-    const remainingAfter3 = remaining.filter(i => i !== threeIdx);
+    const remainingAfter3 = remainingAfterS2.filter(i => i !== threeIdx);
 
     // Goal
     let gIdx = null;
@@ -242,21 +317,33 @@ class DungeonMapper {
     }
     this.goalIndex = gIdx;
 
-    // 4 & 5
-    const middleNumbers = this._shuffle([4, 5]);
+    // Build numeric labels based on shape size.
+// - Pentagon  (5 sides): [4]   -> S, 2, 3, 4, G(5)
+// - Hexagon   (6 sides): [4,5] -> S, 2, 3, 4, 5, G(6)
+// - Heptagon  (7 sides): [4,5,6]
+// - Octagon   (8 sides): [4,5,6,7]
+// We cap at 7 so if we ever add larger shapes, we don't spawn infinite labels.
+const numericLabels = [];
+const maxNumeric = Math.min(sides - 1, 7);
+for (let n = 4; n <= maxNumeric; n++) {
+  numericLabels.push(n);
+}
 
-    // S / G instead of Start / Goal
-    pointsWithTypes[sIdx].number = "S";
-    if (twoIdx !== null) pointsWithTypes[twoIdx].number = 2;
-    if (threeIdx !== null) pointsWithTypes[threeIdx].number = 3;
-    if (gIdx !== null) pointsWithTypes[gIdx].number = "G";
+const middleNumbers = this._shuffle(numericLabels);
 
-    for (const idx of remainingAfter3) {
-      if (idx === gIdx) continue;
-      const n = middleNumbers.shift();
-      if (n !== undefined) pointsWithTypes[idx].number = n;
-    }
+// Assign labels
+pointsWithTypes[sIdx].number = "S";
+if (twoIdx   !== null && pointsWithTypes[twoIdx])   pointsWithTypes[twoIdx].number   = 2;
+if (threeIdx !== null && pointsWithTypes[threeIdx]) pointsWithTypes[threeIdx].number = 3;
+if (gIdx     !== null && pointsWithTypes[gIdx])     pointsWithTypes[gIdx].number     = "G";
 
+for (const idx of remainingAfter3) {
+  if (idx === gIdx) continue;
+  const n = middleNumbers.shift();
+  if (n !== undefined && pointsWithTypes[idx]) {
+    pointsWithTypes[idx].number = n;
+  }
+}
     return pointsWithTypes;
   }
 
@@ -349,18 +436,26 @@ class DungeonMapper {
     this.stairsIndex = candidates[Math.floor(this._rng() * candidates.length)];
   }
 
-  _getAllPossibleLines() {
+  _getAllPossibleLines(points, sides, includeCenter) {
     const lines = [];
+    const outerCount = sides;
+    const centerIndex = includeCenter ? outerCount : null;
 
     // Ring edges
-    for (let i = 0; i < 6; i++) {
-      const j = (i + 1) % 6;
-      lines.push([i, j]);
+    for (let i = 0; i < outerCount; i++) {
+      const j = (i + 1) % outerCount;
+      if (i < points.length && j < points.length) {
+        lines.push([i, j]);
+      }
     }
 
-    // Radial edges
-    for (let i = 0; i < 6; i++) {
-      lines.push([i, 6]);
+    // Radial edges to center
+    if (includeCenter && centerIndex != null && centerIndex < points.length) {
+      for (let i = 0; i < outerCount; i++) {
+        if (i < points.length) {
+          lines.push([i, centerIndex]);
+        }
+      }
     }
 
     return lines;
@@ -386,6 +481,7 @@ class DungeonMapper {
     const d3 = cross(p2.x, p2.y, q2.x, q2.y, p1.x, p1.y);
     const d4 = cross(p2.x, p2.y, q2.x, q2.y, q1.x, q1.y);
 
+    // Collinear case: treat as non-crossing here
     if ((d1 === 0 && d2 === 0 && d3 === 0 && d4 === 0)) {
       return false;
     }
@@ -395,10 +491,12 @@ class DungeonMapper {
 
   _allMarkedConnected(edges, markedIndices) {
     if (markedIndices.length === 0) return true;
+
     const adj = new Map();
     for (const idx of markedIndices) {
       adj.set(idx, []);
     }
+
     for (const [a, b] of edges) {
       if (adj.has(a) && adj.has(b)) {
         adj.get(a).push(b);
@@ -450,13 +548,13 @@ class DungeonMapper {
     return true;
   }
 
-  _chooseRandomLines(points) {
-    const allLines = this._getAllPossibleLines();
+  _chooseRandomLines(points, sides, includeCenter, desiredCount) {
+    const allLines = this._getAllPossibleLines(points, sides, includeCenter);
 
     const candidateAll = allLines
       .filter(([i, j]) => points[i].type !== "blank" && points[j].type !== "blank");
 
-    if (candidateAll.length === 0) return [];
+    if (!candidateAll.length) return [];
 
     const candidate = this._shuffle(candidateAll.slice());
 
@@ -500,7 +598,9 @@ class DungeonMapper {
       }
     }
 
-    const maxLines = Math.min(6, candidateAll.length);
+    const minK = Math.max(requiredEdges.length || 1, 1);
+    const maxPossible = candidateAll.length;
+    const targetK = Math.max(minK, Math.min(desiredCount || minK, maxPossible));
 
     const tryWithK = (k) => {
       let found = null;
@@ -534,9 +634,14 @@ class DungeonMapper {
       return found;
     };
 
-    for (let k = maxLines; k >= 1; k--) {
+    for (let k = targetK; k >= minK; k--) {
       const result = tryWithK(k);
       if (result) return result;
+    }
+
+    // If nothing works, fallback to just requiredEdges (if valid) or empty
+    if (this._isValidEdgeSet(points, requiredEdges, markedIndices)) {
+      return requiredEdges;
     }
 
     return [];
@@ -556,11 +661,11 @@ class DungeonMapper {
     className,
     x,
     y,
-    sizePx = 14,
-    color = "black",
+    sizePx   = 14,
+    color    = "black",
     extraClass = "",
-    offsetX = 0,
-    offsetY = 0
+    offsetX  = 0,
+    offsetY  = 0
   ) {
     if (!this.iconLayer) return;
 
@@ -575,10 +680,13 @@ class DungeonMapper {
 
     icon.style.transform = `translate(-50%, -50%) translate(${offsetX}px, ${offsetY}px)`;
 
-    icon.style.fontSize = `${sizePx}px`;
-    icon.style.lineHeight = "1";
+    icon.style.fontSize      = `${sizePx}px`;
+    icon.style.lineHeight    = "1";
     icon.style.pointerEvents = "none";
-    icon.style.color = color;
+    icon.style.color         = color;
+
+    // Mark as a map icon so we can clear them without deleting trackers
+    icon.dataset.layer = "map-icon";
 
     this.iconLayer.appendChild(icon);
   }
@@ -613,36 +721,49 @@ class DungeonMapper {
   }
 
   // ---------- decorated line drawing ----------
-  _drawLines(points, lines) {
+  _drawLines(points, lines, pathCounts) {
     const ctx = this.ctx;
     const count = lines.length;
     if (!count) return;
 
-    const indices = Array.from({ length: count }, (_, i) => i);
-    const shuffledIndices = this._shuffle(indices.slice());
+    // Path type counts
+    let secretCount = Math.max(0, pathCounts.secret ?? 0);
+    let closedCount = Math.max(0, pathCounts.closed ?? 0);
+    const totalLines = lines.length;
 
-    const secretIndex = shuffledIndices.shift();
-    const maxDoorLines = Math.min(2, count - 1);
-    const doorIndices = new Set(shuffledIndices.slice(0, maxDoorLines));
+    if (secretCount > totalLines) secretCount = totalLines;
+    if (closedCount > (totalLines - secretCount)) {
+      closedCount = totalLines - secretCount;
+    }
 
+    // Decide which edge indices are secret / closed
+    const indices = Array.from({ length: totalLines }, (_, i) => i);
+    const shuffled = this._shuffle(indices);
+
+    const secretIndices = new Set(shuffled.slice(0, secretCount));
+    const closedIndices = new Set(
+      shuffled.slice(secretCount, secretCount + closedCount)
+    );
+
+    // Patrols & traps still layered on top
     let patrolIndices = new Set();
-    if (this.usePatrols && count > 0) {
-      const openIndices = indices.filter(
-        i => i !== secretIndex && !doorIndices.has(i)
+    if (this.usePatrols && totalLines > 0) {
+      const openCandidates = indices.filter(
+        i => !secretIndices.has(i) && !closedIndices.has(i)
       );
-      if (openIndices.length > 0) {
+      if (openCandidates.length > 0) {
         const patrolCount = Math.min(
           1 + Math.floor(this._rng() * 2),
-          openIndices.length
+          openCandidates.length
         );
-        const patrolOrder = this._shuffle(openIndices.slice());
+        const patrolOrder = this._shuffle(openCandidates.slice());
         patrolIndices = new Set(patrolOrder.slice(0, patrolCount));
       }
     }
 
     let trapIndices = new Set();
-    if (this.useTraps && doorIndices.size > 0) {
-      const obstructedIndices = Array.from(doorIndices);
+    if (this.useTraps && closedIndices.size > 0) {
+      const obstructedIndices = Array.from(closedIndices);
       const trapCount = Math.min(
         1 + Math.floor(this._rng() * 2),
         obstructedIndices.length
@@ -651,16 +772,24 @@ class DungeonMapper {
       trapIndices = new Set(trapOrder.slice(0, trapCount));
     }
 
-    for (let li = 0; li < count; li++) {
+    for (let li = 0; li < totalLines; li++) {
       const [i, j] = lines[li];
       const a = points[i];
       const b = points[j];
 
-      const isSecret = li === secretIndex;
-      const isDoor = doorIndices.has(li);
+      const isSecret = secretIndices.has(li);
+      const isClosed = closedIndices.has(li);
       const isPatrol = this.usePatrols && patrolIndices.has(li);
-      const isTrap = this.useTraps && trapIndices.has(li);
+      const isTrap   = this.useTraps   && trapIndices.has(li);
 
+      // Base geometry
+      const dx  = b.x - a.x;
+      const dy  = b.y - a.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx  = -dy / len;
+      const ny  =  dx / len;
+
+      // Simple full segment
       ctx.beginPath();
       ctx.setLineDash(isSecret ? [8, 6] : []);
       ctx.moveTo(a.x, a.y);
@@ -668,15 +797,11 @@ class DungeonMapper {
       ctx.stroke();
       ctx.setLineDash([]);
 
+      // Midpoint for decorations
       const mx = (a.x + b.x) / 2;
       const my = (a.y + b.y) / 2;
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const len = Math.hypot(dx, dy) || 1;
-      const nx = -dy / len;
-      const ny = dx / len;
 
-      if (isDoor) {
+      if (isClosed) {
         const tickLen = 12;
         const hx = (tickLen / 2) * nx;
         const hy = (tickLen / 2) * ny;
@@ -783,9 +908,9 @@ class DungeonMapper {
 
       ctx.save();
       ctx.font = "16px sans-serif";
-      ctx.textAlign = "center";
+      ctx.textAlign   = "center";
       ctx.textBaseline = "middle";
-      ctx.fillStyle = "black";
+      ctx.fillStyle   = "black";
 
       if (number === "S" || number === "G") {
         ctx.font = "bold 16px sans-serif";
@@ -794,13 +919,6 @@ class DungeonMapper {
       ctx.fillText(String(number), x, y + yOffset);
       ctx.restore();
     });
-
-    if (this.useStairs) {
-      this._drawStairs(points);
-    }
-    if (this.useEgress) {
-      this._drawEgress(points);
-    }
   }
 
   _drawStairs(points) {
@@ -832,7 +950,7 @@ class DungeonMapper {
   }
 
   _drawEgress(points) {
-    const r = this.nodeRadius;
+    const r  = this.nodeRadius;
     const cx = this.centerX;
     const cy = this.centerY;
 
@@ -841,8 +959,8 @@ class DungeonMapper {
       const vx = s.x - cx;
       const vy = s.y - cy;
       const len = Math.hypot(vx, vy) || 1;
-      const ux = vx / len;
-      const uy = vy / len;
+      const ux  = vx / len;
+      const uy  = vy / len;
 
       const tailX = s.x + ux * (r + 8);
       const tailY = s.y + uy * (r + 8);
@@ -857,8 +975,8 @@ class DungeonMapper {
       const vx = p.x - cx;
       const vy = p.y - cy;
       const len = Math.hypot(vx, vy) || 1;
-      const ux = vx / len;
-      const uy = vy / len;
+      const ux  = vx / len;
+      const uy  = vy / len;
 
       const tailX = p.x + ux * (r + 2);
       const tailY = p.y + uy * (r + 2);
@@ -883,7 +1001,7 @@ const dialogContent = `
             style="border:1px solid #666; display:block; margin:0 auto; width:100%; height:auto;">
     </canvas>
     <div id="dungeon-builder-icons"
-         style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none;"></div>
+         style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:auto;"></div>
   </div>
 
   <div style="margin-top:8px; font-size:12px; width:100%; margin-left:auto; margin-right:auto; text-align:left;">
@@ -893,11 +1011,25 @@ const dialogContent = `
       <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
         <legend style="font-weight:bold; padding:0 4px;">Paths</legend>
         <div style="line-height:1.4;">
+          <!-- Open paths -->
           <div>
+            <input type="number"
+                   id="dungeon-builder-path-open-count"
+                   value="3"
+                   min="0"
+                   max="3"
+                   style="width:2em; text-align:center; margin-right:4px;">
             <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; vertical-align:middle;"></span>
             <span style="vertical-align:middle;">Open</span>
           </div>
+          <!-- Closed paths -->
           <div style="margin-top:2px;">
+            <input type="number"
+                   id="dungeon-builder-path-closed-count"
+                   value="2"
+                   min="0"
+                   max="3"
+                   style="width:2em; text-align:center; margin-right:4px;">
             <span style="position:relative; display:inline-block; vertical-align:middle;">
               <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; position:relative; vertical-align:middle;">
                 <span style="position:absolute; left:50%; top:-5px; height:10px; border-left:1px solid #000; transform:translateX(-50%);"></span>
@@ -905,7 +1037,14 @@ const dialogContent = `
               <span style="vertical-align:middle;">Closed</span>
             </span>
           </div>
+          <!-- Secret paths -->
           <div style="margin-top:2px;">
+            <input type="number"
+                   id="dungeon-builder-path-secret-count"
+                   value="1"
+                   min="0"
+                   max="3"
+                   style="width:2em; text-align:center; margin-right:4px;">
             <span style="display:inline-block; width:28px; border-top:1px dashed #000; margin-right:4px; vertical-align:middle;"></span>
             <span style="vertical-align:middle;">Secret</span>
           </div>
@@ -916,15 +1055,36 @@ const dialogContent = `
       <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
         <legend style="font-weight:bold; padding:0 4px;">Points</legend>
         <div style="line-height:1.4;">
+          <!-- Features -->
           <div>
+            <input type="number"
+                   id="dungeon-builder-point-feature-count"
+                   value="3"
+                   min="0"
+                   max="3"
+                   style="width:2em; text-align:center; margin-right:4px;">
             <i class="fa-sharp fa-solid fa-circle" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Feature</span>
           </div>
+          <!-- Dangers -->
           <div style="margin-top:2px;">
+            <input type="number"
+                   id="dungeon-builder-point-danger-count"
+                   value="2"
+                   min="0"
+                   max="3"
+                   style="width:2em; text-align:center; margin-right:4px;">
             <i class="fa-sharp fa-solid fa-triangle" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Danger</span>
           </div>
+          <!-- Treasures -->
           <div style="margin-top:2px;">
+            <input type="number"
+                   id="dungeon-builder-point-treasure-count"
+                   value="1"
+                   min="0"
+                   max="3"
+                   style="width:2em; text-align:center; margin-right:4px;">
             <i class="fa-sharp fa-solid fa-diamond" style="font-size:12px; vertical-align:middle;"></i>
             <span style="vertical-align:middle;">&nbsp;Treasure</span>
           </div>
@@ -932,38 +1092,87 @@ const dialogContent = `
       </fieldset>
 
       <!-- Seed -->
-<fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-  <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
-  <div style="line-height:1.4; text-align:center;">
-    <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
-    <div style="margin-top:4px;">
-      <input type="text"
-             id="dungeon-builder-seed-input"
-             placeholder="Enter seed"
-             style="width:100%; box-sizing:border-box; font-size:11px;">
-    </div>
-  </div>
-</fieldset>
-    </div>
+      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+        <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
+        <div style="line-height:1.4; text-align:center;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
+            <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
+            <button type="button"
+                    id="dungeon-builder-seed-copy"
+                    style="width:20px; height:20px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <i class="fa-solid fa-copy" style="font-size:10px;"></i>
+            </button>
+          </div>
+          <div style="margin-top:4px;">
+            <input type="text"
+                   id="dungeon-builder-seed-input"
+                   placeholder="Enter seed"
+                   style="width:100%; box-sizing:border-box; font-size:11px;">
+          </div>
+        </div>
+      </fieldset>
+    </div> <!-- end flex row for Paths / Points / Seed -->
 
-    <fieldset style="margin:4px 0 0 0; padding:6px 8px; border:1px solid #aaa; width:100%;">
-      <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
-      <div style="margin-top:2px; line-height:1.4; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px;">
-        <label><input type="checkbox" id="dungeon-builder-opt-keys"> Keys</label>
-        <label><input type="checkbox" id="dungeon-builder-opt-patrols"> Patrols</label>
-        <label><input type="checkbox" id="dungeon-builder-opt-traps"> Traps</label>
-        <label><input type="checkbox" id="dungeon-builder-opt-egress"> Egress</label>
-        <label><input type="checkbox" id="dungeon-builder-opt-stairs"> Stairs</label>
-      </div>
-    </fieldset>
-  </div>
+    <!-- Generate + Shape row -->
+    <div style="display:flex; gap:8px; margin-top:4px; width:100%;">
+      <!-- Generate -->
+      <fieldset style="flex:2; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+        <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
+        <div style="margin-top:2px; line-height:1.4; display:flex; justify-content:center; align-items:center; gap:6px;">
+          <button type="button"
+                  id="dungeon-builder-opt-keys"
+                  title="Keys"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-key" style="font-size:14px;"></i>
+          </button>
+          <button type="button"
+                  id="dungeon-builder-opt-patrols"
+                  title="Patrols"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-skull" style="font-size:14px;"></i>
+          </button>
+          <button type="button"
+                  id="dungeon-builder-opt-traps"
+                  title="Traps"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-land-mine-on" style="font-size:14px;"></i>
+          </button>
+        </div>
+      </fieldset>
+
+      <!-- Shape -->
+      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+        <legend style="font-weight:bold; padding:0 4px;">Shape</legend>
+        <div style="margin-top:2px; display:flex; justify-content:center; align-items:center; gap:6px;">
+          <button type="button"
+                  id="dungeon-builder-shape-pent"
+                  title="Pentagon"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-pentagon" style="font-size:14px; transform:translateX(1px);"></i>
+          </button>
+          <button type="button"
+                  id="dungeon-builder-shape-hex"
+                  title="Hexagon"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-hexagon" style="font-size:14px; transform:translateX(1px);"></i>
+          </button>
+          <button type="button"
+                  id="dungeon-builder-shape-sept"
+                  title="Heptagon"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-Heptagon" style="font-size:14px; transform:translateX(1px);"></i>
+          </button>
+          <button type="button"
+                  id="dungeon-builder-shape-oct"
+                  title="Octagon"
+                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-octagon" style="font-size:14px; transform:translateX(1px);"></i>
+          </button>
+        </div>
+      </fieldset>
+    </div>
 
   <div style="margin-top:8px; width:100%; display:flex; gap:4px;">
-    <button type="button"
-            id="dungeon-builder-pin-btn"
-            style="flex:1; box-sizing:border-box;">
-      Pin
-    </button>
     <button type="button"
             id="dungeon-builder-generate-btn"
             style="flex:1; box-sizing:border-box;">
@@ -974,21 +1183,6 @@ const dialogContent = `
             style="flex:1; box-sizing:border-box;">
       Save
     </button>
-  </div>
-</div>
-`;
-
-const pinnedDialogContent = `
-<div style="text-align:center;">
-  <div id="dungeon-builder-pinned-wrapper"
-       style="position:relative; display:block; width:100%; margin:0 auto;">
-    <canvas id="dungeon-builder-pinned-canvas"
-            width="${CANVAS_WIDTH}"
-            height="${CANVAS_HEIGHT}"
-            style="border:1px solid #666; display:block; margin:0 auto; width:100%; height:auto;">
-    </canvas>
-    <div id="dungeon-builder-pinned-icons"
-         style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:auto;"></div>
   </div>
 </div>
 `;
@@ -1018,7 +1212,7 @@ export function openDungeonMapper() {
 
       const $html = html;
       const canvas = $html.find("#dungeon-builder-canvas")[0];
-      const ctx = canvas.getContext("2d");
+      const ctx    = canvas.getContext("2d");
       const iconLayer = $html.find("#dungeon-builder-icons")[0];
 
       const lastState = _lastDungeonState || null;
@@ -1031,33 +1225,302 @@ export function openDungeonMapper() {
         lastState && typeof lastState.seed === "number" ? lastState.seed : null
       );
 
-      const keysCheckbox    = $html.find("#dungeon-builder-opt-keys")[0];
-      const patrolsCheckbox = $html.find("#dungeon-builder-opt-patrols")[0];
-      const trapsCheckbox   = $html.find("#dungeon-builder-opt-traps")[0];
-      const egressCheckbox  = $html.find("#dungeon-builder-opt-egress")[0];
-      const stairsCheckbox  = $html.find("#dungeon-builder-opt-stairs")[0];
+      const keysButton    = $html.find("#dungeon-builder-opt-keys")[0];
+      const patrolsButton = $html.find("#dungeon-builder-opt-patrols")[0];
+      const trapsButton   = $html.find("#dungeon-builder-opt-traps")[0];
 
       const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
       const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
+      const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
 
-      if (lastState && lastState.options) {
-        const opt = lastState.options;
-        if (keysCheckbox)    keysCheckbox.checked    = !!opt.useKeys;
-        if (patrolsCheckbox) patrolsCheckbox.checked = !!opt.usePatrols;
-        if (trapsCheckbox)   trapsCheckbox.checked   = !!opt.useTraps;
-        if (egressCheckbox)  egressCheckbox.checked  = !!opt.useEgress;
-        if (stairsCheckbox)  stairsCheckbox.checked  = !!opt.useStairs;
+      // Numeric inputs for paths and points
+      const pathOpenInput    = $html.find("#dungeon-builder-path-open-count")[0];
+      const pathClosedInput  = $html.find("#dungeon-builder-path-closed-count")[0];
+      const pathSecretInput  = $html.find("#dungeon-builder-path-secret-count")[0];
+
+      const pointFeatureInput  = $html.find("#dungeon-builder-point-feature-count")[0];
+      const pointDangerInput   = $html.find("#dungeon-builder-point-danger-count")[0];
+      const pointTreasureInput = $html.find("#dungeon-builder-point-treasure-count")[0];
+
+      // Shape config: sides + defaults per shape
+      const SHAPE_CONFIG = {
+        pent: {
+          sides: 5,
+          points: { feature: 3, danger: 1, treasure: 1 },
+          paths:  { open: 2, closed: 1, secret: 1 }
+        },
+        hex: {
+          sides: 6,
+          points: { feature: 3, danger: 2, treasure: 1 },
+          paths:  { open: 3, closed: 2, secret: 1 }
+        },
+        // Key name remains "sept" for wiring; UI label says Heptagon
+        sept: {
+          sides: 7,
+          points: { feature: 3, danger: 2, treasure: 2 },
+          paths:  { open: 2, closed: 3, secret: 2 }
+        },
+        oct: {
+          sides: 8,
+          points: { feature: 3, danger: 3, treasure: 2 },
+          paths:  { open: 3, closed: 3, secret: 2 }
+        }
+      };
+
+      const pathGroupInputs = {
+        open:   pathOpenInput,
+        closed: pathClosedInput,
+        secret: pathSecretInput
+      };
+
+      const pointGroupInputs = {
+        feature:  pointFeatureInput,
+        danger:   pointDangerInput,
+        treasure: pointTreasureInput
+      };
+
+      // Clamp to [0,3] and return numeric value
+      const clampField = (input) => {
+        if (!input) return 0;
+        let v = parseInt(input.value, 10);
+        if (Number.isNaN(v)) v = 0;
+        if (v < 0) v = 0;
+        if (v > 3) v = 3;
+        input.value = String(v);
+        return v;
+      };
+
+      // Current active shape
+      let activeShape = "hex";
+
+      const getShapeConfig = () => SHAPE_CONFIG[activeShape] || SHAPE_CONFIG.hex;
+
+      // Apply default values for a given shape
+      const applyShapeDefaults = (shapeKey) => {
+        const cfg = SHAPE_CONFIG[shapeKey] || SHAPE_CONFIG.hex;
+        activeShape = shapeKey;
+
+        // Points
+        if (pointFeatureInput)  pointFeatureInput.value  = cfg.points.feature;
+        if (pointDangerInput)   pointDangerInput.value   = cfg.points.danger;
+        if (pointTreasureInput) pointTreasureInput.value = cfg.points.treasure;
+
+        // Paths
+        if (pathOpenInput)   pathOpenInput.value   = cfg.paths.open;
+        if (pathClosedInput) pathClosedInput.value = cfg.paths.closed;
+        if (pathSecretInput) pathSecretInput.value = cfg.paths.secret;
+      };
+
+      // Enforce per-group total <= sides, adjusting other fields if needed
+      const enforceGroupTotals = (groupInputs, changedKey = null) => {
+        const cfg = getShapeConfig();
+        const maxTotal = cfg.sides;
+
+        const values = {};
+        let total = 0;
+
+        const allKeys = Object.keys(groupInputs).filter(k => groupInputs[k]);
+
+        for (const key of allKeys) {
+          const input = groupInputs[key];
+          const v = clampField(input);
+          values[key] = v;
+          total += v;
+        }
+
+        if (total <= maxTotal) return;
+
+        let overflow = total - maxTotal;
+
+        // Priority: all other fields first, then the changed field last (if provided)
+        let priority = allKeys;
+        if (changedKey && allKeys.includes(changedKey)) {
+          priority = allKeys.filter(k => k !== changedKey);
+          priority.push(changedKey);
+        }
+
+        while (overflow > 0) {
+          let adjustedThisPass = false;
+
+          for (const key of priority) {
+            if (overflow <= 0) break;
+            if (values[key] > 0) {
+              values[key]--;
+              overflow--;
+              adjustedThisPass = true;
+              if (overflow <= 0) break;
+            }
+          }
+
+          if (!adjustedThisPass) break; // can't reduce any further
+        }
+
+        // Push adjusted values back into inputs
+        for (const key of allKeys) {
+          const input = groupInputs[key];
+          if (!input) continue;
+          input.value = String(values[key] ?? 0);
+        }
+      };
+
+      // Wire change handlers for all numeric inputs
+      for (const [key, input] of Object.entries(pathGroupInputs)) {
+        if (!input) continue;
+        input.addEventListener("change", () => enforceGroupTotals(pathGroupInputs, key));
       }
 
-      const getOptions = () => ({
-        useKeys:   !!keysCheckbox?.checked,
-        usePatrols:!!patrolsCheckbox?.checked,
-        useTraps:  !!trapsCheckbox?.checked,
-        useEgress: !!egressCheckbox?.checked,
-        useStairs: !!stairsCheckbox?.checked
+      for (const [key, input] of Object.entries(pointGroupInputs)) {
+        if (!input) continue;
+        input.addEventListener("change", () => enforceGroupTotals(pointGroupInputs, key));
+      }
+
+      // Initialize numeric inputs to current shape defaults (hex by default)
+      applyShapeDefaults(activeShape);
+      enforceGroupTotals(pathGroupInputs);
+      enforceGroupTotals(pointGroupInputs);
+
+      // Seed copy handler
+      if (seedCopyBtn && seedCurrentSpan) {
+        seedCopyBtn.addEventListener("click", async () => {
+          const value = seedCurrentSpan.textContent?.trim();
+          if (!value || value === "—") {
+            ui.notifications?.warn?.("No seed to copy yet.");
+            return;
+          }
+
+          try {
+            if (navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(value);
+            } else {
+              const ta = document.createElement("textarea");
+              ta.value = value;
+              ta.style.position = "fixed";
+              ta.style.left = "-9999px";
+              document.body.appendChild(ta);
+              ta.focus();
+              ta.select();
+              document.execCommand("copy");
+              document.body.removeChild(ta);
+            }
+            ui.notifications?.info?.("Seed copied to clipboard.");
+          } catch (err) {
+            console.error("[Dungeon Mapper] Failed to copy seed:", err);
+            ui.notifications?.error?.("Failed to copy seed to clipboard.");
+          }
+        });
+      }
+
+      // generate-options state (backed by lastState if present)
+      let genOptions = {
+        useKeys:    !!(lastState?.options?.useKeys),
+        usePatrols: !!(lastState?.options?.usePatrols),
+        useTraps:   !!(lastState?.options?.useTraps)
+      };
+
+      // --- Generate option buttons (multi-toggle) ---
+      const genButtons = {
+        useKeys:    keysButton,
+        usePatrols: patrolsButton,
+        useTraps:   trapsButton
+      };
+
+      const updateGenButtons = () => {
+        for (const [key, btn] of Object.entries(genButtons)) {
+          if (!btn) continue;
+          const active = !!genOptions[key];
+          if (active) {
+            btn.style.background  = "#ccc";
+            btn.style.borderColor = "#555";
+            btn.style.boxShadow   = "inset 0 0 3px rgba(0,0,0,0.5)";
+          } else {
+            btn.style.background  = "#eee";
+            btn.style.borderColor = "#888";
+            btn.style.boxShadow   = "none";
+          }
+        }
+      };
+
+      Object.entries(genButtons).forEach(([key, btn]) => {
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+          genOptions[key] = !genOptions[key]; // toggle on/off
+          updateGenButtons();
+        });
       });
 
-      const $pinBtn      = $html.find("#dungeon-builder-pin-btn");
+      // initialize button states from genOptions / lastState
+      updateGenButtons();
+      // --- end generate option buttons ---
+
+      // --- Shape toggle buttons (single active) ---
+      const shapeButtons = {
+        pent: $html.find("#dungeon-builder-shape-pent")[0],
+        hex:  $html.find("#dungeon-builder-shape-hex")[0],
+        sept: $html.find("#dungeon-builder-shape-sept")[0],
+        oct:  $html.find("#dungeon-builder-shape-oct")[0]
+      };
+
+      const updateShapeButtons = () => {
+        for (const [key, btn] of Object.entries(shapeButtons)) {
+          if (!btn) continue;
+          if (key === activeShape) {
+            btn.style.background  = "#ccc";
+            btn.style.borderColor = "#555";
+            btn.style.boxShadow   = "inset 0 0 3px rgba(0,0,0,0.5)";
+          } else {
+            btn.style.background  = "#eee";
+            btn.style.borderColor = "#888";
+            btn.style.boxShadow   = "none";
+          }
+        }
+      };
+
+      Object.entries(shapeButtons).forEach(([key, btn]) => {
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+          if (activeShape === key) return; // already active
+          applyShapeDefaults(key);        // reset inputs to that shape's defaults
+          enforceGroupTotals(pathGroupInputs);
+          enforceGroupTotals(pointGroupInputs);
+          activeShape = key;
+          updateShapeButtons();
+        });
+      });
+
+      // Initialize active shape button state
+      updateShapeButtons();
+      // --- end shape toggle buttons ---
+
+      const getOptions = () => {
+        const cfg = getShapeConfig();
+        const sides = cfg.sides || 6;
+
+        // Clamp first, then enforce totals just in case
+        const featureCount  = clampField(pointFeatureInput);
+        const dangerCount   = clampField(pointDangerInput);
+        const treasureCount = clampField(pointTreasureInput);
+
+        const pathOpen   = clampField(pathOpenInput);
+        const pathClosed = clampField(pathClosedInput);
+        const pathSecret = clampField(pathSecretInput);
+
+        enforceGroupTotals(pointGroupInputs);
+        enforceGroupTotals(pathGroupInputs);
+
+        return {
+          useKeys:    !!genOptions.useKeys,
+          usePatrols: !!genOptions.usePatrols,
+          useTraps:   !!genOptions.useTraps,
+          sides,
+          featureCount,
+          dangerCount,
+          treasureCount,
+          pathOpen,
+          pathClosed,
+          pathSecret
+        };
+      };
+
       const $generateBtn = $html.find("#dungeon-builder-generate-btn");
       const $saveBtn     = $html.find("#dungeon-builder-save-btn");
 
@@ -1067,6 +1530,114 @@ export function openDungeonMapper() {
         }
         generator.draw(options);
       };
+
+      // --- Draggable party trackers on main map ---
+      let resetPartyTrackers = null;
+      try {
+        const trackerLayer = iconLayer;
+        if (trackerLayer) {
+          const trackerDefs = [
+            { id: "db-tracker-red",    color: "red" },
+            { id: "db-tracker-blue",   color: "blue" },
+            { id: "db-tracker-green",  color: "green" },
+            { id: "db-tracker-purple", color: "purple" }
+          ];
+
+          const iconSize = 18;
+          const margin   = 6;
+
+          const dragState = { icon: null, offsetX: 0, offsetY: 0 };
+
+          const onMouseMove = (ev) => {
+            if (!dragState.icon) return;
+            const rect = trackerLayer.getBoundingClientRect();
+
+            let newLeft = ev.clientX - rect.left - dragState.offsetX;
+            let newTop  = ev.clientY - rect.top  - dragState.offsetY;
+
+            const maxX = trackerLayer.clientWidth  - dragState.icon.offsetWidth;
+            const maxY = trackerLayer.clientHeight - dragState.icon.offsetHeight;
+
+            newLeft = Math.max(0, Math.min(newLeft, maxX));
+            newTop  = Math.max(0, Math.min(newTop,  maxY));
+
+            dragState.icon.style.left = `${newLeft}px`;
+            dragState.icon.style.top  = `${newTop}px`;
+          };
+
+          const endDrag = () => {
+            if (!dragState.icon) return;
+            dragState.icon.style.cursor = "grab";
+            dragState.icon = null;
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", endDrag);
+          };
+
+          const ensureTrackers = () => {
+            trackerDefs.forEach((def) => {
+              let icon = trackerLayer.querySelector(`[data-tracker-id="${def.id}"]`);
+              if (!icon) {
+                icon = document.createElement("i");
+                icon.className = "fa-solid fa-person-dress-simple";
+                icon.dataset.trackerId = def.id;
+
+                icon.style.position      = "absolute";
+                icon.style.fontSize      = `${iconSize}px`;
+                icon.style.lineHeight    = "1";
+                icon.style.color         = def.color;
+                icon.style.cursor        = "grab";
+                icon.style.pointerEvents = "auto";
+                icon.style.zIndex        = "10";
+
+                icon.addEventListener("mousedown", (ev) => {
+                  ev.preventDefault();
+                  const rect = trackerLayer.getBoundingClientRect();
+                  dragState.icon    = icon;
+                  dragState.offsetX = ev.clientX - (rect.left + icon.offsetLeft);
+                  dragState.offsetY = ev.clientY - (rect.top  + icon.offsetTop);
+                  icon.style.cursor = "grabbing";
+
+                  document.addEventListener("mousemove", onMouseMove);
+                  document.addEventListener("mouseup", endDrag);
+                });
+
+                trackerLayer.appendChild(icon);
+                console.log("[Dungeon Mapper] created tracker", def.id);
+              }
+            });
+          };
+
+          const resetImpl = () => {
+            const rectWidth = trackerLayer.clientWidth;
+            if (!rectWidth) return;
+
+            ensureTrackers();
+
+            let baseLeft = rectWidth - iconSize - margin;
+            if (!Number.isFinite(baseLeft) || baseLeft < margin) {
+              baseLeft = rectWidth > 0 ? rectWidth - iconSize - margin : margin;
+            }
+
+            let currentTop = margin;
+
+            trackerDefs.forEach((def) => {
+              const icon = trackerLayer.querySelector(`[data-tracker-id="${def.id}"]`);
+              if (!icon) return;
+              icon.style.left = `${baseLeft}px`;
+              icon.style.top  = `${currentTop}px`;
+              currentTop += iconSize + 4;
+            });
+          };
+
+          resetPartyTrackers = resetImpl;
+
+          // Initial placement once layout is ready
+          requestAnimationFrame(() => resetImpl());
+        }
+      } catch (e) {
+        console.warn("[Dungeon Mapper] could not create trackers", e);
+      }
+      // --- end draggable party trackers ---
 
       $generateBtn.on("click", () => {
         const options = getOptions();
@@ -1090,169 +1661,10 @@ export function openDungeonMapper() {
 
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
-      });
 
-      $pinBtn.on("click", () => {
-        const last = _lastDungeonState;
-        if (!last || typeof last.seed !== "number" || !last.options) {
-          ui?.notifications?.warn?.("No dungeon to pin yet. Generate one first.");
-          return;
-        }
-
-        const pinnedDialog = new Dialog({
-          title: "Pinned Dungeon",
-          content: pinnedDialogContent,
-          buttons: {},
-          render: function(pinnedHtml) {
-            const pinnedApp = this;
-            const $p = pinnedHtml;
-            const pinnedCanvas  = $p.find("#dungeon-builder-pinned-canvas")[0];
-            const pinnedCtx     = pinnedCanvas.getContext("2d");
-            const pinnedIcons   = $p.find("#dungeon-builder-pinned-icons")[0];
-
-            const pinnedGen = new DungeonMapper(
-              pinnedCtx,
-              pinnedCanvas.width,
-              pinnedCanvas.height,
-              pinnedIcons,
-              last.seed
-            );
-            pinnedGen.draw(last.options);
-
-                        // --- Draggable party trackers on pinned map ---
-            try {
-              const trackerLayer = pinnedIcons;
-              if (trackerLayer) {
-                // Defer until after layout so clientWidth/clientHeight are correct
-                requestAnimationFrame(() => {
-                  const trackerDefs = [
-                    { id: "db-tracker-red",    color: "red" },
-                    { id: "db-tracker-blue",   color: "blue" },
-                    { id: "db-tracker-green",  color: "green" },
-                    { id: "db-tracker-purple", color: "purple" }
-                  ];
-
-                  const iconSize = 18;
-                  const margin = 6;
-                  let currentTop = margin;
-
-                  const dragState = { icon: null, offsetX: 0, offsetY: 0 };
-
-                  const onMouseMove = (ev) => {
-                    if (!dragState.icon) return;
-                    const rect = trackerLayer.getBoundingClientRect();
-
-                    let newLeft = ev.clientX - rect.left - dragState.offsetX;
-                    let newTop  = ev.clientY - rect.top  - dragState.offsetY;
-
-                    const maxX = trackerLayer.clientWidth  - dragState.icon.offsetWidth;
-                    const maxY = trackerLayer.clientHeight - dragState.icon.offsetHeight;
-
-                    newLeft = Math.max(0, Math.min(newLeft, maxX));
-                    newTop  = Math.max(0, Math.min(newTop,  maxY));
-
-                    dragState.icon.style.left = `${newLeft}px`;
-                    dragState.icon.style.top  = `${newTop}px`;
-                  };
-
-                  const endDrag = () => {
-                    if (!dragState.icon) return;
-                    dragState.icon.style.cursor = "grab";
-                    dragState.icon = null;
-                    document.removeEventListener("mousemove", onMouseMove);
-                    document.removeEventListener("mouseup", endDrag);
-                  };
-
-                  // Place them along the top-right edge, but fully inside the overlay
-                  let baseLeft = trackerLayer.clientWidth - iconSize - margin;
-                  if (!Number.isFinite(baseLeft) || baseLeft < margin) {
-                    baseLeft = trackerLayer.clientWidth > 0
-                      ? trackerLayer.clientWidth - iconSize - margin
-                      : margin;
-                  }
-
-                  trackerDefs.forEach((def) => {
-                    const icon = document.createElement("i");
-                    // Use the requested icon for party markers
-                    icon.className = "fa-solid fa-person-dress-simple";
-                    icon.dataset.trackerId = def.id;
-
-                    icon.style.position = "absolute";
-                    icon.style.left     = `${baseLeft}px`;
-                    icon.style.top      = `${currentTop}px`;
-                    icon.style.fontSize = `${iconSize}px`;
-                    icon.style.lineHeight = "1";
-                    icon.style.color    = def.color;
-                    icon.style.cursor   = "grab";
-                    icon.style.pointerEvents = "auto";
-                    icon.style.zIndex   = "10";
-
-                    trackerLayer.appendChild(icon);
-                    console.log("[Dungeon Mapper] created tracker", def.id);
-
-                    currentTop += iconSize + 4;
-
-                    icon.addEventListener("mousedown", (ev) => {
-                      ev.preventDefault();
-                      const rect = trackerLayer.getBoundingClientRect();
-                      dragState.icon = icon;
-                      dragState.offsetX = ev.clientX - (rect.left + icon.offsetLeft);
-                      dragState.offsetY = ev.clientY - (rect.top  + icon.offsetTop);
-                      icon.style.cursor = "grabbing";
-
-                      document.addEventListener("mousemove", onMouseMove);
-                      document.addEventListener("mouseup", endDrag);
-                    });
-                  });
-                });
-              }
-            } catch (e) {
-              console.warn("[Dungeon Mapper] could not create trackers", e);
-            }
-            // --- end draggable party trackers ---
-
-            // Attempt to position pinned dialog near the Players list sidebar
-            const players = document.getElementById("players");
-            if (players && pinnedApp.element?.length) {
-              const rect = players.getBoundingClientRect();
-              const el   = pinnedApp.element[0];
-
-              el.style.position = "fixed";
-              el.style.left = `${rect.right + 10}px`;
-              el.style.top  = `${rect.top}px`;
-            }
-          }
-        }, {
-          width: 320,
-          resizable: false,
-          minimizable: false
-        });
-
-        pinnedDialog.render(true);
-
-        // Close the main Dungeon Mapper dialog when pinning
-        const win = ui?.windows?.[generatorAppId];
-        if (win && typeof win.close === "function") {
-          try {
-            win.close();
-          } catch (e) {
-            console.warn("[Dungeon Mapper] ui.windows[appId].close() failed", e);
-          }
-        } else if (typeof app.close === "function") {
-          try {
-            app.close();
-          } catch (e) {
-            console.warn("[Dungeon Mapper] app.close() failed", e);
-          }
-        }
-
-        try {
-          const $window = $html.closest(".app.window-app.dialog");
-          if ($window && $window.length) {
-            $window.remove();
-          }
-        } catch (e) {
-          console.warn("[Dungeon Mapper] hard DOM removal failed", e);
+        // Reset trackers on every generate (without deleting them)
+        if (typeof resetPartyTrackers === "function") {
+          resetPartyTrackers();
         }
       });
 
