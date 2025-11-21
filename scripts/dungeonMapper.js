@@ -660,28 +660,51 @@ class DungeonMapper {
 
     for (let li = 0; li < count; li++) {
       const [i, j] = lines[li];
-      const a = points[i];
-      const b = points[j];
+const a = points[i];
+const b = points[j];
 
-      const isSecret = li === secretIndex;
-      const isDoor   = doorIndices.has(li);
-      const isPatrol = this.usePatrols && patrolIndices.has(li);
-      const isTrap   = this.useTraps   && trapIndices.has(li);
+const isSecret = li === secretIndex;
+const isDoor   = doorIndices.has(li);
+const isPatrol = this.usePatrols && patrolIndices.has(li);
+const isTrap   = this.useTraps   && trapIndices.has(li);
 
-      ctx.beginPath();
-      ctx.setLineDash(isSecret ? [8, 6] : []);
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.stroke();
-      ctx.setLineDash([]);
+// Base geometry
+const dx  = b.x - a.x;
+const dy  = b.y - a.y;
+const len = Math.hypot(dx, dy) || 1;
+const nx  = -dy / len;
+const ny  =  dx / len;
 
-      const mx = (a.x + b.x) / 2;
-      const my = (a.y + b.y) / 2;
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const len = Math.hypot(dx, dy) || 1;
-      const nx = -dy / len;
-      const ny =  dx / len;
+// Defaults: full segment
+let ax = a.x;
+let ay = a.y;
+let bx = b.x;
+let by = b.y;
+
+// If this path has a patrol icon, shorten the line so it doesn't pass under the icon
+if (isPatrol) {
+  // Roughly half the icon size + a little padding
+  const patrolGap = 12; // tweak (10–14) to taste
+
+  const ux = dx / len;
+  const uy = dy / len;
+
+  ax = a.x + ux * patrolGap;
+  ay = a.y + uy * patrolGap;
+  bx = b.x - ux * patrolGap;
+  by = b.y - uy * patrolGap;
+}
+
+ctx.beginPath();
+ctx.setLineDash(isSecret ? [8, 6] : []);
+ctx.moveTo(ax, ay);
+ctx.lineTo(bx, by);
+ctx.stroke();
+ctx.setLineDash([]);
+
+// Midpoint (still the true midpoint for icon placement)
+const mx = (a.x + b.x) / 2;
+const my = (a.y + b.y) / 2;
 
       if (isDoor) {
         const tickLen = 12;
