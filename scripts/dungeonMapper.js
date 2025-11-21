@@ -30,8 +30,6 @@ class DungeonMapper {
     // Node "radius" used for egress/stairs offsets (approx 64px overall node size)
     this.nodeRadius = 32;
 
-    this.points = this._computePoints();
-
     this.startIndex = null;
     this.twoIndex   = null;
     this.threeIndex = null;
@@ -58,7 +56,7 @@ class DungeonMapper {
   _initRNG(seed) {
     const baseSeed = (seed != null)
       ? seed >>> 0
-      : (Date.now() ^ (Math.floor(Math.random() * 0xFFFFFFFF))) >>> 0;
+      : (Date.now() ^ (Math.floor(Math.random() * (0xFFFFFFFF >>> 0)))) >>> 0;
     this.seed = baseSeed;
     this._rngState = baseSeed;
   }
@@ -84,33 +82,41 @@ class DungeonMapper {
     this._initRNG(seed);
   }
 
-  // Precompute 7 point positions: 6 outer in a hex, 1 center
-  _computePoints() {
+  // Precompute point positions: N outer vertices + optional center
+  _computePoints(sides = 6, includeCenter = true) {
     const cx = this.centerX;
     const cy = this.centerY;
     const radius = Math.min(this.width, this.height) * 0.36;
 
     const points = [];
 
-    // 6 outer points (indices 0–5)
-    for (let i = 0; i < 6; i++) {
-      const angle = -Math.PI / 2 + i * (Math.PI / 3); // start at top, go around
+    // outer points (indices 0..sides-1)
+    for (let i = 0; i < sides; i++) {
+      const angle = -Math.PI / 2 + i * ((2 * Math.PI) / sides); // start at top, go around
       const x = cx + radius * Math.cos(angle);
       const y = cy + radius * Math.sin(angle);
       points.push({ id: i + 1, x, y });
     }
 
-    // center point (index 6, id 7)
-    points.push({ id: 7, x: cx, y: cy });
+    if (includeCenter) {
+      points.push({ id: sides + 1, x: cx, y: cy });
+    }
 
     return points;
   }
 
   // Main entry point
   draw({
-    useKeys    = false,
-    usePatrols = false,
-    useTraps   = false
+    useKeys       = false,
+    usePatrols    = false,
+    useTraps      = false,
+    sides         = 6,
+    featureCount  = 3,
+    dangerCount   = 2,
+    treasureCount = 1,
+    pathOpen      = 3,
+    pathClosed    = 2,
+    pathSecret    = 1
   } = {}) {
     const ctx = this.ctx;
 
@@ -130,41 +136,119 @@ class DungeonMapper {
     this.usePatrols = usePatrols;
     this.useTraps   = useTraps;
 
-    this.key1Index = null;
-    this.key2Index = null;
+    this.key1Index  = null;
+    this.key2Index  = null;
+    this.startIndex = null;
+    this.twoIndex   = null;
+    this.threeIndex = null;
+    this.goalIndex  = null;
 
-    // Assign roles + labels
-    const points = this._assignPointTypesAndLabels();
+    // Shape definition
+    const includeCenter = true;
+    const points = this._computePoints(sides, includeCenter);
+
+    // Assign point types based on counts
+    const pointsWithTypes = this._assignPointTypesAndLabels(
+      points,
+      sides,
+      includeCenter,
+      {
+        feature:  featureCount,
+        danger:   dangerCount,
+        treasure: treasureCount
+      }
+    );
 
     // Keys
     if (this.useKeys) {
-      this._assignKeys(points);
+      this._assignKeys(pointsWithTypes);
     }
 
-    // Choose lines
-    const lines = this._chooseRandomLines(points);
+    // Choose lines based on path totals
+    const allLines = this._getAllPossibleLines(pointsWithTypes, sides, includeCenter);
+    const totalRequestedPaths = Math.max(0, (pathOpen || 0) + (pathClosed || 0) + (pathSecret || 0));
+    const desiredPathCount = Math.min(totalRequestedPaths || 1, allLines.length || 1);
 
-    // Draw lines on canvas
-    this._drawLines(points, lines);
+    const lines = this._chooseRandomLines(
+      pointsWithTypes,
+      sides,
+      includeCenter,
+      desiredPathCount
+    );
+
+    // Draw lines with path-type counts
+    this._drawLines(
+      pointsWithTypes,
+      lines,
+      {
+        open:   pathOpen,
+        closed: pathClosed,
+        secret: pathSecret
+      }
+    );
 
     // Draw node shapes + labels
-    this._drawPoints(points);
+    this._drawPoints(pointsWithTypes);
   }
 
-  _assignPointTypesAndLabels() {
-    const types = ["feature", "feature", "feature", "danger", "danger", "treasure", "blank"];
-    const shuffledTypes = this._shuffle(types);
+  _assignPointTypesAndLabels(points, sides, includeCenter, counts) {
+    let featureCount  = Math.max(0, counts.feature  ?? 0);
+    let dangerCount   = Math.max(0, counts.danger   ?? 0);
+    let treasureCount = Math.max(0, counts.treasure ?? 0);
 
-    const pointsWithTypes = this.points.map((p, idx) => {
-      const type = shuffledTypes[idx];
+    let totalMarked = featureCount + dangerCount + treasureCount;
+    const maxNodes  = points.length;
+
+    // Ensure at least one marked node
+    if (totalMarked <= 0) {
+      featureCount = 1;
+      dangerCount  = 0;
+      treasureCount = 0;
+      totalMarked  = 1;
+    }
+
+    // Clamp to available nodes
+    if (totalMarked > maxNodes) {
+      totalMarked = maxNodes;
+    }
+
+    // Distribute counts so they sum to totalMarked
+    let remaining = totalMarked;
+    let f = Math.min(featureCount,  remaining); remaining -= f;
+    let d = Math.min(dangerCount,   remaining); remaining -= d;
+    let t = Math.min(treasureCount, remaining); remaining -= t;
+
+    // If there's leftover (because input sums were too small), dump into features
+    if (remaining > 0) {
+      f += remaining;
+      remaining = 0;
+    }
+
+    const typePool = [];
+    for (let i = 0; i < f; i++) typePool.push("feature");
+    for (let i = 0; i < d; i++) typePool.push("danger");
+    for (let i = 0; i < t; i++) typePool.push("treasure");
+
+    const shuffledTypes = this._shuffle(typePool);
+
+    // Choose which indices are marked
+    const allIndices   = [...Array(points.length).keys()];
+    const shuffledIdx  = this._shuffle(allIndices);
+    const markedIndices = shuffledIdx.slice(0, totalMarked);
+
+    const typeByIndex = new Map();
+    markedIndices.forEach((idx, i) => {
+      const tp = shuffledTypes[i] ?? "feature";
+      typeByIndex.set(idx, tp);
+    });
+
+    const pointsWithTypes = points.map((p, idx) => {
+      const type = typeByIndex.has(idx) ? typeByIndex.get(idx) : "blank";
       return { ...p, type, number: null };
     });
 
-    let markedIndices = pointsWithTypes
-      .map((p, idx) => (p.type === "blank" ? -1 : idx))
-      .filter(idx => idx !== -1);
-
-    const allLines = this._getAllPossibleLines();
+    // Now we need adjacency graph to assign S/2/3/G
+    const allLines = this._getAllPossibleLines(pointsWithTypes, sides, includeCenter);
 
     const neighborsOf = (idx) => {
       const result = [];
@@ -175,18 +259,26 @@ class DungeonMapper {
       return result;
     };
 
+    let marked = markedIndices.slice();
+
+    if (!marked.length) {
+      // In the pathological case, mark the first point
+      marked = [0];
+      pointsWithTypes[0].type = "feature";
+    }
+
     // Choose Start index
     let sIdx = null;
-    for (const cand of markedIndices) {
-      const neigh = neighborsOf(cand).filter(n => markedIndices.includes(n));
+    for (const cand of marked) {
+      const neigh = neighborsOf(cand).filter(n => marked.includes(n));
       if (neigh.length > 0) {
         sIdx = cand;
         break;
       }
     }
-    if (sIdx === null) sIdx = markedIndices[0];
+    if (sIdx === null) sIdx = marked[0];
 
-    const sNeighbors = neighborsOf(sIdx).filter(n => markedIndices.includes(n) && n !== sIdx);
+    const sNeighbors = neighborsOf(sIdx).filter(n => marked.includes(n) && n !== sIdx);
 
     // Pick 2
     let twoIdx = sNeighbors.length
@@ -196,27 +288,27 @@ class DungeonMapper {
     this.startIndex = sIdx;
     this.twoIndex   = twoIdx;
 
-    const remaining = markedIndices.filter(i => i !== sIdx && i !== twoIdx);
+    const remainingAfterS2 = marked.filter(i => i !== sIdx && i !== twoIdx);
 
     // Pick 3 (adjacent to Start or 2 if possible)
     const twoNeighbors = (twoIdx !== null)
-      ? neighborsOf(twoIdx).filter(n => markedIndices.includes(n) && n !== twoIdx)
+      ? neighborsOf(twoIdx).filter(n => marked.includes(n) && n !== twoIdx)
       : [];
 
-    const threeCandidates = remaining.filter(
+    const threeCandidates = remainingAfterS2.filter(
       i => sNeighbors.includes(i) || twoNeighbors.includes(i)
     );
 
     let threeIdx = null;
     if (threeCandidates.length > 0) {
       threeIdx = threeCandidates[Math.floor(this._rng() * threeCandidates.length)];
-    } else if (remaining.length > 0) {
-      threeIdx = remaining[0];
+    } else if (remainingAfterS2.length > 0) {
+      threeIdx = remainingAfterS2[0];
     }
 
     this.threeIndex = threeIdx;
 
-    const remainingAfter3 = remaining.filter(i => i !== threeIdx);
+    const remainingAfter3 = remainingAfterS2.filter(i => i !== threeIdx);
 
     // Goal
     let gIdx = null;
@@ -225,19 +317,20 @@ class DungeonMapper {
     }
     this.goalIndex = gIdx;
 
-    // 4 & 5
     const middleNumbers = this._shuffle([4, 5]);
 
-    // S / G instead of Start / Goal
+    // Assign labels
     pointsWithTypes[sIdx].number = "S";
-    if (twoIdx   !== null) pointsWithTypes[twoIdx].number   = 2;
-    if (threeIdx !== null) pointsWithTypes[threeIdx].number = 3;
-    if (gIdx     !== null) pointsWithTypes[gIdx].number     = "G";
+    if (twoIdx   !== null && pointsWithTypes[twoIdx])   pointsWithTypes[twoIdx].number   = 2;
+    if (threeIdx !== null && pointsWithTypes[threeIdx]) pointsWithTypes[threeIdx].number = 3;
+    if (gIdx     !== null && pointsWithTypes[gIdx])     pointsWithTypes[gIdx].number     = "G";
 
     for (const idx of remainingAfter3) {
       if (idx === gIdx) continue;
       const n = middleNumbers.shift();
-      if (n !== undefined) pointsWithTypes[idx].number = n;
+      if (n !== undefined && pointsWithTypes[idx]) {
+        pointsWithTypes[idx].number = n;
+      }
     }
 
     return pointsWithTypes;
@@ -332,18 +425,26 @@ class DungeonMapper {
     this.stairsIndex = candidates[Math.floor(this._rng() * candidates.length)];
   }
 
-  _getAllPossibleLines() {
+  _getAllPossibleLines(points, sides, includeCenter) {
     const lines = [];
+    const outerCount = sides;
+    const centerIndex = includeCenter ? outerCount : null;
 
     // Ring edges
-    for (let i = 0; i < 6; i++) {
-      const j = (i + 1) % 6;
-      lines.push([i, j]);
+    for (let i = 0; i < outerCount; i++) {
+      const j = (i + 1) % outerCount;
+      if (i < points.length && j < points.length) {
+        lines.push([i, j]);
+      }
     }
 
-    // Radial edges
-    for (let i = 0; i < 6; i++) {
-      lines.push([i, 6]);
+    // Radial edges to center
+    if (includeCenter && centerIndex != null && centerIndex < points.length) {
+      for (let i = 0; i < outerCount; i++) {
+        if (i < points.length) {
+          lines.push([i, centerIndex]);
+        }
+      }
     }
 
     return lines;
@@ -436,13 +537,13 @@ class DungeonMapper {
     return true;
   }
 
-  _chooseRandomLines(points) {
-    const allLines = this._getAllPossibleLines();
+  _chooseRandomLines(points, sides, includeCenter, desiredCount) {
+    const allLines = this._getAllPossibleLines(points, sides, includeCenter);
 
     const candidateAll = allLines
       .filter(([i, j]) => points[i].type !== "blank" && points[j].type !== "blank");
 
-    if (candidateAll.length === 0) return [];
+    if (!candidateAll.length) return [];
 
     const candidate = this._shuffle(candidateAll.slice());
 
@@ -486,7 +587,9 @@ class DungeonMapper {
       }
     }
 
-    const maxLines = Math.min(6, candidateAll.length);
+    const minK = Math.max(requiredEdges.length || 1, 1);
+    const maxPossible = candidateAll.length;
+    const targetK = Math.max(minK, Math.min(desiredCount || minK, maxPossible));
 
     const tryWithK = (k) => {
       let found = null;
@@ -520,9 +623,14 @@ class DungeonMapper {
       return found;
     };
 
-    for (let k = maxLines; k >= 1; k--) {
+    for (let k = targetK; k >= minK; k--) {
       const result = tryWithK(k);
       if (result) return result;
+    }
+
+    // If nothing works, fallback to just requiredEdges (if valid) or empty
+    if (this._isValidEdgeSet(points, requiredEdges, markedIndices)) {
+      return requiredEdges;
     }
 
     return [];
@@ -602,36 +710,49 @@ class DungeonMapper {
   }
 
   // ---------- decorated line drawing ----------
-  _drawLines(points, lines) {
+  _drawLines(points, lines, pathCounts) {
     const ctx = this.ctx;
     const count = lines.length;
     if (!count) return;
 
-    const indices = Array.from({ length: count }, (_, i) => i);
-    const shuffledIndices = this._shuffle(indices.slice());
+    // Path type counts
+    let secretCount = Math.max(0, pathCounts.secret ?? 0);
+    let closedCount = Math.max(0, pathCounts.closed ?? 0);
+    const totalLines = lines.length;
 
-    const secretIndex   = shuffledIndices.shift();
-    const maxDoorLines  = Math.min(2, count - 1);
-    const doorIndices   = new Set(shuffledIndices.slice(0, maxDoorLines));
+    if (secretCount > totalLines) secretCount = totalLines;
+    if (closedCount > (totalLines - secretCount)) {
+      closedCount = totalLines - secretCount;
+    }
 
+    // Decide which edge indices are secret / closed
+    const indices = Array.from({ length: totalLines }, (_, i) => i);
+    const shuffled = this._shuffle(indices);
+
+    const secretIndices = new Set(shuffled.slice(0, secretCount));
+    const closedIndices = new Set(
+      shuffled.slice(secretCount, secretCount + closedCount)
+    );
+
+    // Patrols & traps still layered on top
     let patrolIndices = new Set();
-    if (this.usePatrols && count > 0) {
-      const openIndices = indices.filter(
-        i => i !== secretIndex && !doorIndices.has(i)
+    if (this.usePatrols && totalLines > 0) {
+      const openCandidates = indices.filter(
+        i => !secretIndices.has(i) && !closedIndices.has(i)
       );
-      if (openIndices.length > 0) {
+      if (openCandidates.length > 0) {
         const patrolCount = Math.min(
           1 + Math.floor(this._rng() * 2),
-          openIndices.length
+          openCandidates.length
         );
-        const patrolOrder = this._shuffle(openIndices.slice());
+        const patrolOrder = this._shuffle(openCandidates.slice());
         patrolIndices = new Set(patrolOrder.slice(0, patrolCount));
       }
     }
 
     let trapIndices = new Set();
-    if (this.useTraps && doorIndices.size > 0) {
-      const obstructedIndices = Array.from(doorIndices);
+    if (this.useTraps && closedIndices.size > 0) {
+      const obstructedIndices = Array.from(closedIndices);
       const trapCount = Math.min(
         1 + Math.floor(this._rng() * 2),
         obstructedIndices.length
@@ -640,13 +761,13 @@ class DungeonMapper {
       trapIndices = new Set(trapOrder.slice(0, trapCount));
     }
 
-    for (let li = 0; li < count; li++) {
+    for (let li = 0; li < totalLines; li++) {
       const [i, j] = lines[li];
       const a = points[i];
       const b = points[j];
 
-      const isSecret = li === secretIndex;
-      const isDoor   = doorIndices.has(li);
+      const isSecret = secretIndices.has(li);
+      const isClosed = closedIndices.has(li);
       const isPatrol = this.usePatrols && patrolIndices.has(li);
       const isTrap   = this.useTraps   && trapIndices.has(li);
 
@@ -669,7 +790,7 @@ class DungeonMapper {
       const mx = (a.x + b.x) / 2;
       const my = (a.y + b.y) / 2;
 
-      if (isDoor) {
+      if (isClosed) {
         const tickLen = 12;
         const hx = (tickLen / 2) * nx;
         const hy = (tickLen / 2) * ny;
@@ -1122,6 +1243,7 @@ export function openDungeonMapper() {
           points: { feature: 3, danger: 2, treasure: 1 },
           paths:  { open: 3, closed: 2, secret: 1 }
         },
+        // Key name remains "sept" for wiring; UI label says Heptagon
         sept: {
           sides: 7,
           points: { feature: 3, danger: 2, treasure: 2 },
@@ -1351,7 +1473,6 @@ export function openDungeonMapper() {
           enforceGroupTotals(pointGroupInputs);
           activeShape = key;
           updateShapeButtons();
-          // (shape wiring into generator will come later)
         });
       });
 
@@ -1359,11 +1480,35 @@ export function openDungeonMapper() {
       updateShapeButtons();
       // --- end shape toggle buttons ---
 
-      const getOptions = () => ({
-        useKeys:    !!genOptions.useKeys,
-        usePatrols: !!genOptions.usePatrols,
-        useTraps:   !!genOptions.useTraps
-      });
+      const getOptions = () => {
+        const cfg = getShapeConfig();
+        const sides = cfg.sides || 6;
+
+        // Clamp first, then enforce totals just in case
+        const featureCount  = clampField(pointFeatureInput);
+        const dangerCount   = clampField(pointDangerInput);
+        const treasureCount = clampField(pointTreasureInput);
+
+        const pathOpen   = clampField(pathOpenInput);
+        const pathClosed = clampField(pathClosedInput);
+        const pathSecret = clampField(pathSecretInput);
+
+        enforceGroupTotals(pointGroupInputs);
+        enforceGroupTotals(pathGroupInputs);
+
+        return {
+          useKeys:    !!genOptions.useKeys,
+          usePatrols: !!genOptions.usePatrols,
+          useTraps:   !!genOptions.useTraps,
+          sides,
+          featureCount,
+          dangerCount,
+          treasureCount,
+          pathOpen,
+          pathClosed,
+          pathSecret
+        };
+      };
 
       const $generateBtn = $html.find("#dungeon-builder-generate-btn");
       const $saveBtn     = $html.find("#dungeon-builder-save-btn");
