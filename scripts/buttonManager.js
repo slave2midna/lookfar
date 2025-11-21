@@ -25,7 +25,7 @@ function getLookfarTools() {
   // GM-only tools
   // ---------------------------------------------------------------------------
   if (game.user.isGM) {
-    
+
     // Treasure Roll Button
     tools.push({
       name: "Treasure Roll",
@@ -39,9 +39,18 @@ function getLookfarTools() {
       icon: "fa-solid fa-dungeon",
       onClick: () => Hooks.call("lookfarShowDungeonMapperDialog")
     });
+
+    // Quick Encounter Button
+    tools.push({
+      name: "Quick Encounter",
+      icon: "fa-solid fa-dragon",   // You can swap the icon if preferred
+      onClick: () => Hooks.call("lookfarShowQuickEncounterDialog")
+    });
   }
 
+  // ---------------------------------------------------------------------------
   // Item Forger Button
+  // ---------------------------------------------------------------------------
   const mode = getItemForgeEditMode(); // "public" | "gmOnly" | "locked" | "hidden"
 
   // Non-GM users: hide the button entirely when mode is "hidden"
@@ -55,13 +64,6 @@ function getLookfarTools() {
     });
   }
 
-  // Placeholder for future buttons
-  // tools.push({
-  //   name: 'LOOKFAR.Button.AnotherFeature.Name',
-  //   icon: 'fa-solid fa-compass',
-  //   onClick: () => Hooks.call('lookfarShowAnotherFeature'),
-  // });
-
   return tools;
 }
 
@@ -70,4 +72,3 @@ Hooks.on(projectfu.SystemControls.HOOK_GET_SYSTEM_TOOLS, (tools) => {
   for (const tool of getLookfarTools()) tools.push(tool);
   return tools;
 });
-
