@@ -959,25 +959,25 @@ const dialogContent = `
                   id="dungeon-builder-shape-pent"
                   title="Pentagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-solid fa-pentagon" style="font-size:14px; transform:translateX(1px);"></i>
+            <i class="fa-solid fa-pentagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
           <button type="button"
                   id="dungeon-builder-shape-hex"
                   title="Hexagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-solid fa-hexagon" style="font-size:14px; transform:translateX(1px);"></i>
+            <i class="fa-solid fa-hexagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
           <button type="button"
                   id="dungeon-builder-shape-sept"
                   title="Septagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-solid fa-septagon" style="font-size:14px; transform:translateX(1px);"></i>
+            <i class="fa-solid fa-septagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
           <button type="button"
                   id="dungeon-builder-shape-oct"
                   title="Octagon"
                   style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-sharp fa-solid fa-octagon" style="font-size:14px; transform:translateX(1px);"></i>
+            <i class="fa-solid fa-octagon" style="font-size:14px; transform:translateX(1px);"></i>
           </button>
         </div>
       </fieldset>
