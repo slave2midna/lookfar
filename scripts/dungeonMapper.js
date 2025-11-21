@@ -939,19 +939,25 @@ const dialogContent = `
       </fieldset>
 
       <!-- Seed -->
-      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
-        <div style="line-height:1.4; text-align:center;">
-          <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
-          <div style="margin-top:4px;">
-            <input type="text"
-                   id="dungeon-builder-seed-input"
-                   placeholder="Enter seed"
-                   style="width:100%; box-sizing:border-box; font-size:11px;">
-          </div>
-        </div>
-      </fieldset>
+<fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
+  <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
+  <div style="line-height:1.4; text-align:center;">
+    <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
+      <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
+      <button type="button"
+              id="dungeon-builder-seed-copy"
+              style="width:20px; height:20px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        <i class="fa-solid fa-copy" style="font-size:10px;"></i>
+      </button>
     </div>
+    <div style="margin-top:4px;">
+      <input type="text"
+             id="dungeon-builder-seed-input"
+             placeholder="Enter seed"
+             style="width:100%; box-sizing:border-box; font-size:11px;">
+    </div>
+  </div>
+</fieldset>
 
     <fieldset style="margin:4px 0 0 0; padding:6px 8px; border:1px solid #aaa; width:100%;">
       <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
@@ -1026,6 +1032,39 @@ export function openDungeonMapper() {
 
       const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
       const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
+
+      const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
+
+if (seedCopyBtn && seedCurrentSpan) {
+  seedCopyBtn.addEventListener("click", async () => {
+    const value = seedCurrentSpan.textContent?.trim();
+    if (!value || value === "—") {
+      ui.notifications?.warn?.("No seed to copy yet.");
+      return;
+    }
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        // Fallback for older browsers / weird environments
+        const ta = document.createElement("textarea");
+        ta.value = value;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      ui.notifications?.info?.("Seed copied to clipboard.");
+    } catch (err) {
+      console.error("[Dungeon Mapper] Failed to copy seed:", err);
+      ui.notifications?.error?.("Failed to copy seed to clipboard.");
+    }
+  });
+}
 
       if (lastState && lastState.options) {
         const opt = lastState.options;
