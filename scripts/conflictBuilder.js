@@ -2,7 +2,8 @@
 // - Provides a tool to rapidly assemble and inspect enemy groups for scenes.
 // - Uses a configured Actor compendium as the bestiary source.
 // - Uses a configured Scene for preview, falling back to the active scene.
-// - Includes stat preview, quantity controls, and creature selection UI.
+// - Includes stat preview, quantity controls, creature selection UI,
+//   and now places tokens on the scene based on preview positions.
 
 // ---------------------------------------------------------------------------
 // CONFIG
@@ -303,13 +304,121 @@ async function openConflictBuilderDialog() {
       summon: {
         label: "Fight",
         callback: async (html) => {
-          // For now, we only validate that something is selected.
           const $html = html instanceof HTMLElement ? $(html) : html;
-          const selected = $html.find(".list-item.selected");
-          if (!selected.length) {
-            ui.notifications.error("No creature selected.");
+
+          const $tokensLayer = $html.find("#preview-tokens-layer");
+          const $preview     = $html.find("#conflict-preview");
+          const $tokens      = $tokensLayer.find(".preview-token");
+
+          // Require at least one preview token
+          if (!$tokens.length) {
+            ui.notifications.error("No creatures have been added to the encounter.");
+            return;
           }
-          // Future wiring for encounter-building / combat start can go here.
+
+          // Activate / focus the battle scene if not already active
+          if (!previewScene.active || canvas.scene?.id !== previewScene.id) {
+            await previewScene.view();
+          }
+
+          // Ensure canvas is the correct scene
+          const targetScene = canvas.scene;
+          if (!targetScene) {
+            ui.notifications.error("Could not access the canvas for the battle scene.");
+            return;
+          }
+
+          const dims = canvas.dimensions;
+          if (!dims) {
+            ui.notifications.error("Canvas dimensions are not ready.");
+            return;
+          }
+
+          const sceneWidth  = dims.sceneWidth;
+          const sceneHeight = dims.sceneHeight;
+
+          // Use DOM geometry to compute token centers relative to preview box
+          const previewEl = $preview[0];
+          const previewRect = previewEl.getBoundingClientRect();
+
+          const tokenData = [];
+          const actorCache = new Map();
+
+          const level = parseInt($html.find("#creature-level").val(), 10) || 5;
+          const rank  = $html.find("#creature-rank").val() || "soldier";
+          const replacedSoldiers = rank === "champion"
+            ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
+            : 1;
+
+          for (const el of $tokens.toArray()) {
+            const $tok = $(el);
+            const actorId = $tok.data("actorId");
+            if (!actorId) continue;
+
+            let actor = actorCache.get(actorId);
+            if (!actor) {
+              actor = await pack.getDocument(actorId);
+              if (!actor) continue;
+              actorCache.set(actorId, actor);
+            }
+
+            const tokRect = el.getBoundingClientRect();
+            const centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
+            const centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
+
+            const u = centerX / previewRect.width;
+            const v = centerY / previewRect.height;
+
+            const rawX = u * sceneWidth;
+            const rawY = v * sceneHeight;
+
+            // Snap to grid
+            const snapped = canvas.grid.getSnappedPosition(rawX, rawY, 1);
+
+            const proto = actor.prototypeToken.toObject();
+
+            // Apply facing if horizontally flipped in preview
+            const flipped = $tok.data("lfFlipped") === true;
+            if (flipped) {
+              proto.mirrorX = !proto.mirrorX;
+            }
+
+            proto.x = snapped.x;
+            proto.y = snapped.y;
+
+            tokenData.push({ proto, actor });
+          }
+
+          if (!tokenData.length) {
+            ui.notifications.error("No valid creatures could be placed from the preview.");
+            return;
+          }
+
+          // Create tokens on the active scene
+          const toCreate = tokenData.map(t => t.proto);
+          const created = await targetScene.createEmbeddedDocuments("Token", toCreate);
+
+          // Apply level / rank / HP / MP to the synthetic actors
+          for (const tokenDoc of created) {
+            const actor = tokenDoc.actor;
+            if (!actor) continue;
+
+            await actor.update({
+              "system.level.value": level,
+              "system.rank.value": rank,
+              "system.rank.replacedSoldiers": replacedSoldiers
+            });
+
+            const maxHP = actor.system.resources.hp.max;
+            const maxMP = actor.system.resources.mp.max;
+
+            await actor.update({
+              "system.resources.hp.value": maxHP,
+              "system.resources.mp.value": maxMP
+            });
+          }
+
+          ui.notifications.info("Encounter placed on the battle scene.");
         }
       }
     },
@@ -341,7 +450,6 @@ async function openConflictBuilderDialog() {
       }
 
       async function updateStatsForId(id, level, rank, replacedSoldiers) {
-        // Fetch the full actor doc only for the one we care about
         const actor = await pack.getDocument(id);
         if (!actor) return;
 
@@ -440,7 +548,6 @@ async function openConflictBuilderDialog() {
       searchInput.on("input", filterList);
       folderSelect.on("change", () => {
         filterList();
-        // Optionally, auto-select first visible entry in that folder
         const visible = $html.find(".list-item:visible").first();
         if (visible.length) {
           listItems.removeClass("selected");
@@ -494,14 +601,17 @@ async function openConflictBuilderDialog() {
           const left = 4 + col * 68;
           const top  = 4 + row * 68;
 
-          const $img = $(
-            `<img class="preview-token" src="${lfEsc(texSrc)}">`
-          );
+          const $img = $(`
+            <img class="preview-token" src="${lfEsc(texSrc)}">
+          `);
 
           $img.css({
             left: `${left}px`,
             top: `${top}px`
           });
+
+          // remember which compendium actor this preview represents
+          $img.data("actorId", id);
 
           tokensLayer.append($img);
         }
@@ -510,8 +620,7 @@ async function openConflictBuilderDialog() {
       // ---------- Preview token interactions ----------
       // Left-click & drag inside preview bounds
       tokensLayer.on("mousedown", ".preview-token", ev => {
-        // left button only
-        if (ev.button !== 0) return;
+        if (ev.button !== 0) return; // left button only
         ev.preventDefault();
 
         const $token = $(ev.currentTarget);
