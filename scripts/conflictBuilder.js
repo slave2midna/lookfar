@@ -3,7 +3,7 @@
 // - Uses a configured Actor compendium as the bestiary source.
 // - Uses a configured Scene for preview, falling back to the active scene.
 // - Includes stat preview, quantity controls, creature selection UI,
-//   and now places tokens on the scene based on preview positions.
+//   and places tokens on the battle scene based on preview positions.
 
 // ---------------------------------------------------------------------------
 // CONFIG
@@ -70,7 +70,6 @@ async function openConflictBuilderDialog() {
   // -------------------------------------------------------------------------
   // Compendium folder support (for filtering)
   // -------------------------------------------------------------------------
-  // Build folder -> Set(actorId) map from *compendium* folders, not world folders
   const folderMap = new Map();
   let compFolders = [];
 
@@ -199,7 +198,7 @@ async function openConflictBuilderDialog() {
             height: 64px;
             object-fit: contain;
             pointer-events: auto;
-            border: none; /* ensure no border around preview token icons */
+            border: none;
           }
         </style>
 
@@ -310,14 +309,19 @@ async function openConflictBuilderDialog() {
           const $preview     = $html.find("#conflict-preview");
           const $tokens      = $tokensLayer.find(".preview-token");
 
-          // Require at least one preview token
           if (!$tokens.length) {
             ui.notifications.error("No creatures have been added to the encounter.");
             return;
           }
 
-          // Make sure the battle scene is the active canvas scene,
-          // but do NOT touch the sidebar/chat UI.
+          // Snapshot sidebar collapsed state so we can restore it
+          const sidebar = ui.sidebar;
+          const wasCollapsed =
+            sidebar?.collapsed ??
+            sidebar?._collapsed ??
+            false;
+
+          // Make sure the battle scene is the active canvas scene
           if (canvas.scene?.id !== previewScene.id) {
             await previewScene.activate();
           }
@@ -337,11 +341,10 @@ async function openConflictBuilderDialog() {
           const sceneWidth  = dims.sceneWidth;
           const sceneHeight = dims.sceneHeight;
 
-          // Use DOM geometry to compute token centers relative to preview box
-          const previewEl = $preview[0];
+          const previewEl   = $preview[0];
           const previewRect = previewEl.getBoundingClientRect();
 
-          const tokenData = [];
+          const tokenData  = [];
           const actorCache = new Map();
 
           const level = parseInt($html.find("#creature-level").val(), 10) || 5;
@@ -372,12 +375,10 @@ async function openConflictBuilderDialog() {
             const rawX = u * sceneWidth;
             const rawY = v * sceneHeight;
 
-            // Snap to grid
             const snapped = canvas.grid.getSnappedPosition(rawX, rawY, 1);
 
             const proto = actor.prototypeToken.toObject();
 
-            // Apply facing if horizontally flipped in preview
             const flipped = $tok.data("lfFlipped") === true;
             if (flipped) {
               proto.mirrorX = !proto.mirrorX;
@@ -394,11 +395,9 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // Create tokens on the active scene
           const toCreate = tokenData.map(t => t.proto);
-          const created = await targetScene.createEmbeddedDocuments("Token", toCreate);
+          const created  = await targetScene.createEmbeddedDocuments("Token", toCreate);
 
-          // Apply level / rank / HP / MP to the synthetic actors
           for (const tokenDoc of created) {
             const actor = tokenDoc.actor;
             if (!actor) continue;
@@ -418,6 +417,11 @@ async function openConflictBuilderDialog() {
             });
           }
 
+          // Restore sidebar collapsed state if it was collapsed before
+          if (sidebar && wasCollapsed && !sidebar.collapsed && !sidebar._collapsed) {
+            sidebar.collapse();
+          }
+
           ui.notifications.info("Encounter placed on the battle scene.");
         }
       }
@@ -431,18 +435,17 @@ async function openConflictBuilderDialog() {
     render: html => {
       const $html = html instanceof HTMLElement ? $(html) : html;
 
-      const levelInput    = $html.find("#creature-level");
-      const rankSelect    = $html.find("#creature-rank");
-      const replacedInput = $html.find("#replaced-soldiers");
-      const imageElement  = $html.find("#creature-image");
-      const listItems     = $html.find(".list-item");
-      const searchInput   = $html.find("#search-input");
-      const folderSelect  = $html.find("#folder-filter");
-      const addButton     = $html.find("#add-to-encounter");
-      const tokensLayer   = $html.find("#preview-tokens-layer");
+      const levelInput      = $html.find("#creature-level");
+      const rankSelect      = $html.find("#creature-rank");
+      const replacedInput   = $html.find("#replaced-soldiers");
+      const imageElement    = $html.find("#creature-image");
+      const listItems       = $html.find(".list-item");
+      const searchInput     = $html.find("#search-input");
+      const folderSelect    = $html.find("#folder-filter");
+      const addButton       = $html.find("#add-to-encounter");
+      const tokensLayer     = $html.find("#preview-tokens-layer");
       const previewContainer = $html.find("#conflict-preview");
 
-      // drag state for preview tokens
       let dragState = null;
 
       if (listItems.length) {
@@ -476,7 +479,6 @@ async function openConflictBuilderDialog() {
         $html.find("#creature-init").text(Math.round(init));
       }
 
-      // Combined search + folder filter
       function filterList() {
         const searchTerm     = (searchInput.val() || "").toString().toLowerCase();
         const selectedFolder = folderSelect.val();
@@ -577,7 +579,7 @@ async function openConflictBuilderDialog() {
           return;
         }
 
-        const id = selected.data("id");
+        const id  = selected.data("id");
         const qty = Math.max(1, parseInt($html.find("#creature-quantity").val(), 10) || 1);
 
         const actor = await pack.getDocument(id);
@@ -601,17 +603,10 @@ async function openConflictBuilderDialog() {
           const left = 4 + col * 68;
           const top  = 4 + row * 68;
 
-          const $img = $(`
-            <img class="preview-token" src="${lfEsc(texSrc)}">
-          `);
+          const $img = $(`<img class="preview-token" src="${lfEsc(texSrc)}">`);
 
-          $img.css({
-            left: `${left}px`,
-            top: `${top}px`
-          });
-
-          // remember which compendium actor this preview represents
-          $img.data("actorId", id);
+          $img.css({ left: `${left}px`, top: `${top}px` });
+          $img.data("actorId", id);  // <-- link preview to compendium actor
 
           tokensLayer.append($img);
         }
@@ -706,4 +701,4 @@ Hooks.once("ready", () => {
 
   // Toolbar button hook
   Hooks.on("lookfarShowConflictBuilderDialog", openConflictBuilderDialog);
-});4
+});
