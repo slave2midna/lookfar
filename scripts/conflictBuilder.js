@@ -316,12 +316,12 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // Activate / focus the battle scene if not already active
-          if (!previewScene.active || canvas.scene?.id !== previewScene.id) {
-            await previewScene.view();
+          // Make sure the battle scene is the active canvas scene,
+          // but do NOT touch the sidebar/chat UI.
+          if (canvas.scene?.id !== previewScene.id) {
+            await previewScene.activate();
           }
 
-          // Ensure canvas is the correct scene
           const targetScene = canvas.scene;
           if (!targetScene) {
             ui.notifications.error("Could not access the canvas for the battle scene.");
@@ -706,4 +706,4 @@ Hooks.once("ready", () => {
 
   // Toolbar button hook
   Hooks.on("lookfarShowConflictBuilderDialog", openConflictBuilderDialog);
-});
+});4
