@@ -213,6 +213,21 @@ export const LookfarSettings = {
       const cfg = setting;
       if (cfg) cfg.choices = rollTableChoices;
     }
+  },
+
+  // NEW: update compendium + scene choices after ready
+  updateCompendiumAndSceneChoices() {
+    const reg = game.settings.settings;
+    if (!reg) return;
+
+    const actorCompChoices = LookfarSettings.getActorCompendiumChoices();
+    const sceneChoices = LookfarSettings.getSceneChoices();
+
+    const compSetting = reg.get("lookfar.monsterCompendium");
+    if (compSetting) compSetting.choices = actorCompChoices;
+
+    const sceneSetting = reg.get("lookfar.battleSceneName");
+    if (sceneSetting) sceneSetting.choices = sceneChoices;
   }
 };
 
@@ -227,6 +242,7 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   // Ensure registry choices are fresh once the world is ready
   Hooks.once("ready", () => {
     LookfarSettings.updateRollTableChoices();
+    LookfarSettings.updateCompendiumAndSceneChoices();   // 👈 NEW
   });
 
   const onTablesChanged = () => {
