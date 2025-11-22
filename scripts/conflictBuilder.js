@@ -190,14 +190,15 @@ async function openConflictBuilderDialog() {
             position: absolute;
             inset: 0;
             z-index: 3;
-            pointer-events: none;
+            pointer-events: auto;
           }
           #conflictBuilderDialog .preview-token {
             position: absolute;
             width: 64px;
             height: 64px;
             object-fit: contain;
-            pointer-events: none;
+            pointer-events: auto;
+            border: none; /* ensure no border around preview token icons */
           }
         </style>
 
@@ -330,6 +331,10 @@ async function openConflictBuilderDialog() {
       const folderSelect  = $html.find("#folder-filter");
       const addButton     = $html.find("#add-to-encounter");
       const tokensLayer   = $html.find("#preview-tokens-layer");
+      const previewContainer = $html.find("#conflict-preview");
+
+      // drag state for preview tokens
+      let dragState = null;
 
       if (listItems.length) {
         listItems.first().addClass("selected");
@@ -499,6 +504,77 @@ async function openConflictBuilderDialog() {
           });
 
           tokensLayer.append($img);
+        }
+      });
+
+      // ---------- Preview token interactions ----------
+      // Left-click & drag inside preview bounds
+      tokensLayer.on("mousedown", ".preview-token", ev => {
+        // left button only
+        if (ev.button !== 0) return;
+        ev.preventDefault();
+
+        const $token = $(ev.currentTarget);
+
+        dragState = {
+          $token,
+          startMouseX: ev.pageX,
+          startMouseY: ev.pageY,
+          startLeft: parseFloat($token.css("left")) || 0,
+          startTop: parseFloat($token.css("top")) || 0,
+          containerWidth: previewContainer.width(),
+          containerHeight: previewContainer.height(),
+          tokenWidth: $token.outerWidth(),
+          tokenHeight: $token.outerHeight()
+        };
+
+        $(document).on("mousemove.conflictDrag", onDragMove);
+        $(document).on("mouseup.conflictDrag", onDragEnd);
+      });
+
+      function onDragMove(ev) {
+        if (!dragState) return;
+        ev.preventDefault();
+
+        const dx = ev.pageX - dragState.startMouseX;
+        const dy = ev.pageY - dragState.startMouseY;
+
+        let left = dragState.startLeft + dx;
+        let top  = dragState.startTop + dy;
+
+        const maxLeft = Math.max(0, dragState.containerWidth - dragState.tokenWidth);
+        const maxTop  = Math.max(0, dragState.containerHeight - dragState.tokenHeight);
+
+        left = Math.max(0, Math.min(maxLeft, left));
+        top  = Math.max(0, Math.min(maxTop, top));
+
+        dragState.$token.css({ left: `${left}px`, top: `${top}px` });
+      }
+
+      function onDragEnd(_ev) {
+        $(document).off(".conflictDrag");
+        dragState = null;
+      }
+
+      // Right-click: remove; Ctrl+right-click: flip horizontally
+      tokensLayer.on("contextmenu", ".preview-token", ev => {
+        ev.preventDefault();
+        const e = ev.originalEvent || ev;
+        const $token = $(ev.currentTarget);
+
+        const hasCtrl = e.ctrlKey || e.metaKey;
+
+        if (hasCtrl) {
+          const flipped = $token.data("lfFlipped") === true;
+          if (flipped) {
+            $token.css("transform", "");
+            $token.data("lfFlipped", false);
+          } else {
+            $token.css("transform", "scaleX(-1)");
+            $token.data("lfFlipped", true);
+          }
+        } else {
+          $token.remove();
         }
       });
 
