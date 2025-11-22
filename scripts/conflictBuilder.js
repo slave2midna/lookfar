@@ -315,18 +315,16 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // Optionally bring the battle scene into view for the GM
-          // (this does not affect where tokens are created)
+          // *** IMPORTANT: ACTIVATE the battle scene, like your other macros ***
           try {
-            if (canvas.scene?.id !== previewScene.id) {
-              await previewScene.view();
+            if (!previewScene.active) {
+              await previewScene.update({ active: true });
             }
           } catch (e) {
-            console.warn("Conflict Builder: unable to view battle scene.", e);
+            console.warn("Conflict Builder: unable to activate battle scene.", e);
           }
 
-          // We ALWAYS create tokens on the configured battle scene (previewScene),
-          // not on whatever scene was active when the macro was run.
+          // Always create tokens on the configured battle scene
           const targetScene = previewScene;
           if (!targetScene) {
             ui.notifications.error("Could not access the battle scene.");
@@ -431,15 +429,15 @@ async function openConflictBuilderDialog() {
     render: html => {
       const $html = html instanceof HTMLElement ? $(html) : html;
 
-      const levelInput      = $html.find("#creature-level");
-      const rankSelect      = $html.find("#creature-rank");
-      const replacedInput   = $html.find("#replaced-soldiers");
-      const imageElement    = $html.find("#creature-image");
-      const listItems       = $html.find(".list-item");
-      const searchInput     = $html.find("#search-input");
-      const folderSelect    = $html.find("#folder-filter");
-      const addButton       = $html.find("#add-to-encounter");
-      const tokensLayer     = $html.find("#preview-tokens-layer");
+      const levelInput       = $html.find("#creature-level");
+      const rankSelect       = $html.find("#creature-rank");
+      const replacedInput    = $html.find("#replaced-soldiers");
+      const imageElement     = $html.find("#creature-image");
+      const listItems        = $html.find(".list-item");
+      const searchInput      = $html.find("#search-input");
+      const folderSelect     = $html.find("#folder-filter");
+      const addButton        = $html.find("#add-to-encounter");
+      const tokensLayer      = $html.find("#preview-tokens-layer");
       const previewContainer = $html.find("#conflict-preview");
 
       let dragState = null;
@@ -602,7 +600,7 @@ async function openConflictBuilderDialog() {
           const $img = $(`<img class="preview-token" src="${lfEsc(texSrc)}">`);
 
           $img.css({ left: `${left}px`, top: `${top}px` });
-          $img.data("actorId", id); // <--- IMPORTANT: link preview to compendium actor
+          $img.data("actorId", id);
 
           tokensLayer.append($img);
         }
