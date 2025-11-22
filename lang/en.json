@@ -89,8 +89,9 @@
   },
 
   "DefaultRollTable": "Lookfar Defaults",
-  "DefaultCompendium": "World Actors",
-  "DefaultScene": "Current Active Scene"
+
+  "NoActorCompendiums": "No Actor compendiums found",
+  "NoScenes": "No scenes found"
 },
 
 
@@ -465,6 +466,7 @@
 
   }
 }
+
 
 
 
