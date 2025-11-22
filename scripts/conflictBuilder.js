@@ -315,7 +315,7 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // *** IMPORTANT: ACTIVATE the battle scene, like your other macros ***
+          // Activate the battle scene
           try {
             if (!previewScene.active) {
               await previewScene.update({ active: true });
@@ -339,9 +339,14 @@ async function openConflictBuilderDialog() {
 
           const sceneWidth  = dims.sceneWidth;
           const sceneHeight = dims.sceneHeight;
+          const gridSize    = dims.size ?? 100; // rough token footprint in pixels
 
           const previewEl   = $preview[0];
-          const previewRect = previewEl.getBoundingClientRect();
+          const previewRect = previewEl?.getBoundingClientRect();
+          if (!previewRect || !previewRect.width || !previewRect.height) {
+            ui.notifications.error("Preview area size is invalid.");
+            return;
+          }
 
           const tokenData  = [];
           const actorCache = new Map();
@@ -365,15 +370,28 @@ async function openConflictBuilderDialog() {
             }
 
             const tokRect = el.getBoundingClientRect();
-            const centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
-            const centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
 
-            const u = centerX / previewRect.width;
-            const v = centerY / previewRect.height;
+            // Center of the preview token, relative to the preview box
+            let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
+            let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
 
-            const rawX = u * sceneWidth;
-            const rawY = v * sceneHeight;
+            // Normalize to [0,1] and clamp to stay inside the preview area
+            let u = centerX / previewRect.width;
+            let v = centerY / previewRect.height;
 
+            if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
+
+            u = Math.min(0.999, Math.max(0, u));
+            v = Math.min(0.999, Math.max(0, v));
+
+            // Map to scene pixels, leaving a one-grid margin so tokens are not off-scene
+            const usableWidth  = Math.max(gridSize, sceneWidth  - gridSize);
+            const usableHeight = Math.max(gridSize, sceneHeight - gridSize);
+
+            let rawX = u * usableWidth;
+            let rawY = v * usableHeight;
+
+            // Snap to grid using scene's grid
             const snapped = canvas.grid.getSnappedPosition(rawX, rawY, 1);
 
             const proto = actor.prototypeToken.toObject();
@@ -383,8 +401,9 @@ async function openConflictBuilderDialog() {
               proto.mirrorX = !proto.mirrorX;
             }
 
-            proto.x = snapped.x;
-            proto.y = snapped.y;
+            // Extra clamp just in case
+            proto.x = Math.min(sceneWidth  - gridSize, Math.max(0, snapped.x));
+            proto.y = Math.min(sceneHeight - gridSize, Math.max(0, snapped.y));
 
             tokenData.push({ proto, actor });
           }
