@@ -56,6 +56,32 @@ export const LookfarSettings = {
       default: false,
       type: Boolean
     });
+
+    // -----------------------------------------------------------------------
+    // Conflict Builder: Monster Compendium (Actor packs only)
+    // -----------------------------------------------------------------------
+    game.settings.register("lookfar", "monsterCompendium", {
+      name: game.i18n.localize("LOOKFAR.Settings.MonsterCompendium.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.MonsterCompendium.Hint"),
+      scope: "world",
+      config: true,
+      type: String,
+      choices: LookfarSettings.getActorCompendiumChoices(),
+      default: "default"
+    });
+
+    // -----------------------------------------------------------------------
+    // Conflict Builder: Battle Scene Name (Scene selector)
+    // -----------------------------------------------------------------------
+    game.settings.register("lookfar", "battleSceneName", {
+      name: game.i18n.localize("LOOKFAR.Settings.BattleSceneName.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.BattleSceneName.Hint"),
+      scope: "world",
+      config: true,
+      type: String,
+      choices: LookfarSettings.getSceneChoices(),
+      default: "default"
+    });
   },
 
   registerDynamicRollTableSettings() {
@@ -113,6 +139,7 @@ export const LookfarSettings = {
     });
   },
 
+  // RollTable choices (existing)
   getRollTableChoices() {
     const choices = { default: game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") };
     if (game.tables) {
@@ -123,11 +150,43 @@ export const LookfarSettings = {
     return choices;
   },
 
+  // NEW: Actor Compendium choices for Conflict Builder
+  getActorCompendiumChoices() {
+    const choices = {
+      default: game.i18n.localize("LOOKFAR.Settings.DefaultCompendium")
+    };
+
+    if (game.packs) {
+      for (const pack of game.packs) {
+        // Only include Actor packs
+        if (pack.documentName === "Actor") {
+          choices[pack.collection] = pack.title || pack.collection;
+        }
+      }
+    }
+
+    return choices;
+  },
+
+  // NEW: Scene choices for Conflict Builder
+  getSceneChoices() {
+    const choices = {
+      default: game.i18n.localize("LOOKFAR.Settings.DefaultScene")
+    };
+
+    if (game.scenes) {
+      game.scenes.forEach(scene => {
+        choices[scene.id] = scene.name;
+      });
+    }
+
+    return choices;
+  },
+
   // Update the registry (game.settings.settings) so future renders pick up new tables
   updateRollTableChoices() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
     const reg = game.settings.settings;
-    // Guard if registry not ready yet
     if (!reg) return;
 
     const keys = [
@@ -169,7 +228,3 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
-
-
-
-
