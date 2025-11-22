@@ -78,7 +78,7 @@ async function openConflictBuilderDialog() {
   const currentTerrain = previewScene.tiles?.contents[0]?.texture?.src || "";
 
   // -------------------------------------------------------------------------
-  // Resolve monster compendium
+  // Resolve monster compendium (Actor pack only)
   // -------------------------------------------------------------------------
   const compendiumKey = game.settings.get("lookfar", "monsterCompendium") || "";
   const pack = game.packs?.get(compendiumKey);
@@ -88,8 +88,8 @@ async function openConflictBuilderDialog() {
     return;
   }
 
-  // Use compendium index (name + img + folder) instead of loading full documents
-  const index = await pack.getIndex({ fields: ["img", "folder"] });
+  // Use compendium index (name + img) instead of loading full documents
+  const index = await pack.getIndex({ fields: ["img"] });
   const indexEntries = Array.from(index.values());
 
   if (!indexEntries.length) {
@@ -100,19 +100,18 @@ async function openConflictBuilderDialog() {
   // -------------------------------------------------------------------------
   // Compendium folder support (for filtering)
   // -------------------------------------------------------------------------
-  // Map: folderId -> Set(actorId) from that folder
+  // Build folder -> Set(actorId) map from *compendium* folders, not world folders
   const folderMap = new Map();
-  for (const entry of indexEntries) {
-    const folderId = entry.folder;
-    if (!folderId) continue;
-    if (!folderMap.has(folderId)) folderMap.set(folderId, new Set());
-    folderMap.get(folderId).add(entry._id);
-  }
+  let compFolders = [];
 
-  // Only include folders that actually contain actors in this pack
-  const compFolders = Array.from(folderMap.keys())
-    .map(fid => game.folders.get(fid))
-    .filter(f => !!f);
+  if (pack.folders) {
+    compFolders = Array.from(pack.folders); // Folder docs for this pack only
+    for (const folder of compFolders) {
+      const docs = folder.contents || [];
+      const ids = docs.map(d => d._id);
+      if (ids.length) folderMap.set(folder.id, new Set(ids));
+    }
+  }
 
   const folderOptions =
     `<option value="all">${lfEsc("All Types")}</option>` +
