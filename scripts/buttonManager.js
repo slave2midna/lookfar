@@ -40,11 +40,11 @@ function getLookfarTools() {
       onClick: () => Hooks.call("lookfarShowDungeonMapperDialog")
     });
 
-    // Quick Encounter Button
+    // Conflict Builder Button
     tools.push({
-      name: "Quick Encounter",
+      name: "Conflict Builder",
       icon: "fa-solid fa-dragon",   // You can swap the icon if preferred
-      onClick: () => Hooks.call("lookfarShowQuickEncounterDialog")
+      onClick: () => Hooks.call("lookfarShowConflictBuilderDialog")
     });
   }
 
