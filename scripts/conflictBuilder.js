@@ -145,7 +145,10 @@ async function openConflictBuilderDialog() {
             justify-content: space-between;
             width: 190px;
             height: 297px;
-            gap: 8px;
+            gap: 4px; /* tighter vertical spacing */
+          }
+          #conflictBuilderDialog .form-group {
+            margin-bottom: 2px; /* small buffer between controls */
           }
           #conflictBuilderDialog .scrollable-list {
             width: 100%;
@@ -249,9 +252,9 @@ async function openConflictBuilderDialog() {
 
           <div style="margin-top:4px;">
             <label style="width:35px;">Level:</label>
-            <button id="decrease-level" type="button" style="width:30px;">-</button>
+            <button id="decrease-level" type="button" style="width:22px; padding:0;">-</button>
             <input type="number" id="creature-level" value="5" min="5" max="60" step="5" style="width:40px; text-align:center;">
-            <button id="increase-level" type="button" style="width:30px;">+</button>
+            <button id="increase-level" type="button" style="width:22px; padding:0;">+</button>
           </div>
 
           <div style="margin-top:5px; display:flex; align-items:center;">
