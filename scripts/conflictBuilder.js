@@ -3,7 +3,7 @@
 // - Uses a configured Actor compendium as the bestiary source.
 // - Uses a configured Scene for preview, falling back to the active scene.
 // - Includes stat preview, quantity controls, creature selection UI,
-//   and places tokens on the battle scene based on preview positions.
+//   and places tokens on the configured battle scene based on preview positions.
 
 // ---------------------------------------------------------------------------
 // CONFIG
@@ -28,14 +28,16 @@ async function openConflictBuilderDialog() {
   const { playlistNames } = LOOKFAR_CONFLICT_BUILDER_CONFIG;
 
   // -------------------------------------------------------------------------
-  // Resolve battle scene (settings → active scene)
+  // Resolve battle scene (settings → active scene fallback)
   // -------------------------------------------------------------------------
   const sceneSettingId = game.settings.get("lookfar", "battleSceneName") || "";
   let previewScene = null;
 
   if (sceneSettingId && game.scenes?.get(sceneSettingId)) {
+    // Expecting this to be a Scene ID
     previewScene = game.scenes.get(sceneSettingId);
   } else {
+    // Fallback to current scene if setting not set/invalid
     previewScene = canvas.scene;
   }
 
@@ -74,9 +76,8 @@ async function openConflictBuilderDialog() {
   let compFolders = [];
 
   if (pack.folders) {
-    compFolders = Array.from(pack.folders); // Folder docs for this pack only
+    compFolders = Array.from(pack.folders);
 
-    // Sort folders alphabetically by name
     compFolders.sort((a, b) => a.name.localeCompare(b.name));
 
     for (const folder of compFolders) {
@@ -145,10 +146,10 @@ async function openConflictBuilderDialog() {
             justify-content: space-between;
             width: 190px;
             height: 297px;
-            gap: 4px; /* tighter vertical spacing */
+            gap: 4px;
           }
           #conflictBuilderDialog .form-group {
-            margin-bottom: 2px; /* small buffer between controls */
+            margin-bottom: 2px;
           }
           #conflictBuilderDialog .scrollable-list {
             width: 100%;
@@ -174,7 +175,7 @@ async function openConflictBuilderDialog() {
           #conflictBuilderDialog .actor-attributes {
             font-size: 14px;
             margin-top: 8px;
-            margin-bottom: 10px; /* extra space above the Fight button */
+            margin-bottom: 10px;
             text-align: left;
             width: 190px;
           }
@@ -314,21 +315,21 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // Snapshot sidebar collapsed state so we can restore it
-          const sidebar = ui.sidebar;
-          const wasCollapsed =
-            sidebar?.collapsed ??
-            sidebar?._collapsed ??
-            false;
-
-          // Make sure the battle scene is the active canvas scene
-          if (canvas.scene?.id !== previewScene.id) {
-            await previewScene.activate();
+          // Optionally bring the battle scene into view for the GM
+          // (this does not affect where tokens are created)
+          try {
+            if (canvas.scene?.id !== previewScene.id) {
+              await previewScene.view();
+            }
+          } catch (e) {
+            console.warn("Conflict Builder: unable to view battle scene.", e);
           }
 
-          const targetScene = canvas.scene;
+          // We ALWAYS create tokens on the configured battle scene (previewScene),
+          // not on whatever scene was active when the macro was run.
+          const targetScene = previewScene;
           if (!targetScene) {
-            ui.notifications.error("Could not access the canvas for the battle scene.");
+            ui.notifications.error("Could not access the battle scene.");
             return;
           }
 
@@ -415,11 +416,6 @@ async function openConflictBuilderDialog() {
               "system.resources.hp.value": maxHP,
               "system.resources.mp.value": maxMP
             });
-          }
-
-          // Restore sidebar collapsed state if it was collapsed before
-          if (sidebar && wasCollapsed && !sidebar.collapsed && !sidebar._collapsed) {
-            sidebar.collapse();
           }
 
           ui.notifications.info("Encounter placed on the battle scene.");
@@ -606,14 +602,13 @@ async function openConflictBuilderDialog() {
           const $img = $(`<img class="preview-token" src="${lfEsc(texSrc)}">`);
 
           $img.css({ left: `${left}px`, top: `${top}px` });
-          $img.data("actorId", id);  // <-- link preview to compendium actor
+          $img.data("actorId", id); // <--- IMPORTANT: link preview to compendium actor
 
           tokensLayer.append($img);
         }
       });
 
       // ---------- Preview token interactions ----------
-      // Left-click & drag inside preview bounds
       tokensLayer.on("mousedown", ".preview-token", ev => {
         if (ev.button !== 0) return; // left button only
         ev.preventDefault();
@@ -696,9 +691,6 @@ async function openConflictBuilderDialog() {
 Hooks.once("ready", () => {
   game.lookfar ??= {};
 
-  // Expose function
   game.lookfar.conflictBuilder = openConflictBuilderDialog;
-
-  // Toolbar button hook
   Hooks.on("lookfarShowConflictBuilderDialog", openConflictBuilderDialog);
 });
