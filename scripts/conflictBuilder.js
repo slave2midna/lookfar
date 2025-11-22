@@ -3,7 +3,7 @@
 // - Uses a configured Actor compendium as the bestiary source.
 // - Uses a configured Scene for preview, falling back to the active scene.
 // - Includes stat preview, quantity controls, creature selection UI,
-//   and places tokens on the battle scene based on preview positions.
+//   and places tokens on the configured battle scene based on preview positions.
 
 // ---------------------------------------------------------------------------
 // CONFIG
@@ -28,14 +28,16 @@ async function openConflictBuilderDialog() {
   const { playlistNames } = LOOKFAR_CONFLICT_BUILDER_CONFIG;
 
   // -------------------------------------------------------------------------
-  // Resolve battle scene (settings → active scene)
+  // Resolve battle scene (settings → active scene fallback)
   // -------------------------------------------------------------------------
   const sceneSettingId = game.settings.get("lookfar", "battleSceneName") || "";
   let previewScene = null;
 
   if (sceneSettingId && game.scenes?.get(sceneSettingId)) {
+    // Expecting this to be a Scene ID
     previewScene = game.scenes.get(sceneSettingId);
   } else {
+    // Fallback to current scene if setting not set/invalid
     previewScene = canvas.scene;
   }
 
@@ -74,9 +76,8 @@ async function openConflictBuilderDialog() {
   let compFolders = [];
 
   if (pack.folders) {
-    compFolders = Array.from(pack.folders); // Folder docs for this pack only
+    compFolders = Array.from(pack.folders);
 
-    // Sort folders alphabetically by name
     compFolders.sort((a, b) => a.name.localeCompare(b.name));
 
     for (const folder of compFolders) {
@@ -145,10 +146,10 @@ async function openConflictBuilderDialog() {
             justify-content: space-between;
             width: 190px;
             height: 297px;
-            gap: 4px; /* tighter vertical spacing */
+            gap: 4px;
           }
           #conflictBuilderDialog .form-group {
-            margin-bottom: 2px; /* small buffer between controls */
+            margin-bottom: 2px;
           }
           #conflictBuilderDialog .scrollable-list {
             width: 100%;
@@ -174,7 +175,7 @@ async function openConflictBuilderDialog() {
           #conflictBuilderDialog .actor-attributes {
             font-size: 14px;
             margin-top: 8px;
-            margin-bottom: 10px; /* extra space above the Fight button */
+            margin-bottom: 10px;
             text-align: left;
             width: 190px;
           }
@@ -314,23 +315,62 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // Snapshot sidebar collapsed state so we can restore it
-          const sidebar = ui.sidebar;
-          const wasCollapsed =
-            sidebar?.collapsed ??
-            sidebar?._collapsed ??
-            false;
-
-          // Make sure the battle scene is the active canvas scene
-          if (canvas.scene?.id !== previewScene.id) {
-            await previewScene.activate();
-          }
-
-          const targetScene = canvas.scene;
-          if (!targetScene) {
-            ui.notifications.error("Could not access the canvas for the battle scene.");
+          const previewEl   = $preview[0];
+          const previewRect = previewEl?.getBoundingClientRect();
+          if (!previewRect || !previewRect.width || !previewRect.height) {
+            ui.notifications.error("Preview area size is invalid.");
             return;
           }
+
+          // --- STEP 1: capture normalized positions before we touch scenes ---
+          const previewTokens = [];
+          for (const el of $tokens.toArray()) {
+            const $tok    = $(el);
+            const actorId = $tok.data("actorId");
+            if (!actorId) continue;
+
+            const tokRect = el.getBoundingClientRect();
+
+            let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
+            let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
+
+            let u = centerX / previewRect.width;
+            let v = centerY / previewRect.height;
+
+            if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
+            u = Math.min(0.999, Math.max(0, u));
+            v = Math.min(0.999, Math.max(0, v));
+
+            previewTokens.push({
+              actorId,
+              u,
+              v,
+              flipped: $tok.data("lfFlipped") === true
+            });
+          }
+
+          if (!previewTokens.length) {
+            ui.notifications.error("No valid preview tokens to place.");
+            return;
+          }
+
+          // --- STEP 2: activate the battle scene & give the canvas a beat ---
+          const targetScene = previewScene;
+          if (!targetScene) {
+            ui.notifications.error("Could not access the battle scene.");
+            return;
+          }
+
+          try {
+            if (!targetScene.active) {
+              await targetScene.update({ active: true });
+            }
+          } catch (e) {
+            console.warn("Conflict Builder: unable to activate battle scene.", e);
+          }
+
+          // small delay to let the new canvas settle
+          await new Promise(r => setTimeout(r, 250));
 
           const dims = canvas.dimensions;
           if (!dims) {
@@ -341,9 +381,6 @@ async function openConflictBuilderDialog() {
           const sceneWidth  = dims.sceneWidth;
           const sceneHeight = dims.sceneHeight;
 
-          const previewEl   = $preview[0];
-          const previewRect = previewEl.getBoundingClientRect();
-
           const tokenData  = [];
           const actorCache = new Map();
 
@@ -353,10 +390,9 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
             : 1;
 
-          for (const el of $tokens.toArray()) {
-            const $tok = $(el);
-            const actorId = $tok.data("actorId");
-            if (!actorId) continue;
+          // --- STEP 3: map u,v → scene pixels (no grid snapping) -------------
+          for (const pt of previewTokens) {
+            const { actorId, u, v, flipped } = pt;
 
             let actor = actorCache.get(actorId);
             if (!actor) {
@@ -365,27 +401,26 @@ async function openConflictBuilderDialog() {
               actorCache.set(actorId, actor);
             }
 
-            const tokRect = el.getBoundingClientRect();
-            const centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
-            const centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
-
-            const u = centerX / previewRect.width;
-            const v = centerY / previewRect.height;
-
-            const rawX = u * sceneWidth;
-            const rawY = v * sceneHeight;
-
-            const snapped = canvas.grid.getSnappedPosition(rawX, rawY, 1);
-
             const proto = actor.prototypeToken.toObject();
 
-            const flipped = $tok.data("lfFlipped") === true;
+            const tokenGridW = proto.width  ?? 1;
+            const tokenGridH = proto.height ?? 1;
+            const tokenPxW   = tokenGridW * dims.size;
+            const tokenPxH   = tokenGridH * dims.size;
+
+            const maxX = Math.max(0, sceneWidth  - tokenPxW);
+            const maxY = Math.max(0, sceneHeight - tokenPxH);
+
+            let rawX = u * maxX;
+            let rawY = v * maxY;
+
+            // no snapping: use raw positions, just clamp
+            proto.x = Math.min(maxX, Math.max(0, rawX));
+            proto.y = Math.min(maxY, Math.max(0, rawY));
+
             if (flipped) {
               proto.mirrorX = !proto.mirrorX;
             }
-
-            proto.x = snapped.x;
-            proto.y = snapped.y;
 
             tokenData.push({ proto, actor });
           }
@@ -398,6 +433,7 @@ async function openConflictBuilderDialog() {
           const toCreate = tokenData.map(t => t.proto);
           const created  = await targetScene.createEmbeddedDocuments("Token", toCreate);
 
+          // --- STEP 4: apply stats (level/rank + HP/MP) ----------------------
           for (const tokenDoc of created) {
             const actor = tokenDoc.actor;
             if (!actor) continue;
@@ -417,9 +453,28 @@ async function openConflictBuilderDialog() {
             });
           }
 
-          // Restore sidebar collapsed state if it was collapsed before
-          if (sidebar && wasCollapsed && !sidebar.collapsed && !sidebar._collapsed) {
-            sidebar.collapse();
+          // --- STEP 5: fade-in animation (alpha 0 → 1 over ~2s) --------------
+          try {
+            const createdIds = new Set(created.map(d => d.id));
+            const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
+
+            // start invisible
+            for (const t of placeables) {
+              if (!t.destroyed) t.alpha = 0;
+            }
+
+            const duration = 2000; // ms
+            const steps    = 30;
+            for (let i = 1; i <= steps; i++) {
+              setTimeout(() => {
+                const a = i / steps;
+                for (const t of placeables) {
+                  if (!t.destroyed) t.alpha = a;
+                }
+              }, (duration / steps) * i);
+            }
+          } catch (e) {
+            console.warn("Conflict Builder: fade-in animation failed.", e);
           }
 
           ui.notifications.info("Encounter placed on the battle scene.");
@@ -435,15 +490,15 @@ async function openConflictBuilderDialog() {
     render: html => {
       const $html = html instanceof HTMLElement ? $(html) : html;
 
-      const levelInput      = $html.find("#creature-level");
-      const rankSelect      = $html.find("#creature-rank");
-      const replacedInput   = $html.find("#replaced-soldiers");
-      const imageElement    = $html.find("#creature-image");
-      const listItems       = $html.find(".list-item");
-      const searchInput     = $html.find("#search-input");
-      const folderSelect    = $html.find("#folder-filter");
-      const addButton       = $html.find("#add-to-encounter");
-      const tokensLayer     = $html.find("#preview-tokens-layer");
+      const levelInput       = $html.find("#creature-level");
+      const rankSelect       = $html.find("#creature-rank");
+      const replacedInput    = $html.find("#replaced-soldiers");
+      const imageElement     = $html.find("#creature-image");
+      const listItems        = $html.find(".list-item");
+      const searchInput      = $html.find("#search-input");
+      const folderSelect     = $html.find("#folder-filter");
+      const addButton        = $html.find("#add-to-encounter");
+      const tokensLayer      = $html.find("#preview-tokens-layer");
       const previewContainer = $html.find("#conflict-preview");
 
       let dragState = null;
@@ -606,14 +661,13 @@ async function openConflictBuilderDialog() {
           const $img = $(`<img class="preview-token" src="${lfEsc(texSrc)}">`);
 
           $img.css({ left: `${left}px`, top: `${top}px` });
-          $img.data("actorId", id);  // <-- link preview to compendium actor
+          $img.data("actorId", id);
 
           tokensLayer.append($img);
         }
       });
 
       // ---------- Preview token interactions ----------
-      // Left-click & drag inside preview bounds
       tokensLayer.on("mousedown", ".preview-token", ev => {
         if (ev.button !== 0) return; // left button only
         ev.preventDefault();
@@ -696,9 +750,6 @@ async function openConflictBuilderDialog() {
 Hooks.once("ready", () => {
   game.lookfar ??= {};
 
-  // Expose function
   game.lookfar.conflictBuilder = openConflictBuilderDialog;
-
-  // Toolbar button hook
   Hooks.on("lookfarShowConflictBuilderDialog", openConflictBuilderDialog);
 });
