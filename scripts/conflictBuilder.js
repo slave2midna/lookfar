@@ -1,8 +1,8 @@
 // Lookfar GM: Conflict Builder (Foundry v13+)
-// - Provides a tool to rapidly assemble and place enemy groups onto a scene.
+// - Provides a tool to rapidly assemble and inspect enemy groups for scenes.
 // - Uses a configured Actor compendium as the bestiary source.
 // - Uses a configured Scene for preview, falling back to the active scene.
-// - Includes stat preview, quantity controls, and click-to-place on the active canvas.
+// - Includes stat preview, quantity controls, and creature selection UI.
 
 // ---------------------------------------------------------------------------
 // CONFIG
@@ -19,37 +19,6 @@ const lfEsc = (s) => {
     return String(s);
   }
 };
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-// Click-to-place helper
-async function lookfarPickCanvasPosition() {
-  if (!canvas?.scene) {
-    ui.notifications.error("No active scene available.");
-    throw new Error("No active scene");
-  }
-
-  return new Promise(resolve => {
-    ui.notifications.info("Click on the scene to place the group.");
-
-    const stage = canvas.app.stage;
-    const originalMode = stage.eventMode ?? "auto";
-    stage.eventMode = "static";
-
-    const handler = event => {
-      stage.off("pointerdown", handler);
-      stage.eventMode = originalMode;
-
-      const pos = event.getLocalPosition(canvas.tokens);
-      const snapped = canvas.grid.getSnappedPosition(pos.x, pos.y, 1);
-      resolve({ x: snapped.x, y: snapped.y });
-    };
-
-    stage.on("pointerdown", handler);
-  });
-}
 
 // ---------------------------------------------------------------------------
 // MAIN FUNCTION — Conflict Builder Dialog
@@ -182,17 +151,27 @@ async function openConflictBuilderDialog() {
             width: 100%;
             height: 297px;
             overflow-y: auto;
-            padding: 4px;
+            padding: 2px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
           }
           #conflictBuilderDialog .list-item {
-            padding: 4px;
+            padding: 2px 4px;
             cursor: pointer;
-            border-radius: 4px;
-            margin-bottom: 4px;
+            border-radius: 3px;
+            margin-bottom: 2px;
+          }
+          #conflictBuilderDialog .list-item:hover {
+            background: #e0e0e0;
+          }
+          #conflictBuilderDialog .list-item.selected {
+            background: #3b82f6;
+            color: #ffffff;
           }
           #conflictBuilderDialog .actor-attributes {
             font-size: 14px;
             margin-top: 8px;
+            margin-bottom: 10px; /* extra space above the Fight button */
             text-align: left;
             width: 190px;
           }
@@ -298,73 +277,16 @@ async function openConflictBuilderDialog() {
       summon: {
         label: "Fight",
         callback: async (html) => {
+          // For now, we only validate that something is selected.
+          // All original summoning / placement logic has been removed.
           const $html = html instanceof HTMLElement ? $(html) : html;
-
           const selected = $html.find(".list-item.selected");
-          const id = selected.data("id");
-          if (!id) {
+          if (!selected.length) {
             ui.notifications.error("No creature selected.");
-            return;
           }
-
-          // Lazily load the chosen actor document
-          const originalActor = await pack.getDocument(id);
-          if (!originalActor) {
-            ui.notifications.error("Actor not found in compendium.");
-            return;
-          }
-
-          const quantity = parseInt($html.find("#creature-quantity").val(), 10);
-          const level = parseInt($html.find("#creature-level").val(), 10);
-          const rank = $html.find("#creature-rank").val();
-          const replacedSoldiers = rank === "champion"
-            ? Math.max(1, parseInt($html.find("#replaced-soldiers").val() || 1, 10))
-            : 1;
-
-          if (!canvas?.scene) {
-            ui.notifications.error("No active scene available to place tokens.");
-            return;
-          }
-
-          const basePos = await lookfarPickCanvasPosition();
-          const tokenSize = canvas.grid.size;
-
-          const prototype = originalActor.prototypeToken.toObject();
-          const tokensToCreate = [];
-
-          for (let i = 0; i < quantity; i++) {
-            const dx = (i % 5) * tokenSize;
-            const dy = Math.floor(i / 5) * tokenSize;
-
-            const td = foundry.utils.duplicate(prototype);
-            td.x = basePos.x + dx;
-            td.y = basePos.y + dy;
-            tokensToCreate.push(td);
-          }
-
-          const created = await canvas.scene.createEmbeddedDocuments("Token", tokensToCreate);
-
-          for (const token of created) {
-            const actor = token.actor;
-            if (!actor) continue;
-
-            await actor.update({
-              "system.level.value": level,
-              "system.rank.value": rank,
-              "system.rank.replacedSoldiers": replacedSoldiers
-            });
-
-            const maxHP = actor.system.resources.hp.max;
-            const maxMP = actor.system.resources.mp.max;
-
-            await actor.update({
-              "system.resources.hp.value": maxHP,
-              "system.resources.mp.value": maxMP
-            });
-          }
+          // Future wiring for encounter-building / combat start can go here.
         }
-      },
-      cancel: { label: "Cancel" }
+      }
     },
 
     default: "summon",
