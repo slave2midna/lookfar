@@ -315,21 +315,62 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // Activate the battle scene
-          try {
-            if (!previewScene.active) {
-              await previewScene.update({ active: true });
-            }
-          } catch (e) {
-            console.warn("Conflict Builder: unable to activate battle scene.", e);
+          const previewEl   = $preview[0];
+          const previewRect = previewEl?.getBoundingClientRect();
+          if (!previewRect || !previewRect.width || !previewRect.height) {
+            ui.notifications.error("Preview area size is invalid.");
+            return;
           }
 
-          // Always create tokens on the configured battle scene
+          // --- STEP 1: capture normalized positions before we touch scenes ---
+          const previewTokens = [];
+          for (const el of $tokens.toArray()) {
+            const $tok    = $(el);
+            const actorId = $tok.data("actorId");
+            if (!actorId) continue;
+
+            const tokRect = el.getBoundingClientRect();
+
+            let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
+            let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
+
+            let u = centerX / previewRect.width;
+            let v = centerY / previewRect.height;
+
+            if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
+            u = Math.min(0.999, Math.max(0, u));
+            v = Math.min(0.999, Math.max(0, v));
+
+            previewTokens.push({
+              actorId,
+              u,
+              v,
+              flipped: $tok.data("lfFlipped") === true
+            });
+          }
+
+          if (!previewTokens.length) {
+            ui.notifications.error("No valid preview tokens to place.");
+            return;
+          }
+
+          // --- STEP 2: activate the battle scene & give the canvas a beat ---
           const targetScene = previewScene;
           if (!targetScene) {
             ui.notifications.error("Could not access the battle scene.");
             return;
           }
+
+          try {
+            if (!targetScene.active) {
+              await targetScene.update({ active: true });
+            }
+          } catch (e) {
+            console.warn("Conflict Builder: unable to activate battle scene.", e);
+          }
+
+          // small delay to let the new canvas settle
+          await new Promise(r => setTimeout(r, 250));
 
           const dims = canvas.dimensions;
           if (!dims) {
@@ -339,14 +380,6 @@ async function openConflictBuilderDialog() {
 
           const sceneWidth  = dims.sceneWidth;
           const sceneHeight = dims.sceneHeight;
-          const gridSize    = dims.size ?? 100; // rough token footprint in pixels
-
-          const previewEl   = $preview[0];
-          const previewRect = previewEl?.getBoundingClientRect();
-          if (!previewRect || !previewRect.width || !previewRect.height) {
-            ui.notifications.error("Preview area size is invalid.");
-            return;
-          }
 
           const tokenData  = [];
           const actorCache = new Map();
@@ -357,10 +390,9 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
             : 1;
 
-          for (const el of $tokens.toArray()) {
-            const $tok = $(el);
-            const actorId = $tok.data("actorId");
-            if (!actorId) continue;
+          // --- STEP 3: map u,v → scene pixels (no grid snapping) -------------
+          for (const pt of previewTokens) {
+            const { actorId, u, v, flipped } = pt;
 
             let actor = actorCache.get(actorId);
             if (!actor) {
@@ -369,41 +401,26 @@ async function openConflictBuilderDialog() {
               actorCache.set(actorId, actor);
             }
 
-            const tokRect = el.getBoundingClientRect();
-
-            // Center of the preview token, relative to the preview box
-            let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
-            let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
-
-            // Normalize to [0,1] and clamp to stay inside the preview area
-            let u = centerX / previewRect.width;
-            let v = centerY / previewRect.height;
-
-            if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
-
-            u = Math.min(0.999, Math.max(0, u));
-            v = Math.min(0.999, Math.max(0, v));
-
-            // Map to scene pixels, leaving a one-grid margin so tokens are not off-scene
-            const usableWidth  = Math.max(gridSize, sceneWidth  - gridSize);
-            const usableHeight = Math.max(gridSize, sceneHeight - gridSize);
-
-            let rawX = u * usableWidth;
-            let rawY = v * usableHeight;
-
-            // Snap to grid using scene's grid
-            const snapped = canvas.grid.getSnappedPosition(rawX, rawY, 1);
-
             const proto = actor.prototypeToken.toObject();
 
-            const flipped = $tok.data("lfFlipped") === true;
+            const tokenGridW = proto.width  ?? 1;
+            const tokenGridH = proto.height ?? 1;
+            const tokenPxW   = tokenGridW * dims.size;
+            const tokenPxH   = tokenGridH * dims.size;
+
+            const maxX = Math.max(0, sceneWidth  - tokenPxW);
+            const maxY = Math.max(0, sceneHeight - tokenPxH);
+
+            let rawX = u * maxX;
+            let rawY = v * maxY;
+
+            // no snapping: use raw positions, just clamp
+            proto.x = Math.min(maxX, Math.max(0, rawX));
+            proto.y = Math.min(maxY, Math.max(0, rawY));
+
             if (flipped) {
               proto.mirrorX = !proto.mirrorX;
             }
-
-            // Extra clamp just in case
-            proto.x = Math.min(sceneWidth  - gridSize, Math.max(0, snapped.x));
-            proto.y = Math.min(sceneHeight - gridSize, Math.max(0, snapped.y));
 
             tokenData.push({ proto, actor });
           }
@@ -416,6 +433,7 @@ async function openConflictBuilderDialog() {
           const toCreate = tokenData.map(t => t.proto);
           const created  = await targetScene.createEmbeddedDocuments("Token", toCreate);
 
+          // --- STEP 4: apply stats (level/rank + HP/MP) ----------------------
           for (const tokenDoc of created) {
             const actor = tokenDoc.actor;
             if (!actor) continue;
@@ -433,6 +451,30 @@ async function openConflictBuilderDialog() {
               "system.resources.hp.value": maxHP,
               "system.resources.mp.value": maxMP
             });
+          }
+
+          // --- STEP 5: fade-in animation (alpha 0 → 1 over ~2s) --------------
+          try {
+            const createdIds = new Set(created.map(d => d.id));
+            const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
+
+            // start invisible
+            for (const t of placeables) {
+              if (!t.destroyed) t.alpha = 0;
+            }
+
+            const duration = 2000; // ms
+            const steps    = 30;
+            for (let i = 1; i <= steps; i++) {
+              setTimeout(() => {
+                const a = i / steps;
+                for (const t of placeables) {
+                  if (!t.destroyed) t.alpha = a;
+                }
+              }, (duration / steps) * i);
+            }
+          } catch (e) {
+            console.warn("Conflict Builder: fade-in animation failed.", e);
           }
 
           ui.notifications.info("Encounter placed on the battle scene.");
