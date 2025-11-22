@@ -1,27 +1,19 @@
 // Lookfar GM: Conflict Builder (Foundry v13+)
 // - Provides a tool to rapidly assemble and place enemy groups onto a scene.
-// - Includes scene preview, bestiary browser, stat preview, quantity controls,
-//   and click-to-place functionality on the active canvas.
+// - Uses a configured Actor compendium as the bestiary source.
+// - Uses a configured Scene for preview, falling back to the active scene.
+// - Includes stat preview, quantity controls, and click-to-place on the active canvas.
 
 // ---------------------------------------------------------------------------
 // CONFIG
 // ---------------------------------------------------------------------------
 const LOOKFAR_CONFLICT_BUILDER_CONFIG = {
-  folderName: "Bestiary", // Root folder for summonable actors
   playlistNames: ["Normal Battle", "Decisive Battle", "Final Battle"] // Optional music dropdown
 };
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-// Recursive folder walker
-function lookfarGetAllActorsInFolder(folder) {
-  const actors = game.actors.filter(a => a.folder?.id === folder.id);
-  const subfolders = game.folders.filter(f => f.type === "Actor" && f.folder?.id === folder.id);
-  for (const sf of subfolders) actors.push(...lookfarGetAllActorsInFolder(sf));
-  return actors;
-}
 
 // Click-to-place helper
 async function lookfarPickCanvasPosition() {
@@ -54,38 +46,52 @@ async function lookfarPickCanvasPosition() {
 // MAIN FUNCTION — Conflict Builder Dialog
 // ---------------------------------------------------------------------------
 async function openConflictBuilderDialog() {
-  const { folderName, playlistNames } = LOOKFAR_CONFLICT_BUILDER_CONFIG;
+  const { playlistNames } = LOOKFAR_CONFLICT_BUILDER_CONFIG;
 
-  // Scene preview
-  const scene = canvas.scene;
-  if (!scene) return ui.notifications.error("No active scene.");
+  // -------------------------------------------------------------------------
+  // Resolve battle scene (settings → active scene)
+  // -------------------------------------------------------------------------
+  const sceneSettingId = game.settings.get("lookfar", "battleSceneName") || "";
+  let previewScene = null;
 
-  const currentBackground = scene.background?.src || "";
-  const currentTerrain = scene.tiles?.contents[0]?.texture?.src || "";
+  if (sceneSettingId && game.scenes?.get(sceneSettingId)) {
+    previewScene = game.scenes.get(sceneSettingId);
+  } else {
+    previewScene = canvas.scene;
+  }
 
-  // Playlist dropdown options
-  const playlistOptions =
-    `<option value="default">Default</option>` +
-    game.playlists
-      .filter(pl => playlistNames.includes(pl.name))
-      .map(pl => `<option value="${pl.id}">${pl.name}</option>`)
-      .join("");
+  if (!previewScene) {
+    ui.notifications.error("No valid battle scene or active scene is available.");
+    return;
+  }
 
-  // Bestiary lookup
-  const rootFolder = game.folders.find(f => f.name === folderName && f.type === "Actor");
-  if (!rootFolder) return ui.notifications.error(`Folder "${folderName}" not found.`);
+  const currentBackground = previewScene.background?.src || "";
+  const currentTerrain = previewScene.tiles?.contents[0]?.texture?.src || "";
 
-  const actorsInFolder = lookfarGetAllActorsInFolder(rootFolder);
-  if (!actorsInFolder.length)
-    return ui.notifications.error(`No actors found in "${folderName}" or its subfolders.`);
+  // -------------------------------------------------------------------------
+  // Resolve monster compendium
+  // -------------------------------------------------------------------------
+  const compendiumKey = game.settings.get("lookfar", "monsterCompendium") || "";
+  const pack = game.packs?.get(compendiumKey);
 
-  // Actor data for list
-  const actorData = actorsInFolder
+  if (!pack || pack.documentName !== "Actor") {
+    ui.notifications.error("Selected Monster Compendium is invalid or missing.");
+    return;
+  }
+
+  const actorsInPack = await pack.getDocuments();
+  if (!actorsInPack.length) {
+    ui.notifications.error(`No actors found in compendium "${pack.title || pack.collection}".`);
+    return;
+  }
+
+  // Actor data for list (keep docs so we don't need game.actors)
+  const actorData = actorsInPack
     .map(actor => ({
       name: actor.name,
-      id: actor.id,
+      uuid: actor.uuid,
       img: actor.img || "icons/svg/mystery-man.svg",
-      folder: actor.folder?.id || "root"
+      doc: actor
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -94,6 +100,16 @@ async function openConflictBuilderDialog() {
     height: "600px",
     width: "400px"
   };
+
+  // -------------------------------------------------------------------------
+  // Playlist dropdown options
+  // -------------------------------------------------------------------------
+  const playlistOptions =
+    `<option value="default">Default</option>` +
+    game.playlists
+      .filter(pl => playlistNames.includes(pl.name))
+      .map(pl => `<option value="${pl.id}">${pl.name}</option>`)
+      .join("");
 
   // -------------------------------------------------------------------------
   // Dialog Content
@@ -173,22 +189,12 @@ async function openConflictBuilderDialog() {
 
           <div class="form-fields">
             <div class="form-group">
-              <label>Select Type:</label>
-              <select id="folder-filter" style="width:100%;">
-                <option value="all">All</option>
-                ${game.folders
-                  .filter(f => f.type === "Actor" && f.folder?.id === rootFolder.id)
-                  .map(f => `<option value="${f.id}">${f.name}</option>`).join("")}
-              </select>
-            </div>
-
-            <div class="form-group">
               <input type="text" id="search-input" placeholder="Search..." style="width:100%; padding:4px;">
             </div>
 
             <div class="scrollable-list">
               ${actorData.map(a => `
-                <div class="list-item" data-id="${a.id}" data-folder="${a.folder}">
+                <div class="list-item" data-uuid="${a.uuid}">
                   ${a.name}
                 </div>`).join("")}
             </div>
@@ -243,7 +249,12 @@ async function openConflictBuilderDialog() {
           const $html = html instanceof HTMLElement ? $(html) : html;
 
           const selected = $html.find(".list-item.selected");
-          const actorId = selected.data("id");
+          const uuid = selected.data("uuid");
+          const entry = actorData.find(a => a.uuid === uuid);
+          const originalActor = entry?.doc;
+
+          if (!originalActor) return ui.notifications.error("Actor not found.");
+
           const quantity = parseInt($html.find("#creature-quantity").val(), 10);
           const level = parseInt($html.find("#creature-level").val(), 10);
           const rank = $html.find("#creature-rank").val();
@@ -251,8 +262,10 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val() || 1, 10))
             : 1;
 
-          const originalActor = game.actors.get(actorId);
-          if (!originalActor) return ui.notifications.error("Actor not found.");
+          if (!canvas?.scene) {
+            ui.notifications.error("No active scene available to place tokens.");
+            return;
+          }
 
           const basePos = await lookfarPickCanvasPosition();
           const tokenSize = canvas.grid.size;
@@ -310,7 +323,9 @@ async function openConflictBuilderDialog() {
       const listItems = $html.find(".list-item");
       const searchInput = $html.find("#search-input");
 
-      listItems.first().addClass("selected");
+      if (listItems.length) {
+        listItems.first().addClass("selected");
+      }
 
       function updateStats(actor, level, rank, replacedSoldiers) {
         const { dex, ins, mig, wlp } = actor.system.attributes;
@@ -352,31 +367,32 @@ async function openConflictBuilderDialog() {
         listItems.removeClass("selected");
         $(this).addClass("selected");
 
-        const id = $(this).data("id");
-        const actor = game.actors.get(id);
-        imageElement.attr("src", actor?.img);
+        const uuid = $(this).data("uuid");
+        const entry = actorData.find(a => a.uuid === uuid);
+        const actor = entry?.doc;
 
         if (actor) {
+          imageElement.attr("src", actor.img);
           levelInput.val(actor.system.level.value ?? 5);
-          updateStats(actor, parseInt(levelInput.val(), 10), rankSelect.val(), parseInt(replacedInput.val(), 10));
+          const lvl = parseInt(levelInput.val(), 10);
+          const rank = rankSelect.val();
+          const repl = parseInt(replacedInput.val(), 10) || 1;
+          updateStats(actor, lvl, rank, repl);
         }
       });
 
-      // Filters
+      // Filters (search only)
       function filterList() {
-        const searchTerm = searchInput.val().toLowerCase();
-        const selectedFolder = $html.find("#folder-filter").val();
+        const searchTerm = (searchInput.val() || "").toString().toLowerCase();
 
         listItems.each(function() {
           const item = $(this);
           const matchesSearch = item.text().toLowerCase().includes(searchTerm);
-          const matchesFolder = selectedFolder === "all" || item.data("folder") === selectedFolder;
-          item.toggle(matchesSearch && matchesFolder);
+          item.toggle(matchesSearch);
         });
       }
 
       searchInput.on("input", filterList);
-      $html.find("#folder-filter").on("change", filterList);
 
       // Rank change → show/hide replaced soldiers
       rankSelect.on("change", () => {
