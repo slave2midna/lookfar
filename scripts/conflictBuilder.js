@@ -106,6 +106,10 @@ async function openConflictBuilderDialog() {
 
   if (pack.folders) {
     compFolders = Array.from(pack.folders); // Folder docs for this pack only
+
+    // Sort folders alphabetically by name
+    compFolders.sort((a, b) => a.name.localeCompare(b.name));
+
     for (const folder of compFolders) {
       const docs = folder.contents || [];
       const ids = docs.map(d => d._id);
@@ -222,7 +226,7 @@ async function openConflictBuilderDialog() {
 
           <div class="form-fields">
             <div class="form-group">
-              <label for="folder-filter">Select Type:</label>
+              <label for="folder-filter">Subfolder:</label>
               <select id="folder-filter" style="width:100%;">
                 ${folderOptions}
               </select>
@@ -239,9 +243,17 @@ async function openConflictBuilderDialog() {
                 </div>`).join("")}
             </div>
 
-            <div class="form-group">
-              <label>Quantity:</label>
-              <input type="number" id="creature-quantity" value="1" min="1" max="10" style="width:100%; padding:4px;">
+            <div class="form-group" style="display:flex; align-items:center; gap:4px;">
+              <label style="flex:0 0 auto;">Quantity:</label>
+              <input
+                type="number"
+                id="creature-quantity"
+                value="1"
+                min="1"
+                max="10"
+                style="flex:1; padding:4px;"
+              >
+              <button type="button" id="add-to-encounter" style="flex:0 0 60px;">Add</button>
             </div>
           </div>
         </div>
@@ -284,7 +296,7 @@ async function openConflictBuilderDialog() {
     // -----------------------------------------------------------------------
     buttons: {
       summon: {
-        label: "Place",
+        label: "Fight",
         callback: async (html) => {
           const $html = html instanceof HTMLElement ? $(html) : html;
 
@@ -370,6 +382,7 @@ async function openConflictBuilderDialog() {
       const listItems     = $html.find(".list-item");
       const searchInput   = $html.find("#search-input");
       const folderSelect  = $html.find("#folder-filter");
+      const addButton     = $html.find("#add-to-encounter"); // (not wired yet)
 
       if (listItems.length) {
         listItems.first().addClass("selected");
@@ -496,6 +509,9 @@ async function openConflictBuilderDialog() {
           await updateStatsForId(id, lvl, rankSelect.val(), repl);
         }
       });
+
+      // (Add button is visually in place; wiring can be added later)
+      // addButton.on("click", () => { ... });
 
       // Initial filter pass
       filterList();
