@@ -11,6 +11,15 @@ const LOOKFAR_CONFLICT_BUILDER_CONFIG = {
   playlistNames: ["Normal Battle", "Decisive Battle", "Final Battle"] // Optional music dropdown
 };
 
+// Simple HTML escape helper
+const lfEsc = (s) => {
+  try {
+    return foundry.utils.escapeHTML(String(s));
+  } catch {
+    return String(s);
+  }
+};
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -79,19 +88,40 @@ async function openConflictBuilderDialog() {
     return;
   }
 
-  const actorsInPack = await pack.getDocuments();
-  if (!actorsInPack.length) {
+  // Use compendium index (name + img) instead of loading full documents
+  const index = await pack.getIndex({ fields: ["img"] });
+  if (!index.length) {
     ui.notifications.error(`No actors found in compendium "${pack.title || pack.collection}".`);
     return;
   }
 
-  // Actor data for list (keep docs so we don't need game.actors)
-  const actorData = actorsInPack
-    .map(actor => ({
-      name: actor.name,
-      uuid: actor.uuid,
-      img: actor.img || "icons/svg/mystery-man.svg",
-      doc: actor
+  // -------------------------------------------------------------------------
+  // Compendium folder support (for filtering)
+  // -------------------------------------------------------------------------
+  const compFolders = game.folders.filter(f =>
+    f.inCompendium && f.compendium?.collection === pack.collection
+  );
+
+  // Map: folderId -> Set(actorId) from that folder
+  const folderMap = new Map();
+  for (const folder of compFolders) {
+    const entries = folder.contents || [];
+    const ids = new Set(entries.map(e => e._id));
+    if (ids.size) folderMap.set(folder.id, ids);
+  }
+
+  const folderOptions =
+    `<option value="all">${lfEsc(game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") || "All Types")}</option>` +
+    compFolders.map(f =>
+      `<option value="${folder.id}">${lfEsc(f.name)}</option>`
+    ).join("");
+
+  // Index-level actor data (no full docs yet)
+  const actorIndexData = index
+    .map(e => ({
+      id: e._id,
+      name: e.name,
+      img: e.img || "icons/svg/mystery-man.svg"
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -108,14 +138,14 @@ async function openConflictBuilderDialog() {
     `<option value="default">Default</option>` +
     game.playlists
       .filter(pl => playlistNames.includes(pl.name))
-      .map(pl => `<option value="${pl.id}">${pl.name}</option>`)
+      .map(pl => `<option value="${pl.id}">${lfEsc(pl.name)}</option>`)
       .join("");
 
   // -------------------------------------------------------------------------
   // Dialog Content
   // -------------------------------------------------------------------------
   const dialogData = {
-    title: `Conflict Builder`,
+    title: "Conflict Builder",
     content: `
       <form>
         <style>
@@ -184,18 +214,25 @@ async function openConflictBuilderDialog() {
         <!-- Creature Selection -->
         <div class="dialog-body">
           <div>
-            <img id="creature-image" src="${actorData[0].img}" class="preview-image">
+            <img id="creature-image" src="${actorIndexData[0].img}" class="preview-image">
           </div>
 
           <div class="form-fields">
+            <div class="form-group">
+              <label for="folder-filter">Select Type:</label>
+              <select id="folder-filter" style="width:100%;">
+                ${folderOptions}
+              </select>
+            </div>
+
             <div class="form-group">
               <input type="text" id="search-input" placeholder="Search..." style="width:100%; padding:4px;">
             </div>
 
             <div class="scrollable-list">
-              ${actorData.map(a => `
-                <div class="list-item" data-uuid="${a.uuid}">
-                  ${a.name}
+              ${actorIndexData.map(a => `
+                <div class="list-item" data-id="${a.id}">
+                  ${lfEsc(a.name)}
                 </div>`).join("")}
             </div>
 
@@ -249,11 +286,18 @@ async function openConflictBuilderDialog() {
           const $html = html instanceof HTMLElement ? $(html) : html;
 
           const selected = $html.find(".list-item.selected");
-          const uuid = selected.data("uuid");
-          const entry = actorData.find(a => a.uuid === uuid);
-          const originalActor = entry?.doc;
+          const id = selected.data("id");
+          if (!id) {
+            ui.notifications.error("No creature selected.");
+            return;
+          }
 
-          if (!originalActor) return ui.notifications.error("Actor not found.");
+          // Lazily load the chosen actor document
+          const originalActor = await pack.getDocument(id);
+          if (!originalActor) {
+            ui.notifications.error("Actor not found in compendium.");
+            return;
+          }
 
           const quantity = parseInt($html.find("#creature-quantity").val(), 10);
           const level = parseInt($html.find("#creature-level").val(), 10);
@@ -316,34 +360,39 @@ async function openConflictBuilderDialog() {
     render: html => {
       const $html = html instanceof HTMLElement ? $(html) : html;
 
-      const levelInput = $html.find("#creature-level");
-      const rankSelect = $html.find("#creature-rank");
-      const replacedInput = $html.find("#replaced-soldiers");
-      const imageElement = $html.find("#creature-image");
-      const listItems = $html.find(".list-item");
-      const searchInput = $html.find("#search-input");
+      const levelInput      = $html.find("#creature-level");
+      const rankSelect      = $html.find("#creature-rank");
+      const replacedInput   = $html.find("#replaced-soldiers");
+      const imageElement    = $html.find("#creature-image");
+      const listItems       = $html.find(".list-item");
+      const searchInput     = $html.find("#search-input");
+      const folderSelect    = $html.find("#folder-filter");
 
       if (listItems.length) {
         listItems.first().addClass("selected");
       }
 
-      function updateStats(actor, level, rank, replacedSoldiers) {
+      async function updateStatsForId(id, level, rank, replacedSoldiers) {
+        // Fetch the full actor doc only for the one we care about
+        const actor = await pack.getDocument(id);
+        if (!actor) return;
+
         const { dex, ins, mig, wlp } = actor.system.attributes;
         const initBase = (dex.base + ins.base) / 2;
         const maxHpBase = (level * 2) + (mig.base * 5);
         const maxMpBase = level + (wlp.base * 5);
 
         let init = initBase;
-        let hp = maxHpBase;
-        let mp = maxMpBase;
+        let hp   = maxHpBase;
+        let mp   = maxMpBase;
 
         if (rank === "elite") {
           init += 2;
-          hp *= 2;
+          hp   *= 2;
         } else if (rank === "champion") {
           init += replacedSoldiers;
-          hp *= replacedSoldiers;
-          mp *= 2;
+          hp   *= replacedSoldiers;
+          mp   *= 2;
         }
 
         $html.find("#creature-hp").text(Math.round(hp));
@@ -351,54 +400,102 @@ async function openConflictBuilderDialog() {
         $html.find("#creature-init").text(Math.round(init));
       }
 
-      // Level +/- buttons
-      $html.find("#increase-level").on("click", () => {
-        const v = Math.min(60, parseInt(levelInput.val(), 10) + 5);
-        levelInput.val(v).trigger("change");
-      });
-
-      $html.find("#decrease-level").on("click", () => {
-        const v = Math.max(5, parseInt(levelInput.val(), 10) - 5);
-        levelInput.val(v).trigger("change");
-      });
-
-      // List selection
-      listItems.on("click", function() {
-        listItems.removeClass("selected");
-        $(this).addClass("selected");
-
-        const uuid = $(this).data("uuid");
-        const entry = actorData.find(a => a.uuid === uuid);
-        const actor = entry?.doc;
-
-        if (actor) {
-          imageElement.attr("src", actor.img);
-          levelInput.val(actor.system.level.value ?? 5);
-          const lvl = parseInt(levelInput.val(), 10);
-          const rank = rankSelect.val();
-          const repl = parseInt(replacedInput.val(), 10) || 1;
-          updateStats(actor, lvl, rank, repl);
-        }
-      });
-
-      // Filters (search only)
+      // Combined search + folder filter
       function filterList() {
-        const searchTerm = (searchInput.val() || "").toString().toLowerCase();
+        const searchTerm      = (searchInput.val() || "").toString().toLowerCase();
+        const selectedFolder  = folderSelect.val();
 
         listItems.each(function() {
-          const item = $(this);
-          const matchesSearch = item.text().toLowerCase().includes(searchTerm);
-          item.toggle(matchesSearch);
+          const item  = $(this);
+          const id    = item.data("id");
+          const nameMatch = item.text().toLowerCase().includes(searchTerm);
+
+          let folderMatch = true;
+          if (selectedFolder && selectedFolder !== "all") {
+            const idsSet = folderMap.get(selectedFolder);
+            folderMatch = idsSet ? idsSet.has(id) : false;
+          }
+
+          item.toggle(nameMatch && folderMatch);
         });
       }
 
-      searchInput.on("input", filterList);
+      // Level +/- buttons
+      $html.find("#increase-level").on("click", async () => {
+        const v = Math.min(60, parseInt(levelInput.val(), 10) + 5);
+        levelInput.val(v);
+        const selected = $html.find(".list-item.selected");
+        const id = selected.data("id");
+        if (id) {
+          await updateStatsForId(
+            id,
+            v,
+            rankSelect.val(),
+            parseInt(replacedInput.val(), 10) || 1
+          );
+        }
+      });
 
-      // Rank change → show/hide replaced soldiers
-      rankSelect.on("change", () => {
+      $html.find("#decrease-level").on("click", async () => {
+        const v = Math.max(5, parseInt(levelInput.val(), 10) - 5);
+        levelInput.val(v);
+        const selected = $html.find(".list-item.selected");
+        const id = selected.data("id");
+        if (id) {
+          await updateStatsForId(
+            id,
+            v,
+            rankSelect.val(),
+            parseInt(replacedInput.val(), 10) || 1
+          );
+        }
+      });
+
+      // List selection
+      listItems.on("click", async function() {
+        listItems.removeClass("selected");
+        $(this).addClass("selected");
+
+        const id         = $(this).data("id");
+        const indexEntry = actorIndexData.find(a => a.id === id);
+        if (indexEntry) {
+          imageElement.attr("src", indexEntry.img);
+        }
+
+        const lvl  = parseInt(levelInput.val(), 10) || 5;
+        const rank = rankSelect.val();
+        const repl = parseInt(replacedInput.val(), 10) || 1;
+        await updateStatsForId(id, lvl, rank, repl);
+      });
+
+      // Filters (search + folder)
+      searchInput.on("input", filterList);
+      folderSelect.on("change", () => {
+        filterList();
+        // Optionally, auto-select first visible entry in that folder
+        const visible = $html.find(".list-item:visible").first();
+        if (visible.length) {
+          listItems.removeClass("selected");
+          visible.addClass("selected");
+        }
+      });
+
+      // Rank change → show/hide replaced soldiers and recompute stats
+      rankSelect.on("change", async () => {
         const isChamp = rankSelect.val() === "champion";
         $html.find("#replaced-soldiers-cell").toggle(isChamp);
+
+        const selected = $html.find(".list-item.selected");
+        const id = selected.data("id");
+        if (id) {
+          const lvl  = parseInt(levelInput.val(), 10) || 5;
+          const repl = parseInt(replacedInput.val(), 10) || 1;
+          await updateStatsForId(id, lvl, rankSelect.val(), repl);
+        }
       });
+
+      // Initial filter pass
+      filterList();
     }
   };
 
