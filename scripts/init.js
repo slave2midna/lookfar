@@ -7,6 +7,7 @@ import "./treasureRoll.js";
 import "./itemForge.js";
 import "./dungeonMapper.js";
 import "./buttonManager.js";
+import "./conflictBuilder.js";
 
 Hooks.once("init", async () => {
   console.log("Lookfar GM Assistant: Initializing...");
@@ -24,4 +25,3 @@ Hooks.once("ready", () => {
   // Register dynamic settings that require game ready
   LookfarSettings.registerDynamicRollTableSettings();
 });
-

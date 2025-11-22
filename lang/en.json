@@ -28,15 +28,15 @@
   },
 
   "ItemForgeEditMode": {
-  "Name": "Item Forge Edit Mode",
-  "Hint": "Change how interacting with the Item Forger works for users.",
-  "Choices": {
-    "Public": "Public",
-    "GMOnly": "GM Only",
-    "Locked": "Locked",
-    "Hidden": "Hidden"
-  }
-},
+    "Name": "Item Forge Edit Mode",
+    "Hint": "Change how interacting with the Item Forger works for users.",
+    "Choices": {
+      "Public": "Public",
+      "GMOnly": "GM Only",
+      "Locked": "Locked",
+      "Hidden": "Hidden"
+    }
+  },
 
   "EnableKeywords": {
     "Name": "Enable Keywords",
@@ -78,7 +78,20 @@
     "Hint": "Select the Roll Table to use for generating custom treasure."
   },
 
-  "DefaultRollTable": "Lookfar Defaults"
+  "MonsterCompendium": {
+    "Name": "Monster Compendium",
+    "Hint": "Select the Actor compendium to use as the source for Conflict Builder."
+  },
+
+  "BattleSceneName": {
+    "Name": "Battle Scene",
+    "Hint": "Select the Scene to use for the Conflict Builder preview."
+  },
+
+  "DefaultRollTable": "Lookfar Defaults",
+
+  "NoActorCompendiums": "No Actor compendiums found",
+  "NoScenes": "No scenes found"
 },
 
 
@@ -453,6 +466,8 @@
 
   }
 }
+
+
 
 
 

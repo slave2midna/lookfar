@@ -56,6 +56,38 @@ export const LookfarSettings = {
       default: false,
       type: Boolean
     });
+
+    // -----------------------------------------------------------------------
+    // Conflict Builder: Monster Compendium (Actor packs only)
+    // -----------------------------------------------------------------------
+    const actorCompChoices = LookfarSettings.getActorCompendiumChoices();
+    const actorCompDefault = Object.keys(actorCompChoices)[0] ?? "";
+
+    game.settings.register("lookfar", "monsterCompendium", {
+      name: game.i18n.localize("LOOKFAR.Settings.MonsterCompendium.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.MonsterCompendium.Hint"),
+      scope: "world",
+      config: true,
+      type: String,
+      choices: actorCompChoices,
+      default: actorCompDefault
+    });
+
+    // -----------------------------------------------------------------------
+    // Conflict Builder: Battle Scene Name (Scene selector)
+    // -----------------------------------------------------------------------
+    const sceneChoices = LookfarSettings.getSceneChoices();
+    const sceneDefault = Object.keys(sceneChoices)[0] ?? "";
+
+    game.settings.register("lookfar", "battleSceneName", {
+      name: game.i18n.localize("LOOKFAR.Settings.BattleSceneName.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.BattleSceneName.Hint"),
+      scope: "world",
+      config: true,
+      type: String,
+      choices: sceneChoices,
+      default: sceneDefault
+    });
   },
 
   registerDynamicRollTableSettings() {
@@ -113,6 +145,7 @@ export const LookfarSettings = {
     });
   },
 
+  // RollTable choices (existing)
   getRollTableChoices() {
     const choices = { default: game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") };
     if (game.tables) {
@@ -123,11 +156,48 @@ export const LookfarSettings = {
     return choices;
   },
 
+  // Actor Compendium choices for Conflict Builder
+  getActorCompendiumChoices() {
+    const choices = {};
+
+    if (game.packs) {
+      for (const pack of game.packs) {
+        // Only include Actor packs (any source: system, module, world)
+        if (pack.documentName === "Actor") {
+          choices[pack.collection] = pack.title || pack.collection;
+        }
+      }
+    }
+
+    // If no Actor compendiums exist, show a placeholder entry
+    if (!Object.keys(choices).length) {
+      choices[""] = game.i18n.localize("LOOKFAR.Settings.NoActorCompendiums");
+    }
+
+    return choices;
+  },
+
+  // Scene choices for Conflict Builder
+  getSceneChoices() {
+    const choices = {};
+
+    if (game.scenes) {
+      game.scenes.forEach(scene => {
+        choices[scene.id] = scene.name;
+      });
+    }
+
+    if (!Object.keys(choices).length) {
+      choices[""] = game.i18n.localize("LOOKFAR.Settings.NoScenes");
+    }
+
+    return choices;
+  },
+
   // Update the registry (game.settings.settings) so future renders pick up new tables
   updateRollTableChoices() {
     const rollTableChoices = LookfarSettings.getRollTableChoices();
     const reg = game.settings.settings;
-    // Guard if registry not ready yet
     if (!reg) return;
 
     const keys = [
@@ -143,6 +213,21 @@ export const LookfarSettings = {
       const cfg = setting;
       if (cfg) cfg.choices = rollTableChoices;
     }
+  },
+
+  // NEW: update compendium + scene choices after ready
+  updateCompendiumAndSceneChoices() {
+    const reg = game.settings.settings;
+    if (!reg) return;
+
+    const actorCompChoices = LookfarSettings.getActorCompendiumChoices();
+    const sceneChoices = LookfarSettings.getSceneChoices();
+
+    const compSetting = reg.get("lookfar.monsterCompendium");
+    if (compSetting) compSetting.choices = actorCompChoices;
+
+    const sceneSetting = reg.get("lookfar.battleSceneName");
+    if (sceneSetting) sceneSetting.choices = sceneChoices;
   }
 };
 
@@ -157,6 +242,7 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   // Ensure registry choices are fresh once the world is ready
   Hooks.once("ready", () => {
     LookfarSettings.updateRollTableChoices();
+    LookfarSettings.updateCompendiumAndSceneChoices();   // 👈 NEW
   });
 
   const onTablesChanged = () => {
@@ -169,7 +255,3 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
-
-
-
-
