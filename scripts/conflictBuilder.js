@@ -178,17 +178,39 @@ async function openConflictBuilderDialog() {
             text-align: left;
             width: 190px;
           }
+          /* Preview token overlay */
+          #conflictBuilderDialog #conflict-preview {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+          }
+          #conflictBuilderDialog #preview-tokens-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+          }
+          #conflictBuilderDialog .preview-token {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            pointer-events: none;
+          }
         </style>
 
         <!-- Scene Preview -->
         <div style="margin-bottom: 10px;">
           <div style="padding: 5px; border: 1px solid #ccc; margin-bottom: 8px;">
             <h4 style="margin: 0 0 4px 0;">Scene Preview</h4>
-            <div style="position: relative; width: 100%; height: 200px; border: 1px solid #ccc; overflow: hidden;">
+            <div id="conflict-preview">
               <img id="background-preview" src="${currentBackground}"
                    style="position:absolute; width:100%; height:100%; object-fit:cover; z-index:1;" />
               <img id="terrain-preview" src="${currentTerrain}"
                    style="position:absolute; width:100%; height:100%; object-fit:cover; z-index:2;" />
+              <div id="preview-tokens-layer"></div>
             </div>
           </div>
 
@@ -281,7 +303,6 @@ async function openConflictBuilderDialog() {
         label: "Fight",
         callback: async (html) => {
           // For now, we only validate that something is selected.
-          // All original summoning / placement logic has been removed.
           const $html = html instanceof HTMLElement ? $(html) : html;
           const selected = $html.find(".list-item.selected");
           if (!selected.length) {
@@ -307,7 +328,8 @@ async function openConflictBuilderDialog() {
       const listItems     = $html.find(".list-item");
       const searchInput   = $html.find("#search-input");
       const folderSelect  = $html.find("#folder-filter");
-      const addButton     = $html.find("#add-to-encounter"); // (not wired yet)
+      const addButton     = $html.find("#add-to-encounter");
+      const tokensLayer   = $html.find("#preview-tokens-layer");
 
       if (listItems.length) {
         listItems.first().addClass("selected");
@@ -435,8 +457,50 @@ async function openConflictBuilderDialog() {
         }
       });
 
-      // (Add button is visually in place; wiring can be added later)
-      // addButton.on("click", () => { ... });
+      // Add button → add small prototype token previews onto the scene preview
+      addButton.on("click", async () => {
+        const selected = $html.find(".list-item.selected");
+        if (!selected.length) {
+          ui.notifications.error("No creature selected to add.");
+          return;
+        }
+
+        const id = selected.data("id");
+        const qty = Math.max(1, parseInt($html.find("#creature-quantity").val(), 10) || 1);
+
+        const actor = await pack.getDocument(id);
+        if (!actor) {
+          ui.notifications.error("Actor not found in compendium.");
+          return;
+        }
+
+        const texSrc =
+          actor.prototypeToken?.texture?.src ||
+          actor.img ||
+          "icons/svg/mystery-man.svg";
+
+        const existing = tokensLayer.find(".preview-token").length;
+
+        for (let i = 0; i < qty; i++) {
+          const idx = existing + i;
+          const col = idx % 5;
+          const row = Math.floor(idx / 5);
+
+          const left = 4 + col * 68;
+          const top  = 4 + row * 68;
+
+          const $img = $(
+            `<img class="preview-token" src="${lfEsc(texSrc)}">`
+          );
+
+          $img.css({
+            left: `${left}px`,
+            top: `${top}px`
+          });
+
+          tokensLayer.append($img);
+        }
+      });
 
       // Initial filter pass
       filterList();
