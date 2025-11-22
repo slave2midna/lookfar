@@ -88,9 +88,11 @@ async function openConflictBuilderDialog() {
     return;
   }
 
-  // Use compendium index (name + img) instead of loading full documents
-  const index = await pack.getIndex({ fields: ["img"] });
-  if (!index.length) {
+  // Use compendium index (name + img + folder) instead of loading full documents
+  const index = await pack.getIndex({ fields: ["img", "folder"] });
+  const indexEntries = Array.from(index.values());
+
+  if (!indexEntries.length) {
     ui.notifications.error(`No actors found in compendium "${pack.title || pack.collection}".`);
     return;
   }
@@ -98,26 +100,28 @@ async function openConflictBuilderDialog() {
   // -------------------------------------------------------------------------
   // Compendium folder support (for filtering)
   // -------------------------------------------------------------------------
-  const compFolders = game.folders.filter(f =>
-    f.inCompendium && f.compendium?.collection === pack.collection
-  );
-
   // Map: folderId -> Set(actorId) from that folder
   const folderMap = new Map();
-  for (const folder of compFolders) {
-    const entries = folder.contents || [];
-    const ids = new Set(entries.map(e => e._id));
-    if (ids.size) folderMap.set(folder.id, ids);
+  for (const entry of indexEntries) {
+    const folderId = entry.folder;
+    if (!folderId) continue;
+    if (!folderMap.has(folderId)) folderMap.set(folderId, new Set());
+    folderMap.get(folderId).add(entry._id);
   }
 
+  // Only include folders that actually contain actors in this pack
+  const compFolders = Array.from(folderMap.keys())
+    .map(fid => game.folders.get(fid))
+    .filter(f => !!f);
+
   const folderOptions =
-    `<option value="all">${lfEsc(game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") || "All Types")}</option>` +
+    `<option value="all">${lfEsc("All Types")}</option>` +
     compFolders.map(f =>
-      `<option value="${folder.id}">${lfEsc(f.name)}</option>`
+      `<option value="${f.id}">${lfEsc(f.name)}</option>`
     ).join("");
 
   // Index-level actor data (no full docs yet)
-  const actorIndexData = index
+  const actorIndexData = indexEntries
     .map(e => ({
       id: e._id,
       name: e.name,
@@ -360,13 +364,13 @@ async function openConflictBuilderDialog() {
     render: html => {
       const $html = html instanceof HTMLElement ? $(html) : html;
 
-      const levelInput      = $html.find("#creature-level");
-      const rankSelect      = $html.find("#creature-rank");
-      const replacedInput   = $html.find("#replaced-soldiers");
-      const imageElement    = $html.find("#creature-image");
-      const listItems       = $html.find(".list-item");
-      const searchInput     = $html.find("#search-input");
-      const folderSelect    = $html.find("#folder-filter");
+      const levelInput    = $html.find("#creature-level");
+      const rankSelect    = $html.find("#creature-rank");
+      const replacedInput = $html.find("#replaced-soldiers");
+      const imageElement  = $html.find("#creature-image");
+      const listItems     = $html.find(".list-item");
+      const searchInput   = $html.find("#search-input");
+      const folderSelect  = $html.find("#folder-filter");
 
       if (listItems.length) {
         listItems.first().addClass("selected");
@@ -378,9 +382,9 @@ async function openConflictBuilderDialog() {
         if (!actor) return;
 
         const { dex, ins, mig, wlp } = actor.system.attributes;
-        const initBase = (dex.base + ins.base) / 2;
-        const maxHpBase = (level * 2) + (mig.base * 5);
-        const maxMpBase = level + (wlp.base * 5);
+        const initBase   = (dex.base + ins.base) / 2;
+        const maxHpBase  = (level * 2) + (mig.base * 5);
+        const maxMpBase  = level + (wlp.base * 5);
 
         let init = initBase;
         let hp   = maxHpBase;
@@ -402,18 +406,18 @@ async function openConflictBuilderDialog() {
 
       // Combined search + folder filter
       function filterList() {
-        const searchTerm      = (searchInput.val() || "").toString().toLowerCase();
-        const selectedFolder  = folderSelect.val();
+        const searchTerm     = (searchInput.val() || "").toString().toLowerCase();
+        const selectedFolder = folderSelect.val();
 
         listItems.each(function() {
-          const item  = $(this);
-          const id    = item.data("id");
+          const item      = $(this);
+          const id        = item.data("id");
           const nameMatch = item.text().toLowerCase().includes(searchTerm);
 
           let folderMatch = true;
           if (selectedFolder && selectedFolder !== "all") {
             const idsSet = folderMap.get(selectedFolder);
-            folderMatch = idsSet ? idsSet.has(id) : false;
+            folderMatch  = idsSet ? idsSet.has(id) : false;
           }
 
           item.toggle(nameMatch && folderMatch);
