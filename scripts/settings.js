@@ -60,27 +60,33 @@ export const LookfarSettings = {
     // -----------------------------------------------------------------------
     // Conflict Builder: Monster Compendium (Actor packs only)
     // -----------------------------------------------------------------------
+    const actorCompChoices = LookfarSettings.getActorCompendiumChoices();
+    const actorCompDefault = Object.keys(actorCompChoices)[0] ?? "";
+
     game.settings.register("lookfar", "monsterCompendium", {
       name: game.i18n.localize("LOOKFAR.Settings.MonsterCompendium.Name"),
       hint: game.i18n.localize("LOOKFAR.Settings.MonsterCompendium.Hint"),
       scope: "world",
       config: true,
       type: String,
-      choices: LookfarSettings.getActorCompendiumChoices(),
-      default: "default"
+      choices: actorCompChoices,
+      default: actorCompDefault
     });
 
     // -----------------------------------------------------------------------
     // Conflict Builder: Battle Scene Name (Scene selector)
     // -----------------------------------------------------------------------
+    const sceneChoices = LookfarSettings.getSceneChoices();
+    const sceneDefault = Object.keys(sceneChoices)[0] ?? "";
+
     game.settings.register("lookfar", "battleSceneName", {
       name: game.i18n.localize("LOOKFAR.Settings.BattleSceneName.Name"),
       hint: game.i18n.localize("LOOKFAR.Settings.BattleSceneName.Hint"),
       scope: "world",
       config: true,
       type: String,
-      choices: LookfarSettings.getSceneChoices(),
-      default: "default"
+      choices: sceneChoices,
+      default: sceneDefault
     });
   },
 
@@ -150,34 +156,39 @@ export const LookfarSettings = {
     return choices;
   },
 
-  // NEW: Actor Compendium choices for Conflict Builder
+  // Actor Compendium choices for Conflict Builder
   getActorCompendiumChoices() {
-    const choices = {
-      default: game.i18n.localize("LOOKFAR.Settings.DefaultCompendium")
-    };
+    const choices = {};
 
     if (game.packs) {
       for (const pack of game.packs) {
-        // Only include Actor packs
+        // Only include Actor packs (any source: system, module, world)
         if (pack.documentName === "Actor") {
           choices[pack.collection] = pack.title || pack.collection;
         }
       }
     }
 
+    // If no Actor compendiums exist, show a placeholder entry
+    if (!Object.keys(choices).length) {
+      choices[""] = game.i18n.localize("LOOKFAR.Settings.NoActorCompendiums");
+    }
+
     return choices;
   },
 
-  // NEW: Scene choices for Conflict Builder
+  // Scene choices for Conflict Builder
   getSceneChoices() {
-    const choices = {
-      default: game.i18n.localize("LOOKFAR.Settings.DefaultScene")
-    };
+    const choices = {};
 
     if (game.scenes) {
       game.scenes.forEach(scene => {
         choices[scene.id] = scene.name;
       });
+    }
+
+    if (!Object.keys(choices).length) {
+      choices[""] = game.i18n.localize("LOOKFAR.Settings.NoScenes");
     }
 
     return choices;
