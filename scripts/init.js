@@ -7,9 +7,7 @@ import "./treasureRoll.js";
 import "./itemForge.js";
 import "./dungeonMapper.js";
 import "./buttonManager.js";
-
-// NEW: Load quick encounter / battle summoner dialog logic
-import "./quickEncounter.js";
+import "./conflictBuilder.js";
 
 Hooks.once("init", async () => {
   console.log("Lookfar GM Assistant: Initializing...");
