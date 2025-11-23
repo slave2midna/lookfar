@@ -370,7 +370,7 @@ async function openConflictBuilderDialog() {
       }
 
       // Slightly longer delay so the canvas has time to settle before placement
-      await new Promise(r => setTimeout(r, 3000));
+      await new Promise(r => setTimeout(r, 2000));
 
       const dims = canvas.dimensions;
       if (!dims) {
@@ -453,21 +453,27 @@ async function openConflictBuilderDialog() {
         });
       }
 
-      // --- STEP 5: slower fade-in animation (0 → 0.1 → … → 1.0) ----------
+      // --- STEP 5: slower fade-in animation -------------------
       try {
+        // Give the canvas a brief moment to draw the newly created tokens
+        await new Promise(r => setTimeout(r, 100));
+
         const createdIds = new Set(created.map(d => d.id));
         const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
+
+        if (!placeables.length) return;
 
         // start invisible
         for (const t of placeables) {
           if (!t.destroyed) t.alpha = 0;
         }
 
-        const fadeDuration = 3000; // ms total
-        const fadeSteps    = 10;   // 0.1 increments
+        // ~2000ms total, with small incremental steps
+        const fadeDuration = 2000; // ms total
+        const fadeSteps    = 20;   // 20 steps => ~100ms per step, 0.05 alpha increments
 
         for (let i = 1; i <= fadeSteps; i++) {
-          const alpha = i / fadeSteps; // 0.1, 0.2, ... 1.0
+          const alpha = i / fadeSteps; // 0.05, 0.10, ... 1.0
           setTimeout(() => {
             for (const t of placeables) {
               if (!t.destroyed) t.alpha = alpha;
