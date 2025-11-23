@@ -418,6 +418,9 @@ async function openConflictBuilderDialog() {
         proto.x = Math.min(maxX, Math.max(0, rawX));
         proto.y = Math.min(maxY, Math.max(0, rawY));
 
+        // ensure created tokens start invisible
+        proto.alpha = 0;
+
         if (flipped) {
           proto.mirrorX = !proto.mirrorX;
         }
@@ -453,7 +456,7 @@ async function openConflictBuilderDialog() {
         });
       }
 
-      // --- STEP 5: slower fade-in animation -------------------
+      // --- STEP 5: slower fade-in animation (~2s total) -------------------
       try {
         // Give the canvas a brief moment to draw the newly created tokens
         await new Promise(r => setTimeout(r, 100));
@@ -463,17 +466,17 @@ async function openConflictBuilderDialog() {
 
         if (!placeables.length) return;
 
-        // start invisible
+        // make absolutely sure they start at 0 on the canvas
         for (const t of placeables) {
           if (!t.destroyed) t.alpha = 0;
         }
 
-        // ~2000ms total, with small incremental steps
+        // ~2000ms total, 20 steps => 100ms per step, 0.05 alpha increments
         const fadeDuration = 2000; // ms total
-        const fadeSteps    = 20;   // 20 steps => ~100ms per step, 0.05 alpha increments
+        const fadeSteps    = 20;
 
         for (let i = 1; i <= fadeSteps; i++) {
-          const alpha = i / fadeSteps; // 0.05, 0.10, ... 1.0
+          const alpha = i / fadeSteps; // 0.05, 0.10, ... , 1.0
           setTimeout(() => {
             for (const t of placeables) {
               if (!t.destroyed) t.alpha = alpha;
