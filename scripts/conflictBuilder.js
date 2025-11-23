@@ -301,187 +301,185 @@ async function openConflictBuilderDialog() {
     // Buttons
     // -----------------------------------------------------------------------
     buttons: {
-      summon: {
-        label: "Fight",
-        callback: async (html) => {
-          const $html = html instanceof HTMLElement ? $(html) : html;
+  summon: {
+    label: "Fight",
+    callback: async (html) => {
+      const $html = html instanceof HTMLElement ? $(html) : html;
 
-          const $tokensLayer = $html.find("#preview-tokens-layer");
-          const $preview     = $html.find("#conflict-preview");
-          const $tokens      = $tokensLayer.find(".preview-token");
+      const $tokensLayer = $html.find("#preview-tokens-layer");
+      const $preview     = $html.find("#conflict-preview");
+      const $tokens      = $tokensLayer.find(".preview-token");
 
-          if (!$tokens.length) {
-            ui.notifications.error("No creatures have been added to the encounter.");
-            return;
-          }
-
-          const previewEl   = $preview[0];
-          const previewRect = previewEl?.getBoundingClientRect();
-          if (!previewRect || !previewRect.width || !previewRect.height) {
-            ui.notifications.error("Preview area size is invalid.");
-            return;
-          }
-
-          // --- STEP 1: capture normalized positions before we touch scenes ---
-          const previewTokens = [];
-          for (const el of $tokens.toArray()) {
-            const $tok    = $(el);
-            const actorId = $tok.data("actorId");
-            if (!actorId) continue;
-
-            const tokRect = el.getBoundingClientRect();
-
-            let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
-            let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
-
-            let u = centerX / previewRect.width;
-            let v = centerY / previewRect.height;
-
-            if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
-            u = Math.min(0.999, Math.max(0, u));
-            v = Math.min(0.999, Math.max(0, v));
-
-            previewTokens.push({
-              actorId,
-              u,
-              v,
-              flipped: $tok.data("lfFlipped") === true
-            });
-          }
-
-          if (!previewTokens.length) {
-            ui.notifications.error("No valid preview tokens to place.");
-            return;
-          }
-
-          // --- STEP 2: activate the battle scene & give the canvas a beat ---
-          const targetScene = previewScene;
-          if (!targetScene) {
-            ui.notifications.error("Could not access the battle scene.");
-            return;
-          }
-
-          try {
-            if (!targetScene.active) {
-              await targetScene.update({ active: true });
-            }
-          } catch (e) {
-            console.warn("Conflict Builder: unable to activate battle scene.", e);
-          }
-
-          // small delay to let the new canvas settle
-          await new Promise(r => setTimeout(r, 250));
-
-          const dims = canvas.dimensions;
-          if (!dims) {
-            ui.notifications.error("Canvas dimensions are not ready.");
-            return;
-          }
-
-          const sceneWidth  = dims.sceneWidth;
-          const sceneHeight = dims.sceneHeight;
-
-          const tokenData  = [];
-          const actorCache = new Map();
-
-          const level = parseInt($html.find("#creature-level").val(), 10) || 5;
-          const rank  = $html.find("#creature-rank").val() || "soldier";
-          const replacedSoldiers = rank === "champion"
-            ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
-            : 1;
-
-          // --- STEP 3: map u,v → scene pixels (no grid snapping) -------------
-          for (const pt of previewTokens) {
-            const { actorId, u, v, flipped } = pt;
-
-            let actor = actorCache.get(actorId);
-            if (!actor) {
-              actor = await pack.getDocument(actorId);
-              if (!actor) continue;
-              actorCache.set(actorId, actor);
-            }
-
-            const proto = actor.prototypeToken.toObject();
-
-            const tokenGridW = proto.width  ?? 1;
-            const tokenGridH = proto.height ?? 1;
-            const tokenPxW   = tokenGridW * dims.size;
-            const tokenPxH   = tokenGridH * dims.size;
-
-            const maxX = Math.max(0, sceneWidth  - tokenPxW);
-            const maxY = Math.max(0, sceneHeight - tokenPxH);
-
-            let rawX = u * maxX;
-            let rawY = v * maxY;
-
-            // no snapping: use raw positions, just clamp
-            proto.x = Math.min(maxX, Math.max(0, rawX));
-            proto.y = Math.min(maxY, Math.max(0, rawY));
-
-            if (flipped) {
-              proto.mirrorX = !proto.mirrorX;
-            }
-
-            tokenData.push({ proto, actor });
-          }
-
-          if (!tokenData.length) {
-            ui.notifications.error("No valid creatures could be placed from the preview.");
-            return;
-          }
-
-          const toCreate = tokenData.map(t => t.proto);
-          const created  = await targetScene.createEmbeddedDocuments("Token", toCreate);
-
-          // --- STEP 4: apply stats (level/rank + HP/MP) ----------------------
-          for (const tokenDoc of created) {
-            const actor = tokenDoc.actor;
-            if (!actor) continue;
-
-            await actor.update({
-              "system.level.value": level,
-              "system.rank.value": rank,
-              "system.rank.replacedSoldiers": replacedSoldiers
-            });
-
-            const maxHP = actor.system.resources.hp.max;
-            const maxMP = actor.system.resources.mp.max;
-
-            await actor.update({
-              "system.resources.hp.value": maxHP,
-              "system.resources.mp.value": maxMP
-            });
-          }
-
-          // --- STEP 5: fade-in animation (alpha 0 → 1 over ~2s) --------------
-          try {
-            const createdIds = new Set(created.map(d => d.id));
-            const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
-
-            // start invisible
-            for (const t of placeables) {
-              if (!t.destroyed) t.alpha = 0;
-            }
-
-            const duration = 2000; // ms
-            const steps    = 30;
-            for (let i = 1; i <= steps; i++) {
-              setTimeout(() => {
-                const a = i / steps;
-                for (const t of placeables) {
-                  if (!t.destroyed) t.alpha = a;
-                }
-              }, (duration / steps) * i);
-            }
-          } catch (e) {
-            console.warn("Conflict Builder: fade-in animation failed.", e);
-          }
-
-          ui.notifications.info("Encounter placed on the battle scene.");
-        }
+      if (!$tokens.length) {
+        ui.notifications.error("No creatures have been added to the encounter.");
+        return;
       }
-    },
 
+      const previewEl   = $preview[0];
+      const previewRect = previewEl?.getBoundingClientRect();
+      if (!previewRect || !previewRect.width || !previewRect.height) {
+        ui.notifications.error("Preview area size is invalid.");
+        return;
+      }
+
+      // --- STEP 1: capture normalized positions before we touch scenes ---
+      const previewTokens = [];
+      for (const el of $tokens.toArray()) {
+        const $tok    = $(el);
+        const actorId = $tok.data("actorId");
+        if (!actorId) continue;
+
+        const tokRect = el.getBoundingClientRect();
+
+        let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
+        let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
+
+        let u = centerX / previewRect.width;
+        let v = centerY / previewRect.height;
+
+        if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
+        u = Math.min(0.999, Math.max(0, u));
+        v = Math.min(0.999, Math.max(0, v));
+
+        previewTokens.push({
+          actorId,
+          u,
+          v,
+          flipped: $tok.data("lfFlipped") === true
+        });
+      }
+
+      if (!previewTokens.length) {
+        ui.notifications.error("No valid preview tokens to place.");
+        return;
+      }
+
+      // --- STEP 2: activate the battle scene & give the canvas a bit more time ---
+      const targetScene = previewScene;
+      if (!targetScene) {
+        ui.notifications.error("Could not access the battle scene.");
+        return;
+      }
+
+      try {
+        if (!targetScene.active) {
+          await targetScene.update({ active: true });
+        }
+      } catch (e) {
+        console.warn("Conflict Builder: unable to activate battle scene.", e);
+      }
+
+      // Slightly longer delay so the canvas has time to settle before placement
+      await new Promise(r => setTimeout(r, 750));
+
+      const dims = canvas.dimensions;
+      if (!dims) {
+        ui.notifications.error("Canvas dimensions are not ready.");
+        return;
+      }
+
+      const sceneWidth  = dims.sceneWidth;
+      const sceneHeight = dims.sceneHeight;
+
+      const tokenData  = [];
+      const actorCache = new Map();
+
+      const level = parseInt($html.find("#creature-level").val(), 10) || 5;
+      const rank  = $html.find("#creature-rank").val() || "soldier";
+      const replacedSoldiers = rank === "champion"
+        ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
+        : 1;
+
+      // --- STEP 3: map u,v → scene pixels (no grid snapping) -------------
+      for (const pt of previewTokens) {
+        const { actorId, u, v, flipped } = pt;
+
+        let actor = actorCache.get(actorId);
+        if (!actor) {
+          actor = await pack.getDocument(actorId);
+          if (!actor) continue;
+          actorCache.set(actorId, actor);
+        }
+
+        const proto = actor.prototypeToken.toObject();
+
+        const tokenGridW = proto.width  ?? 1;
+        const tokenGridH = proto.height ?? 1;
+        const tokenPxW   = tokenGridW * dims.size;
+        const tokenPxH   = tokenGridH * dims.size;
+
+        const maxX = Math.max(0, sceneWidth  - tokenPxW);
+        const maxY = Math.max(0, sceneHeight - tokenPxH);
+
+        let rawX = u * maxX;
+        let rawY = v * maxY;
+
+        // no snapping: use raw positions, just clamp
+        proto.x = Math.min(maxX, Math.max(0, rawX));
+        proto.y = Math.min(maxY, Math.max(0, rawY));
+
+        if (flipped) {
+          proto.mirrorX = !proto.mirrorX;
+        }
+
+        tokenData.push({ proto, actor });
+      }
+
+      if (!tokenData.length) {
+        ui.notifications.error("No valid creatures could be placed from the preview.");
+        return;
+      }
+
+      const toCreate = tokenData.map(t => t.proto);
+      const created  = await targetScene.createEmbeddedDocuments("Token", toCreate);
+
+      // --- STEP 4: apply stats (level/rank + HP/MP) ----------------------
+      for (const tokenDoc of created) {
+        const actor = tokenDoc.actor;
+        if (!actor) continue;
+
+        await actor.update({
+          "system.level.value": level,
+          "system.rank.value": rank,
+          "system.rank.replacedSoldiers": replacedSoldiers
+        });
+
+        const maxHP = actor.system.resources.hp.max;
+        const maxMP = actor.system.resources.mp.max;
+
+        await actor.update({
+          "system.resources.hp.value": maxHP,
+          "system.resources.mp.value": maxMP
+        });
+      }
+
+      // --- STEP 5: slower fade-in animation (0 → 0.1 → … → 1.0) ----------
+      try {
+        const createdIds = new Set(created.map(d => d.id));
+        const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
+
+        // start invisible
+        for (const t of placeables) {
+          if (!t.destroyed) t.alpha = 0;
+        }
+
+        const fadeDuration = 3000; // ms total
+        const fadeSteps    = 10;   // 0.1 increments
+
+        for (let i = 1; i <= fadeSteps; i++) {
+          const alpha = i / fadeSteps; // 0.1, 0.2, ... 1.0
+          setTimeout(() => {
+            for (const t of placeables) {
+              if (!t.destroyed) t.alpha = alpha;
+            }
+          }, (fadeDuration / fadeSteps) * i);
+        }
+      } catch (e) {
+        console.warn("Conflict Builder: fade-in animation failed.", e);
+      }
+    }
+  }
+},
     default: "summon",
 
     // -----------------------------------------------------------------------
