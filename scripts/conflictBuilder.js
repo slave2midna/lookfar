@@ -47,9 +47,40 @@ async function openConflictBuilderDialog() {
   }
 
   // -------------------------------------------------------------------------
-  // Use existing scene thumbnail (no core "Generating thumbnail..." notify)
+  // Generate real scene thumbnail (16:9 @ 380x214) with suppressed toast
   // -------------------------------------------------------------------------
-  const sceneThumb = previewScene.thumb || previewScene.img || "";
+  let sceneThumb = "";
+  try {
+    const notifications = ui.notifications;
+    const originalInfo  = notifications.info.bind(notifications);
+
+    // Temporarily suppress the core "Generating scene thumbnail..." info toast
+    notifications.info = function(message, options = {}) {
+      try {
+        const text = typeof message === "string" ? message.toLowerCase() : "";
+        // Be conservative: only swallow obvious thumbnail generation notices
+        if (text.includes("thumbnail") && text.includes("generat")) return;
+      } catch {
+        // If anything goes weird, fall back to normal behavior
+      }
+      return originalInfo(message, options);
+    };
+
+    const thumbData = await previewScene.createThumbnail({
+      width: 380,
+      height: 214
+    });
+
+    sceneThumb = thumbData?.thumb || "";
+    // Restore original immediately after
+    notifications.info = originalInfo;
+  } catch (e) {
+    console.warn("Conflict Builder: failed to create scene thumbnail.", e);
+    // Best effort restore if something exploded before we restored
+    if (ui?.notifications?.info && ui.notifications.info.name !== "bound ") {
+      // noop: likely already restored or not changed
+    }
+  }
 
   // -------------------------------------------------------------------------
   // Resolve monster compendium (Actor pack only)
