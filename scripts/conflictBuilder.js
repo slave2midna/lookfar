@@ -418,8 +418,6 @@ async function openConflictBuilderDialog() {
         proto.x = Math.min(maxX, Math.max(0, rawX));
         proto.y = Math.min(maxY, Math.max(0, rawY));
 
-        // ensure created tokens start invisible
-        proto.alpha = 0;
 
         if (flipped) {
           proto.mirrorX = !proto.mirrorX;
@@ -479,21 +477,28 @@ async function openConflictBuilderDialog() {
           return;
         }
 
-        // Make absolutely sure they start at 0 on the canvas
-        for (const t of placeables) {
-          if (!t.destroyed) t.alpha = 0;
-        }
+        // 1) Make sure the *documents* start at alpha 0
+        await targetScene.updateEmbeddedDocuments(
+          "Token",
+          placeables.map(t => ({
+            _id: t.document.id,
+            alpha: 0
+          }))
+        );
 
-        // ~2000ms total, 20 steps => 100ms per step, 0.05 alpha increments
+        // 2) Fade documents 0 → 1 over ~2000ms
         const fadeDuration = 2000; // ms total
-        const fadeSteps    = 20;
+        const fadeSteps    = 10;   // 0.1 increments => 200ms per step
 
         for (let i = 1; i <= fadeSteps; i++) {
-          const alpha = i / fadeSteps; // 0.05, 0.10, ... , 1.0
+          const alpha = i / fadeSteps; // 0.1, 0.2, ... , 1.0
           setTimeout(() => {
-            for (const t of placeables) {
-              if (!t.destroyed) t.alpha = alpha;
-            }
+            const updates = placeables.map(t => ({
+              _id: t.document.id,
+              alpha
+            }));
+            // Fire-and-forget; no need to await inside setTimeout
+            targetScene.updateEmbeddedDocuments("Token", updates);
           }, (fadeDuration / fadeSteps) * i);
         }
       } catch (e) {
