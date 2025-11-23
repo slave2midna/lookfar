@@ -370,7 +370,7 @@ async function openConflictBuilderDialog() {
       }
 
       // Slightly longer delay so the canvas has time to settle before placement
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 1000));
 
       const dims = canvas.dimensions;
       if (!dims) {
