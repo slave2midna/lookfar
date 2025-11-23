@@ -47,19 +47,9 @@ async function openConflictBuilderDialog() {
   }
 
   // -------------------------------------------------------------------------
-  // Generate real scene thumbnail (16:9 @ 380x214)
+  // Use existing scene thumbnail (no core "Generating thumbnail..." notify)
   // -------------------------------------------------------------------------
-  let sceneThumb = "";
-  try {
-    const thumbData = await previewScene.createThumbnail({
-      width: 380,
-      height: 214
-    });
-    // Document#createThumbnail typically returns { thumb, width, height }
-    sceneThumb = thumbData?.thumb || "";
-  } catch (e) {
-    console.warn("Conflict Builder: failed to create scene thumbnail.", e);
-  }
+  const sceneThumb = previewScene.thumb || previewScene.img || "";
 
   // -------------------------------------------------------------------------
   // Resolve monster compendium (Actor pack only)
