@@ -417,7 +417,7 @@ async function openConflictBuilderDialog() {
         // no snapping: use raw positions, just clamp
         proto.x = Math.min(maxX, Math.max(0, rawX));
         proto.y = Math.min(maxY, Math.max(0, rawY));
-
+        proto.alpha = 0;
 
         if (flipped) {
           proto.mirrorX = !proto.mirrorX;
