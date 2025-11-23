@@ -458,15 +458,28 @@ async function openConflictBuilderDialog() {
 
       // --- STEP 5: slower fade-in animation (~2s total) -------------------
       try {
-        // Give the canvas a brief moment to draw the newly created tokens
-        await new Promise(r => setTimeout(r, 100));
+        // Helper: wait for the created tokens to show up on the canvas
+        async function waitForPlaceables(createdDocs, timeout = 3000) {
+          const createdIds = new Set(createdDocs.map(d => d.id));
+          const start = Date.now();
 
-        const createdIds = new Set(created.map(d => d.id));
-        const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
+          // Poll until we see them or timeout
+          while (Date.now() - start < timeout) {
+            const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
+            if (placeables.length) return placeables;
+            await new Promise(r => setTimeout(r, 50));
+          }
 
-        if (!placeables.length) return;
+          return [];
+        }
 
-        // make absolutely sure they start at 0 on the canvas
+        const placeables = await waitForPlaceables(created, 3000);
+        if (!placeables.length) {
+          console.warn("Conflict Builder: could not find created tokens on canvas for fade-in.");
+          return;
+        }
+
+        // Make absolutely sure they start at 0 on the canvas
         for (const t of placeables) {
           if (!t.destroyed) t.alpha = 0;
         }
