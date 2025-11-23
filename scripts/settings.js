@@ -70,7 +70,8 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: actorCompChoices,
-      default: actorCompDefault
+      default: actorCompDefault,
+      requiresReload: true
     });
 
     // -----------------------------------------------------------------------
@@ -86,7 +87,8 @@ export const LookfarSettings = {
       config: true,
       type: String,
       choices: sceneChoices,
-      default: sceneDefault
+      default: sceneDefault,
+      requiresReload: true
     });
   },
 
@@ -255,3 +257,4 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
