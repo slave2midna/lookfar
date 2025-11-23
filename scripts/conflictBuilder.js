@@ -22,6 +22,48 @@ const lfEsc = (s) => {
 };
 
 // ---------------------------------------------------------------------------
+// MONKEY PATCH: Suppress thumbnail progress bar
+// ---------------------------------------------------------------------------
+// We patch TextureLoader.prototype.load once, and only touch loads while
+// globalThis._lookfarSuppressTextureProgress === true.
+(function patchLookfarTextureLoader() {
+  try {
+    // Try to grab the same TextureLoader that Foundry uses for scenes.
+    const TL = globalThis.TextureLoader ?? CONFIG.Canvas?.textureLoader;
+    if (!TL || !TL.prototype?.load) {
+      console.warn("Lookfar Conflict Builder | TextureLoader not found; cannot suppress thumbnail progress.");
+      return;
+    }
+
+    if (TL.prototype._lookfarPatched) return; // avoid double-patching
+
+    const _origLoad = TL.prototype.load;
+    TL.prototype.load = function (...args) {
+      try {
+        if (globalThis._lookfarSuppressTextureProgress) {
+          // In v13-style APIs, args[1] is commonly an options object.
+          let options = args[1];
+          if (!options || typeof options !== "object") {
+            options = {};
+            args[1] = options;
+          }
+          // Best-effort: if Foundry honors displayProgress, turn it off.
+          options.displayProgress = false;
+        }
+      } catch (e) {
+        console.warn("Lookfar Conflict Builder | Error adjusting TextureLoader options:", e);
+      }
+
+      return _origLoad.apply(this, args);
+    };
+
+    TL.prototype._lookfarPatched = true;
+  } catch (e) {
+    console.warn("Lookfar Conflict Builder | Failed to patch TextureLoader:", e);
+  }
+})();
+
+// ---------------------------------------------------------------------------
 // MAIN FUNCTION — Conflict Builder Dialog
 // ---------------------------------------------------------------------------
 async function openConflictBuilderDialog() {
@@ -47,39 +89,22 @@ async function openConflictBuilderDialog() {
   }
 
   // -------------------------------------------------------------------------
-  // Generate real scene thumbnail (16:9 @ 380x214) with suppressed toast
+  // Generate real scene thumbnail (16:9 @ 380x214) — with progress suppressed
   // -------------------------------------------------------------------------
   let sceneThumb = "";
   try {
-    const notifications = ui.notifications;
-    const originalInfo  = notifications.info.bind(notifications);
-
-    // Temporarily suppress the core "Generating scene thumbnail..." info toast
-    notifications.info = function(message, options = {}) {
-      try {
-        const text = typeof message === "string" ? message.toLowerCase() : "";
-        // Be conservative: only swallow obvious thumbnail generation notices
-        if (text.includes("thumbnail") && text.includes("generat")) return;
-      } catch {
-        // If anything goes weird, fall back to normal behavior
-      }
-      return originalInfo(message, options);
-    };
+    globalThis._lookfarSuppressTextureProgress = true;
 
     const thumbData = await previewScene.createThumbnail({
       width: 380,
       height: 214
     });
-
+    // Document#createThumbnail typically returns { thumb, width, height }
     sceneThumb = thumbData?.thumb || "";
-    // Restore original immediately after
-    notifications.info = originalInfo;
   } catch (e) {
     console.warn("Conflict Builder: failed to create scene thumbnail.", e);
-    // Best effort restore if something exploded before we restored
-    if (ui?.notifications?.info && ui.notifications.info.name !== "bound ") {
-      // noop: likely already restored or not changed
-    }
+  } finally {
+    globalThis._lookfarSuppressTextureProgress = false;
   }
 
   // -------------------------------------------------------------------------
