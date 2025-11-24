@@ -1,7 +1,7 @@
 // cacheManager.js
 
 // ---- Constants ----
-const LOOKFAR_FLAG_SCOPE   = "lookfar";
+const LOOKFAR_FLAG_SCOPE = "lookfar";
 
 // Loot Cache (Items)
 const LOOKFAR_CACHE_SYSTEM = "loot-cache";
@@ -11,12 +11,14 @@ const LOOKFAR_STYLE_ID     = "lookfar-hide-cache-style";
 // NPC Cache (Actors)
 const LOOKFAR_NPC_CACHE_SYSTEM = "npc-cache";
 const LOOKFAR_NPC_CACHE_NAME   = "Lookfar NPC Cache";
+const LOOKFAR_NPC_STYLE_ID     = "lookfar-hide-npc-cache-style";
 
 const LOG = "[Lookfar Cache]";
 
 // ---- Public API ----
 export const cacheManager = {
-  _hooksInstalled: false,
+  _hooksInstalled: false,       // Loot cache (items) hider hooks
+  _npcHooksInstalled: false,    // NPC cache (actors) hider hooks
 
   // ------------------------------------------------------------
   // Synchronous finders (no await allowed inside render hooks)
@@ -103,7 +105,7 @@ export const cacheManager = {
 
   // ------------------------------------------------------------
   // NPC Cache Folder (Actors)
-  // (Visible for now — hiding comes later once wired up)
+  // (Now hidden like the loot cache)
   // ------------------------------------------------------------
   async getOrCreateNpcCacheFolder() {
     if (!game?.folders || typeof game.folders.find !== "function") {
@@ -130,7 +132,7 @@ export const cacheManager = {
         sorting: "a",
         parent: null,
         color: "#999999",
-        flags: { [LOOKFAR_FLAG_SCOPE]: { system: LOOKFAR_NPC_CACHE_SYSTEM, hidden: false } }
+        flags: { [LOOKFAR_FLAG_SCOPE]: { system: LOOKFAR_NPC_CACHE_SYSTEM, hidden: true } }
       });
       console.log(`${LOG} Created NPC cache folder: ${folder.name}`);
     }
@@ -141,9 +143,9 @@ export const cacheManager = {
         await folder.setFlag?.(LOOKFAR_FLAG_SCOPE, "system", LOOKFAR_NPC_CACHE_SYSTEM);
       }
 
-      // Keep hidden=false until we're ready to hide NPC cache
-      if (folder.getFlag?.(LOOKFAR_FLAG_SCOPE, "hidden") !== false) {
-        await folder.setFlag?.(LOOKFAR_FLAG_SCOPE, "hidden", false);
+      // Now we keep hidden=true, same as loot cache
+      if (folder.getFlag?.(LOOKFAR_FLAG_SCOPE, "hidden") !== true) {
+        await folder.setFlag?.(LOOKFAR_FLAG_SCOPE, "hidden", true);
       }
 
       const NONE = (CONST?.DOCUMENT_OWNERSHIP_LEVELS?.NONE ?? 0);
@@ -159,7 +161,7 @@ export const cacheManager = {
       console.warn(`${LOG} Could not normalize NPC cache folder flags/ownership`, e);
     }
 
-    // IMPORTANT: We DO NOT hide the NPC cache yet.
+    // Hider gets installed in ready hook
     return folder;
   },
 
@@ -224,7 +226,7 @@ export const cacheManager = {
   },
 
   // ------------------------------------------------------------
-  // Hooks & DOM Hiding (Loot Cache ONLY)
+  // Hooks & DOM Hiding (Loot Cache: Items)
   // ------------------------------------------------------------
 
   _installCacheHider() {
@@ -318,17 +320,104 @@ export const cacheManager = {
       .forEach(el => {
         if (!el.classList.contains("folder")) el.remove();
       });
+  },
+
+  // ------------------------------------------------------------
+  // Hooks & DOM Hiding (NPC Cache: Actors)
+  // ------------------------------------------------------------
+
+  _installNpcCacheHider() {
+    try {
+      this._injectNpcHiderStyle();
+
+      if (this._npcHooksInstalled) return;
+
+      // Scrub on Actor Directory render
+      Hooks.on("renderActorDirectory", (_app, html) => this._scrubNpcDirectoryDOM(html));
+
+      // Sidebar initial render for Actors tab
+      Hooks.on("renderSidebarTab", (app, html) => {
+        if (app?.id === "actors") this._scrubNpcDirectoryDOM(html);
+      });
+
+      // v13 safety net for alternate actor directories
+      Hooks.on("renderApplicationV2", (app, html) => {
+        if (app?.id === "actors" ||
+            app?.constructor?.name?.includes?.("ActorDirectory")) {
+          this._scrubNpcDirectoryDOM(html);
+        }
+      });
+
+      // Update CSS if NPC cache folder moves/renames
+      Hooks.on("updateFolder", (folder) => {
+        if (
+          folder?.type === "Actor" &&
+          (folder.getFlag?.(LOOKFAR_FLAG_SCOPE, "system") === LOOKFAR_NPC_CACHE_SYSTEM ||
+           folder.name === LOOKFAR_NPC_CACHE_NAME)
+        ) {
+          this._injectNpcHiderStyle();
+        }
+      });
+      Hooks.on("createFolder", () => this._injectNpcHiderStyle());
+      Hooks.on("deleteFolder", () => this._injectNpcHiderStyle());
+
+      this._npcHooksInstalled = true;
+    } catch (err) {
+      console.warn(`${LOG} Failed to install NPC cache hider:`, err);
+    }
+  },
+
+  _injectNpcHiderStyle() {
+    const folder = this._getNpcCacheFolderSync();
+    const folderId = folder?.id;
+    if (!folderId) return;
+
+    let style = document.getElementById(LOOKFAR_NPC_STYLE_ID);
+    if (!style) {
+      style = document.createElement("style");
+      style.id = LOOKFAR_NPC_STYLE_ID;
+      document.head.appendChild(style);
+    }
+
+    style.textContent = `
+      section#actors li[data-folder-id="${folderId}"] {
+        display: none !important;
+      }
+    `;
+  },
+
+  _scrubNpcDirectoryDOM(htmlLike) {
+    const folder = this._getNpcCacheFolderSync();
+    const folderId = folder?.id;
+    if (!folderId) return;
+
+    const rootEl = htmlLike?.[0] ?? htmlLike;
+    if (!(rootEl instanceof Element)) return;
+
+    // Remove NPC cache folder
+    rootEl.querySelectorAll(`li.folder[data-folder-id="${folderId}"]`)
+      .forEach(el => el.remove());
+
+    // Remove its children if any leaked
+    rootEl.querySelectorAll(`li[data-folder-id="${folderId}"]`)
+      .forEach(el => {
+        if (!el.classList.contains("folder")) el.remove();
+      });
   }
 };
 
 // ---- Install Loot Cache early
 Hooks.once("init", async () => {
   await cacheManager.getOrCreateCacheFolder();
-  // NPC cache is created lazily by Conflict Builder when needed
+  // NPC cache is created when needed, but hiding hooks are installed at ready.
 });
 
-// ---- Auto-clear Caches on world ready
+// ---- Auto-clear Caches on world ready and install hiders
 Hooks.once("ready", async () => {
   await cacheManager.clearCacheFolder();
   await cacheManager.clearNpcCacheFolder();
+
+  // Install hiders for both caches
+  cacheManager._installCacheHider();
+  cacheManager._installNpcCacheHider();
 });
