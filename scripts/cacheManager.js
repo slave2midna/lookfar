@@ -12,6 +12,8 @@ const LOOKFAR_STYLE_ID     = "lookfar-hide-cache-style";
 const LOOKFAR_NPC_CACHE_SYSTEM = "npc-cache";
 const LOOKFAR_NPC_CACHE_NAME   = "Lookfar NPC Cache";
 
+const LOG = "[Lookfar Cache]";
+
 // ---- Public API ----
 export const cacheManager = {
   _hooksInstalled: false,
@@ -43,7 +45,7 @@ export const cacheManager = {
   // ------------------------------------------------------------
   async getOrCreateCacheFolder() {
     if (!game?.folders || typeof game.folders.find !== "function") {
-      console.warn("[Lookfar] Folders collection not ready yet; skipping cache folder ensure for now.");
+      console.warn(`${LOG} Folders collection not ready yet; skipping cache folder ensure for now.`);
       return null;
     }
 
@@ -68,7 +70,7 @@ export const cacheManager = {
         color: "#999999",
         flags: { [LOOKFAR_FLAG_SCOPE]: { system: LOOKFAR_CACHE_SYSTEM, hidden: true } }
       });
-      console.log("[Lookfar] Created loot cache folder:", folder.name);
+      console.log(`${LOG} Created loot cache folder: ${folder.name}`);
     }
 
     // 3) Normalize ownership and flags
@@ -90,7 +92,7 @@ export const cacheManager = {
         });
       }
     } catch (e) {
-      console.warn("[Lookfar] Could not normalize cache folder flags/ownership", e);
+      console.warn(`${LOG} Could not normalize loot cache folder flags/ownership`, e);
     }
 
     // 4) Ensure UI hider installed
@@ -105,7 +107,7 @@ export const cacheManager = {
   // ------------------------------------------------------------
   async getOrCreateNpcCacheFolder() {
     if (!game?.folders || typeof game.folders.find !== "function") {
-      console.warn("[Lookfar] Folders collection not ready yet; skipping NPC cache ensure for now.");
+      console.warn(`${LOG} Folders collection not ready yet; skipping NPC cache ensure for now.`);
       return null;
     }
 
@@ -130,7 +132,7 @@ export const cacheManager = {
         color: "#999999",
         flags: { [LOOKFAR_FLAG_SCOPE]: { system: LOOKFAR_NPC_CACHE_SYSTEM, hidden: false } }
       });
-      console.log("[Lookfar] Created NPC cache folder:", folder.name);
+      console.log(`${LOG} Created NPC cache folder: ${folder.name}`);
     }
 
     // 3) Normalize flags and ownership
@@ -154,7 +156,7 @@ export const cacheManager = {
         });
       }
     } catch (e) {
-      console.warn("[Lookfar] Could not normalize NPC cache folder flags/ownership", e);
+      console.warn(`${LOG} Could not normalize NPC cache folder flags/ownership`, e);
     }
 
     // IMPORTANT: We DO NOT hide the NPC cache yet.
@@ -166,22 +168,58 @@ export const cacheManager = {
   // ------------------------------------------------------------
   async clearCacheFolder() {
     const activeGM = game.users?.activeGM;
-    if (!activeGM || game.user.id !== activeGM.id) return;
+    if (!activeGM || game.user.id !== activeGM.id) {
+      console.debug(`${LOG} clearCacheFolder skipped; user is not active GM.`);
+      return;
+    }
 
     const folder = await this.getOrCreateCacheFolder();
-    if (!folder) return;
+    if (!folder) {
+      console.debug(`${LOG} clearCacheFolder: no loot cache folder found.`);
+      return;
+    }
 
     const items = game.items.filter(i => i.folder?.id === folder.id);
     if (!items.length) {
-      console.log("[Lookfar] No cached items to clear.");
+      console.log(`${LOG} No cached loot items to clear in "${folder.name}".`);
       return;
     }
 
     try {
       await Item.deleteDocuments(items.map(i => i.id));
-      console.log(`[Lookfar] Cleared ${items.length} cached items from "${folder.name}".`);
+      console.log(`${LOG} Cleared ${items.length} cached loot items from "${folder.name}".`);
     } catch (err) {
-      console.warn("[Lookfar] Failed to clear loot cache (GM-only operation):", err);
+      console.warn(`${LOG} Failed to clear loot cache (GM-only operation):`, err);
+    }
+  },
+
+  // ------------------------------------------------------------
+  // Clear the *NPC* Cache Folder (Actors only)
+  // ------------------------------------------------------------
+  async clearNpcCacheFolder() {
+    const activeGM = game.users?.activeGM;
+    if (!activeGM || game.user.id !== activeGM.id) {
+      console.debug(`${LOG} clearNpcCacheFolder skipped; user is not active GM.`);
+      return;
+    }
+
+    const folder = await this.getOrCreateNpcCacheFolder();
+    if (!folder) {
+      console.debug(`${LOG} clearNpcCacheFolder: no NPC cache folder found.`);
+      return;
+    }
+
+    const npcs = game.actors.filter(a => a.folder?.id === folder.id);
+    if (!npcs.length) {
+      console.log(`${LOG} No cached NPCs to clear in "${folder.name}".`);
+      return;
+    }
+
+    try {
+      await Actor.deleteDocuments(npcs.map(a => a.id));
+      console.log(`${LOG} Cleared ${npcs.length} cached NPCs from "${folder.name}".`);
+    } catch (err) {
+      console.warn(`${LOG} Failed to clear NPC cache (GM-only operation):`, err);
     }
   },
 
@@ -240,7 +278,7 @@ export const cacheManager = {
 
       this._hooksInstalled = true;
     } catch (e) {
-      console.warn("[Lookfar] Failed to install cache hider", e);
+      console.warn(`${LOG} Failed to install cache hider`, e);
     }
   },
 
@@ -286,11 +324,11 @@ export const cacheManager = {
 // ---- Install Loot Cache early
 Hooks.once("init", async () => {
   await cacheManager.getOrCreateCacheFolder();
+  // NPC cache is created lazily by Conflict Builder when needed
 });
 
-// ---- Auto-clear Loot Cache on world ready
+// ---- Auto-clear Caches on world ready
 Hooks.once("ready", async () => {
   await cacheManager.clearCacheFolder();
-
-  // NPC cache is intentionally NOT cleared automatically yet
+  await cacheManager.clearNpcCacheFolder();
 });
