@@ -114,9 +114,9 @@
   },
   "Result": {
     "Danger": "Danger!",
-    "DangerMinor": "Minor Danger",
-    "DangerHeavy": "Heavy Danger",
-    "DangerMassive": "Massive Danger",
+    "DangerMinor": "Minor Danger!",
+    "DangerHeavy": "Heavy Danger!",
+    "DangerMassive": "Massive Danger!",
     "Discovery": "Discovery!"
   },
   "TableHeaders": {
@@ -469,6 +469,7 @@
 
   }
 }
+
 
 
 
