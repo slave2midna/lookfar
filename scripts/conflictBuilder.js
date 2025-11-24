@@ -495,8 +495,21 @@ async function openConflictBuilderDialog() {
             const maxX = Math.max(0, sceneWidth  - tokenPxW);
             const maxY = Math.max(0, sceneHeight - tokenPxH);
 
-            let rawX = u * maxX;
-            let rawY = v * maxY;
+            // Scene padding percentage (0 → 0.5)
+            const p = Number(targetScene.padding ?? 0) || 0;
+            const padScale = 1 + 2 * p;
+
+            // Convert preview (u,v) → background normalized coords
+            let u_bg = (u * padScale) - p;
+            let v_bg = (v * padScale) - p;
+
+            // Clamp
+            u_bg = Math.min(0.999, Math.max(0, u_bg));
+            v_bg = Math.min(0.999, Math.max(0, v_bg));
+
+            // Convert to pixel positions in true background space
+            let rawX = u_bg * maxX;
+            let rawY = v_bg * maxY;
 
             // no snapping: use raw positions, just clamp
             proto.x = Math.min(maxX, Math.max(0, rawX));
