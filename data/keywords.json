@@ -1,5 +1,5 @@
 {
-  "traits":[
+  "traits": [
     "LOOKFAR.Keywords.Traits.Abandoned",
     "LOOKFAR.Keywords.Traits.Ancient",
     "LOOKFAR.Keywords.Traits.Arcane",
@@ -88,7 +88,7 @@
     "LOOKFAR.Keywords.Traits.Withered",
     "LOOKFAR.Keywords.Traits.Wraithlike"
   ],
-  "terrain":[
+  "terrain": [
     "LOOKFAR.Keywords.Terrain.Alcove",
     "LOOKFAR.Keywords.Terrain.Altar",
     "LOOKFAR.Keywords.Terrain.Aqueduct",
@@ -206,494 +206,494 @@
     "LOOKFAR.Keywords.Terrain.Zeppelin",
     "LOOKFAR.Keywords.Terrain.Ziggurat"
   ],
-  "nature":{
-    "material":{
-      "Anthropod":[
-        "Carapace",
-        "Mandible",
-        "Pincer",
-        "Shell",
-        "Stinger"
+  "nature": {
+    "material": {
+      "Anthropod": [
+        "LOOKFAR.Keywords.Nature.Material.Anthropod.Carapace",
+        "LOOKFAR.Keywords.Nature.Material.Anthropod.Mandible",
+        "LOOKFAR.Keywords.Nature.Material.Anthropod.Pincer",
+        "LOOKFAR.Keywords.Nature.Material.Anthropod.Shell",
+        "LOOKFAR.Keywords.Nature.Material.Anthropod.Stinger"
       ],
-      "Bird":[
-        "Feather",
-        "Talon",
-        "Beak",
-        "Claw",
-        "Bone"
+      "Bird": [
+        "LOOKFAR.Keywords.Nature.Material.Bird.Feather",
+        "LOOKFAR.Keywords.Nature.Material.Bird.Talon",
+        "LOOKFAR.Keywords.Nature.Material.Bird.Beak",
+        "LOOKFAR.Keywords.Nature.Material.Bird.Claw",
+        "LOOKFAR.Keywords.Nature.Material.Bird.Bone"
       ],
-      "Fish":[
-        "Fin",
-        "Scale",
-        "Gill",
-        "Tooth",
-        "Bone"
+      "Fish": [
+        "LOOKFAR.Keywords.Nature.Material.Fish.Fin",
+        "LOOKFAR.Keywords.Nature.Material.Fish.Scale",
+        "LOOKFAR.Keywords.Nature.Material.Fish.Gill",
+        "LOOKFAR.Keywords.Nature.Material.Fish.Tooth",
+        "LOOKFAR.Keywords.Nature.Material.Fish.Bone"
       ],
-      "Mammal":[
-        "Bone",
-        "Fur",
-        "Horn",
-        "Hide",
-        "Tusk"
+      "Mammal": [
+        "LOOKFAR.Keywords.Nature.Material.Mammal.Bone",
+        "LOOKFAR.Keywords.Nature.Material.Mammal.Fur",
+        "LOOKFAR.Keywords.Nature.Material.Mammal.Horn",
+        "LOOKFAR.Keywords.Nature.Material.Mammal.Hide",
+        "LOOKFAR.Keywords.Nature.Material.Mammal.Tusk"
       ],
-      "Mollusk":[
-        "Shell",
-        "Pearl",
-        "Valve",
-        "Mantle",
-        "Beak"
+      "Mollusk": [
+        "LOOKFAR.Keywords.Nature.Material.Mollusk.Shell",
+        "LOOKFAR.Keywords.Nature.Material.Mollusk.Pearl",
+        "LOOKFAR.Keywords.Nature.Material.Mollusk.Valve",
+        "LOOKFAR.Keywords.Nature.Material.Mollusk.Mantle",
+        "LOOKFAR.Keywords.Nature.Material.Mollusk.Beak"
       ],
-      "Reptile":[
-        "Claw",
-        "Scale",
-        "Tail",
-        "Spine",
-        "Fang"
+      "Reptile": [
+        "LOOKFAR.Keywords.Nature.Material.Reptile.Claw",
+        "LOOKFAR.Keywords.Nature.Material.Reptile.Scale",
+        "LOOKFAR.Keywords.Nature.Material.Reptile.Tail",
+        "LOOKFAR.Keywords.Nature.Material.Reptile.Spine",
+        "LOOKFAR.Keywords.Nature.Material.Reptile.Fang"
       ],
-      "Fungus":[
-        "Sporecase",
-        "Cap",
-        "Vein",
-        "Stem",
-        "Fiber"
+      "Fungus": [
+        "LOOKFAR.Keywords.Nature.Material.Fungus.Sporecase",
+        "LOOKFAR.Keywords.Nature.Material.Fungus.Cap",
+        "LOOKFAR.Keywords.Nature.Material.Fungus.Vein",
+        "LOOKFAR.Keywords.Nature.Material.Fungus.Stem",
+        "LOOKFAR.Keywords.Nature.Material.Fungus.Fiber"
       ],
-      "Incorporeal":[
-        "Wisp",
-        "Vapor",
-        "Ash",
-        "Essence",
-        "Soul"
+      "Incorporeal": [
+        "LOOKFAR.Keywords.Nature.Material.Incorporeal.Wisp",
+        "LOOKFAR.Keywords.Nature.Material.Incorporeal.Vapor",
+        "LOOKFAR.Keywords.Nature.Material.Incorporeal.Ash",
+        "LOOKFAR.Keywords.Nature.Material.Incorporeal.Essence",
+        "LOOKFAR.Keywords.Nature.Material.Incorporeal.Soul"
       ],
-      "Liquid":[
-        "Droplet",
-        "Globule",
-        "Ichor",
-        "Resin",
-        "Film"
+      "Liquid": [
+        "LOOKFAR.Keywords.Nature.Material.Liquid.Droplet",
+        "LOOKFAR.Keywords.Nature.Material.Liquid.Globule",
+        "LOOKFAR.Keywords.Nature.Material.Liquid.Ichor",
+        "LOOKFAR.Keywords.Nature.Material.Liquid.Resin",
+        "LOOKFAR.Keywords.Nature.Material.Liquid.Film"
       ],
-      "Artificial":[
-        "Alloy",
-        "Circuit",
-        "Frame",
-        "Casing",
-        "Component"
+      "Artificial": [
+        "LOOKFAR.Keywords.Nature.Material.Artificial.Alloy",
+        "LOOKFAR.Keywords.Nature.Material.Artificial.Circuit",
+        "LOOKFAR.Keywords.Nature.Material.Artificial.Frame",
+        "LOOKFAR.Keywords.Nature.Material.Artificial.Casing",
+        "LOOKFAR.Keywords.Nature.Material.Artificial.Component"
       ],
-      "Mineral":[
-        "Crystal",
-        "Shard",
-        "Ore",
-        "Fragment",
-        "Nodule"
+      "Mineral": [
+        "LOOKFAR.Keywords.Nature.Material.Mineral.Crystal",
+        "LOOKFAR.Keywords.Nature.Material.Mineral.Shard",
+        "LOOKFAR.Keywords.Nature.Material.Mineral.Ore",
+        "LOOKFAR.Keywords.Nature.Material.Mineral.Fragment",
+        "LOOKFAR.Keywords.Nature.Material.Mineral.Nodule"
       ],
-      "Plant":[
-        "Branch",
-        "Vine",
-        "Bark",
-        "Thorn",
-        "Reed"
+      "Plant": [
+        "LOOKFAR.Keywords.Nature.Material.Plant.Branch",
+        "LOOKFAR.Keywords.Nature.Material.Plant.Vine",
+        "LOOKFAR.Keywords.Nature.Material.Plant.Bark",
+        "LOOKFAR.Keywords.Nature.Material.Plant.Thorn",
+        "LOOKFAR.Keywords.Nature.Material.Plant.Reed"
       ]
     },
-    "ingredient":{
-      "Anthropod":[
-        "Meat",
-        "Sac",
-        "Egg",
-        "Leg",
-        "Juice"
+    "ingredient": {
+      "Anthropod": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Anthropod.Meat",
+        "LOOKFAR.Keywords.Nature.Ingredient.Anthropod.Sac",
+        "LOOKFAR.Keywords.Nature.Ingredient.Anthropod.Egg",
+        "LOOKFAR.Keywords.Nature.Ingredient.Anthropod.Leg",
+        "LOOKFAR.Keywords.Nature.Ingredient.Anthropod.Juice"
       ],
-      "Bird":[
-        "Egg",
-        "Wing",
-        "Meat",
-        "Heart",
-        "Blood"
+      "Bird": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Bird.Egg",
+        "LOOKFAR.Keywords.Nature.Ingredient.Bird.Wing",
+        "LOOKFAR.Keywords.Nature.Ingredient.Bird.Meat",
+        "LOOKFAR.Keywords.Nature.Ingredient.Bird.Heart",
+        "LOOKFAR.Keywords.Nature.Ingredient.Bird.Blood"
       ],
-      "Fish":[
-        "Meat",
-        "Egg",
-        "Oil",
-        "Eye",
-        "Bile"
+      "Fish": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Fish.Meat",
+        "LOOKFAR.Keywords.Nature.Ingredient.Fish.Egg",
+        "LOOKFAR.Keywords.Nature.Ingredient.Fish.Oil",
+        "LOOKFAR.Keywords.Nature.Ingredient.Fish.Eye",
+        "LOOKFAR.Keywords.Nature.Ingredient.Fish.Bile"
       ],
-      "Mammal":[
-        "Meat",
-        "Fat",
-        "Organ",
-        "Milk",
-        "Blood"
+      "Mammal": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Mammal.Meat",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mammal.Fat",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mammal.Organ",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mammal.Milk",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mammal.Blood"
       ],
-      "Mollusk":[
-        "Flesh",
-        "Ink",
-        "Gland",
-        "Slurry",
-        "Meat"
+      "Mollusk": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Mollusk.Flesh",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mollusk.Ink",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mollusk.Gland",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mollusk.Slurry",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mollusk.Meat"
       ],
-      "Reptile":[
-        "Meat",
-        "Egg",
-        "Venom",
-        "Blood",
-        "Liver"
+      "Reptile": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Reptile.Meat",
+        "LOOKFAR.Keywords.Nature.Ingredient.Reptile.Egg",
+        "LOOKFAR.Keywords.Nature.Ingredient.Reptile.Venom",
+        "LOOKFAR.Keywords.Nature.Ingredient.Reptile.Blood",
+        "LOOKFAR.Keywords.Nature.Ingredient.Reptile.Liver"
       ],
-      "Fungus":[
-        "Shroom",
-        "Spore",
-        "Flesh",
-        "Pulp",
-        "Residue"
+      "Fungus": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Fungus.Shroom",
+        "LOOKFAR.Keywords.Nature.Ingredient.Fungus.Spore",
+        "LOOKFAR.Keywords.Nature.Ingredient.Fungus.Flesh",
+        "LOOKFAR.Keywords.Nature.Ingredient.Fungus.Pulp",
+        "LOOKFAR.Keywords.Nature.Ingredient.Fungus.Residue"
       ],
-      "Incorporeal":[
-        "Mist",
-        "Plasma",
-        "Breath",
-        "Essence",
-        "Residue"
+      "Incorporeal": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Incorporeal.Mist",
+        "LOOKFAR.Keywords.Nature.Ingredient.Incorporeal.Plasma",
+        "LOOKFAR.Keywords.Nature.Ingredient.Incorporeal.Breath",
+        "LOOKFAR.Keywords.Nature.Ingredient.Incorporeal.Essence",
+        "LOOKFAR.Keywords.Nature.Ingredient.Incorporeal.Residue"
       ],
-      "Liquid":[
-        "Fluid",
-        "Reagent",
-        "Syrup",
-        "Slime",
-        "Gel"
+      "Liquid": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Liquid.Fluid",
+        "LOOKFAR.Keywords.Nature.Ingredient.Liquid.Reagent",
+        "LOOKFAR.Keywords.Nature.Ingredient.Liquid.Syrup",
+        "LOOKFAR.Keywords.Nature.Ingredient.Liquid.Slime",
+        "LOOKFAR.Keywords.Nature.Ingredient.Liquid.Gel"
       ],
-      "Artificial":[
-        "Gel",
-        "Solution",
-        "Compound",
-        "Serum",
-        "Extract"
+      "Artificial": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Artificial.Gel",
+        "LOOKFAR.Keywords.Nature.Ingredient.Artificial.Solution",
+        "LOOKFAR.Keywords.Nature.Ingredient.Artificial.Compound",
+        "LOOKFAR.Keywords.Nature.Ingredient.Artificial.Serum",
+        "LOOKFAR.Keywords.Nature.Ingredient.Artificial.Extract"
       ],
-      "Mineral":[
-        "Dust",
-        "Grain",
-        "Powder",
-        "Salt",
-        "Residue"
+      "Mineral": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Mineral.Dust",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mineral.Grain",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mineral.Powder",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mineral.Salt",
+        "LOOKFAR.Keywords.Nature.Ingredient.Mineral.Residue"
       ],
-      "Plant":[
-        "Leaf",
-        "Seed",
-        "Fruit",
-        "Sap",
-        "Root"
+      "Plant": [
+        "LOOKFAR.Keywords.Nature.Ingredient.Plant.Leaf",
+        "LOOKFAR.Keywords.Nature.Ingredient.Plant.Seed",
+        "LOOKFAR.Keywords.Nature.Ingredient.Plant.Fruit",
+        "LOOKFAR.Keywords.Nature.Ingredient.Plant.Sap",
+        "LOOKFAR.Keywords.Nature.Ingredient.Plant.Root"
       ]
     }
   },
-  "origin":{
-    "material":{
-      "Aerial":[
-        "Light",
-        "Hollow",
-        "Avian",
-        "Fowl",
-        "Drift"
+  "origin": {
+    "material": {
+      "Aerial": [
+        "LOOKFAR.Keywords.Origin.Material.Aerial.Light",
+        "LOOKFAR.Keywords.Origin.Material.Aerial.Hollow",
+        "LOOKFAR.Keywords.Origin.Material.Aerial.Avian",
+        "LOOKFAR.Keywords.Origin.Material.Aerial.Fowl",
+        "LOOKFAR.Keywords.Origin.Material.Aerial.Drift"
       ],
-      "Thunderous":[
-        "Conductive",
-        "Magnetic",
-        "Charged",
-        "Ionic",
-        "Crackling"
+      "Thunderous": [
+        "LOOKFAR.Keywords.Origin.Material.Thunderous.Conductive",
+        "LOOKFAR.Keywords.Origin.Material.Thunderous.Magnetic",
+        "LOOKFAR.Keywords.Origin.Material.Thunderous.Charged",
+        "LOOKFAR.Keywords.Origin.Material.Thunderous.Ionic",
+        "LOOKFAR.Keywords.Origin.Material.Thunderous.Crackling"
       ],
-      "Paradox":[
-        "Fractured",
-        "Glitched",
-        "Timeless",
-        "Looped",
-        "Entropic"
+      "Paradox": [
+        "LOOKFAR.Keywords.Origin.Material.Paradox.Fractured",
+        "LOOKFAR.Keywords.Origin.Material.Paradox.Glitched",
+        "LOOKFAR.Keywords.Origin.Material.Paradox.Timeless",
+        "LOOKFAR.Keywords.Origin.Material.Paradox.Looped",
+        "LOOKFAR.Keywords.Origin.Material.Paradox.Entropic"
       ],
-      "Terrestrial":[
-        "Fossilized",
-        "Quarried",
-        "Sedimentary",
-        "Iron",
-        "Earthen"
+      "Terrestrial": [
+        "LOOKFAR.Keywords.Origin.Material.Terrestrial.Fossilized",
+        "LOOKFAR.Keywords.Origin.Material.Terrestrial.Quarried",
+        "LOOKFAR.Keywords.Origin.Material.Terrestrial.Sedimentary",
+        "LOOKFAR.Keywords.Origin.Material.Terrestrial.Iron",
+        "LOOKFAR.Keywords.Origin.Material.Terrestrial.Earthen"
       ],
-      "Ardent":[
-        "Blazing",
-        "Molten",
-        "Smoldering",
-        "Scorched",
-        "Embered"
+      "Ardent": [
+        "LOOKFAR.Keywords.Origin.Material.Ardent.Blazing",
+        "LOOKFAR.Keywords.Origin.Material.Ardent.Molten",
+        "LOOKFAR.Keywords.Origin.Material.Ardent.Smoldering",
+        "LOOKFAR.Keywords.Origin.Material.Ardent.Scorched",
+        "LOOKFAR.Keywords.Origin.Material.Ardent.Embered"
       ],
-      "Glacial":[
-        "Crystalline",
-        "Frozen",
-        "Encased",
-        "Glassy",
-        "Still"
+      "Glacial": [
+        "LOOKFAR.Keywords.Origin.Material.Glacial.Crystalline",
+        "LOOKFAR.Keywords.Origin.Material.Glacial.Frozen",
+        "LOOKFAR.Keywords.Origin.Material.Glacial.Encased",
+        "LOOKFAR.Keywords.Origin.Material.Glacial.Glassy",
+        "LOOKFAR.Keywords.Origin.Material.Glacial.Still"
       ],
-      "Spiritual":[
-        "Sanctified",
-        "Echoing",
-        "Hallowed",
-        "Woven",
-        "Otherbound"
+      "Spiritual": [
+        "LOOKFAR.Keywords.Origin.Material.Spiritual.Sanctified",
+        "LOOKFAR.Keywords.Origin.Material.Spiritual.Echoing",
+        "LOOKFAR.Keywords.Origin.Material.Spiritual.Hallowed",
+        "LOOKFAR.Keywords.Origin.Material.Spiritual.Woven",
+        "LOOKFAR.Keywords.Origin.Material.Spiritual.Otherbound"
       ],
-      "Corrupted":[
-        "Warped",
-        "Blight",
-        "Decayed",
-        "Toxic",
-        "Speckled"
+      "Corrupted": [
+        "LOOKFAR.Keywords.Origin.Material.Corrupted.Warped",
+        "LOOKFAR.Keywords.Origin.Material.Corrupted.Blight",
+        "LOOKFAR.Keywords.Origin.Material.Corrupted.Decayed",
+        "LOOKFAR.Keywords.Origin.Material.Corrupted.Toxic",
+        "LOOKFAR.Keywords.Origin.Material.Corrupted.Speckled"
       ],
-      "Aquatic":[
-        "Barnacled",
-        "Soaked",
-        "Flooded",
-        "Tidal",
-        "Marshbound"
+      "Aquatic": [
+        "LOOKFAR.Keywords.Origin.Material.Aquatic.Barnacled",
+        "LOOKFAR.Keywords.Origin.Material.Aquatic.Soaked",
+        "LOOKFAR.Keywords.Origin.Material.Aquatic.Flooded",
+        "LOOKFAR.Keywords.Origin.Material.Aquatic.Tidal",
+        "LOOKFAR.Keywords.Origin.Material.Aquatic.Marshbound"
       ],
-      "Mechanical":[
-        "Cogged",
-        "Bolted",
-        "Clockwork",
-        "Forged",
-        "Powered"
+      "Mechanical": [
+        "LOOKFAR.Keywords.Origin.Material.Mechanical.Cogged",
+        "LOOKFAR.Keywords.Origin.Material.Mechanical.Bolted",
+        "LOOKFAR.Keywords.Origin.Material.Mechanical.Clockwork",
+        "LOOKFAR.Keywords.Origin.Material.Mechanical.Forged",
+        "LOOKFAR.Keywords.Origin.Material.Mechanical.Powered"
       ]
     },
-    "ingredient":{
-      "Aerial":[
-        "Fluffy",
-        "Airy",
-        "Crisp",
-        "Wispy",
-        "Downy"
+    "ingredient": {
+      "Aerial": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Aerial.Fluffy",
+        "LOOKFAR.Keywords.Origin.Ingredient.Aerial.Airy",
+        "LOOKFAR.Keywords.Origin.Ingredient.Aerial.Crisp",
+        "LOOKFAR.Keywords.Origin.Ingredient.Aerial.Wispy",
+        "LOOKFAR.Keywords.Origin.Ingredient.Aerial.Downy"
       ],
-      "Thunderous":[
-        "Crackling",
-        "Zesty",
-        "Sparkling",
-        "Sizzling",
-        "Charged"
+      "Thunderous": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Thunderous.Crackling",
+        "LOOKFAR.Keywords.Origin.Ingredient.Thunderous.Zesty",
+        "LOOKFAR.Keywords.Origin.Ingredient.Thunderous.Sparkling",
+        "LOOKFAR.Keywords.Origin.Ingredient.Thunderous.Sizzling",
+        "LOOKFAR.Keywords.Origin.Ingredient.Thunderous.Charged"
       ],
-      "Paradox":[
-        "Flickering",
-        "Prismatic",
-        "Twisted",
-        "Mishapen",
-        "Glistening"
+      "Paradox": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Paradox.Flickering",
+        "LOOKFAR.Keywords.Origin.Ingredient.Paradox.Prismatic",
+        "LOOKFAR.Keywords.Origin.Ingredient.Paradox.Twisted",
+        "LOOKFAR.Keywords.Origin.Ingredient.Paradox.Mishapen",
+        "LOOKFAR.Keywords.Origin.Ingredient.Paradox.Glistening"
       ],
-      "Terrestrial":[
-        "Coarse",
-        "Earthen",
-        "Grainy",
-        "Brown",
-        "Loamy"
+      "Terrestrial": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Terrestrial.Coarse",
+        "LOOKFAR.Keywords.Origin.Ingredient.Terrestrial.Earthen",
+        "LOOKFAR.Keywords.Origin.Ingredient.Terrestrial.Grainy",
+        "LOOKFAR.Keywords.Origin.Ingredient.Terrestrial.Brown",
+        "LOOKFAR.Keywords.Origin.Ingredient.Terrestrial.Loamy"
       ],
-      "Ardent":[
-        "Roasted",
-        "Smoked",
-        "Charred",
-        "Toasted",
-        "Glazed"
+      "Ardent": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Ardent.Roasted",
+        "LOOKFAR.Keywords.Origin.Ingredient.Ardent.Smoked",
+        "LOOKFAR.Keywords.Origin.Ingredient.Ardent.Charred",
+        "LOOKFAR.Keywords.Origin.Ingredient.Ardent.Toasted",
+        "LOOKFAR.Keywords.Origin.Ingredient.Ardent.Glazed"
       ],
-      "Glacial":[
-        "Chilled",
-        "Crystalline",
-        "Cold",
-        "Smooth",
-        "Brittle"
+      "Glacial": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Glacial.Chilled",
+        "LOOKFAR.Keywords.Origin.Ingredient.Glacial.Crystalline",
+        "LOOKFAR.Keywords.Origin.Ingredient.Glacial.Cold",
+        "LOOKFAR.Keywords.Origin.Ingredient.Glacial.Smooth",
+        "LOOKFAR.Keywords.Origin.Ingredient.Glacial.Brittle"
       ],
-      "Spiritual":[
-        "Luminous",
-        "Silk",
-        "Translucent",
-        "Hollow",
-        "Misted"
+      "Spiritual": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Spiritual.Luminous",
+        "LOOKFAR.Keywords.Origin.Ingredient.Spiritual.Silk",
+        "LOOKFAR.Keywords.Origin.Ingredient.Spiritual.Translucent",
+        "LOOKFAR.Keywords.Origin.Ingredient.Spiritual.Hollow",
+        "LOOKFAR.Keywords.Origin.Ingredient.Spiritual.Misted"
       ],
-      "Corrupted":[
-        "Stained",
-        "Wilted",
-        "Marbled",
-        "Fermented",
-        "Spoiled"
+      "Corrupted": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Corrupted.Stained",
+        "LOOKFAR.Keywords.Origin.Ingredient.Corrupted.Wilted",
+        "LOOKFAR.Keywords.Origin.Ingredient.Corrupted.Marbled",
+        "LOOKFAR.Keywords.Origin.Ingredient.Corrupted.Fermented",
+        "LOOKFAR.Keywords.Origin.Ingredient.Corrupted.Spoiled"
       ],
-      "Aquatic":[
-        "Moist",
-        "Scaley",
-        "Brined",
-        "Puffy",
-        "Slick"
+      "Aquatic": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Aquatic.Moist",
+        "LOOKFAR.Keywords.Origin.Ingredient.Aquatic.Scaley",
+        "LOOKFAR.Keywords.Origin.Ingredient.Aquatic.Brined",
+        "LOOKFAR.Keywords.Origin.Ingredient.Aquatic.Puffy",
+        "LOOKFAR.Keywords.Origin.Ingredient.Aquatic.Slick"
       ],
-      "Mechanical":[
-        "Refined",
-        "Pressed",
-        "Distilled",
-        "Tempered",
-        "Infused"
+      "Mechanical": [
+        "LOOKFAR.Keywords.Origin.Ingredient.Mechanical.Refined",
+        "LOOKFAR.Keywords.Origin.Ingredient.Mechanical.Pressed",
+        "LOOKFAR.Keywords.Origin.Ingredient.Mechanical.Distilled",
+        "LOOKFAR.Keywords.Origin.Ingredient.Mechanical.Tempered",
+        "LOOKFAR.Keywords.Origin.Ingredient.Mechanical.Infused"
       ]
     }
   },
-  "detail":{
-    "agility":[
-      "Stretchy",
-      "Pointy",
-      "Slender",
-      "Slippery",
-      "Hooded",
-      "Moist",
-      "Slimey",
-      "Springy",
-      "Small",
-      "Responsive"
+  "detail": {
+    "agility": [
+      "LOOKFAR.Keywords.Detail.Agility.Stretchy",
+      "LOOKFAR.Keywords.Detail.Agility.Pointy",
+      "LOOKFAR.Keywords.Detail.Agility.Slender",
+      "LOOKFAR.Keywords.Detail.Agility.Slippery",
+      "LOOKFAR.Keywords.Detail.Agility.Hooded",
+      "LOOKFAR.Keywords.Detail.Agility.Moist",
+      "LOOKFAR.Keywords.Detail.Agility.Slimey",
+      "LOOKFAR.Keywords.Detail.Agility.Springy",
+      "LOOKFAR.Keywords.Detail.Agility.Small",
+      "LOOKFAR.Keywords.Detail.Agility.Responsive"
     ],
-    "powerful":[
-      "Strong",
-      "Big",
-      "Hefty",
-      "Prickly",
-      "Serrated",
-      "Blunt",
-      "Red",
-      "Huge",
-      "Sharp",
-      "Clubbed"
+    "powerful": [
+      "LOOKFAR.Keywords.Detail.Powerful.Strong",
+      "LOOKFAR.Keywords.Detail.Powerful.Big",
+      "LOOKFAR.Keywords.Detail.Powerful.Hefty",
+      "LOOKFAR.Keywords.Detail.Powerful.Prickly",
+      "LOOKFAR.Keywords.Detail.Powerful.Serrated",
+      "LOOKFAR.Keywords.Detail.Powerful.Blunt",
+      "LOOKFAR.Keywords.Detail.Powerful.Red",
+      "LOOKFAR.Keywords.Detail.Powerful.Huge",
+      "LOOKFAR.Keywords.Detail.Powerful.Sharp",
+      "LOOKFAR.Keywords.Detail.Powerful.Clubbed"
     ],
-    "protective":[
-      "Sturdy",
-      "Plated",
-      "Blue",
-      "Shielded",
-      "Hardened",
-      "Tough",
-      "Thick",
-      "Layered",
-      "Bulbous",
-      "Bloated"
+    "protective": [
+      "LOOKFAR.Keywords.Detail.Protective.Sturdy",
+      "LOOKFAR.Keywords.Detail.Protective.Plated",
+      "LOOKFAR.Keywords.Detail.Protective.Blue",
+      "LOOKFAR.Keywords.Detail.Protective.Shielded",
+      "LOOKFAR.Keywords.Detail.Protective.Hardened",
+      "LOOKFAR.Keywords.Detail.Protective.Tough",
+      "LOOKFAR.Keywords.Detail.Protective.Thick",
+      "LOOKFAR.Keywords.Detail.Protective.Layered",
+      "LOOKFAR.Keywords.Detail.Protective.Bulbous",
+      "LOOKFAR.Keywords.Detail.Protective.Bloated"
     ],
-    "recovery":[
-      "Curative",
-      "Steady",
-      "Healthy",
-      "Lush",
-      "Hearty",
-      "Repaired",
-      "Stable",
-      "Fresh",
-      "Green",
-      "Regenerating"
+    "recovery": [
+      "LOOKFAR.Keywords.Detail.Recovery.Curative",
+      "LOOKFAR.Keywords.Detail.Recovery.Steady",
+      "LOOKFAR.Keywords.Detail.Recovery.Healthy",
+      "LOOKFAR.Keywords.Detail.Recovery.Lush",
+      "LOOKFAR.Keywords.Detail.Recovery.Hearty",
+      "LOOKFAR.Keywords.Detail.Recovery.Repaired",
+      "LOOKFAR.Keywords.Detail.Recovery.Stable",
+      "LOOKFAR.Keywords.Detail.Recovery.Fresh",
+      "LOOKFAR.Keywords.Detail.Recovery.Green",
+      "LOOKFAR.Keywords.Detail.Recovery.Regenerating"
     ],
-    "debilitating":[
-      "Corrosive",
-      "Drained",
-      "Hexed",
-      "Mutated",
-      "Melting",
-      "Withered",
-      "Cursed",
-      "Freckled",
-      "Black",
-      "Infected"
+    "debilitating": [
+      "LOOKFAR.Keywords.Detail.Debilitating.Corrosive",
+      "LOOKFAR.Keywords.Detail.Debilitating.Drained",
+      "LOOKFAR.Keywords.Detail.Debilitating.Hexed",
+      "LOOKFAR.Keywords.Detail.Debilitating.Mutated",
+      "LOOKFAR.Keywords.Detail.Debilitating.Melting",
+      "LOOKFAR.Keywords.Detail.Debilitating.Withered",
+      "LOOKFAR.Keywords.Detail.Debilitating.Cursed",
+      "LOOKFAR.Keywords.Detail.Debilitating.Freckled",
+      "LOOKFAR.Keywords.Detail.Debilitating.Black",
+      "LOOKFAR.Keywords.Detail.Debilitating.Infected"
     ],
-    "support":[
-      "Yellow",
-      "Spongey",
-      "Ribbed",
-      "Squeaky",
-      "Humming",
-      "Resonating",
-      "Reflective",
-      "Porous",
-      "Boosted",
-      "Sticky"
+    "support": [
+      "LOOKFAR.Keywords.Detail.Support.Yellow",
+      "LOOKFAR.Keywords.Detail.Support.Spongey",
+      "LOOKFAR.Keywords.Detail.Support.Ribbed",
+      "LOOKFAR.Keywords.Detail.Support.Squeaky",
+      "LOOKFAR.Keywords.Detail.Support.Humming",
+      "LOOKFAR.Keywords.Detail.Support.Resonating",
+      "LOOKFAR.Keywords.Detail.Support.Reflective",
+      "LOOKFAR.Keywords.Detail.Support.Porous",
+      "LOOKFAR.Keywords.Detail.Support.Boosted",
+      "LOOKFAR.Keywords.Detail.Support.Sticky"
     ]
   },
-  "taste":{
-    "bitter":[
-      "Astringent",
-      "Harsh",
-      "Tannic",
-      "Sharp",
-      "Acrid",
-      "Dry",
-      "Medicinal",
-      "Pungent",
-      "Bracing",
-      "Earthy"
+  "taste": {
+    "bitter": [
+      "LOOKFAR.Keywords.Taste.Bitter.Astringent",
+      "LOOKFAR.Keywords.Taste.Bitter.Harsh",
+      "LOOKFAR.Keywords.Taste.Bitter.Tannic",
+      "LOOKFAR.Keywords.Taste.Bitter.Sharp",
+      "LOOKFAR.Keywords.Taste.Bitter.Acrid",
+      "LOOKFAR.Keywords.Taste.Bitter.Dry",
+      "LOOKFAR.Keywords.Taste.Bitter.Medicinal",
+      "LOOKFAR.Keywords.Taste.Bitter.Pungent",
+      "LOOKFAR.Keywords.Taste.Bitter.Bracing",
+      "LOOKFAR.Keywords.Taste.Bitter.Earthy"
     ],
-    "sour":[
-      "Tart",
-      "Tangy",
-      "Zesty",
-      "Citrusy",
-      "Acidic",
-      "Lip-puckering",
-      "Vinegary",
-      "Fermented",
-      "Lemon",
-      "Crisp"
+    "sour": [
+      "LOOKFAR.Keywords.Taste.Sour.Tart",
+      "LOOKFAR.Keywords.Taste.Sour.Tangy",
+      "LOOKFAR.Keywords.Taste.Sour.Zesty",
+      "LOOKFAR.Keywords.Taste.Sour.Citrusy",
+      "LOOKFAR.Keywords.Taste.Sour.Acidic",
+      "LOOKFAR.Keywords.Taste.Sour.LipPuckering",
+      "LOOKFAR.Keywords.Taste.Sour.Vinegary",
+      "LOOKFAR.Keywords.Taste.Sour.Fermented",
+      "LOOKFAR.Keywords.Taste.Sour.Lemon",
+      "LOOKFAR.Keywords.Taste.Sour.Crisp"
     ],
-    "sweet":[
-      "Sugary",
-      "Honeyed",
-      "Syrupy",
-      "Candy-like",
-      "Nectarous",
-      "Saccharine",
-      "Luscious",
-      "Caramelized",
-      "Fruity",
-      "Rich"
+    "sweet": [
+      "LOOKFAR.Keywords.Taste.Sweet.Sugary",
+      "LOOKFAR.Keywords.Taste.Sweet.Honeyed",
+      "LOOKFAR.Keywords.Taste.Sweet.Syrupy",
+      "LOOKFAR.Keywords.Taste.Sweet.CandyLike",
+      "LOOKFAR.Keywords.Taste.Sweet.Nectarous",
+      "LOOKFAR.Keywords.Taste.Sweet.Saccharine",
+      "LOOKFAR.Keywords.Taste.Sweet.Luscious",
+      "LOOKFAR.Keywords.Taste.Sweet.Caramelized",
+      "LOOKFAR.Keywords.Taste.Sweet.Fruity",
+      "LOOKFAR.Keywords.Taste.Sweet.Rich"
     ],
-    "salty":[
-      "Briny",
-      "Savory",
-      "Pickled",
-      "Cured",
-      "Mineral",
-      "Zingy",
-      "Piquant",
-      "Aged",
-      "Smoky",
-      "Oceanic"
+    "salty": [
+      "LOOKFAR.Keywords.Taste.Salty.Briny",
+      "LOOKFAR.Keywords.Taste.Salty.Savory",
+      "LOOKFAR.Keywords.Taste.Salty.Pickled",
+      "LOOKFAR.Keywords.Taste.Salty.Cured",
+      "LOOKFAR.Keywords.Taste.Salty.Mineral",
+      "LOOKFAR.Keywords.Taste.Salty.Zingy",
+      "LOOKFAR.Keywords.Taste.Salty.Piquant",
+      "LOOKFAR.Keywords.Taste.Salty.Aged",
+      "LOOKFAR.Keywords.Taste.Salty.Smoky",
+      "LOOKFAR.Keywords.Taste.Salty.Oceanic"
     ],
-    "umami":[
-      "Meaty",
-      "Brothy",
-      "Rich",
-      "Mushroomy",
-      "Hearty",
-      "Deep",
-      "Robust",
-      "Soy-like",
-      "Mellow",
-      "Full-bodied"
+    "umami": [
+      "LOOKFAR.Keywords.Taste.Umami.Meaty",
+      "LOOKFAR.Keywords.Taste.Umami.Brothy",
+      "LOOKFAR.Keywords.Taste.Umami.Rich",
+      "LOOKFAR.Keywords.Taste.Umami.Mushroomy",
+      "LOOKFAR.Keywords.Taste.Umami.Hearty",
+      "LOOKFAR.Keywords.Taste.Umami.Deep",
+      "LOOKFAR.Keywords.Taste.Umami.Robust",
+      "LOOKFAR.Keywords.Taste.Umami.SoyLike",
+      "LOOKFAR.Keywords.Taste.Umami.Mellow",
+      "LOOKFAR.Keywords.Taste.Umami.FullBodied"
     ]
   },
-  "element":{
-    "fire":[
-      "Flaming",
-      "Fire"
+  "element": {
+    "fire": [
+      "LOOKFAR.Keywords.Element.Fire.Flaming",
+      "LOOKFAR.Keywords.Element.Fire.Fire"
     ],
-    "ice":[
-      "Cold",
-      "Ice"
+    "ice": [
+      "LOOKFAR.Keywords.Element.Ice.Cold",
+      "LOOKFAR.Keywords.Element.Ice.Ice"
     ],
-    "earth":[
-      "Stone",
-      "Earth"
+    "earth": [
+      "LOOKFAR.Keywords.Element.Earth.Stone",
+      "LOOKFAR.Keywords.Element.Earth.Earth"
     ],
-    "bolt":[
-      "Electric",
-      "Bolt"
+    "bolt": [
+      "LOOKFAR.Keywords.Element.Bolt.Electric",
+      "LOOKFAR.Keywords.Element.Bolt.Bolt"
     ],
-    "air":[
-      "Energy",
-      "Wind"
+    "air": [
+      "LOOKFAR.Keywords.Element.Air.Energy",
+      "LOOKFAR.Keywords.Element.Air.Wind"
     ],
-    "dark":[
-      "Cursed",
-      "Dark"
+    "dark": [
+      "LOOKFAR.Keywords.Element.Dark.Cursed",
+      "LOOKFAR.Keywords.Element.Dark.Dark"
     ],
-    "light":[
-      "Holy",
-      "Light"
+    "light": [
+      "LOOKFAR.Keywords.Element.Light.Holy",
+      "LOOKFAR.Keywords.Element.Light.Light"
     ],
-    "poison":[
-      "Toxic",
-      "Poison"
+    "poison": [
+      "LOOKFAR.Keywords.Element.Poison.Toxic",
+      "LOOKFAR.Keywords.Element.Poison.Poison"
     ]
   }
 }
