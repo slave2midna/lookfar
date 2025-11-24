@@ -437,19 +437,6 @@ async function openConflictBuilderDialog() {
           const sceneWidth  = dims.sceneWidth;
           const sceneHeight = dims.sceneHeight;
 
-          // Map preview box -> letterboxed background area -> scene coords
-          // Scene background area is sceneWidth x sceneHeight in pixels.
-          let scale = Math.min(
-            previewW / sceneWidth,
-            previewH / sceneHeight
-          );
-          if (!Number.isFinite(scale) || scale <= 0) scale = 1;
-
-          const bgW = sceneWidth * scale;
-          const bgH = sceneHeight * scale;
-          const bgOffsetX = (previewW - bgW) / 2;
-          const bgOffsetY = (previewH - bgH) / 2;
-
           const tokenData  = [];
           const actorCache = new Map();
 
@@ -459,7 +446,7 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
             : 1;
 
-          // --- STEP 3: map preview ghost coords → background → scene pixels ---
+          // --- STEP 3: simple normalized mapping preview (0–1) → scene (0–max) ---
           for (const pt of previewTokens) {
             const { actorId, u, v, flipped } = pt;
 
@@ -480,22 +467,9 @@ async function openConflictBuilderDialog() {
             const maxX = Math.max(0, sceneWidth  - tokenPxW);
             const maxY = Math.max(0, sceneHeight - tokenPxH);
 
-            // Reconstruct preview-space center position
-            const px = u * previewW;
-            const py = v * previewH;
-
-            // Convert to normalized coords within the contained background rect
-            let nx = (px - bgOffsetX) / bgW;
-            let ny = (py - bgOffsetY) / bgH;
-
-            if (!Number.isFinite(nx) || !Number.isFinite(ny)) continue;
-
-            nx = Math.min(0.999, Math.max(0, nx));
-            ny = Math.min(0.999, Math.max(0, ny));
-
-            // Now map to scene pixel space
-            let rawX = nx * maxX;
-            let rawY = ny * maxY;
+            // u,v are 0–1 across the preview; map directly to 0–max in scene
+            let rawX = u * maxX;
+            let rawY = v * maxY;
 
             proto.x = Math.min(maxX, Math.max(0, rawX));
             proto.y = Math.min(maxY, Math.max(0, rawY));
