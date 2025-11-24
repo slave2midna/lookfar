@@ -28,6 +28,7 @@ const lfEsc = (s) => {
 // globalThis._lookfarSuppressTextureProgress === true.
 (function patchLookfarTextureLoader() {
   try {
+    // Try to grab the same TextureLoader that Foundry uses for scenes.
     const TL = globalThis.TextureLoader ?? CONFIG.Canvas?.textureLoader;
     if (!TL || !TL.prototype?.load) {
       console.warn("Lookfar Conflict Builder | TextureLoader not found; cannot suppress thumbnail progress.");
@@ -40,11 +41,13 @@ const lfEsc = (s) => {
     TL.prototype.load = function (...args) {
       try {
         if (globalThis._lookfarSuppressTextureProgress) {
+          // In v13-style APIs, args[1] is commonly an options object.
           let options = args[1];
           if (!options || typeof options !== "object") {
             options = {};
             args[1] = options;
           }
+          // Best-effort: if Foundry honors displayProgress, turn it off.
           options.displayProgress = false;
         }
       } catch (e) {
@@ -86,34 +89,38 @@ async function openConflictBuilderDialog() {
   }
 
   // -------------------------------------------------------------------------
-  // Aspect-aware preview size (fit inside 380x214, keep scene aspect)
+  // Compute preview size based on scene aspect (max 380 x 214)
   // -------------------------------------------------------------------------
-  const dims0 = previewScene.dimensions ?? canvas?.dimensions;
-  const sceneWidthPx  = dims0?.sceneWidth  || 1920;
-  const sceneHeightPx = dims0?.sceneHeight || 1080;
+  const dims = previewScene.dimensions ?? canvas?.dimensions;
+  const sceneWidthPx  = dims?.sceneWidth  || 1920;
+  const sceneHeightPx = dims?.sceneHeight || 1080;
 
   const MAX_PREVIEW_W = 380;
   const MAX_PREVIEW_H = 214;
 
-  const sceneAspect = sceneWidthPx / sceneHeightPx;
-  const frameAspect = MAX_PREVIEW_W / MAX_PREVIEW_H;
+  const sceneAspect  = sceneWidthPx / sceneHeightPx;
+  const frameAspect  = MAX_PREVIEW_W / MAX_PREVIEW_H;
 
   let previewW, previewH;
   if (!Number.isFinite(sceneAspect)) {
     previewW = MAX_PREVIEW_W;
     previewH = MAX_PREVIEW_H;
   } else if (sceneAspect >= frameAspect) {
-    // Scene is wider than frame → bound by width
+    // Scene is wider than frame → limit by width
     previewW = MAX_PREVIEW_W;
     previewH = Math.round(MAX_PREVIEW_W / sceneAspect);
   } else {
-    // Scene is taller than frame → bound by height
+    // Scene is taller than frame → limit by height
     previewH = MAX_PREVIEW_H;
     previewW = Math.round(MAX_PREVIEW_H * sceneAspect);
   }
 
+  // We'll store these so the callback math is always aligned.
+  let thumbWidth  = previewW;
+  let thumbHeight = previewH;
+
   // -------------------------------------------------------------------------
-  // Generate scene thumbnail at previewW x previewH
+  // Generate real scene thumbnail at previewW x previewH (no letterboxing)
   // -------------------------------------------------------------------------
   let sceneThumb = "";
   try {
@@ -123,10 +130,10 @@ async function openConflictBuilderDialog() {
       width: previewW,
       height: previewH
     });
-    sceneThumb = thumbData?.thumb || "";
-    // If Foundry returns slightly different dims, honor them.
-    previewW = thumbData?.width  || previewW;
-    previewH = thumbData?.height || previewH;
+    // Document#createThumbnail typically returns { thumb, width, height }
+    sceneThumb  = thumbData?.thumb || "";
+    thumbWidth  = thumbData?.width  || previewW;
+    thumbHeight = thumbData?.height || previewH;
   } catch (e) {
     console.warn("Conflict Builder: failed to create scene thumbnail.", e);
   } finally {
@@ -144,6 +151,7 @@ async function openConflictBuilderDialog() {
     return;
   }
 
+  // Use compendium index (name + img) instead of loading full documents
   const index = await pack.getIndex({ fields: ["img"] });
   const indexEntries = Array.from(index.values());
 
@@ -160,6 +168,7 @@ async function openConflictBuilderDialog() {
 
   if (pack.folders) {
     compFolders = Array.from(pack.folders);
+
     compFolders.sort((a, b) => a.name.localeCompare(b.name));
 
     for (const folder of compFolders) {
@@ -175,6 +184,7 @@ async function openConflictBuilderDialog() {
       `<option value="${f.id}">${lfEsc(f.name)}</option>`
     ).join("");
 
+  // Index-level actor data (no full docs yet)
   const actorIndexData = indexEntries
     .map(e => ({
       id: e._id,
@@ -276,7 +286,7 @@ async function openConflictBuilderDialog() {
           }
         </style>
 
-        <!-- Scene Thumbnail Preview (aspect-matched, bounded by 380x214) -->
+        <!-- Scene Thumbnail Preview (aspect-matched to scene) -->
         <div style="margin-bottom: 6px; display:flex; justify-content:center;">
           <div id="conflict-preview"
                style="position:relative; width:${previewW}px; height:${previewH}px;
@@ -443,17 +453,17 @@ async function openConflictBuilderDialog() {
             console.warn("Conflict Builder: unable to activate battle scene.", e);
           }
 
+          // Slight delay so the canvas has time to settle before placement
           await new Promise(r => setTimeout(r, 750));
 
-          const dims = canvas.dimensions;
-          if (!dims) {
+          const dims2 = canvas.dimensions;
+          if (!dims2) {
             ui.notifications.error("Canvas dimensions are not ready.");
             return;
           }
 
-          const sceneWidth  = dims.sceneWidth;
-          const sceneHeight = dims.sceneHeight;
-          const gridSize    = dims.size;
+          const sceneWidth  = dims2.sceneWidth;
+          const sceneHeight = dims2.sceneHeight;
 
           const tokenData  = [];
           const actorCache = new Map();
@@ -464,7 +474,7 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
             : 1;
 
-          // --- STEP 3: map u,v → scene pixels (full scene extents) -----------
+          // --- STEP 3: map u,v → scene pixels (no grid snapping) -------------
           for (const pt of previewTokens) {
             const { actorId, u, v, flipped } = pt;
 
@@ -479,8 +489,8 @@ async function openConflictBuilderDialog() {
 
             const tokenGridW = proto.width  ?? 1;
             const tokenGridH = proto.height ?? 1;
-            const tokenPxW   = tokenGridW * gridSize;
-            const tokenPxH   = tokenGridH * gridSize;
+            const tokenPxW   = tokenGridW * dims2.size;
+            const tokenPxH   = tokenGridH * dims2.size;
 
             const maxX = Math.max(0, sceneWidth  - tokenPxW);
             const maxY = Math.max(0, sceneHeight - tokenPxH);
@@ -488,6 +498,7 @@ async function openConflictBuilderDialog() {
             let rawX = u * maxX;
             let rawY = v * maxY;
 
+            // no snapping: use raw positions, just clamp
             proto.x = Math.min(maxX, Math.max(0, rawX));
             proto.y = Math.min(maxY, Math.max(0, rawY));
             proto.alpha = 0;
@@ -529,10 +540,12 @@ async function openConflictBuilderDialog() {
 
           // --- STEP 5: slower fade-in animation (~2s total) -------------------
           try {
+            // Helper: wait for the created tokens to show up on the canvas
             async function waitForPlaceables(createdDocs, timeout = 3000) {
               const createdIds = new Set(createdDocs.map(d => d.id));
               const start = Date.now();
 
+              // Poll until we see them or timeout
               while (Date.now() - start < timeout) {
                 const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
                 if (placeables.length) return placeables;
@@ -548,6 +561,7 @@ async function openConflictBuilderDialog() {
               return;
             }
 
+            // 1) Make sure the *documents* start at alpha 0
             await targetScene.updateEmbeddedDocuments(
               "Token",
               placeables.map(t => ({
@@ -556,16 +570,18 @@ async function openConflictBuilderDialog() {
               }))
             );
 
-            const fadeDuration = 2000;
-            const fadeSteps    = 10;
+            // 2) Fade documents 0 → 1 over ~2000ms
+            const fadeDuration = 2000; // ms total
+            const fadeSteps    = 10;   // 0.1 increments => 200ms per step
 
             for (let i = 1; i <= fadeSteps; i++) {
-              const alpha = i / fadeSteps;
+              const alpha = i / fadeSteps; // 0.1, 0.2, ... , 1.0
               setTimeout(() => {
                 const updates = placeables.map(t => ({
                   _id: t.document.id,
                   alpha
                 }));
+                // Fire-and-forget; no need to await inside setTimeout
                 targetScene.updateEmbeddedDocuments("Token", updates);
               }, (fadeDuration / fadeSteps) * i);
             }
