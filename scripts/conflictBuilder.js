@@ -474,59 +474,57 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
             : 1;
 
-          // --- STEP 3: map u,v → scene pixels (no grid snapping) -------------
-          for (const pt of previewTokens) {
-            const { actorId, u, v, flipped } = pt;
+          // --- STEP 3: map u,v → scene pixels, compensating for canvas padding -------------
+for (const pt of previewTokens) {
+  const { actorId, u, v, flipped } = pt;
 
-            let actor = actorCache.get(actorId);
-            if (!actor) {
-              actor = await pack.getDocument(actorId);
-              if (!actor) continue;
-              actorCache.set(actorId, actor);
-            }
+  let actor = actorCache.get(actorId);
+  if (!actor) {
+    actor = await pack.getDocument(actorId);
+    if (!actor) continue;
+    actorCache.set(actorId, actor);
+  }
 
-            const proto = actor.prototypeToken.toObject();
+  const proto = actor.prototypeToken.toObject();
 
-            const tokenGridW = proto.width  ?? 1;
-            const tokenGridH = proto.height ?? 1;
-            const tokenPxW   = tokenGridW * dims2.size;
-            const tokenPxH   = tokenGridH * dims2.size;
+  const tokenGridW = proto.width  ?? 1;
+  const tokenGridH = proto.height ?? 1;
+  const tokenPxW   = tokenGridW * dims2.size;
+  const tokenPxH   = tokenGridH * dims2.size;
 
-            const maxX = Math.max(0, sceneWidth  - tokenPxW);
-            const maxY = Math.max(0, sceneHeight - tokenPxH);
+  // Background (scene) size, not including padding
+  const bgSceneWidth  = dims2.sceneWidth;
+  const bgSceneHeight = dims2.sceneHeight;
 
-            // Scene padding percentage (0 → 0.5)
-const p = Number(targetScene.padding ?? 0) || 0;
+  // Where the background actually sits inside the padded canvas
+  const bgOffsetX = dims2.sceneX ?? 0;
+  const bgOffsetY = dims2.sceneY ?? 0;
 
-// Convert preview (u,v) in padded canvas space → background normalized coords [0,1]
-// Canvas shows background from p/(1+2p) to 1 - p/(1+2p).
-let u_bg = u;
-let v_bg = v;
-if (p > 0 && p < 0.5) {
-  const padScale = 1 + 2 * p;
-  u_bg = (u * padScale) - p;
-  v_bg = (v * padScale) - p;
+  const maxX = Math.max(0, bgSceneWidth  - tokenPxW);
+  const maxY = Math.max(0, bgSceneHeight - tokenPxH);
+
+  // Treat (u, v) as normalized background coordinates directly
+  let u_bg = Math.min(0.999, Math.max(0, u));
+  let v_bg = Math.min(0.999, Math.max(0, v));
+
+  // Pixel positions within the *background* area
+  let rawBgX = u_bg * maxX;
+  let rawBgY = v_bg * maxY;
+
+  // Now place tokens in canvas space by adding the background offset
+  const clampedBgX = Math.min(maxX, Math.max(0, rawBgX));
+  const clampedBgY = Math.min(maxY, Math.max(0, rawBgY));
+
+  proto.x = bgOffsetX + clampedBgX;
+  proto.y = bgOffsetY + clampedBgY;
+  proto.alpha = 0;
+
+  if (flipped) {
+    proto.mirrorX = !proto.mirrorX;
+  }
+
+  tokenData.push({ proto, actor });
 }
-
-// Clamp to [0, 1)
-u_bg = Math.min(0.999, Math.max(0, u_bg));
-v_bg = Math.min(0.999, Math.max(0, v_bg));
-
-// Convert to pixel positions in true background space
-let rawX = u_bg * maxX;
-let rawY = v_bg * maxY;
-
-            // no snapping: use raw positions, just clamp
-            proto.x = Math.min(maxX, Math.max(0, rawX));
-            proto.y = Math.min(maxY, Math.max(0, rawY));
-            proto.alpha = 0;
-
-            if (flipped) {
-              proto.mirrorX = !proto.mirrorX;
-            }
-
-            tokenData.push({ proto, actor });
-          }
 
           if (!tokenData.length) {
             ui.notifications.error("No valid creatures could be placed from the preview.");
