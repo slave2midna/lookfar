@@ -519,11 +519,6 @@ for (const pt of previewTokens) {
   proto.y = bgOffsetY + clampedBgY;
   proto.alpha = 0;
 
-  // Disable grid snapping on placement
-  proto.flags ??= {};
-  proto.flags.core ??= {};
-  proto.flags.core.snapToGrid = false;
-
   if (flipped) {
     proto.mirrorX = !proto.mirrorX;
   }
