@@ -434,8 +434,10 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          const sceneWidth  = dims.sceneWidth;
-          const sceneHeight = dims.sceneHeight;
+          // Scene "background" size in pixels (ignores padding/zoom)
+          const gridSize      = dims.size;
+          const bgSceneWidth  = (targetScene.width  ?? (dims.sceneWidth  / gridSize)) * gridSize;
+          const bgSceneHeight = (targetScene.height ?? (dims.sceneHeight / gridSize)) * gridSize;
 
           const tokenData  = [];
           const actorCache = new Map();
@@ -446,7 +448,22 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
             : 1;
 
-          // --- STEP 3: simple normalized mapping preview (0–1) → scene (0–max) ---
+          // --- STEP 3: map preview ghost coords → background → scene pixels ---
+          // The thumbnail shows the background image letterboxed inside the
+          // preview 380x214 box. We reconstruct that letterboxed rect so that
+          // a ghost in the center of the visible map ends up in the center
+          // of the real background, regardless of aspect ratio.
+          let scale = Math.min(
+            previewW / bgSceneWidth,
+            previewH / bgSceneHeight
+          );
+          if (!Number.isFinite(scale) || scale <= 0) scale = 1;
+
+          const bgW = bgSceneWidth * scale;   // width of the map image inside preview
+          const bgH = bgSceneHeight * scale;  // height of the map image inside preview
+          const bgOffsetX = (previewW - bgW) / 2; // letterbox horizontal padding
+          const bgOffsetY = (previewH - bgH) / 2; // letterbox vertical padding
+
           for (const pt of previewTokens) {
             const { actorId, u, v, flipped } = pt;
 
@@ -461,15 +478,30 @@ async function openConflictBuilderDialog() {
 
             const tokenGridW = proto.width  ?? 1;
             const tokenGridH = proto.height ?? 1;
-            const tokenPxW   = tokenGridW * dims.size;
-            const tokenPxH   = tokenGridH * dims.size;
+            const tokenPxW   = tokenGridW * gridSize;
+            const tokenPxH   = tokenGridH * gridSize;
 
-            const maxX = Math.max(0, sceneWidth  - tokenPxW);
-            const maxY = Math.max(0, sceneHeight - tokenPxH);
+            // The usable background range (keep token fully on the map)
+            const maxX = Math.max(0, bgSceneWidth  - tokenPxW);
+            const maxY = Math.max(0, bgSceneHeight - tokenPxH);
 
-            // u,v are 0–1 across the preview; map directly to 0–max in scene
-            let rawX = u * maxX;
-            let rawY = v * maxY;
+            // Reconstruct preview-space center position
+            const px = u * previewW;
+            const py = v * previewH;
+
+            // Convert to normalized coords within the background rect
+            let nx = (px - bgOffsetX) / bgW;
+            let ny = (py - bgOffsetY) / bgH;
+
+            if (!Number.isFinite(nx) || !Number.isFinite(ny)) continue;
+
+            // Clamp to [0,1) so we stay on the visible map
+            nx = Math.min(0.999, Math.max(0, nx));
+            ny = Math.min(0.999, Math.max(0, ny));
+
+            // Map to scene *background* pixel space
+            let rawX = nx * maxX;
+            let rawY = ny * maxY;
 
             proto.x = Math.min(maxX, Math.max(0, rawX));
             proto.y = Math.min(maxY, Math.max(0, rawY));
