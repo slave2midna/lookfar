@@ -237,14 +237,6 @@ async function openConflictBuilderDialog() {
             text-align: left;
             width: 190px;
           }
-          /* Preview token overlay (16:9 @ 380x214) */
-          #conflictBuilderDialog #conflict-preview {
-            position: relative;
-            width: 380px;
-            height: 214px;
-            overflow: hidden;
-            margin: 0 auto 6px auto;
-          }
           #conflictBuilderDialog #preview-tokens-layer {
             position: absolute;
             inset: 0;
@@ -263,12 +255,15 @@ async function openConflictBuilderDialog() {
 
         <!-- Scene Thumbnail Preview (no label, no border) -->
         <div style="margin-bottom: 6px; display:flex; justify-content:center;">
-          <div id="conflict-preview">
-            <img id="scene-thumbnail" src="${sceneThumb}"
-                 style="position:absolute; width:100%; height:100%; object-fit:contain; z-index:1; background:black;" />
-            <div id="preview-tokens-layer"></div>
-          </div>
-        </div>
+  <div id="conflict-preview"
+       style="position:relative; width:${previewW}px; height:${previewH}px;
+              overflow:hidden; margin:0 auto 6px auto; background:#000;">
+    <img id="scene-thumbnail" src="${sceneThumb}"
+         style="position:absolute; width:100%; height:100%;
+                object-fit:fill; z-index:1;" />
+    <div id="preview-tokens-layer"></div>
+  </div>
+</div>
 
         <div style="display:flex; align-items:center; gap:8px; margin-bottom: 8px;">
           <label for="playlist-select">Music:</label>
