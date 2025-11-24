@@ -88,27 +88,52 @@ async function openConflictBuilderDialog() {
     return;
   }
 
-  // We'll capture the thumbnail's *intrinsic* size so we can account for aspect.
-  let thumbWidth  = 380;  // defaults in case createThumbnail doesn't give dims
-  let thumbHeight = 214;
+  // -------------------------------------------------------------------------
+  // Compute preview size based on scene aspect (max 380 x 214)
+  // -------------------------------------------------------------------------
+  const dims = previewScene.dimensions ?? canvas?.dimensions;
+  const sceneWidthPx  = dims?.sceneWidth  || 1920;
+  const sceneHeightPx = dims?.sceneHeight || 1080;
+
+  const MAX_PREVIEW_W = 380;
+  const MAX_PREVIEW_H = 214;
+
+  const sceneAspect  = sceneWidthPx / sceneHeightPx;
+  const frameAspect  = MAX_PREVIEW_W / MAX_PREVIEW_H;
+
+  let previewW, previewH;
+  if (!Number.isFinite(sceneAspect)) {
+    previewW = MAX_PREVIEW_W;
+    previewH = MAX_PREVIEW_H;
+  } else if (sceneAspect >= frameAspect) {
+    // Scene is wider than frame → limit by width
+    previewW = MAX_PREVIEW_W;
+    previewH = Math.round(MAX_PREVIEW_W / sceneAspect);
+  } else {
+    // Scene is taller than frame → limit by height
+    previewH = MAX_PREVIEW_H;
+    previewW = Math.round(MAX_PREVIEW_H * sceneAspect);
+  }
+
+  // We'll store these so the callback math is always aligned.
+  let thumbWidth  = previewW;
+  let thumbHeight = previewH;
 
   // -------------------------------------------------------------------------
-  // Generate real scene thumbnail (16:9 @ 380x214) — with progress suppressed
+  // Generate real scene thumbnail at previewW x previewH (no letterboxing)
   // -------------------------------------------------------------------------
   let sceneThumb = "";
   try {
     globalThis._lookfarSuppressTextureProgress = true;
 
     const thumbData = await previewScene.createThumbnail({
-      width: 380,
-      height: 214
+      width: previewW,
+      height: previewH
     });
     // Document#createThumbnail typically returns { thumb, width, height }
     sceneThumb  = thumbData?.thumb || "";
-    if (thumbData?.width && thumbData?.height) {
-      thumbWidth  = thumbData.width;
-      thumbHeight = thumbData.height;
-    }
+    thumbWidth  = thumbData?.width  || previewW;
+    thumbHeight = thumbData?.height || previewH;
   } catch (e) {
     console.warn("Conflict Builder: failed to create scene thumbnail.", e);
   } finally {
@@ -245,15 +270,6 @@ async function openConflictBuilderDialog() {
             text-align: left;
             width: 190px;
           }
-          /* Preview token overlay (16:9 @ 380x214) */
-          #conflictBuilderDialog #conflict-preview {
-            position: relative;
-            width: 380px;
-            height: 214px;
-            overflow: hidden;
-            margin: 0 auto 6px auto;
-            background: #000;
-          }
           #conflictBuilderDialog #preview-tokens-layer {
             position: absolute;
             inset: 0;
@@ -270,11 +286,14 @@ async function openConflictBuilderDialog() {
           }
         </style>
 
-        <!-- Scene Thumbnail Preview (no label, no border) -->
+        <!-- Scene Thumbnail Preview (aspect-matched to scene) -->
         <div style="margin-bottom: 6px; display:flex; justify-content:center;">
-          <div id="conflict-preview">
+          <div id="conflict-preview"
+               style="position:relative; width:${previewW}px; height:${previewH}px;
+                      overflow:hidden; margin:0 auto 6px auto; background:#000;">
             <img id="scene-thumbnail" src="${sceneThumb}"
-                 style="position:absolute; width:100%; height:100%; object-fit:contain; z-index:1;" />
+                 style="position:absolute; width:100%; height:100%;
+                        object-fit:fill; z-index:1;" />
             <div id="preview-tokens-layer"></div>
           </div>
         </div>
@@ -384,27 +403,8 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // Compute how the thumbnail is letterboxed within the preview using object-fit: contain
           const previewW = previewRect.width;
           const previewH = previewRect.height;
-
-          const thumbAspect   = thumbWidth / thumbHeight;
-          const previewAspect = previewW / previewH;
-
-          let imgDisplayW, imgDisplayH, offsetX, offsetY;
-          if (previewAspect > thumbAspect) {
-            // Preview is wider → full height used, horizontal bars
-            imgDisplayH = previewH;
-            imgDisplayW = previewH * thumbAspect;
-            offsetX     = (previewW - imgDisplayW) / 2;
-            offsetY     = 0;
-          } else {
-            // Preview is taller → full width used, vertical bars
-            imgDisplayW = previewW;
-            imgDisplayH = previewW / thumbAspect;
-            offsetX     = 0;
-            offsetY     = (previewH - imgDisplayH) / 2;
-          }
 
           // --- STEP 1: capture normalized positions before we touch scenes ---
           const previewTokens = [];
@@ -415,21 +415,11 @@ async function openConflictBuilderDialog() {
 
             const tokRect = el.getBoundingClientRect();
 
-            // Center in container coordinates
             let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
             let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
 
-            // Translate into image content box coordinates
-            let relX = centerX - offsetX;
-            let relY = centerY - offsetY;
-
-            // Clamp to the visible image area
-            relX = Math.max(0, Math.min(imgDisplayW, relX));
-            relY = Math.max(0, Math.min(imgDisplayH, relY));
-
-            // Normalize inside the image box
-            let u = relX / imgDisplayW;
-            let v = relY / imgDisplayH;
+            let u = centerX / previewW;
+            let v = centerY / previewH;
 
             if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
             u = Math.min(0.999, Math.max(0, u));
@@ -466,14 +456,14 @@ async function openConflictBuilderDialog() {
           // Slight delay so the canvas has time to settle before placement
           await new Promise(r => setTimeout(r, 750));
 
-          const dims = canvas.dimensions;
-          if (!dims) {
+          const dims2 = canvas.dimensions;
+          if (!dims2) {
             ui.notifications.error("Canvas dimensions are not ready.");
             return;
           }
 
-          const sceneWidth  = dims.sceneWidth;
-          const sceneHeight = dims.sceneHeight;
+          const sceneWidth  = dims2.sceneWidth;
+          const sceneHeight = dims2.sceneHeight;
 
           const tokenData  = [];
           const actorCache = new Map();
@@ -499,8 +489,8 @@ async function openConflictBuilderDialog() {
 
             const tokenGridW = proto.width  ?? 1;
             const tokenGridH = proto.height ?? 1;
-            const tokenPxW   = tokenGridW * dims.size;
-            const tokenPxH   = tokenGridH * dims.size;
+            const tokenPxW   = tokenGridW * dims2.size;
+            const tokenPxH   = tokenGridH * dims2.size;
 
             const maxX = Math.max(0, sceneWidth  - tokenPxW);
             const maxY = Math.max(0, sceneHeight - tokenPxH);
