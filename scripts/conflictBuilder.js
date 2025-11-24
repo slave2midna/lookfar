@@ -497,13 +497,21 @@ async function openConflictBuilderDialog() {
 
             // Scene padding percentage (0 → 0.5)
             const p = Number(targetScene.padding ?? 0) || 0;
-            const padScale = 1 + 2 * p;
 
-            // Convert preview (u,v) → background normalized coords
-            let u_bg = (u * padScale) - p;
-            let v_bg = (v * padScale) - p;
+            // Convert preview (u,v) → background normalized coords by stripping padding
+            // padded-space [0,1] → background-space [p, 1-p] → normalized [0,1]
+            let u_bg, v_bg;
+            if (p > 0 && p < 0.5) {
+              const denom = 1 - 2 * p;
+              u_bg = (u - p) / denom;
+              v_bg = (v - p) / denom;
+            } else {
+              // No padding or degenerate case: use u,v directly
+              u_bg = u;
+              v_bg = v;
+            }
 
-            // Clamp
+            // Clamp to [0, 1)
             u_bg = Math.min(0.999, Math.max(0, u_bg));
             v_bg = Math.min(0.999, Math.max(0, v_bg));
 
