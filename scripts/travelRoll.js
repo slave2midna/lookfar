@@ -271,31 +271,35 @@ if (game.dice3d) {
   let dangerSeverity = "";
 
   if (roll.total >= 6) {
-  dangerSeverity = await randomSeverity(selectedDifficulty);
-  const resultType = `${game.i18n.localize("LOOKFAR.Severity." + dangerSeverity)} ${game.i18n.localize("LOOKFAR.Dialogs.Result.Danger")}`;
-  const resultTable = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
-  resultMessage = `
-    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
-      ${resultType}
+    dangerSeverity = await randomSeverity(selectedDifficulty);
+
+    // Build a single localized key: LOOKFAR.Dialogs.Result.DangerMinor / Heavy / Massive
+    const resultTypeKey = `LOOKFAR.Dialogs.Result.Danger${dangerSeverity}`;
+    const resultType = game.i18n.localize(resultTypeKey);
+
+    const resultTable = await generateDanger(selectedDifficulty, groupLevel, dangerSeverity);
+    resultMessage = `
+      <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+        ${resultType}
+      </div>
+      ${resultTable}
+    `;
+  } else if (isDiscovery) {
+    const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");
+    const resultTable = await generateDiscovery();
+    resultMessage = `
+      <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+        ${resultType}
+      </div>
+      ${resultTable}
+    `;
+  } else {
+    resultMessage = `
+    <div style="text-align: center; font-size: 1.2rem;">
+      ${game.i18n.localize("LOOKFAR.Dialogs.TravelResult.NoIncident")}
     </div>
-    ${resultTable}
   `;
-} else if (isDiscovery) {
-  const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");
-  const resultTable = await generateDiscovery();
-  resultMessage = `
-    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
-      ${resultType}
-    </div>
-    ${resultTable}
-  `;
-} else {
-  resultMessage = `
-  <div style="text-align: center; font-size: 1.2rem;">
-    ${game.i18n.localize("LOOKFAR.Dialogs.TravelResult.NoIncident")}
-  </div>
-`;
-}
+ }
 
   // Emit the result to all clients
   game.socket.emit("module.lookfar", {
@@ -678,6 +682,7 @@ async function generateDiscovery() {
   ${generateKeywords()}
 `;
 }
+
 
 
 
