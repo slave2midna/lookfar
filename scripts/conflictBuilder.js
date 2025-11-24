@@ -89,18 +89,54 @@ async function openConflictBuilderDialog() {
   }
 
   // -------------------------------------------------------------------------
-  // Generate real scene thumbnail (16:9 @ 380x214) — with progress suppressed
+  // Aspect-aware preview size (based on background, ignoring padding/zoom)
+  // -------------------------------------------------------------------------
+  const dims0 = previewScene.dimensions ?? canvas?.dimensions;
+  const gridSize0 = dims0?.size || 100;
+
+  // Background in grid units if available, otherwise fall back to dimensions
+  const bgGridW0 = previewScene.width  ?? (dims0.sceneWidth  / gridSize0);
+  const bgGridH0 = previewScene.height ?? (dims0.sceneHeight / gridSize0);
+
+  const sceneWidthPx  = bgGridW0 * gridSize0;
+  const sceneHeightPx = bgGridH0 * gridSize0;
+
+  const MAX_PREVIEW_W = 380;
+  const MAX_PREVIEW_H = 214;
+
+  const sceneAspect = sceneWidthPx / sceneHeightPx;
+  const frameAspect = MAX_PREVIEW_W / MAX_PREVIEW_H;
+
+  let previewW, previewH;
+  if (!Number.isFinite(sceneAspect)) {
+    previewW = MAX_PREVIEW_W;
+    previewH = MAX_PREVIEW_H;
+  } else if (sceneAspect >= frameAspect) {
+    // Scene is wider than frame → limit by width
+    previewW = MAX_PREVIEW_W;
+    previewH = Math.round(MAX_PREVIEW_W / sceneAspect);
+  } else {
+    // Scene is taller than frame → limit by height
+    previewH = MAX_PREVIEW_H;
+    previewW = Math.round(MAX_PREVIEW_H * sceneAspect);
+  }
+
+  // -------------------------------------------------------------------------
+  // Generate real scene thumbnail at previewW x previewH (no extra letterboxing)
   // -------------------------------------------------------------------------
   let sceneThumb = "";
   try {
     globalThis._lookfarSuppressTextureProgress = true;
 
     const thumbData = await previewScene.createThumbnail({
-      width: 380,
-      height: 214
+      width: previewW,
+      height: previewH
     });
     // Document#createThumbnail typically returns { thumb, width, height }
     sceneThumb = thumbData?.thumb || "";
+    // If Foundry gives us slightly different dims, prefer them
+    previewW = thumbData?.width  || previewW;
+    previewH = thumbData?.height || previewH;
   } catch (e) {
     console.warn("Conflict Builder: failed to create scene thumbnail.", e);
   } finally {
@@ -253,17 +289,17 @@ async function openConflictBuilderDialog() {
           }
         </style>
 
-        <!-- Scene Thumbnail Preview (no label, no border) -->
+        <!-- Scene Thumbnail Preview (aspect-matched to background) -->
         <div style="margin-bottom: 6px; display:flex; justify-content:center;">
-  <div id="conflict-preview"
-       style="position:relative; width:${previewW}px; height:${previewH}px;
-              overflow:hidden; margin:0 auto 6px auto; background:#000;">
-    <img id="scene-thumbnail" src="${sceneThumb}"
-         style="position:absolute; width:100%; height:100%;
-                object-fit:fill; z-index:1;" />
-    <div id="preview-tokens-layer"></div>
-  </div>
-</div>
+          <div id="conflict-preview"
+               style="position:relative; width:${previewW}px; height:${previewH}px;
+                      overflow:hidden; margin:0 auto 6px auto; background:#000;">
+            <img id="scene-thumbnail" src="${sceneThumb}"
+                 style="position:absolute; width:100%; height:100%;
+                        object-fit:fill; z-index:1;" />
+            <div id="preview-tokens-layer"></div>
+          </div>
+        </div>
 
         <div style="display:flex; align-items:center; gap:8px; margin-bottom: 8px;">
           <label for="playlist-select">Music:</label>
@@ -429,7 +465,7 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // Scene "background" size in pixels (ignores padding/zoom)
+          // Background size in pixels, ignoring padding/zoom
           const gridSize      = dims.size;
           const bgSceneWidth  = (targetScene.width  ?? (dims.sceneWidth  / gridSize)) * gridSize;
           const bgSceneHeight = (targetScene.height ?? (dims.sceneHeight / gridSize)) * gridSize;
@@ -444,20 +480,18 @@ async function openConflictBuilderDialog() {
             : 1;
 
           // --- STEP 3: map preview ghost coords → background → scene pixels ---
-          // The thumbnail shows the background image letterboxed inside the
-          // preview 380x214 box. We reconstruct that letterboxed rect so that
-          // a ghost in the center of the visible map ends up in the center
-          // of the real background, regardless of aspect ratio.
+          // Because the thumbnail was generated to match the background aspect,
+          // scale/offset reduce to a direct mapping with no extra letterboxing.
           let scale = Math.min(
             previewW / bgSceneWidth,
             previewH / bgSceneHeight
           );
           if (!Number.isFinite(scale) || scale <= 0) scale = 1;
 
-          const bgW = bgSceneWidth * scale;   // width of the map image inside preview
-          const bgH = bgSceneHeight * scale;  // height of the map image inside preview
-          const bgOffsetX = (previewW - bgW) / 2; // letterbox horizontal padding
-          const bgOffsetY = (previewH - bgH) / 2; // letterbox vertical padding
+          const bgW = bgSceneWidth * scale;
+          const bgH = bgSceneHeight * scale;
+          const bgOffsetX = (previewW - bgW) / 2;
+          const bgOffsetY = (previewH - bgH) / 2;
 
           for (const pt of previewTokens) {
             const { actorId, u, v, flipped } = pt;
