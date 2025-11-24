@@ -97,33 +97,36 @@
 
 
     "__SECTION__Dialogs": "=== Dialogs ===",
-    "Dialogs": {
-      "TravelCheck": {
-        "Title": "Travel Check",
-        "ThreatLevel": "Threat Level",
-        "Wayfaring": "Wayfaring",
-        "PartyLevel": "Party Level:",
-        "TreasureHunting": "Treasure Hunting",
-        "WellTraveled": "Well-Traveled"
-      },
-      "TravelResult": {
-        "Title": "Travel Result",
-        "Prompt": "Do you want to keep this result or reroll?",
-        "Waiting": "Waiting for GM decision...",
-        "NoIncident": "The travel day passed without incident."
-      },
-      "Result": {
-        "Danger": "Danger!",
-        "Discovery": "Discovery!"
-      },
-      "TableHeaders": {
-        "Threat": "Threat",
-        "Source": "Source",
-        "Effect": "Effect",
-        "Traits": "Traits",
-        "Terrain": "Terrain"
-      }
-    },
+"Dialogs": {
+  "TravelCheck": {
+    "Title": "Travel Check",
+    "ThreatLevel": "Threat Level",
+    "Wayfaring": "Wayfaring",
+    "PartyLevel": "Party Level:",
+    "TreasureHunting": "Treasure Hunting",
+    "WellTraveled": "Well-Traveled"
+  },
+  "TravelResult": {
+    "Title": "Travel Result",
+    "Prompt": "Do you want to keep this result or reroll?",
+    "Waiting": "Waiting for GM decision...",
+    "NoIncident": "The travel day passed without incident."
+  },
+  "Result": {
+    "Danger": "Danger!",
+    "DangerMinor": "Minor Danger!",
+    "DangerHeavy": "Heavy Danger!",
+    "DangerMassive": "Massive Danger!",
+    "Discovery": "Discovery!"
+  },
+  "TableHeaders": {
+    "Threat": "Threat",
+    "Source": "Source",
+    "Effect": "Effect",
+    "Traits": "Traits",
+    "Terrain": "Terrain"
+  }
+},
 
 
 
@@ -466,6 +469,8 @@
 
   }
 }
+
+
 
 
 
