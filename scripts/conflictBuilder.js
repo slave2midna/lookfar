@@ -22,6 +22,48 @@ const lfEsc = (s) => {
 };
 
 // ---------------------------------------------------------------------------
+// MONKEY PATCH: Suppress thumbnail progress bar
+// ---------------------------------------------------------------------------
+// We patch TextureLoader.prototype.load once, and only touch loads while
+// globalThis._lookfarSuppressTextureProgress === true.
+(function patchLookfarTextureLoader() {
+  try {
+    // Try to grab the same TextureLoader that Foundry uses for scenes.
+    const TL = globalThis.TextureLoader ?? CONFIG.Canvas?.textureLoader;
+    if (!TL || !TL.prototype?.load) {
+      console.warn("Lookfar Conflict Builder | TextureLoader not found; cannot suppress thumbnail progress.");
+      return;
+    }
+
+    if (TL.prototype._lookfarPatched) return; // avoid double-patching
+
+    const _origLoad = TL.prototype.load;
+    TL.prototype.load = function (...args) {
+      try {
+        if (globalThis._lookfarSuppressTextureProgress) {
+          // In v13-style APIs, args[1] is commonly an options object.
+          let options = args[1];
+          if (!options || typeof options !== "object") {
+            options = {};
+            args[1] = options;
+          }
+          // Best-effort: if Foundry honors displayProgress, turn it off.
+          options.displayProgress = false;
+        }
+      } catch (e) {
+        console.warn("Lookfar Conflict Builder | Error adjusting TextureLoader options:", e);
+      }
+
+      return _origLoad.apply(this, args);
+    };
+
+    TL.prototype._lookfarPatched = true;
+  } catch (e) {
+    console.warn("Lookfar Conflict Builder | Failed to patch TextureLoader:", e);
+  }
+})();
+
+// ---------------------------------------------------------------------------
 // MAIN FUNCTION — Conflict Builder Dialog
 // ---------------------------------------------------------------------------
 async function openConflictBuilderDialog() {
@@ -46,8 +88,57 @@ async function openConflictBuilderDialog() {
     return;
   }
 
-  const currentBackground = previewScene.background?.src || "";
-  const currentTerrain = previewScene.tiles?.contents[0]?.texture?.src || "";
+  // -------------------------------------------------------------------------
+  // Compute preview size based on scene aspect (max 380 x 214)
+  // -------------------------------------------------------------------------
+  const dims = previewScene.dimensions ?? canvas?.dimensions;
+  const sceneWidthPx  = dims?.sceneWidth  || 1920;
+  const sceneHeightPx = dims?.sceneHeight || 1080;
+
+  const MAX_PREVIEW_W = 380;
+  const MAX_PREVIEW_H = 214;
+
+  const sceneAspect  = sceneWidthPx / sceneHeightPx;
+  const frameAspect  = MAX_PREVIEW_W / MAX_PREVIEW_H;
+
+  let previewW, previewH;
+  if (!Number.isFinite(sceneAspect)) {
+    previewW = MAX_PREVIEW_W;
+    previewH = MAX_PREVIEW_H;
+  } else if (sceneAspect >= frameAspect) {
+    // Scene is wider than frame → limit by width
+    previewW = MAX_PREVIEW_W;
+    previewH = Math.round(MAX_PREVIEW_W / sceneAspect);
+  } else {
+    // Scene is taller than frame → limit by height
+    previewH = MAX_PREVIEW_H;
+    previewW = Math.round(MAX_PREVIEW_H * sceneAspect);
+  }
+
+  // We'll store these so the callback math is always aligned.
+  let thumbWidth  = previewW;
+  let thumbHeight = previewH;
+
+  // -------------------------------------------------------------------------
+  // Generate real scene thumbnail at previewW x previewH (no letterboxing)
+  // -------------------------------------------------------------------------
+  let sceneThumb = "";
+  try {
+    globalThis._lookfarSuppressTextureProgress = true;
+
+    const thumbData = await previewScene.createThumbnail({
+      width: previewW,
+      height: previewH
+    });
+    // Document#createThumbnail typically returns { thumb, width, height }
+    sceneThumb  = thumbData?.thumb || "";
+    thumbWidth  = thumbData?.width  || previewW;
+    thumbHeight = thumbData?.height || previewH;
+  } catch (e) {
+    console.warn("Conflict Builder: failed to create scene thumbnail.", e);
+  } finally {
+    globalThis._lookfarSuppressTextureProgress = false;
+  }
 
   // -------------------------------------------------------------------------
   // Resolve monster compendium (Actor pack only)
@@ -179,18 +270,10 @@ async function openConflictBuilderDialog() {
             text-align: left;
             width: 190px;
           }
-          /* Preview token overlay */
-          #conflictBuilderDialog #conflict-preview {
-            position: relative;
-            width: 100%;
-            height: 200px;
-            border: 1px solid #ccc;
-            overflow: hidden;
-          }
           #conflictBuilderDialog #preview-tokens-layer {
             position: absolute;
             inset: 0;
-            z-index: 3;
+            z-index: 2;
             pointer-events: auto;
           }
           #conflictBuilderDialog .preview-token {
@@ -203,25 +286,23 @@ async function openConflictBuilderDialog() {
           }
         </style>
 
-        <!-- Scene Preview -->
-        <div style="margin-bottom: 10px;">
-          <div style="padding: 5px; border: 1px solid #ccc; margin-bottom: 8px;">
-            <h4 style="margin: 0 0 4px 0;">Scene Preview</h4>
-            <div id="conflict-preview">
-              <img id="background-preview" src="${currentBackground}"
-                   style="position:absolute; width:100%; height:100%; object-fit:cover; z-index:1;" />
-              <img id="terrain-preview" src="${currentTerrain}"
-                   style="position:absolute; width:100%; height:100%; object-fit:cover; z-index:2;" />
-              <div id="preview-tokens-layer"></div>
-            </div>
+        <!-- Scene Thumbnail Preview (aspect-matched to scene) -->
+        <div style="margin-bottom: 6px; display:flex; justify-content:center;">
+          <div id="conflict-preview"
+               style="position:relative; width:${previewW}px; height:${previewH}px;
+                      overflow:hidden; margin:0 auto 6px auto; background:#000;">
+            <img id="scene-thumbnail" src="${sceneThumb}"
+                 style="position:absolute; width:100%; height:100%;
+                        object-fit:fill; z-index:1;" />
+            <div id="preview-tokens-layer"></div>
           </div>
+        </div>
 
-          <div style="display:flex; align-items:center; gap:8px;">
-            <label for="playlist-select">Music:</label>
-            <select id="playlist-select" style="flex:1;">
-              ${playlistOptions}
-            </select>
-          </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom: 8px;">
+          <label for="playlist-select">Music:</label>
+          <select id="playlist-select" style="flex:1;">
+            ${playlistOptions}
+          </select>
         </div>
 
         <!-- Creature Selection -->
@@ -322,6 +403,9 @@ async function openConflictBuilderDialog() {
             return;
           }
 
+          const previewW = previewRect.width;
+          const previewH = previewRect.height;
+
           // --- STEP 1: capture normalized positions before we touch scenes ---
           const previewTokens = [];
           for (const el of $tokens.toArray()) {
@@ -334,8 +418,8 @@ async function openConflictBuilderDialog() {
             let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
             let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
 
-            let u = centerX / previewRect.width;
-            let v = centerY / previewRect.height;
+            let u = centerX / previewW;
+            let v = centerY / previewH;
 
             if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
             u = Math.min(0.999, Math.max(0, u));
@@ -354,7 +438,7 @@ async function openConflictBuilderDialog() {
             return;
           }
 
-          // --- STEP 2: activate the battle scene & give the canvas a beat ---
+          // --- STEP 2: activate the battle scene & give the canvas a bit more time ---
           const targetScene = previewScene;
           if (!targetScene) {
             ui.notifications.error("Could not access the battle scene.");
@@ -369,17 +453,17 @@ async function openConflictBuilderDialog() {
             console.warn("Conflict Builder: unable to activate battle scene.", e);
           }
 
-          // small delay to let the new canvas settle
-          await new Promise(r => setTimeout(r, 250));
+          // Slight delay so the canvas has time to settle before placement
+          await new Promise(r => setTimeout(r, 750));
 
-          const dims = canvas.dimensions;
-          if (!dims) {
+          const dims2 = canvas.dimensions;
+          if (!dims2) {
             ui.notifications.error("Canvas dimensions are not ready.");
             return;
           }
 
-          const sceneWidth  = dims.sceneWidth;
-          const sceneHeight = dims.sceneHeight;
+          const sceneWidth  = dims2.sceneWidth;
+          const sceneHeight = dims2.sceneHeight;
 
           const tokenData  = [];
           const actorCache = new Map();
@@ -405,8 +489,8 @@ async function openConflictBuilderDialog() {
 
             const tokenGridW = proto.width  ?? 1;
             const tokenGridH = proto.height ?? 1;
-            const tokenPxW   = tokenGridW * dims.size;
-            const tokenPxH   = tokenGridH * dims.size;
+            const tokenPxW   = tokenGridW * dims2.size;
+            const tokenPxH   = tokenGridH * dims2.size;
 
             const maxX = Math.max(0, sceneWidth  - tokenPxW);
             const maxY = Math.max(0, sceneHeight - tokenPxH);
@@ -417,6 +501,7 @@ async function openConflictBuilderDialog() {
             // no snapping: use raw positions, just clamp
             proto.x = Math.min(maxX, Math.max(0, rawX));
             proto.y = Math.min(maxY, Math.max(0, rawY));
+            proto.alpha = 0;
 
             if (flipped) {
               proto.mirrorX = !proto.mirrorX;
@@ -453,35 +538,59 @@ async function openConflictBuilderDialog() {
             });
           }
 
-          // --- STEP 5: fade-in animation (alpha 0 → 1 over ~2s) --------------
+          // --- STEP 5: slower fade-in animation (~2s total) -------------------
           try {
-            const createdIds = new Set(created.map(d => d.id));
-            const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
+            // Helper: wait for the created tokens to show up on the canvas
+            async function waitForPlaceables(createdDocs, timeout = 3000) {
+              const createdIds = new Set(createdDocs.map(d => d.id));
+              const start = Date.now();
 
-            // start invisible
-            for (const t of placeables) {
-              if (!t.destroyed) t.alpha = 0;
+              // Poll until we see them or timeout
+              while (Date.now() - start < timeout) {
+                const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
+                if (placeables.length) return placeables;
+                await new Promise(r => setTimeout(r, 50));
+              }
+
+              return [];
             }
 
-            const duration = 2000; // ms
-            const steps    = 30;
-            for (let i = 1; i <= steps; i++) {
+            const placeables = await waitForPlaceables(created, 3000);
+            if (!placeables.length) {
+              console.warn("Conflict Builder: could not find created tokens on canvas for fade-in.");
+              return;
+            }
+
+            // 1) Make sure the *documents* start at alpha 0
+            await targetScene.updateEmbeddedDocuments(
+              "Token",
+              placeables.map(t => ({
+                _id: t.document.id,
+                alpha: 0
+              }))
+            );
+
+            // 2) Fade documents 0 → 1 over ~2000ms
+            const fadeDuration = 2000; // ms total
+            const fadeSteps    = 10;   // 0.1 increments => 200ms per step
+
+            for (let i = 1; i <= fadeSteps; i++) {
+              const alpha = i / fadeSteps; // 0.1, 0.2, ... , 1.0
               setTimeout(() => {
-                const a = i / steps;
-                for (const t of placeables) {
-                  if (!t.destroyed) t.alpha = a;
-                }
-              }, (duration / steps) * i);
+                const updates = placeables.map(t => ({
+                  _id: t.document.id,
+                  alpha
+                }));
+                // Fire-and-forget; no need to await inside setTimeout
+                targetScene.updateEmbeddedDocuments("Token", updates);
+              }, (fadeDuration / fadeSteps) * i);
             }
           } catch (e) {
             console.warn("Conflict Builder: fade-in animation failed.", e);
           }
-
-          ui.notifications.info("Encounter placed on the battle scene.");
         }
       }
     },
-
     default: "summon",
 
     // -----------------------------------------------------------------------
