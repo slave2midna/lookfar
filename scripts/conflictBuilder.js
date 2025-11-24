@@ -89,51 +89,18 @@ async function openConflictBuilderDialog() {
   }
 
   // -------------------------------------------------------------------------
-  // Compute preview size based on scene aspect (max 380 x 214)
-  // -------------------------------------------------------------------------
-  const dims = previewScene.dimensions ?? canvas?.dimensions;
-  const sceneWidthPx  = dims?.sceneWidth  || 1920;
-  const sceneHeightPx = dims?.sceneHeight || 1080;
-
-  const MAX_PREVIEW_W = 380;
-  const MAX_PREVIEW_H = 214;
-
-  const sceneAspect  = sceneWidthPx / sceneHeightPx;
-  const frameAspect  = MAX_PREVIEW_W / MAX_PREVIEW_H;
-
-  let previewW, previewH;
-  if (!Number.isFinite(sceneAspect)) {
-    previewW = MAX_PREVIEW_W;
-    previewH = MAX_PREVIEW_H;
-  } else if (sceneAspect >= frameAspect) {
-    // Scene is wider than frame → limit by width
-    previewW = MAX_PREVIEW_W;
-    previewH = Math.round(MAX_PREVIEW_W / sceneAspect);
-  } else {
-    // Scene is taller than frame → limit by height
-    previewH = MAX_PREVIEW_H;
-    previewW = Math.round(MAX_PREVIEW_H * sceneAspect);
-  }
-
-  // We'll store these so the callback math is always aligned.
-  let thumbWidth  = previewW;
-  let thumbHeight = previewH;
-
-  // -------------------------------------------------------------------------
-  // Generate real scene thumbnail at previewW x previewH (no letterboxing)
+  // Generate real scene thumbnail (16:9 @ 380x214) — with progress suppressed
   // -------------------------------------------------------------------------
   let sceneThumb = "";
   try {
     globalThis._lookfarSuppressTextureProgress = true;
 
     const thumbData = await previewScene.createThumbnail({
-      width: previewW,
-      height: previewH
+      width: 380,
+      height: 214
     });
     // Document#createThumbnail typically returns { thumb, width, height }
-    sceneThumb  = thumbData?.thumb || "";
-    thumbWidth  = thumbData?.width  || previewW;
-    thumbHeight = thumbData?.height || previewH;
+    sceneThumb = thumbData?.thumb || "";
   } catch (e) {
     console.warn("Conflict Builder: failed to create scene thumbnail.", e);
   } finally {
@@ -270,6 +237,14 @@ async function openConflictBuilderDialog() {
             text-align: left;
             width: 190px;
           }
+          /* Preview token overlay (16:9 @ 380x214) */
+          #conflictBuilderDialog #conflict-preview {
+            position: relative;
+            width: 380px;
+            height: 214px;
+            overflow: hidden;
+            margin: 0 auto 6px auto;
+          }
           #conflictBuilderDialog #preview-tokens-layer {
             position: absolute;
             inset: 0;
@@ -286,14 +261,11 @@ async function openConflictBuilderDialog() {
           }
         </style>
 
-        <!-- Scene Thumbnail Preview (aspect-matched to scene) -->
+        <!-- Scene Thumbnail Preview (no label, no border) -->
         <div style="margin-bottom: 6px; display:flex; justify-content:center;">
-          <div id="conflict-preview"
-               style="position:relative; width:${previewW}px; height:${previewH}px;
-                      overflow:hidden; margin:0 auto 6px auto; background:#000;">
+          <div id="conflict-preview">
             <img id="scene-thumbnail" src="${sceneThumb}"
-                 style="position:absolute; width:100%; height:100%;
-                        object-fit:fill; z-index:1;" />
+                 style="position:absolute; width:100%; height:100%; object-fit:contain; z-index:1; background:black;" />
             <div id="preview-tokens-layer"></div>
           </div>
         </div>
@@ -456,14 +428,27 @@ async function openConflictBuilderDialog() {
           // Slight delay so the canvas has time to settle before placement
           await new Promise(r => setTimeout(r, 750));
 
-          const dims2 = canvas.dimensions;
-          if (!dims2) {
+          const dims = canvas.dimensions;
+          if (!dims) {
             ui.notifications.error("Canvas dimensions are not ready.");
             return;
           }
 
-          const sceneWidth  = dims2.sceneWidth;
-          const sceneHeight = dims2.sceneHeight;
+          const sceneWidth  = dims.sceneWidth;
+          const sceneHeight = dims.sceneHeight;
+
+          // Map preview box -> letterboxed background area -> scene coords
+          // Scene background area is sceneWidth x sceneHeight in pixels.
+          let scale = Math.min(
+            previewW / sceneWidth,
+            previewH / sceneHeight
+          );
+          if (!Number.isFinite(scale) || scale <= 0) scale = 1;
+
+          const bgW = sceneWidth * scale;
+          const bgH = sceneHeight * scale;
+          const bgOffsetX = (previewW - bgW) / 2;
+          const bgOffsetY = (previewH - bgH) / 2;
 
           const tokenData  = [];
           const actorCache = new Map();
@@ -474,7 +459,7 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
             : 1;
 
-          // --- STEP 3: map u,v → scene pixels (no grid snapping) -------------
+          // --- STEP 3: map preview ghost coords → background → scene pixels ---
           for (const pt of previewTokens) {
             const { actorId, u, v, flipped } = pt;
 
@@ -489,16 +474,29 @@ async function openConflictBuilderDialog() {
 
             const tokenGridW = proto.width  ?? 1;
             const tokenGridH = proto.height ?? 1;
-            const tokenPxW   = tokenGridW * dims2.size;
-            const tokenPxH   = tokenGridH * dims2.size;
+            const tokenPxW   = tokenGridW * dims.size;
+            const tokenPxH   = tokenGridH * dims.size;
 
             const maxX = Math.max(0, sceneWidth  - tokenPxW);
             const maxY = Math.max(0, sceneHeight - tokenPxH);
 
-            let rawX = u * maxX;
-            let rawY = v * maxY;
+            // Reconstruct preview-space center position
+            const px = u * previewW;
+            const py = v * previewH;
 
-            // no snapping: use raw positions, just clamp
+            // Convert to normalized coords within the contained background rect
+            let nx = (px - bgOffsetX) / bgW;
+            let ny = (py - bgOffsetY) / bgH;
+
+            if (!Number.isFinite(nx) || !Number.isFinite(ny)) continue;
+
+            nx = Math.min(0.999, Math.max(0, nx));
+            ny = Math.min(0.999, Math.max(0, ny));
+
+            // Now map to scene pixel space
+            let rawX = nx * maxX;
+            let rawY = ny * maxY;
+
             proto.x = Math.min(maxX, Math.max(0, rawX));
             proto.y = Math.min(maxY, Math.max(0, rawY));
             proto.alpha = 0;
