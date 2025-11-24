@@ -1,6 +1,5 @@
 // cacheManager.js
 
-// ---- Constants ----
 const LOOKFAR_FLAG_SCOPE = "lookfar";
 
 // Loot Cache (Items)
@@ -17,14 +16,10 @@ const LOG = "[Lookfar Cache]";
 
 // ---- Public API ----
 export const cacheManager = {
-  _hooksInstalled: false,       // Loot cache (items) hider hooks
-  _npcHooksInstalled: false,    // NPC cache (actors) hider hooks
+  _hooksInstalled: false,       // Loot cache stealth hooks
+  _npcHooksInstalled: false,    // NPC cache stealth hooks
 
-  // ------------------------------------------------------------
-  // Synchronous finders (no await allowed inside render hooks)
-  // ------------------------------------------------------------
-
-  // Loot Cache (Item folder)
+  // Loot Cache folder
   _getCacheFolderSync() {
     return game.folders.find(f =>
       f?.type === "Item" &&
@@ -33,7 +28,7 @@ export const cacheManager = {
     );
   },
 
-  // NPC Cache (Actor folder)
+  // NPC Cache folder
   _getNpcCacheFolderSync() {
     return game.folders.find(f =>
       f?.type === "Actor" &&
@@ -43,7 +38,7 @@ export const cacheManager = {
   },
 
   // ------------------------------------------------------------
-  // Loot Cache Folder (Items)
+  // Loot Cache Folder Setup
   // ------------------------------------------------------------
   async getOrCreateCacheFolder() {
     if (!game?.folders || typeof game.folders.find !== "function") {
@@ -51,7 +46,7 @@ export const cacheManager = {
       return null;
     }
 
-    // 1) Find folder by flag or name
+    // 1) Check for folder
     let folder =
       game.folders.find(f =>
         f?.type === "Item" &&
@@ -75,7 +70,7 @@ export const cacheManager = {
       console.log(`${LOG} Created loot cache folder: ${folder.name}`);
     }
 
-    // 3) Normalize ownership and flags
+    // 3) Normalize ownership
     try {
       if (folder.getFlag?.(LOOKFAR_FLAG_SCOPE, "system") !== LOOKFAR_CACHE_SYSTEM) {
         await folder.setFlag?.(LOOKFAR_FLAG_SCOPE, "system", LOOKFAR_CACHE_SYSTEM);
@@ -96,16 +91,12 @@ export const cacheManager = {
     } catch (e) {
       console.warn(`${LOG} Could not normalize loot cache folder flags/ownership`, e);
     }
-
-    // 4) Ensure UI hider installed
     this._installCacheHider();
-
     return folder;
   },
 
   // ------------------------------------------------------------
-  // NPC Cache Folder (Actors)
-  // (Now hidden like the loot cache)
+  // NPC Cache Folder Setup
   // ------------------------------------------------------------
   async getOrCreateNpcCacheFolder() {
     if (!game?.folders || typeof game.folders.find !== "function") {
@@ -113,7 +104,7 @@ export const cacheManager = {
       return null;
     }
 
-    // 1) Find NPC cache by flag or name
+    // 1) Check for NPC cache by flag or name
     let folder =
       game.folders.find(f =>
         f?.type === "Actor" &&
@@ -137,17 +128,14 @@ export const cacheManager = {
       console.log(`${LOG} Created NPC cache folder: ${folder.name}`);
     }
 
-    // 3) Normalize flags and ownership
+    // 3) Normalize ownership
     try {
       if (folder.getFlag?.(LOOKFAR_FLAG_SCOPE, "system") !== LOOKFAR_NPC_CACHE_SYSTEM) {
         await folder.setFlag?.(LOOKFAR_FLAG_SCOPE, "system", LOOKFAR_NPC_CACHE_SYSTEM);
       }
-
-      // Now we keep hidden=true, same as loot cache
       if (folder.getFlag?.(LOOKFAR_FLAG_SCOPE, "hidden") !== true) {
         await folder.setFlag?.(LOOKFAR_FLAG_SCOPE, "hidden", true);
       }
-
       const NONE = (CONST?.DOCUMENT_OWNERSHIP_LEVELS?.NONE ?? 0);
       if ((folder.ownership?.default ?? 0) !== NONE) {
         await folder.update({
@@ -160,13 +148,11 @@ export const cacheManager = {
     } catch (e) {
       console.warn(`${LOG} Could not normalize NPC cache folder flags/ownership`, e);
     }
-
-    // Hider gets installed in ready hook
     return folder;
   },
 
   // ------------------------------------------------------------
-  // Clear the *Loot* Cache Folder (Items only)
+  // Clear Loot Cache Folder
   // ------------------------------------------------------------
   async clearCacheFolder() {
     const activeGM = game.users?.activeGM;
@@ -196,7 +182,7 @@ export const cacheManager = {
   },
 
   // ------------------------------------------------------------
-  // Clear the *NPC* Cache Folder (Actors only)
+  // Clear NPC Cache Folder
   // ------------------------------------------------------------
   async clearNpcCacheFolder() {
     const activeGM = game.users?.activeGM;
@@ -226,9 +212,8 @@ export const cacheManager = {
   },
 
   // ------------------------------------------------------------
-  // Hooks & DOM Hiding (Loot Cache: Items)
+  // Hide Loot Cache Folder
   // ------------------------------------------------------------
-
   _installCacheHider() {
     try {
       // Always reinject CSS based on the current folder ID
@@ -323,9 +308,8 @@ export const cacheManager = {
   },
 
   // ------------------------------------------------------------
-  // Hooks & DOM Hiding (NPC Cache: Actors)
+  // Hide NPC Cache Folder
   // ------------------------------------------------------------
-
   _installNpcCacheHider() {
     try {
       this._injectNpcHiderStyle();
@@ -406,18 +390,16 @@ export const cacheManager = {
   }
 };
 
-// ---- Install Loot Cache early
+// ---- Setup Cache Early
 Hooks.once("init", async () => {
   await cacheManager.getOrCreateCacheFolder();
-  // NPC cache is created when needed, but hiding hooks are installed at ready.
 });
 
-// ---- Auto-clear Caches on world ready and install hiders
+// ---- Auto-clear on world ready
 Hooks.once("ready", async () => {
   await cacheManager.clearCacheFolder();
   await cacheManager.clearNpcCacheFolder();
 
-  // Install hiders for both caches
   cacheManager._installCacheHider();
   cacheManager._installNpcCacheHider();
 });
