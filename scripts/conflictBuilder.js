@@ -5,6 +5,8 @@
 // - Includes stat preview, quantity controls, creature selection UI,
 //   and places tokens on the configured battle scene based on preview positions.
 
+import { cacheManager } from "./cacheManager.js";
+
 // ---------------------------------------------------------------------------
 // CONFIG
 // ---------------------------------------------------------------------------
@@ -208,6 +210,45 @@ async function openConflictBuilderDialog() {
       .filter(pl => playlistNames.includes(pl.name))
       .map(pl => `<option value="${pl.id}">${lfEsc(pl.name)}</option>`)
       .join("");
+
+  // -------------------------------------------------------------------------
+  // World NPC cache wiring
+  // -------------------------------------------------------------------------
+  const ActorCls = CONFIG.Actor?.documentClass ?? Actor;
+  const npcCacheFolder = await cacheManager.getOrCreateNpcCacheFolder().catch(() => null);
+
+  /**
+   * Ensure a world Actor exists in the Lookfar NPC Cache folder
+   * for the given compendium actorId. Reuse if already present.
+   * Falls back to compendium actor if cache folder isn't available.
+   */
+  async function ensureWorldActorFromCompendium(actorId) {
+    // Fallback: if cache folder is unavailable, just use compendium actor
+    const src = await pack.getDocument(actorId);
+    if (!src) return null;
+    if (!npcCacheFolder) return src;
+
+    // Try to find existing world actor by flags
+    let worldActor = game.actors.find(a =>
+      a.folder?.id === npcCacheFolder.id &&
+      a.getFlag?.("lookfar", "sourcePack") === pack.collection &&
+      a.getFlag?.("lookfar", "sourceId") === actorId
+    );
+    if (worldActor) return worldActor;
+
+    // Create new world actor in NPC cache
+    const data = src.toObject();
+    delete data._id;
+    data.folder = npcCacheFolder.id;
+
+    data.flags = data.flags || {};
+    data.flags.lookfar = data.flags.lookfar || {};
+    data.flags.lookfar.sourcePack = pack.collection;
+    data.flags.lookfar.sourceId   = actorId;
+
+    worldActor = await ActorCls.create(data);
+    return worldActor;
+  }
 
   // -------------------------------------------------------------------------
   // Dialog Content
@@ -474,57 +515,57 @@ async function openConflictBuilderDialog() {
             ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
             : 1;
 
-          // --- STEP 3: map u,v → scene pixels, compensating for canvas padding -------------
-for (const pt of previewTokens) {
-  const { actorId, u, v, flipped } = pt;
+          // --- STEP 3: map u,v → scene pixels, compensating for canvas padding ---
+          for (const pt of previewTokens) {
+            const { actorId, u, v, flipped } = pt;
 
-  let actor = actorCache.get(actorId);
-  if (!actor) {
-    actor = await pack.getDocument(actorId);
-    if (!actor) continue;
-    actorCache.set(actorId, actor);
-  }
+            let actor = actorCache.get(actorId);
+            if (!actor) {
+              actor = await ensureWorldActorFromCompendium(actorId);
+              if (!actor) continue;
+              actorCache.set(actorId, actor);
+            }
 
-  const proto = actor.prototypeToken.toObject();
+            const proto = actor.prototypeToken.toObject();
 
-  const tokenGridW = proto.width  ?? 1;
-  const tokenGridH = proto.height ?? 1;
-  const tokenPxW   = tokenGridW * dims2.size;
-  const tokenPxH   = tokenGridH * dims2.size;
+            const tokenGridW = proto.width  ?? 1;
+            const tokenGridH = proto.height ?? 1;
+            const tokenPxW   = tokenGridW * dims2.size;
+            const tokenPxH   = tokenGridH * dims2.size;
 
-  // Background (scene) size, not including padding
-  const bgSceneWidth  = dims2.sceneWidth;
-  const bgSceneHeight = dims2.sceneHeight;
+            // Background (scene) size, not including padding
+            const bgSceneWidth  = dims2.sceneWidth;
+            const bgSceneHeight = dims2.sceneHeight;
 
-  // Where the background actually sits inside the padded canvas
-  const bgOffsetX = dims2.sceneX ?? 0;
-  const bgOffsetY = dims2.sceneY ?? 0;
+            // Where the background actually sits inside the padded canvas
+            const bgOffsetX = dims2.sceneX ?? 0;
+            const bgOffsetY = dims2.sceneY ?? 0;
 
-  const maxX = Math.max(0, bgSceneWidth  - tokenPxW);
-  const maxY = Math.max(0, bgSceneHeight - tokenPxH);
+            const maxX = Math.max(0, bgSceneWidth  - tokenPxW);
+            const maxY = Math.max(0, bgSceneHeight - tokenPxH);
 
-  // Treat (u, v) as normalized background coordinates directly
-  let u_bg = Math.min(0.999, Math.max(0, u));
-  let v_bg = Math.min(0.999, Math.max(0, v));
+            // Treat (u, v) as normalized background coordinates directly
+            let u_bg = Math.min(0.999, Math.max(0, u));
+            let v_bg = Math.min(0.999, Math.max(0, v));
 
-  // Pixel positions within the *background* area
-  let rawBgX = u_bg * maxX;
-  let rawBgY = v_bg * maxY;
+            // Pixel positions within the *background* area
+            let rawBgX = u_bg * maxX;
+            let rawBgY = v_bg * maxY;
 
-  // Now place tokens in canvas space by adding the background offset
-  const clampedBgX = Math.min(maxX, Math.max(0, rawBgX));
-  const clampedBgY = Math.min(maxY, Math.max(0, rawBgY));
+            // Now place tokens in canvas space by adding the background offset
+            const clampedBgX = Math.min(maxX, Math.max(0, rawBgX));
+            const clampedBgY = Math.min(maxY, Math.max(0, rawBgY));
 
-  proto.x = bgOffsetX + clampedBgX;
-  proto.y = bgOffsetY + clampedBgY;
-  proto.alpha = 0;
+            proto.x = bgOffsetX + clampedBgX;
+            proto.y = bgOffsetY + clampedBgY;
+            proto.alpha = 0;
 
-  if (flipped) {
-    proto.mirrorX = !proto.mirrorX;
-  }
+            if (flipped) {
+              proto.mirrorX = !proto.mirrorX;
+            }
 
-  tokenData.push({ proto, actor });
-  }
+            tokenData.push({ proto, actor });
+          }
 
           if (!tokenData.length) {
             ui.notifications.error("No valid creatures could be placed from the preview.");
@@ -633,6 +674,7 @@ for (const pt of previewTokens) {
       }
 
       async function updateStatsForId(id, level, rank, replacedSoldiers) {
+        // Note: For stats, we still use the compendium actor (no need for world copy).
         const actor = await pack.getDocument(id);
         if (!actor) return;
 
