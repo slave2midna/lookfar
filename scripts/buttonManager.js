@@ -1,3 +1,5 @@
+// buttonManager.js
+
 // Read Item Forge edit mode setting
 function getItemForgeEditMode() {
   try {
@@ -28,22 +30,22 @@ function getLookfarTools() {
 
     // Treasure Roll Button
     tools.push({
-      name: "Treasure Roll",
+      name: "LOOKFAR.Button.TreasureRoll.Name",
       icon: "fa-solid fa-gem",
       onClick: () => Hooks.call("lookfarShowTreasureRollDialog")
     });
 
     // Dungeon Builder Button
     tools.push({
-      name: "Dungeon Builder",
+      name: "LOOKFAR.Button.DungeonBuilder.Name",
       icon: "fa-solid fa-dungeon",
       onClick: () => Hooks.call("lookfarShowDungeonMapperDialog")
     });
 
     // Conflict Builder Button
     tools.push({
-      name: "Conflict Builder",
-      icon: "fa-solid fa-dragon",   // You can swap the icon if preferred
+      name: "LOOKFAR.Button.ConflictBuilder.Name",
+      icon: "fa-solid fa-dragon",
       onClick: () => Hooks.call("lookfarShowConflictBuilderDialog")
     });
   }
@@ -58,7 +60,7 @@ function getLookfarTools() {
 
   if (!hideForPlayer) {
     tools.push({
-      name: "Item Forger",
+      name: "LOOKFAR.Button.ItemForger.Name",
       icon: "fa-solid fa-hammer",
       onClick: () => Hooks.call("lookfarShowItemForgeDialog")
     });
