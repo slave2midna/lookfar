@@ -17,6 +17,72 @@ function getItemCost(sys) {
          0;
 }
 
+// ---- Localization helpers for keyword-based names ----
+function capitalizeKey(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function localizeOrFallback(key, fallback) {
+  const localized = game?.i18n?.localize?.(key) ?? key;
+  // If nothing was found, fall back to the raw string
+  return (localized === key ? (fallback ?? key) : localized);
+}
+
+/**
+ * Build a localized Material name using:
+ *   LOOKFAR.Keywords.Patterns.Material
+ *   LOOKFAR.Keywords.Detail.{DetailCategory}.{DetailWord}
+ *   LOOKFAR.Keywords.Origin.Material.{OriginCategory}.{OriginWord}
+ *   LOOKFAR.Keywords.Nature.Material.{NatureCategory}.{NatureWord}
+ */
+function buildMaterialName({ detailCategory, detailWord, originCategory, originWord, natureCategory, natureWord }) {
+  const pattern = localizeOrFallback(
+    "LOOKFAR.Keywords.Patterns.Material",
+    "{detail} {origin} {nature}"
+  );
+
+  const detailKey = `LOOKFAR.Keywords.Detail.${capitalizeKey(detailCategory)}.${detailWord}`;
+  const originKey = `LOOKFAR.Keywords.Origin.Material.${originCategory}.${originWord}`;
+  const natureKey = `LOOKFAR.Keywords.Nature.Material.${natureCategory}.${natureWord}`;
+
+  const detailLabel = localizeOrFallback(detailKey, detailWord);
+  const originLabel = localizeOrFallback(originKey, originWord);
+  const natureLabel = localizeOrFallback(natureKey, natureWord);
+
+  return pattern
+    .replace("{detail}", detailLabel)
+    .replace("{origin}", originLabel)
+    .replace("{nature}", natureLabel);
+}
+
+/**
+ * Build a localized Ingredient name using:
+ *   LOOKFAR.Keywords.Patterns.Ingredient
+ *   LOOKFAR.Keywords.Taste.{TasteCategory}.{TasteWord}
+ *   LOOKFAR.Keywords.Origin.Ingredient.{OriginCategory}.{OriginWord}
+ *   LOOKFAR.Keywords.Nature.Ingredient.{NatureCategory}.{NatureWord}
+ */
+function buildIngredientName({ tasteCategory, tasteWord, originCategory, originWord, natureCategory, natureWord }) {
+  const pattern = localizeOrFallback(
+    "LOOKFAR.Keywords.Patterns.Ingredient",
+    "{taste} {origin} {nature}"
+  );
+
+  const tasteKey  = `LOOKFAR.Keywords.Taste.${capitalizeKey(tasteCategory)}.${tasteWord}`;
+  const originKey = `LOOKFAR.Keywords.Origin.Ingredient.${originCategory}.${originWord}`;
+  const natureKey = `LOOKFAR.Keywords.Nature.Ingredient.${natureCategory}.${natureWord}`;
+
+  const tasteLabel  = localizeOrFallback(tasteKey,  tasteWord);
+  const originLabel = localizeOrFallback(originKey, originWord);
+  const natureLabel = localizeOrFallback(natureKey, natureWord);
+
+  return pattern
+    .replace("{taste}",  tasteLabel)
+    .replace("{origin}", originLabel)
+    .replace("{nature}", natureLabel);
+}
+
 // Material Generation
 function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywordsMaterial, natureKeywordsMaterial) {
   const localNature = (nature === "Random" || !natureKeywordsMaterial[nature])
@@ -29,22 +95,36 @@ function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeyw
 
   if (!natureKeywordsMaterial[localNature] || budget < 50) return null;
 
-  const detail = getRandom(Object.keys(detailKeywords));
-  const detailWord = getRandom(detailKeywords[detail]);
-  const originWord = getRandom(originKeywordsMaterial[localOrigin]);
-  const natureWord = getRandom(natureKeywordsMaterial[localNature]);
-  const name = `${detailWord} ${originWord} ${natureWord}`;
+  // detailKeywords: e.g. { agility: [...], powerful: [...], ... }
+  const detailCategory = getRandom(Object.keys(detailKeywords));          // e.g. "agility"
+  const detailWord     = getRandom(detailKeywords[detailCategory]);      // e.g. "Layered"
+
+  // originKeywordsMaterial: { Aerial: ["Light","Hollow",...], ... }
+  const originWord = getRandom(originKeywordsMaterial[localOrigin]);     // e.g. "Avian"
+
+  // natureKeywordsMaterial: { Anthropod: ["Carapace",...], ... }
+  const natureWord = getRandom(natureKeywordsMaterial[localNature]);     // e.g. "Horn"
+
+  // Localized, pattern-based name (Material pattern)
+  const name = buildMaterialName({
+    detailCategory,
+    detailWord,
+    originCategory: localOrigin,
+    originWord,
+    natureCategory: localNature,
+    natureWord
+  });
 
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
   if (value > budget) return null;
 
-  return { 
-	name, 
-	value, 
-	detail, 
-	nature: localNature, 
-	origin: localOrigin
+  return {
+    name,
+    value,
+    detail: detailCategory,
+    nature: localNature,
+    origin: localOrigin
   };
 }
 
@@ -60,24 +140,37 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
 
   if (!natureKeywordsIngredient[localNature] || budget < 10) return null;
 
-  const taste = getRandom(Object.keys(tasteKeywords));
-  const tasteWord = getRandom(tasteKeywords[taste]);
-  const originWord = getRandom(originKeywordsIngredient[localOrigin]);
-  const natureWord = getRandom(natureKeywordsIngredient[localNature]);
-  const name = `${tasteWord} ${originWord} ${natureWord}`;
+  // tasteKeywords: e.g. { bitter: [...], sweet: [...], ... }
+  const tasteCategory = getRandom(Object.keys(tasteKeywords));          // e.g. "sweet"
+  const tasteWord     = getRandom(tasteKeywords[tasteCategory]);        // e.g. "Sugary"
 
-  const quantity = Math.floor(Math.random() * 3) + 1;
-  const unitValue = (taste === "Distinct") ? 20 : 10;
-  const total = unitValue * quantity;
+  // originKeywordsIngredient: { Aerial: ["Fluffy",...], ... }
+  const originWord = getRandom(originKeywordsIngredient[localOrigin]);  // e.g. "Fluffy"
+
+  // natureKeywordsIngredient: { Anthropod: ["Meat",...], ... }
+  const natureWord = getRandom(natureKeywordsIngredient[localNature]);  // e.g. "Meat"
+
+  const name = buildIngredientName({
+    tasteCategory,
+    tasteWord,
+    originCategory: localOrigin,
+    originWord,
+    natureCategory: localNature,
+    natureWord
+  });
+
+  const quantity  = Math.floor(Math.random() * 3) + 1;
+  const unitValue = (tasteCategory === "Distinct") ? 20 : 10;
+  const total     = unitValue * quantity;
   if (total > budget) return null;
 
-  return { 
-	name, 
-	value: total, 
-	taste, 
-	quantity, 
-	nature: localNature, 
-	origin: localOrigin
+  return {
+    name,
+    value: total,
+    taste: tasteCategory,
+    quantity,
+    nature: localNature,
+    origin: localOrigin
   };
 }
 
