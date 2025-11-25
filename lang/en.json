@@ -1873,25 +1873,24 @@
 
 
 "__SECTION__TreasureRoll": "=== Treasure Roll ===",
-
-"Dialogs": {
-  "TreasureRoll": {
-    "Title": "Treasure Generator",
-    "Buttons": {
-      "RollLoot": "Roll Loot"
+"TreasureRoll": {
+  "Dialogs": {
+    "TreasureRoll": {
+      "Title": "Treasure Generator",
+      "Buttons": {
+        "RollLoot": "Roll Loot"
+      }
+    },
+    "TreasureResult": {
+      "Title": "Treasure Results",
+      "Buttons": {
+        "Keep": "Keep",
+        "Stash": "Stash",
+        "Reroll": "Reroll"
+      }
     }
   },
-  "TreasureResult": {
-    "Title": "Treasure Results",
-    "Buttons": {
-      "Keep": "Keep",
-      "Stash": "Stash",
-      "Reroll": "Reroll"
-    }
-  }
-},
 
-"TreasureRoll": {
   "Fields": {
     "Budget": "Budget",
     "Level": "Level",
@@ -1899,6 +1898,7 @@
     "Nature": "Nature",
     "Items": "Items"
   },
+
   "Origin": {
     "Random": "Random",
     "Aerial": "Aerial",
@@ -1912,6 +1912,7 @@
     "Aquatic": "Aquatic",
     "Mechanical": "Mechanical"
   },
+
   "Nature": {
     "Random": "Random",
     "Anthropod": "Anthropod",
@@ -1926,10 +1927,12 @@
     "Artificial": "Artificial",
     "Mineral": "Mineral"
   },
+
   "Options": {
     "IgnoreValues": "Ignore budget/level",
     "SelectAll": "Select all"
   },
+
   "Types": {
     "Weapons": "Weapons",
     "Armor": "Armor",
@@ -1939,71 +1942,76 @@
     "Ingredients": "Ingredients",
     "Currency": "Currency",
     "Custom": "Custom"
+  },
+
+  "Result": {
+    "Budget": {
+      "Remaining": "Remaining Budget"
+    }
+  },
+
+  "Errors": {
+    "CustomTreasureTableMissing": "No Custom Treasure Roll Table selected in settings.",
+    "CustomTreasureTableNotFound": "Selected Custom Treasure Roll Table not found.",
+    "SkippedIngredientsWarning": "Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
+    "NoLootGenerated": "No loot generated."
   }
 },
 
-"TreasureResult": {
-  "Budget": {
-    "Remaining": "Remaining Budget"
-  }
-},
-
-"Errors": {
-  "CustomTreasureTableMissing": "No Custom Treasure Roll Table selected in settings.",
-  "CustomTreasureTableNotFound": "Selected Custom Treasure Roll Table not found.",
-  "SkippedIngredientsWarning": "Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
-  "NoLootGenerated": "No loot generated."
-},
 
 
-        
-
-        
 
 "__SECTION__TravelRoll": "=== Travel Roll ===",
-"Dialogs": {
-  "TravelCheck": {
-    "Title": "Travel Check",
-    "ThreatLevel": "Threat Level",
-    "Wayfaring": "Wayfaring",
-    "PartyLevel": "Party Level:",
-    "TreasureHunting": "Treasure Hunting",
-    "WellTraveled": "Well-Traveled"
+"TravelRoll": {
+  "Dialogs": {
+    "TravelCheck": {
+      "Title": "Travel Check",
+      "ThreatLevel": "Threat Level",
+      "Wayfaring": "Wayfaring",
+      "PartyLevel": "Party Level:",
+      "TreasureHunting": "Treasure Hunting",
+      "WellTraveled": "Well-Traveled"
+    },
+    "TravelResult": {
+      "Title": "Travel Result",
+      "Prompt": "Do you want to keep this result or reroll?",
+      "Waiting": "Waiting for GM decision...",
+      "NoIncident": "The travel day passed without incident."
+    },
+    "Result": {
+      "DangerMinor": "Minor Danger!",
+      "DangerHeavy": "Heavy Danger!",
+      "DangerMassive": "Massive Danger!",
+      "Discovery": "Discovery!"
+    },
+    "TableHeaders": {
+      "Threat": "Threat",
+      "Source": "Source",
+      "Effect": "Effect",
+      "Traits": "Traits",
+      "Terrain": "Terrain"
+    }
   },
-  "TravelResult": {
-    "Title": "Travel Result",
-    "Prompt": "Do you want to keep this result or reroll?",
-    "Waiting": "Waiting for GM decision...",
-    "NoIncident": "The travel day passed without incident."
+
+  "Chat": {
+    "Alias": {
+      "Roll": "Travel Roll",
+      "Result": "Travel Result"
+    }
   },
-  "Result": {
-    "DangerMinor": "Minor Danger!",
-    "DangerHeavy": "Heavy Danger!",
-    "DangerMassive": "Massive Danger!",
-    "Discovery": "Discovery!"
-  },
-  "TableHeaders": {
-    "Threat": "Threat",
-    "Source": "Source",
-    "Effect": "Effect",
-    "Traits": "Traits",
-    "Terrain": "Terrain"
+
+  "Errors": {
+    "DataUnavailable": "Error: Data not available.",
+    "DamageMissing": "Error: Damage data not found.",
+    "ThreatUnknown": "Error: Unknown threat type.",
+    "NoDangerSource": "No danger source available.",
+    "NoDiscoveryEffect": "No discovery effect available.",
+    "NoDiscoverySource": "No discovery source available."
   }
 },
-"Chat": {
-  "Alias": {
-    "Roll": "Travel Roll",
-    "Result": "Travel Result"
-  }
-},
-"Errors": {
-  "DataUnavailable": "Error: Data not available.",
-  "DamageMissing": "Error: Damage data not found.",
-  "ThreatUnknown": "Error: Unknown threat type.",
-  "NoDangerSource": "No danger source available.",
-  "NoDiscoveryEffect": "No discovery effect available.",
-  "NoDiscoverySource": "No discovery source available."
-},
+
+
+
 
 
        "__SECTION__Dangers": "=== Dangers ===",
@@ -2103,6 +2111,7 @@
         }
     }
 }
+
 
 
 
