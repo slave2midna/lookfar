@@ -1,5 +1,10 @@
 {
     "LOOKFAR": {
+
+
+
+
+        
         "__SECTION__Buttons": "=== Buttons ===",
         "Button": {
             "TravelCheck": {
@@ -23,6 +28,11 @@
                 "Title": "Forge and Item"
             }
         },
+
+
+
+
+        
         "__SECTION__Settings": "=== Settings ===",
         "Settings": {
             "ResultVisibility": {
@@ -87,59 +97,12 @@
             "NoActorCompendiums": "No Actor compendiums found",
             "NoScenes": "No scenes found"
         },
-        "__SECTION__Dialogs": "=== Dialogs ===",
-        "Dialogs": {
-            "TravelCheck": {
-                "Title": "Travel Check",
-                "ThreatLevel": "Threat Level",
-                "Wayfaring": "Wayfaring",
-                "PartyLevel": "Party Level:",
-                "TreasureHunting": "Treasure Hunting",
-                "WellTraveled": "Well-Traveled"
-            },
-            "TravelResult": {
-                "Title": "Travel Result",
-                "Prompt": "Do you want to keep this result or reroll?",
-                "Waiting": "Waiting for GM decision...",
-                "NoIncident": "The travel day passed without incident."
-            },
-            "Result": {
-                "Danger": "Danger!",
-                "DangerMinor": "Minor Danger!",
-                "DangerHeavy": "Heavy Danger!",
-                "DangerMassive": "Massive Danger!",
-                "Discovery": "Discovery!"
-            },
-            "TableHeaders": {
-                "Threat": "Threat",
-                "Source": "Source",
-                "Effect": "Effect",
-                "Traits": "Traits",
-                "Terrain": "Terrain"
-            }
-        },
-        "__SECTION__Severity": "=== Severity ===",
-        "Severity": {
-            "Minor": "Minor",
-            "Heavy": "Heavy",
-            "Massive": "Massive"
-        },
-        "__SECTION__Chat": "=== Chat ===",
-        "Chat": {
-            "Alias": {
-                "Roll": "Travel Roll",
-                "Result": "Travel Result"
-            }
-        },
-        "__SECTION__Errors": "=== Errors ===",
-        "Errors": {
-            "DataUnavailable": "Error: Data not available.",
-            "DamageMissing": "Error: Damage data not found.",
-            "ThreatUnknown": "Error: Unknown threat type.",
-            "NoDangerSource": "No danger source available.",
-            "NoDiscoveryEffect": "No discovery effect available.",
-            "NoDiscoverySource": "No discovery source available."
-        },
+
+
+
+
+        
+
         "__SECTION__NamePatterns": "=== Name Patterns ===",
         "NamePatterns": {
             "Material": "{detail} {origin} {nature}",
@@ -149,6 +112,11 @@
             "Shield": "{quality} {base}",
             "Accessory": "{quality} {base}"
         },
+
+
+
+
+        
         "__SECTION__Keywords": "=== Keywords ===",
         "Keywords": {
             "Traits": {
@@ -849,6 +817,11 @@
                 }
             }
         },
+
+
+
+
+        
         "__SECTION__EQUIPMENT": "=== Equipment ===",
         "Equipment": {
             "Weapon": {
@@ -899,6 +872,11 @@
                 "ring": "Ring"
             }
         },
+
+
+
+
+        
         "__SECTION__Qualities": "=== Qualities ===",
         "Qualities": {
             "basic": {
@@ -1893,8 +1871,52 @@
         },
 
 
+"__SECTION__TravelRoll": "=== Travel Roll ===",
+"Dialogs": {
+  "TravelCheck": {
+    "Title": "Travel Check",
+    "ThreatLevel": "Threat Level",
+    "Wayfaring": "Wayfaring",
+    "PartyLevel": "Party Level:",
+    "TreasureHunting": "Treasure Hunting",
+    "WellTraveled": "Well-Traveled"
+  },
+  "TravelResult": {
+    "Title": "Travel Result",
+    "Prompt": "Do you want to keep this result or reroll?",
+    "Waiting": "Waiting for GM decision...",
+    "NoIncident": "The travel day passed without incident."
+  },
+  "Result": {
+    "DangerMinor": "Minor Danger!",
+    "DangerHeavy": "Heavy Danger!",
+    "DangerMassive": "Massive Danger!",
+    "Discovery": "Discovery!"
+  },
+  "TableHeaders": {
+    "Threat": "Threat",
+    "Source": "Source",
+    "Effect": "Effect",
+    "Traits": "Traits",
+    "Terrain": "Terrain"
+  }
+},
+"Chat": {
+  "Alias": {
+    "Roll": "Travel Roll",
+    "Result": "Travel Result"
+  }
+},
+"Errors": {
+  "DataUnavailable": "Error: Data not available.",
+  "DamageMissing": "Error: Damage data not found.",
+  "ThreatUnknown": "Error: Unknown threat type.",
+  "NoDangerSource": "No danger source available.",
+  "NoDiscoveryEffect": "No discovery effect available.",
+  "NoDiscoverySource": "No discovery source available."
+},
 
-        
+
         "__SECTION__Dangers": "=== Dangers ===",
         "Dangers": {
             "StatusEffects": {
@@ -1988,4 +2010,5 @@
         }
     }
 }
+
 
