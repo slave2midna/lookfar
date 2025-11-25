@@ -899,63 +899,6 @@
                 "ring": "Ring"
             }
         },
-        "__SECTION__Dangers": "=== Dangers ===",
-        "Dangers": {
-            "StatusEffects": {
-                "Minor": {
-                    "Dazed": "Suffer dazed",
-                    "Shaken": "Suffer shaken",
-                    "Slow": "Suffer slow",
-                    "Weak": "Suffer weak"
-                },
-                "Heavy": {
-                    "Poison": "Suffer poison",
-                    "Enrage": "Suffer enrage"
-                },
-                "Massive": {
-                    "Dazed": "Suffer dazed",
-                    "Shaken": "Suffer shaken",
-                    "Slow": "Suffer slow",
-                    "Weak": "Suffer weak",
-                    "Poisoned": "Suffer poisoned",
-                    "Enraged": "Suffer enraged"
-                }
-            },
-            "Combat": {
-                "Minor": "An easy combat encounter",
-                "Heavy": "A challenging combat encounter",
-                "Massive": "A deadly combat encounter"
-            },
-            "DangerClock": {
-                "Minor": "A 4-section danger clock begins ticking",
-                "Heavy": "A 6-section danger clock begins ticking",
-                "Massive": "An 8-section danger clock begins ticking"
-            },
-            "VillainPlanAdvance": {
-                "Minor": "The villain’s plan advances by 2 steps",
-                "Heavy": "The villain’s plan advances by 3 steps",
-                "Massive": "The villain’s plan advances by 4 steps"
-            },
-            "Sources": {
-                "Source1": "Altitude sickness, food poisoning, or general exhaustion slows the group.",
-                "Source2": "Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
-                "Source3": "Local or global political unrest causes interruptions or confrontations.",
-                "Source4": "A harsh natural event — storms, quakes, floods — brings delay and peril.",
-                "Source5": "You attract the attention of a rival, villain, or monster.",
-                "Source6": "Supernatural interference alters the path: portals, hauntings, omens.",
-                "Source7": "A mysterious NPC appears, altering or obstructing your path.",
-                "Source8": "An ancient or hidden mechanism is triggered unexpectedly.",
-                "Source9": "You trespass on sacred ground or violate a taboo unknowingly.",
-                "Source10": "The wilderness reveals a secret — but it comes at a price.",
-                "Source11": "Wildlife becomes territorial or aggressive, creating complications.",
-                "Source12": "A landmark has changed, misguiding your path.",
-                "Source13": "Resources deplete faster than expected, straining survival.",
-                "Source14": "Dreams or visions disrupt progress with cryptic warnings.",
-                "Source15": "A divine or arcane presence tests your worth or purity.",
-                "Source16": "A curse or magical interference subtly warps your environment.",
-                "Source17": "An ally reveals a secret that throws everything into question."
-            }
-        },
         "__SECTION__Qualities": "=== Qualities ===",
         "Qualities": {
             "basic": {
@@ -1948,6 +1891,71 @@
                 }
             }
         },
+
+
+
+        
+        "__SECTION__Dangers": "=== Dangers ===",
+        "Dangers": {
+            "StatusEffects": {
+                "Minor": {
+                    "Dazed": "Suffer dazed",
+                    "Shaken": "Suffer shaken",
+                    "Slow": "Suffer slow",
+                    "Weak": "Suffer weak"
+                },
+                "Heavy": {
+                    "Poison": "Suffer poison",
+                    "Enrage": "Suffer enrage"
+                },
+                "Massive": {
+                    "Dazed": "Suffer dazed",
+                    "Shaken": "Suffer shaken",
+                    "Slow": "Suffer slow",
+                    "Weak": "Suffer weak",
+                    "Poisoned": "Suffer poisoned",
+                    "Enraged": "Suffer enraged"
+                }
+            },
+            "Combat": {
+                "Minor": "An easy combat encounter",
+                "Heavy": "A challenging combat encounter",
+                "Massive": "A deadly combat encounter"
+            },
+            "DangerClock": {
+                "Minor": "A 4-section danger clock begins ticking",
+                "Heavy": "A 6-section danger clock begins ticking",
+                "Massive": "An 8-section danger clock begins ticking"
+            },
+            "VillainPlanAdvance": {
+                "Minor": "The villain’s plan advances by 2 steps",
+                "Heavy": "The villain’s plan advances by 3 steps",
+                "Massive": "The villain’s plan advances by 4 steps"
+            },
+            "Sources": {
+                "Source1": "Altitude sickness, food poisoning, or general exhaustion slows the group.",
+                "Source2": "Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
+                "Source3": "Local or global political unrest causes interruptions or confrontations.",
+                "Source4": "A harsh natural event — storms, quakes, floods — brings delay and peril.",
+                "Source5": "You attract the attention of a rival, villain, or monster.",
+                "Source6": "Supernatural interference alters the path: portals, hauntings, omens.",
+                "Source7": "A mysterious NPC appears, altering or obstructing your path.",
+                "Source8": "An ancient or hidden mechanism is triggered unexpectedly.",
+                "Source9": "You trespass on sacred ground or violate a taboo unknowingly.",
+                "Source10": "The wilderness reveals a secret — but it comes at a price.",
+                "Source11": "Wildlife becomes territorial or aggressive, creating complications.",
+                "Source12": "A landmark has changed, misguiding your path.",
+                "Source13": "Resources deplete faster than expected, straining survival.",
+                "Source14": "Dreams or visions disrupt progress with cryptic warnings.",
+                "Source15": "A divine or arcane presence tests your worth or purity.",
+                "Source16": "A curse or magical interference subtly warps your environment.",
+                "Source17": "An ally reveals a secret that throws everything into question."
+            }
+        },
+
+
+
+        
         "__SECTION__Discoveries": "=== Discoveries ===",
         "Discoveries": {
             "Effects": {
@@ -1980,3 +1988,4 @@
         }
     }
 }
+
