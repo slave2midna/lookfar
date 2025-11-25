@@ -1,9 +1,5 @@
 {
     "LOOKFAR": {
-
-
-
-        
         "__SECTION__Buttons": "=== Buttons ===",
         "Button": {
             "TravelCheck": {
@@ -27,10 +23,6 @@
                 "Title": "Forge and Item"
             }
         },
-
-
-
-        
         "__SECTION__Settings": "=== Settings ===",
         "Settings": {
             "ResultVisibility": {
@@ -95,10 +87,6 @@
             "NoActorCompendiums": "No Actor compendiums found",
             "NoScenes": "No scenes found"
         },
-
-
-
-        
         "__SECTION__Dialogs": "=== Dialogs ===",
         "Dialogs": {
             "TravelCheck": {
@@ -130,20 +118,12 @@
                 "Terrain": "Terrain"
             }
         },
-
-
-
-        
         "__SECTION__Severity": "=== Severity ===",
         "Severity": {
             "Minor": "Minor",
             "Heavy": "Heavy",
             "Massive": "Massive"
         },
-
-
-
-        
         "__SECTION__Chat": "=== Chat ===",
         "Chat": {
             "Alias": {
@@ -151,10 +131,6 @@
                 "Result": "Travel Result"
             }
         },
-
-
-
-        
         "__SECTION__Errors": "=== Errors ===",
         "Errors": {
             "DataUnavailable": "Error: Data not available.",
@@ -164,10 +140,6 @@
             "NoDiscoveryEffect": "No discovery effect available.",
             "NoDiscoverySource": "No discovery source available."
         },
-
-
-
-        
         "__SECTION__NamePatterns": "=== Name Patterns ===",
         "NamePatterns": {
             "Material": "{detail} {origin} {nature}",
@@ -177,10 +149,6 @@
             "Shield": "{quality} {base}",
             "Accessory": "{quality} {base}"
         },
-
-
-
-        
         "__SECTION__Keywords": "=== Keywords ===",
         "Keywords": {
             "Traits": {
@@ -881,10 +849,6 @@
                 }
             }
         },
-
-
-
-        
         "__SECTION__EQUIPMENT": "=== Equipment ===",
         "Equipment": {
             "Weapon": {
@@ -935,10 +899,6 @@
                 "ring": "Ring"
             }
         },
-
-
-
-        
         "__SECTION__Dangers": "=== Dangers ===",
         "Dangers": {
             "StatusEffects": {
@@ -996,10 +956,998 @@
                 "Source17": "An ally reveals a secret that throws everything into question."
             }
         },
-
-
-
-        
+        "__SECTION__Qualities": "=== Qualities ===",
+        "Qualities": {
+            "basic": {
+                "anti-slow": {
+                    "Weapon": "Thin",
+                    "Armor": "Light",
+                    "Shield": "Zephyrite",
+                    "Accessory": "Swift",
+                    "Description": "grants immunity to the slow status."
+                },
+                "anti-daze": {
+                    "Weapon": "Thick",
+                    "Armor": "Heavy",
+                    "Shield": "Focussteel",
+                    "Accessory": "Steady",
+                    "Description": "grants immunity to the daze status."
+                },
+                "anti-shaken": {
+                    "Weapon": "Sturdy",
+                    "Armor": "Studded",
+                    "Shield": "Heartstone",
+                    "Accessory": "Brave",
+                    "Description": "grants immunity to the shaken status."
+                },
+                "anti-weak": {
+                    "Weapon": "Strong",
+                    "Armor": "Bulky",
+                    "Shield": "Mightwall",
+                    "Accessory": "Mighty",
+                    "Description": "grants immunity to the weak status."
+                },
+                "anti-poison": {
+                    "Weapon": "Venomguard",
+                    "Armor": "Hermetic",
+                    "Shield": "Toxbane",
+                    "Accessory": "Studded",
+                    "Description": "grants immunity to the poisoned status."
+                },
+                "anti-enrage": {
+                    "Weapon": "Soulsteel",
+                    "Armor": "Darksteel",
+                    "Shield": "Tranquilite",
+                    "Accessory": "Calm",
+                    "Description": "grants immunity to the enraged status."
+                },
+                "resist-fire": {
+                    "Weapon": "Tempered",
+                    "Armor": "Nomex",
+                    "Shield": "Pyrium",
+                    "Accessory": "Dragonscale",
+                    "Description": "grants resistance to fire damage."
+                },
+                "resist-earth": {
+                    "Weapon": "Cracked",
+                    "Armor": "Kevlar",
+                    "Shield": "Terracite",
+                    "Accessory": "Stone",
+                    "Description": "grants resistance to earth damage."
+                },
+                "resist-ice": {
+                    "Weapon": "Cold Iron",
+                    "Armor": "Insulated",
+                    "Shield": "Frostsilver",
+                    "Accessory": "Yetifur",
+                    "Description": "grants resistance to ice damage."
+                },
+                "resist-air": {
+                    "Weapon": "Grated",
+                    "Armor": "Nylon",
+                    "Shield": "Aetherglass",
+                    "Accessory": "Feather",
+                    "Description": "grants resistance to air damage."
+                },
+                "resist-bolt": {
+                    "Weapon": "Wooden",
+                    "Armor": "Neoprene",
+                    "Shield": "Stormsilver",
+                    "Accessory": "Rubber",
+                    "Description": "grants resistance to bolt damage."
+                },
+                "resist-dark": {
+                    "Weapon": "Sacred",
+                    "Armor": "Satin",
+                    "Shield": "Umbracite",
+                    "Accessory": "Obsidian",
+                    "Description": "grants resistance to dark damage."
+                },
+                "resist-light": {
+                    "Weapon": "Purified",
+                    "Armor": "Silk",
+                    "Shield": "Aurorium",
+                    "Accessory": "Ivory",
+                    "Description": "grants resistance to light damage."
+                },
+                "resist-poison": {
+                    "Weapon": "Steralized",
+                    "Armor": "Leather",
+                    "Shield": "Venomite",
+                    "Accessory": "Muddy",
+                    "Description": "grants resistance to poison damage."
+                },
+                "resist-fire-earth": {
+                    "Weapon": "Draconyx",
+                    "Armor": "Firestone",
+                    "Shield": "Moltrum",
+                    "Accessory": "Terracite",
+                    "Description": "grants resistance to fire and earth damage."
+                },
+                "resist-fire-ice": {
+                    "Weapon": "Emberfrost",
+                    "Armor": "Frostfire",
+                    "Shield": "Cryostone",
+                    "Accessory": "Frostsilver",
+                    "Description": "grants resistance to fire and ice damage."
+                },
+                "resist-fire-air": {
+                    "Weapon": "Flarewind",
+                    "Armor": "Windflame",
+                    "Shield": "Aetherglass",
+                    "Accessory": "Aethersteel",
+                    "Description": "grants resistance to fire and air damage."
+                },
+                "resist-fire-bolt": {
+                    "Weapon": "Stormflare",
+                    "Armor": "Firestorm",
+                    "Shield": "Voltplate",
+                    "Accessory": "Stormsilver",
+                    "Description": "grants resistance to fire and bolt damage."
+                },
+                "resist-fire-dark": {
+                    "Weapon": "Hellshade",
+                    "Armor": "Shadowfire",
+                    "Shield": "Umbracite",
+                    "Accessory": "Bloodiron",
+                    "Description": "grants resistance to fire and dark damage."
+                },
+                "resist-fire-light": {
+                    "Weapon": "Solflare",
+                    "Armor": "Sunfire",
+                    "Shield": "Aurorium",
+                    "Accessory": "Sunsteel",
+                    "Description": "grants resistance to fire and light damage."
+                },
+                "resist-fire-poison": {
+                    "Weapon": "Cindervenom",
+                    "Armor": "Dwarven",
+                    "Shield": "Venomite",
+                    "Accessory": "Miastrum",
+                    "Description": "grants resistance to fire and poison damage."
+                },
+                "resist-earth-ice": {
+                    "Weapon": "Stonefrost",
+                    "Armor": "Icestone",
+                    "Shield": "Glacite",
+                    "Accessory": "Cryolite",
+                    "Description": "grants resistance to earth and ice damage."
+                },
+                "resist-earth-air": {
+                    "Weapon": "Skyroot",
+                    "Armor": "Windstone",
+                    "Shield": "Cloudiron",
+                    "Accessory": "Zephyrite",
+                    "Description": "grants resistance to earth and air damage."
+                },
+                "resist-earth-bolt": {
+                    "Weapon": "Terravolt",
+                    "Armor": "Thunderstone",
+                    "Shield": "Stormcore",
+                    "Accessory": "Voltite",
+                    "Description": "grants resistance to earth and bolt damage."
+                },
+                "resist-earth-dark": {
+                    "Weapon": "Gravestone",
+                    "Armor": "Darkstone",
+                    "Shield": "Noctite",
+                    "Accessory": "Shadowsteel",
+                    "Description": "grants resistance to earth and dark damage."
+                },
+                "resist-earth-light": {
+                    "Weapon": "Solgrit",
+                    "Armor": "Lightstone",
+                    "Shield": "Sunsteel",
+                    "Accessory": "Aurorium",
+                    "Description": "grants resistance to earth and light damage."
+                },
+                "resist-earth-poison": {
+                    "Weapon": "Rotrock",
+                    "Armor": "Sylvan",
+                    "Shield": "Blightiron",
+                    "Accessory": "Verdanite",
+                    "Description": "grants resistance to earth and poison damage."
+                },
+                "resist-ice-air": {
+                    "Weapon": "Frostwind",
+                    "Armor": "Windchill",
+                    "Shield": "Aeronite",
+                    "Accessory": "Cloudiron",
+                    "Description": "grants resistance to ice and air damage."
+                },
+                "resist-ice-bolt": {
+                    "Weapon": "Cryostorm",
+                    "Armor": "Frostbolt",
+                    "Shield": "Stormsilver",
+                    "Accessory": "Voltshadow",
+                    "Description": "grants resistance to ice and bolt damage."
+                },
+                "resist-ice-dark": {
+                    "Weapon": "Rimebane",
+                    "Armor": "Blackice",
+                    "Shield": "Umbraglass",
+                    "Accessory": "Grimsteel",
+                    "Description": "grants resistance to ice and dark damage."
+                },
+                "resist-ice-light": {
+                    "Weapon": "Aurafrost",
+                    "Armor": "Frostlight",
+                    "Shield": "Celestium",
+                    "Accessory": "Luminite",
+                    "Description": "grants resistance to ice and light damage."
+                },
+                "resist-ice-poison": {
+                    "Weapon": "Venomglaze",
+                    "Armor": "Composite",
+                    "Shield": "Toxifer",
+                    "Accessory": "Virellium",
+                    "Description": "grants resistance to ice and poison damage."
+                },
+                "resist-air-bolt": {
+                    "Weapon": "Tempestral",
+                    "Armor": "Stormwind",
+                    "Shield": "Chargium",
+                    "Accessory": "Aethersteel",
+                    "Description": "grants resistance to air and bolt damage."
+                },
+                "resist-air-dark": {
+                    "Weapon": "Voidgale",
+                    "Armor": "Darkwind",
+                    "Shield": "Eclipsite",
+                    "Accessory": "Umbracite",
+                    "Description": "grants resistance to air and dark damage."
+                },
+                "resist-air-light": {
+                    "Weapon": "Zephyrlume",
+                    "Armor": "Angelic",
+                    "Shield": "Luminite",
+                    "Accessory": "Radiantite",
+                    "Description": "grants resistance to air and light damage."
+                },
+                "resist-air-poison": {
+                    "Weapon": "Virellium",
+                    "Armor": "Composite",
+                    "Shield": "Miastrum",
+                    "Accessory": "Venomite",
+                    "Description": "grants resistance to air and poison damage."
+                },
+                "resist-bolt-dark": {
+                    "Weapon": "Voltshadow",
+                    "Armor": "Shadowbolt",
+                    "Shield": "Noctium",
+                    "Accessory": "Abyssal Alloy",
+                    "Description": "grants resistance to bolt and dark damage."
+                },
+                "resist-bolt-light": {
+                    "Weapon": "Stormglow",
+                    "Armor": "Lightning",
+                    "Shield": "Radiantite",
+                    "Accessory": "Aurorium",
+                    "Description": "grants resistance to bolt and light damage."
+                },
+                "resist-bolt-poison": {
+                    "Weapon": "Venostorm",
+                    "Armor": "Composite",
+                    "Shield": "Pestelite",
+                    "Accessory": "Rotiron",
+                    "Description": "grants resistance to bolt and poison damage."
+                },
+                "resist-dark-light": {
+                    "Weapon": "Eclipsol",
+                    "Armor": "Nightlight",
+                    "Shield": "Auralite",
+                    "Accessory": "Halochrome",
+                    "Description": "grants resistance to dark and light damage."
+                },
+                "resist-dark-poison": {
+                    "Weapon": "Corvion",
+                    "Armor": "Drow",
+                    "Shield": "Rotiron",
+                    "Accessory": "Morbium",
+                    "Description": "grants resistance to dark and poison damage."
+                },
+                "resist-light-poison": {
+                    "Weapon": "Solvenom",
+                    "Armor": "Composite",
+                    "Shield": "Halochrome",
+                    "Accessory": "Solarium",
+                    "Description": "grants resistance to light and poison damage."
+                },
+                "swordbreaker": {
+                    "Weapon": "Monks",
+                    "Armor": "Adamant",
+                    "Shield": "Tower",
+                    "Accessory": "Warded",
+                    "Description": "grants resistance to physical damage."
+                },
+                "fire-immunity": {
+                    "Weapon": "Sunsteel",
+                    "Armor": "Flameward",
+                    "Shield": "Pyrium",
+                    "Accessory": "Ruby",
+                    "Description": "grants immunity to fire damage."
+                },
+                "earth-immunity": {
+                    "Weapon": "Stonewalker",
+                    "Armor": "Stoneward",
+                    "Shield": "Terracite",
+                    "Accessory": "Emerald",
+                    "Description": "grants immunity to earth damage."
+                },
+                "ice-immunity": {
+                    "Weapon": "Frostsilver",
+                    "Armor": "Frostward",
+                    "Shield": "Glacium",
+                    "Accessory": "Sapphire",
+                    "Description": "grants immunity to ice damage."
+                },
+                "air-immunity": {
+                    "Weapon": "Windwalker",
+                    "Armor": "Windward",
+                    "Shield": "Aethersteel",
+                    "Accessory": "Opal",
+                    "Description": "grants immunity to air damage."
+                },
+                "bolt-immunity": {
+                    "Weapon": "Stormwalker",
+                    "Armor": "Stormward",
+                    "Shield": "Stormcore",
+                    "Accessory": "Topaz",
+                    "Description": "grants immunity to bolt damage."
+                },
+                "dark-immunity": {
+                    "Weapon": "Umbracite",
+                    "Armor": "Shadoward",
+                    "Shield": "Noctite",
+                    "Accessory": "Amethyst",
+                    "Description": "grants immunity to dark damage."
+                },
+                "light-immunity": {
+                    "Weapon": "Sunsteel",
+                    "Armor": "Sunward",
+                    "Shield": "Aurorium",
+                    "Accessory": "Pearl",
+                    "Description": "grants immunity to light damage."
+                },
+                "poison-immunity": {
+                    "Weapon": "Bloodiron",
+                    "Armor": "Acidward",
+                    "Shield": "Venomite",
+                    "Accessory": "Rose",
+                    "Description": "grants immunity to poison damage."
+                },
+                "omnishield": {
+                    "Weapon": "Shielded",
+                    "Armor": "Orichalcum",
+                    "Shield": "Omni",
+                    "Accessory": "Studded",
+                    "Description": "gives +1 to Defense & Magic Defense."
+                },
+                "perfect-health": {
+                    "Weapon": "Sanctified",
+                    "Armor": "Physician's",
+                    "Shield": "Crusader's",
+                    "Accessory": "Angel's",
+                    "Description": "grants immunity to all status effects."
+                },
+                "magical": {
+                    "Weapon": "Magical",
+                    "Description": "targets Magic Defense instead of Defense."
+                },
+                "beast-hunter": {
+                    "Weapon": "Hunting",
+                    "Description": "deals 5 extra damage to beasts."
+                },
+                "construct-hunter": {
+                    "Weapon": "Pulse",
+                    "Description": "deals 5 extra damage to constructs."
+                },
+                "demon-hunter": {
+                    "Weapon": "Demon Slayer",
+                    "Description": "deals 5 extra damage to demons."
+                },
+                "elemental-hunter": {
+                    "Weapon": "Vorpal",
+                    "Description": "deals 5 extra damage to elementals."
+                },
+                "monster-hunter": {
+                    "Weapon": "Monster Hunter",
+                    "Description": "deals 5 extra damage to monsters."
+                },
+                "plant-hunter": {
+                    "Weapon": "Reaping",
+                    "Description": "deals 5 extra damage to plants."
+                },
+                "undead-hunter": {
+                    "Weapon": "Blessed",
+                    "Description": "deals 5 extra damage to undead."
+                },
+                "human-hunter": {
+                    "Weapon": "Assassin",
+                    "Description": "deals 5 extra damage to humanoids."
+                },
+                "piercing": {
+                    "Weapon": "Piercing",
+                    "Description": "ignores resistances."
+                },
+                "hunter-beasts-constructs": {
+                    "Weapon": "Forgestone",
+                    "Description": "deals 5 extra damage to beasts and constructs."
+                },
+                "hunter-beasts-demons": {
+                    "Weapon": "Hellfang",
+                    "Description": "deals 5 extra damage to beasts and demons."
+                },
+                "hunter-beasts-elementals": {
+                    "Weapon": "Wildspark",
+                    "Description": "deals 5 extra damage to beasts and elementals."
+                },
+                "hunter-beasts-humanoids": {
+                    "Weapon": "Bloodfang",
+                    "Description": "deals 5 extra damage to beasts and humanoids."
+                },
+                "hunter-beasts-monsters": {
+                    "Weapon": "Silver",
+                    "Description": "deals 5 extra damage to beasts and monsters."
+                },
+                "hunter-beasts-plants": {
+                    "Weapon": "Verdanite",
+                    "Description": "deals 5 extra damage to beasts and plants."
+                },
+                "hunter-beasts-undead": {
+                    "Weapon": "Grimsteel",
+                    "Description": "deals 5 extra damage to beasts and undead."
+                },
+                "hunter-constructs-demons": {
+                    "Weapon": "Runebreaker",
+                    "Description": "deals 5 extra damage to constructs and demons."
+                },
+                "hunter-constructs-elementals": {
+                    "Weapon": "Stormcore",
+                    "Description": "deals 5 extra damage to constructs and elementals."
+                },
+                "hunter-constructs-humanoids": {
+                    "Weapon": "Golemsteel",
+                    "Description": "deals 5 extra damage to constructs and humanoids."
+                },
+                "hunter-constructs-monsters": {
+                    "Weapon": "Machinite",
+                    "Description": "deals 5 extra damage to constructs and monsters."
+                },
+                "hunter-constructs-plants": {
+                    "Weapon": "Ironroot",
+                    "Description": "deals 5 extra damage to constructs and plants."
+                },
+                "hunter-constructs-undead": {
+                    "Weapon": "Soulforge",
+                    "Description": "deals 5 extra damage to constructs and undead."
+                },
+                "hunter-demons-elementals": {
+                    "Weapon": "Abyssion",
+                    "Description": "deals 5 extra damage to demons and elementals."
+                },
+                "hunter-demons-humanoids": {
+                    "Weapon": "Oathbrand",
+                    "Description": "deals 5 extra damage to demons and humanoids."
+                },
+                "hunter-demons-monsters": {
+                    "Weapon": "Hellglass",
+                    "Description": "deals 5 extra damage to demons and monsters."
+                },
+                "hunter-demons-plants": {
+                    "Weapon": "Blightsteel",
+                    "Description": "deals 5 extra damage to demons and plants."
+                },
+                "hunter-demons-undead": {
+                    "Weapon": "Blessed",
+                    "Description": "deals 5 extra damage to demons and undead."
+                },
+                "hunter-elementals-humanoids": {
+                    "Weapon": "Aetherite",
+                    "Description": "deals 5 extra damage to elementals and humanoids."
+                },
+                "hunter-elementals-monsters": {
+                    "Weapon": "Sparkstone",
+                    "Description": "deals 5 extra damage to elementals and monsters."
+                },
+                "hunter-elementals-plants": {
+                    "Weapon": "Zephyrite",
+                    "Description": "deals 5 extra damage to elementals and plants."
+                },
+                "hunter-elementals-undead": {
+                    "Weapon": "Lightforge",
+                    "Description": "deals 5 extra damage to elementals and undead."
+                },
+                "hunter-humanoids-monsters": {
+                    "Weapon": "Bloodsilver",
+                    "Description": "deals 5 extra damage to humanoids and monsters."
+                },
+                "hunter-humanoids-plants": {
+                    "Weapon": "Thorniron",
+                    "Description": "deals 5 extra damage to humanoids and plants."
+                },
+                "hunter-humanoids-undead": {
+                    "Weapon": "Gravebane",
+                    "Description": "deals 5 extra damage to humanoids and undead."
+                },
+                "hunter-monsters-plants": {
+                    "Weapon": "Vilethorn",
+                    "Description": "deals 5 extra damage to monsters and plants."
+                },
+                "hunter-monsters-undead": {
+                    "Weapon": "Shadowsteel",
+                    "Description": "deals 5 extra damage to monsters and undead."
+                },
+                "hunter-plants-undead": {
+                    "Weapon": "Rotiron",
+                    "Description": "deals 5 extra damage to plants and undead."
+                },
+                "multi": {
+                    "Weapon": "Geminisite",
+                    "Description": "gives attacks with this weapon Multi(2)."
+                },
+                "inflict-slow": {
+                    "Weapon": "Tarrynite",
+                    "Description": "causes slow on hit."
+                },
+                "inflict-daze": {
+                    "Weapon": "Lunacite",
+                    "Description": "causes daze on hit."
+                },
+                "inflict-shaken": {
+                    "Weapon": "Gravemourn",
+                    "Description": "causes shaken on hit."
+                },
+                "inflict-weak": {
+                    "Weapon": "Withersteel",
+                    "Description": "causes weak on hit."
+                },
+                "inflict-poison": {
+                    "Weapon": "Corruptium",
+                    "Description": "causes poisoned on hit."
+                },
+                "inflict-enrage": {
+                    "Weapon": "Wrathborn",
+                    "Description": "causes enraged on hit."
+                },
+                "initiative-up": {
+                    "Armor": "Mythril",
+                    "Shield": "Aetherglass",
+                    "Accessory": "Zephyrite",
+                    "Description": "gives a +4 bonus to initiative."
+                },
+                "accuracy-up": {
+                    "Armor": "Trueglass",
+                    "Shield": "Focussteel",
+                    "Accessory": "Surestone",
+                    "Description": "gives a +1 bonus to accuracy checks."
+                },
+                "magic-up": {
+                    "Armor": "Manasilver",
+                    "Shield": "Spellglass",
+                    "Accessory": "Goldleaf",
+                    "Description": "gives a +1 bonus to magic checks."
+                },
+                "vitality-up": {
+                    "Armor": "Vigormesh",
+                    "Shield": "Heartstone",
+                    "Accessory": "Lifegem",
+                    "Description": "when you recover HP, you recover 5 extra HP."
+                },
+                "healing-up": {
+                    "Armor": "Sanctweave",
+                    "Shield": "Blessplate",
+                    "Accessory": "Chorus Pearl",
+                    "Description": "spells you cast that restore HP, restore 5 extra HP."
+                },
+                "spell-up": {
+                    "Armor": "Goldveil",
+                    "Shield": "Arcstone",
+                    "Accessory": "Silversong",
+                    "Description": "spells you cast deal 5 extra damage."
+                },
+                "melee-up": {
+                    "Armor": "Battlesteel",
+                    "Shield": "Warglass",
+                    "Accessory": "Ironheart",
+                    "Description": "melee weapon attacks deal 5 extra damage."
+                },
+                "ranged-up": {
+                    "Armor": "Hawkplate",
+                    "Shield": "Sightglass",
+                    "Accessory": "Falcon’s Eye",
+                    "Description": "ranged weapon attacks deal 5 extra damage."
+                },
+                "amulet": {
+                    "Weapon": "Gilded",
+                    "Accessory": "Mythril",
+                    "Description": "gives +1 to Magic Defense."
+                },
+                "bulwark": {
+                    "Weapon": "Broad",
+                    "Accessory": "Adamant",
+                    "Description": "gives +1 to Defense."
+                }
+            },
+            "aerial": {
+                "aerial-1": {
+                    "Weapon": "Whirlwind",
+                    "Armor": "Whirlwind",
+                    "Shield": "Skyglass",
+                    "Accessory": "Whirlwind",
+                    "Description": "deals 5 extra damage during the first round of conflict."
+                },
+                "aerial-2": {
+                    "Weapon": "Finesse",
+                    "Description": "can be used in the off-hand for two-weapon fighting, regardless of category."
+                },
+                "aerial-3": {
+                    "Weapon": "Switch",
+                    "Description": "allows you to perform the EQUIP action for free when you hit one or more creatures."
+                },
+                "aerial-4": {
+                    "Weapon": "Skybreaker",
+                    "Armor": "Skybreaker",
+                    "Shield": "Stratosium",
+                    "Accessory": "Skybreaker",
+                    "Description": "grants immunity to damage dealt by flying creatures."
+                },
+                "aerial-5": {
+                    "Weapon": "Polarized",
+                    "Armor": "Polarized",
+                    "Shield": "Skyquartz",
+                    "Accessory": "Polarized",
+                    "Description": "halves the MP cost of spells targeting a creature suffering from slow."
+                },
+                "aerial-6": {
+                    "Weapon": "Slipstream",
+                    "Armor": "Slipstream",
+                    "Shield": "Galeweave",
+                    "Accessory": "Slipstream",
+                    "Description": "deals 5 extra damage to a creature when you damage a creature outside of your turn in a conflict."
+                }
+            },
+            "thunderous": {
+                "thunderous-1": {
+                    "Weapon": "Spiked",
+                    "Armor": "Spiked",
+                    "Shield": "Surgeglass",
+                    "Accessory": "Spiked",
+                    "Description": "gives one ally you can see the option to take their turn immediately after yours, when you deal bolt damage to a creature."
+                },
+                "thunderous-2": {
+                    "Weapon": "Shockwave",
+                    "Description": "causes all enemies present in the scene to suffer dazed, when damage dealt by this weapon put an enemy into crisis."
+                },
+                "thunderous-3": {
+                    "Weapon": "Livewire",
+                    "Armor": "Livewire",
+                    "Shield": "Conductrite",
+                    "Accessory": "Livewire",
+                    "Description": "grants【half your level in the Elementalist Class】as extra damage to your Cataclysm Skill."
+                },
+                "thunderous-4": {
+                    "Weapon": "Conductor's",
+                    "Armor": "Conductor's",
+                    "Shield": "Capacium",
+                    "Accessory": "Conductor's",
+                    "Description": "causes the target of your Encourage Skill to recover extra HP equal to【half your level】."
+                },
+                "thunderous-5": {
+                    "Weapon": "Jolted",
+                    "Armor": "Jolted",
+                    "Shield": "Shocksteel",
+                    "Accessory": "Jolted",
+                    "Description": "deals 5 bolt damage to a creature that hits you with a melee attack."
+                },
+                "thunderous-6": {
+                    "Weapon": "Overcharged",
+                    "Description": "causes each target of this weapon to lose 20 MP on a successful hit, if at least one of them is shaken."
+                }
+            },
+            "paradox": {
+                "paradox-1": {
+                    "Weapon": "Temporal",
+                    "Description": "deals 5 extra damage as long as you have one other weapon equipped of a different category."
+                },
+                "paradox-2": {
+                    "Weapon": "Anomalous",
+                    "Armor": "Anomalous",
+                    "Shield": "Paradoxite",
+                    "Accessory": "Anomalous",
+                    "Description": "grants you the effects of the Mirror spell at the beginning of a conflict scene."
+                },
+                "paradox-3": {
+                    "Weapon": "Bound",
+                    "Description": "tethers up to 2 targets hit by this weapon. When either target loses HP from damage they are Vulnerable to, the other loses 5 HP."
+                },
+                "paradox-4": {
+                    "Weapon": "Distorted",
+                    "Armor": "Distorted",
+                    "Shield": "Warpglass",
+                    "Accessory": "Distorted",
+                    "Description": "empowers a spell to deal 5 extra damage when it hits with critical success."
+                },
+                "paradox-5": {
+                    "Weapon": "Echoing",
+                    "Armor": "Echoing",
+                    "Shield": "Echoquartz",
+                    "Accessory": "Echoing",
+                    "Description": "causes an enemy in the scene to suffer a random status effect (1d4: dazed, shaken, slow, or weak), when that enemy heals from one or more status effects."
+                },
+                "paradox-6": {
+                    "Weapon": "Faded",
+                    "Description": "causes enemies hit by this weapon to fade. If a fading enemy would recover HP, instead they recover no HP and stop fading."
+                }
+            },
+            "terrestrial": {
+                "terrestrial-1": {
+                    "Weapon": "Earthward",
+                    "Armor": "Earthward",
+                    "Shield": "Stonebark",
+                    "Accessory": "Earthward",
+                    "Description": "grants resistance to damage caused by environmental hazards."
+                },
+                "terrestrial-2": {
+                    "Weapon": "Deeproot",
+                    "Armor": "Deeproot",
+                    "Shield": "Heartwood",
+                    "Accessory": "Deeproot",
+                    "Description": "recovers 5 additional HP when you recover HP while in crisis."
+                },
+                "terrestrial-3": {
+                    "Weapon": "Trembling",
+                    "Description": "recovers MP equal to its HR when you hit a creature with this weapon."
+                },
+                "terrestrial-4": {
+                    "Weapon": "Blooming",
+                    "Armor": "Blooming",
+                    "Shield": "Verdantine",
+                    "Accessory": "Blooming",
+                    "Description": "grants resistance to physical damage until the start of your next turn when you heal an ally in a conflict."
+                },
+                "terrestrial-5": {
+                    "Weapon": "Runestone",
+                    "Armor": "Runestone",
+                    "Shield": "Glyphstone",
+                    "Accessory": "Runestone",
+                    "Description": "gives a +2 bonus to Magic Checks for Elementalism Rituals with a total MP cost equal to or less than 60."
+                },
+                "terrestrial-6": {
+                    "Weapon": "Spinebreaker",
+                    "Armor": "Spinebreaker",
+                    "Shield": "Basaltine",
+                    "Accessory": "Spinebreaker",
+                    "Description": "causes any equipped heavy or spear weapon to deal 5 extra damage."
+                }
+            },
+            "ardent": {
+                "ardent-1": {
+                    "Weapon": "Dancing",
+                    "Armor": "Dancing",
+                    "Shield": "Flareglass",
+                    "Accessory": "Dancing",
+                    "Description": "halves the MP cost of your Bladestorm Skill when using this weapon."
+                },
+                "ardent-2": {
+                    "Weapon": "Shadowfire",
+                    "Description": "allows you to change the damage type of your Shadow Strike skill to fire instead of dark at will."
+                },
+                "ardent-3": {
+                    "Weapon": "Cauterized",
+                    "Description": "deals 1 extra damage for every status effect you are suffering from."
+                },
+                "ardent-4": {
+                    "Weapon": "Bonded",
+                    "Armor": "Bonded",
+                    "Shield": "Oathsteel",
+                    "Accessory": "Bonded",
+                    "Description": "restores 5 MP when you invoke a bond during any check."
+                },
+                "ardent-5": {
+                    "Weapon": "Silencing",
+                    "Description": "prevents a creature from taking the Spell action during their next turn when successfully hit."
+                },
+                "ardent-6": {
+                    "Weapon": "Rapidfire",
+                    "Armor": "Rapidfire",
+                    "Shield": "Cinderalloy",
+                    "Accessory": "Rapidfire",
+                    "Description": "causes any equipped bow or firearm weapon to deal 5 extra damage."
+                }
+            },
+            "glacial": {
+                "glacial-1": {
+                    "Weapon": "Frostbitten",
+                    "Armor": "Frostbitten",
+                    "Shield": "Glacium",
+                    "Accessory": "Frostbitten",
+                    "Description": "deals 5 ice damage to every enemy present in the scene when you enter Crisis for the first time."
+                },
+                "glacial-2": {
+                    "Weapon": "Niveous",
+                    "Armor": "Niveous",
+                    "Shield": "Rimeglass",
+                    "Accessory": "Niveous",
+                    "Description": "makes Ice damage you deal ignore Immunities and Resistances."
+                },
+                "glacial-3": {
+                    "Weapon": "Rimebound",
+                    "Armor": "Rimebound",
+                    "Shield": "Hoarfrost",
+                    "Accessory": "Rimebound",
+                    "Description": "causes each creature in the scene suffering weak to lose 5 HP at the start of your turn in a conflict."
+                },
+                "glacial-4": {
+                    "Weapon": "Brumal",
+                    "Armor": "Brumal",
+                    "Shield": "Winterite",
+                    "Accessory": "Brumal",
+                    "Description": "gives a +1 bonus to DEF and M.DEF against attacks and offensive spells from enraged creatures."
+                },
+                "glacial-5": {
+                    "Weapon": "Boreal",
+                    "Armor": "Boreal",
+                    "Shield": "Icequartz",
+                    "Accessory": "Boreal",
+                    "Description": "causes a creature to suffer slow, or lose 10 MP if already slowed when you deal ice damage to it."
+                },
+                "glacial-6": {
+                    "Weapon": "Gelid",
+                    "Armor": "Gelid",
+                    "Shield": "Permaferrum",
+                    "Accessory": "Gelid",
+                    "Description": "deals 5 extra damage to creatures suffering from the weak status effect."
+                }
+            },
+            "spiritual": {
+                "spiritual-1": {
+                    "Weapon": "Anima",
+                    "Armor": "Anima",
+                    "Shield": "Auralite",
+                    "Accessory": "Anima",
+                    "Description": "heals you from a single status effect of your choice when you end your turn merged with an Arcanum."
+                },
+                "spiritual-2": {
+                    "Weapon": "Aetheric",
+                    "Description": "deals 1 extra damage for each Bond of affection you have."
+                },
+                "spiritual-3": {
+                    "Weapon": "Auroral",
+                    "Armor": "Auroral",
+                    "Shield": "Halochrome",
+                    "Accessory": "Auroral",
+                    "Description": "causes damage you deal to ignore resistance as long as you are affected by a spell with the scene duration."
+                },
+                "spiritual-4": {
+                    "Weapon": "Spellbound",
+                    "Description": "applies all Accuracy Check bonuses to your Magic Check instead when using the Spellblade skill with this weapon."
+                },
+                "spiritual-5": {
+                    "Weapon": "Vitalis",
+                    "Armor": "Vitalis",
+                    "Shield": "Heartstone",
+                    "Accessory": "Vitalis",
+                    "Description": "heals an ally for 5 HP when you perform the Guard action and choose to cover that ally."
+                },
+                "spiritual-6": {
+                    "Weapon": "Sylvan",
+                    "Armor": "Sylvan",
+                    "Shield": "Sylvanwood",
+                    "Accessory": "Sylvan",
+                    "Description": "grants resistance to dark, light, and poison damage."
+                }
+            },
+            "corrupted": {
+                "corrupted-1": {
+                    "Weapon": "Tarnished",
+                    "Description": "causes dark damage dealt by a spell using the Spellblade skill ignore Immunities and Resistances."
+                },
+                "corrupted-2": {
+                    "Weapon": "Psychic",
+                    "Armor": "Psychic",
+                    "Shield": "Mindglass",
+                    "Accessory": "Psychic",
+                    "Description": "treats the M.DEF of targets of your offensive spells as being equal to their WLP die."
+                },
+                "corrupted-3": {
+                    "Weapon": "Withering",
+                    "Armor": "Withering",
+                    "Shield": "Rotiron",
+                    "Accessory": "Withering",
+                    "Description": "makes Dark and poison damage you deal ignore Immunities and Resistances."
+                },
+                "corrupted-4": {
+                    "Weapon": "Malicious",
+                    "Armor": "Malicious",
+                    "Shield": "Hateshard",
+                    "Accessory": "Malicious",
+                    "Description": "halves the total MP cost of spells targeting a creature you have a Bond of hatred towards."
+                },
+                "corrupted-5": {
+                    "Weapon": "Overlord's",
+                    "Armor": "Overlord's",
+                    "Shield": "Dreadsteel",
+                    "Accessory": "Overlord's",
+                    "Description": "grants a +1 to DEF and M.DEF against attacks and offensive spells from shaken creatures."
+                },
+                "corrupted-6": {
+                    "Weapon": "Wraith",
+                    "Description": "inflicts the poisoned status on the target of your Counterattack skill."
+                }
+            },
+            "aquatic": {
+                "aquatic-1": {
+                    "Weapon": "Coral",
+                    "Armor": "Coral",
+                    "Shield": "Seastone",
+                    "Accessory": "Coral",
+                    "Description": "allows you to treat your DEX as being one die higher until the end of your next turn when you reduce an enemy to 0 HP."
+                },
+                "aquatic-2": {
+                    "Weapon": "Barnacled",
+                    "Description": "treats the DEF score of each target of this weapon as being equal to their current MIG die size."
+                },
+                "aquatic-3": {
+                    "Weapon": "Boreal",
+                    "Armor": "Boreal",
+                    "Shield": "Tidepearl",
+                    "Accessory": "Boreal",
+                    "Description": "recovers an amount of HP equal to the HR of a successful Magic Check when you cast an offensive spell."
+                },
+                "aquatic-4": {
+                    "Weapon": "Malleable",
+                    "Description": "prevents attacks with this weapon from triggering counterattacks or other reactive skills."
+                },
+                "aquatic-5": {
+                    "Weapon": "Spring",
+                    "Armor": "Spring",
+                    "Shield": "Fountstone",
+                    "Accessory": "Spring",
+                    "Description": "causes any ally that regains full HP to recover 5 MP as well."
+                },
+                "aquatic-6": {
+                    "Weapon": "Misty",
+                    "Description": "allows you to reduce the damage of a creature hit with this weapon by the HR of its last recorded hit."
+                }
+            },
+            "mechanical": {
+                "mechanical-1": {
+                    "Weapon": "Thief's",
+                    "Armor": "Thief's",
+                    "Shield": "Gearplate",
+                    "Accessory": "Thief's",
+                    "Description": "allows you to spend your opportunity to earn 100z."
+                },
+                "mechanical-2": {
+                    "Weapon": "Breaching",
+                    "Description": "gives a +2 to your accuracy check when you use the Breach skill with this weapon."
+                },
+                "mechanical-3": {
+                    "Weapon": "Alchemist's",
+                    "Armor": "Alchemist's",
+                    "Shield": "Catalyte",
+                    "Accessory": "Alchemist's",
+                    "Description": "allows you to choose the area and effect of a potion you create using Gadget (Alchemy), if at least 2 dice show the same number."
+                },
+                "mechanical-4": {
+                    "Weapon": "Magnetic",
+                    "Description": "deals 5 additional damage to creatures with traits related to metal."
+                },
+                "mechanical-5": {
+                    "Weapon": "Bard's",
+                    "Armor": "Bard's",
+                    "Shield": "Resonance Disk",
+                    "Accessory": "Bard's",
+                    "Description": "earns you【200 x SL】worth of zenit when you use the Tavern Talk skill."
+                },
+                "mechanical-6": {
+                    "Weapon": "Energized",
+                    "Shield": "Voltframe",
+                    "Description": "deals 5 extra bolt damage when you hit two or more creatures in a single turn with this weapon."
+                }
+            }
+        },
         "__SECTION__Discoveries": "=== Discoveries ===",
         "Discoveries": {
             "Effects": {
