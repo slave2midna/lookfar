@@ -1,1 +1,147 @@
-coming...
+{{!-- modules/lookfar/templates/item-forge.hbs --}}
+
+<div id="if-body">
+  <form>
+    <div class="lf-if-layout">
+
+      {{!-- Left Column: Item selection, attributes, preview --}}
+      <div class="lf-if-col-left">
+
+        {{!-- Choose Item --}}
+        <fieldset class="lf-if-fieldset">
+          <legend>Choose Item</legend>
+          <div class="lf-if-choose-item">
+            <div class="lf-if-item-types">
+              <label>
+                <input type="radio" name="itemType" value="weapon" checked>
+                Weapon
+              </label><br>
+              <label>
+                <input type="radio" name="itemType" value="armor">
+                Armor
+              </label><br>
+              <label>
+                <input type="radio" name="itemType" value="shield">
+                Shield
+              </label><br>
+              <label>
+                <input type="radio" name="itemType" value="accessory">
+                Accessory
+              </label>
+            </div>
+
+            <div class="lf-if-template-wrapper">
+              <div
+                id="templateList"
+                class="lf-if-scroll lf-if-template-list"
+                aria-label="Template list"
+              >
+                <div>Loading…</div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        {{!-- Attributes --}}
+        <div id="attrRow" class="lf-if-attr-row">
+          <fieldset class="lf-if-fieldset">
+            <legend>Attributes</legend>
+            <div id="attrInner" class="lf-if-attr-inner">
+              {{!-- Populated dynamically by itemForge.js --}}
+            </div>
+          </fieldset>
+        </div>
+
+        {{!-- Preview --}}
+        <fieldset class="lf-if-fieldset">
+          <legend>Preview</legend>
+          <div id="itemPreviewLarge" class="lf-if-preview">
+            CONTENT
+          </div>
+        </fieldset>
+
+      </div>
+
+      {{!-- Right Column: Customize, qualities, cost --}}
+      <div class="lf-if-col-right">
+
+        {{!-- Customize --}}
+        <fieldset class="lf-if-fieldset">
+          <legend>Customize</legend>
+          <div id="customizeArea" class="lf-if-customize">
+            {{!-- Populated dynamically by itemForge.js --}}
+          </div>
+        </fieldset>
+
+        {{!-- Qualities --}}
+        <fieldset class="lf-if-fieldset">
+          <legend>Qualities</legend>
+
+          <div class="lf-if-qualities-select">
+            <select id="qualitiesCategory" style="width: 100%;">
+              <option value="none" selected>None</option>
+              <option value="basic">Basic</option>
+              <option value="custom">Custom</option>
+              <option value="ardent">Ardent</option>
+              <option value="aerial">Aerial</option>
+              <option value="thunderous">Thunderous</option>
+              <option value="paradox">Paradox</option>
+              <option value="terrestrial">Terrestrial</option>
+              <option value="glacial">Glacial</option>
+              <option value="spiritual">Spiritual</option>
+              <option value="corrupted">Corrupted</option>
+              <option value="aquatic">Aquatic</option>
+              <option value="mechanical">Mechanical</option>
+            </select>
+          </div>
+
+          <div
+            id="qualitiesList"
+            class="lf-if-scroll lf-if-qualities-list"
+            aria-label="Qualities list"
+          >
+            <div>Loading…</div>
+          </div>
+        </fieldset>
+
+        {{!-- Cost --}}
+        <fieldset class="lf-if-fieldset">
+          <legend>Cost</legend>
+          <div id="costRow" class="lf-if-cost-row">
+            <i class="fuk fu-zenit" aria-hidden="true"></i>
+            <span
+              id="costValue"
+              class="lf-if-cost-value"
+            >
+              0
+            </span>
+            <label class="lf-if-cost-fee">
+              <input type="checkbox" id="optFee">
+              <span>No Fee</span>
+            </label>
+          </div>
+        </fieldset>
+
+      </div>
+
+    </div>
+
+    {{!-- Materials --}}
+    <fieldset class="lf-if-fieldset lf-if-materials-fieldset">
+      <legend>Materials</legend>
+      <div
+        id="materialsDrop"
+        class="lf-if-materials-drop"
+        aria-label="Materials drop zone"
+      >
+        <div
+          id="materialsHint"
+          class="lf-if-materials-hint"
+        >
+          Drag & drop Item documents here (max 5)
+        </div>
+      </div>
+    </fieldset>
+
+  </form>
+</div>
