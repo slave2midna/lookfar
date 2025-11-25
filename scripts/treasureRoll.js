@@ -275,7 +275,7 @@ async function rollCustom() {
   const tableId = game.settings.get("lookfar", "customTreasureRollTable");
   if (!tableId || tableId === "default") {
     ui.notifications?.warn(
-      game.i18n.localize("LOOKFAR.Errors.CustomTreasureTableMissing")
+      game.i18n.localize("LOOKFAR.TreasureRoll.Errors.CustomTreasureTableMissing")
     );
     return null;
   }
@@ -283,7 +283,7 @@ async function rollCustom() {
   const table = game.tables?.get(tableId);
   if (!table) {
     ui.notifications?.warn(
-      game.i18n.localize("LOOKFAR.Errors.CustomTreasureTableNotFound")
+      game.i18n.localize("LOOKFAR.TreasureRoll.Errors.CustomTreasureTableNotFound")
     );
     return null;
   }
@@ -391,7 +391,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
   // Friendly warning when ingredients are skipped
   if (skippedIngredients.length > 0) {
     const skippedMsg = game.i18n.format(
-      "LOOKFAR.Errors.SkippedIngredientsWarning",
+      "LOOKFAR.TreasureRoll.Errors.SkippedIngredientsWarning",
       { count: skippedIngredients.length }
     );
     ui.notifications?.warn(skippedMsg);
@@ -689,11 +689,11 @@ async function renderTreasureResultDialog(items, budget, config) {
   const content = await renderTemplate(TREASURE_RESULT_TEMPLATE, templateData);
 
   const dialog = new Dialog({
-    title: game.i18n.localize("LOOKFAR.Dialogs.TreasureResult.Title"),
+    title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Title"),
     content,
     buttons: {
       keep: {
-        label: game.i18n.localize("LOOKFAR.Dialogs.TreasureResult.Buttons.Keep"),
+        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Keep"),
         callback: async () => {
           // Move items out of cache
           for (const item of finalItems) {
@@ -708,14 +708,14 @@ async function renderTreasureResultDialog(items, budget, config) {
         }
       },
       stash: {
-        label: game.i18n.localize("LOOKFAR.Dialogs.TreasureResult.Buttons.Stash"),
+        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Stash"),
         callback: async () => {
           const currencyTotal = (currencyLines || []).reduce((sum, c) => sum + (Number(c?.value) || 0), 0);
           await createStash(finalItems, cacheFolder, currencyTotal);
         }
       },
       reroll: {
-        label: game.i18n.localize("LOOKFAR.Dialogs.TreasureResult.Buttons.Reroll"),
+        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Reroll"),
         callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
       }
     }
@@ -850,7 +850,7 @@ Hooks.once("ready", () => {
 
         if (items.length === 0) {
           ui.notifications.warn(
-            game.i18n.localize("LOOKFAR.Errors.NoLootGenerated")
+            game.i18n.localize("LOOKFAR.TreasureRoll.Errors.NoLootGenerated")
           );
           return;
         }
@@ -862,11 +862,11 @@ Hooks.once("ready", () => {
       // --- Main Dialog Form via template ---
       const content = await renderTemplate(TREASURE_ROLL_TEMPLATE, {});
       const genDialog = new Dialog({
-        title: game.i18n.localize("LOOKFAR.Dialogs.TreasureRoll.Title"),
+        title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Title"),
         content,
         buttons: {
           ok: {
-            label: game.i18n.localize("LOOKFAR.Dialogs.TreasureRoll.Buttons.RollLoot"),
+            label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Buttons.RollLoot"),
             callback: (html) => {
               const budget = parseInt(html.find("#treasureBudget").val());
               const maxVal = parseInt(html.find("#highestPCLevel").val());
