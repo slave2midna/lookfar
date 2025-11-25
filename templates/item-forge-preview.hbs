@@ -1,0 +1,30 @@
+{{!-- modules/lookfar/templates/item-forge-preview.hbs --}}
+
+<div id="if-preview-card">
+  <div id="if-preview-head">
+    <div class="if-icon-wrap">
+      <img id="if-preview-icon" src="{{icon}}">
+      {{#if isMartial}}
+        <span class="is-martial if-badge"></span>
+      {{/if}}
+    </div>
+  </div>
+
+  <div id="if-preview-rows" {{#if muted}}class="if-muted"{{/if}}>
+    {{#if muted}}
+      <div class="if-row">
+        {{mutedText}}
+      </div>
+    {{else}}
+      {{#each rows}}
+        <div class="if-row if-tight">{{this}}</div>
+      {{/each}}
+
+      {{#if desc}}
+        <div class="if-row-desc">
+          {{desc}}
+        </div>
+      {{/if}}
+    {{/if}}
+  </div>
+</div>
