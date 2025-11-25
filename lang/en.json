@@ -1917,15 +1917,19 @@
 },
 
 
-        "__SECTION__Dangers": "=== Dangers ===",
-        "Dangers": {
-            "StatusEffects": {
-                "Minor": {
-                    "Dazed": "Suffer dazed",
-                    "Shaken": "Suffer shaken",
-                    "Slow": "Suffer slow",
-                    "Weak": "Suffer weak"
-                },
+       "__SECTION__Dangers": "=== Dangers ===",
+"Dangers": {
+  "Phrases": {
+    "DamageOnly": "{amount} damage",
+    "EffectAndDamage": "{effect} and {amount} damage"
+  },
+  "StatusEffects": {
+    "Minor": {
+      "Dazed": "Suffer dazed",
+      "Shaken": "Suffer shaken",
+      "Slow": "Suffer slow",
+      "Weak": "Suffer weak"
+    },
                 "Heavy": {
                     "Poison": "Suffer poison",
                     "Enrage": "Suffer enrage"
@@ -2010,5 +2014,6 @@
         }
     }
 }
+
 
 
