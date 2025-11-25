@@ -44,6 +44,9 @@ const normHand = (h) => {
   return null;
 };
 
+// Path to the extracted preview template
+const PREVIEW_TEMPLATE_PATH = "modules/lookfar/templates/item-forge-preview.hbs";
+
 // --- Setting Helpers ----------------------------------------------
 
 // Item Forge edit mode
@@ -1065,6 +1068,7 @@ async function openItemForgeDialog() {
 
       const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
+      // NEW: renderPreview now delegates to item-forge-preview.hbs
       function renderPreview(kind, selectedEl, opts = {}) {
         const rerollIcon = !!opts.rerollIcon;
 
@@ -1140,22 +1144,35 @@ async function openItemForgeDialog() {
           return q?.description ?? q?.desc ?? "";
         };
 
-        // dial sanity check
         const kindNow = html.find('input[name="itemType"]:checked').val();
+
+        const ctx = {
+          kind,
+          icon,
+          isMartial: false,
+          muted: false,
+          mutedText: "",
+          line1: "",
+          line2: "",
+          desc: ""
+        };
+
+        const renderCtx = (context) => {
+          return renderTemplate(PREVIEW_TEMPLATE_PATH, context)
+            .then(htmlStr => {
+              $preview.html(htmlStr);
+            })
+            .catch(e => {
+              console.error("[Item Forger] Failed to render preview template:", e);
+              $preview.html(`<div class="if-preview-error">Preview failed (see console).</div>`);
+            });
+        };
+
+        // dial sanity check
         if (kindNow !== kind) {
-          $preview.html(`
-            <div id="if-preview-card">
-              <div id="if-preview-head">
-                <div class="if-icon-wrap">
-                  <img id="if-preview-icon" src="${icon}">
-                </div>
-              </div>
-              <div id="if-preview-rows" class="if-muted">
-                <div class="if-row">Preview coming soon…</div>
-              </div>
-            </div>
-          `);
-          return;
+          ctx.muted = true;
+          ctx.mutedText = "Preview coming soon…";
+          return renderCtx(ctx);
         }
 
         // ---------- ARMOR PREVIEW ----------
@@ -1175,21 +1192,11 @@ async function openItemForgeDialog() {
             `<strong>DEF:</strong> ${esc(defAttr)}+${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}` :
             `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
 
-          $preview.html(`
-              <div id="if-preview-card">
-                <div id="if-preview-head">
-                  <div class="if-icon-wrap">
-                    <img id="if-preview-icon" src="${icon}">
-                    ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
-                  </div>
-                </div>
-                <div id="if-preview-rows">
-                  <div class="if-row if-tight">${rowArmor}</div>
-                  <div class="if-row-desc">${esc(qdesc())}</div>
-                </div>
-              </div>
-            `);
-          return;
+          ctx.isMartial = isMartial;
+          ctx.line1 = rowArmor;
+          ctx.desc = esc(qdesc());
+
+          return renderCtx(ctx);
         }
 
         // ---------- SHIELD PREVIEW ----------
@@ -1204,38 +1211,17 @@ async function openItemForgeDialog() {
 
           const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
 
-          $preview.html(`
-              <div id="if-preview-card">
-                <div id="if-preview-head">
-                  <div class="if-icon-wrap">
-                    <img id="if-preview-icon" src="${icon}">
-                    ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
-                  </div>
-                </div>
-                <div id="if-preview-rows">
-                  <div class="if-row if-tight">${rowShield}</div>
-                  <div class="if-row-desc">${esc(qdesc())}</div>
-                </div>
-              </div>
-            `);
-          return;
+          ctx.isMartial = isMartial;
+          ctx.line1 = rowShield;
+          ctx.desc = esc(qdesc());
+
+          return renderCtx(ctx);
         }
 
         // ---------- ACCESSORY PREVIEW ----------
         if (kind === "accessory") {
-          $preview.html(`
-              <div id="if-preview-card">
-                <div id="if-preview-head">
-                  <div class="if-icon-wrap">
-                    <img id="if-preview-icon" src="${icon}">
-                  </div>
-                </div>
-                <div id="if-preview-rows">
-                  <div class="if-row-desc">${esc(qdesc())}</div>
-                </div>
-              </div>
-            `);
-          return;
+          ctx.desc = esc(qdesc());
+          return renderCtx(ctx);
         }
 
         // ---------- WEAPON PREVIEW ----------
@@ -1245,19 +1231,9 @@ async function openItemForgeDialog() {
           const base2 = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
           if (!base2) {
-            $preview.html(`
-              <div id="if-preview-card">
-                <div id="if-preview-head">
-                  <div class="if-icon-wrap">
-                    <img id="if-preview-icon" src="${icon}">
-                  </div>
-                </div>
-                <div id="if-preview-rows" class="if-muted">
-                  <div class="if-row">Select a weapon template…</div>
-                </div>
-              </div>
-            `);
-            return;
+            ctx.muted = true;
+            ctx.mutedText = "Select a weapon template…";
+            return renderCtx(ctx);
           }
 
           const baseHand     = normHand(base2?.hand) || null;
@@ -1280,23 +1256,16 @@ async function openItemForgeDialog() {
           const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
           const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+ ${stats.acc} | HR+${stats.dmg} ${stats.dmgType}`;
 
-          $preview.html(`
-      <div id="if-preview-card">
-        <div id="if-preview-head">
-          <div class="if-icon-wrap">
-            <img id="if-preview-icon" src="${icon}">
-            ${stats.isMartial ? `<span class="is-martial if-badge"></span>` : ``}
-          </div>
-        </div>
-        <div id="if-preview-rows">
-          <div class="if-row if-tight">${esc(clip(row1))}</div>
-          <div class="if-row if-tight">${esc(clip(row2))}</div>
-          <div class="if-row-desc">${esc(qdesc())}</div>
-        </div>
-      </div>
-    `);
-          return;
+          ctx.isMartial = !!stats.isMartial;
+          ctx.line1 = esc(clip(row1));
+          ctx.line2 = esc(clip(row2));
+          ctx.desc = esc(qdesc());
+
+          return renderCtx(ctx);
         }
+
+        // Fallback (shouldn’t normally hit)
+        return renderCtx(ctx);
       }
 
       // --- Hooks & Wiring ------------------------------------------------------------//
