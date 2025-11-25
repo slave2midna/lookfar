@@ -1,0 +1,704 @@
+/* ==========================================================================
+ * Lookfar GM Assistant - Shared Stylesheet
+ * Sections:
+ *   1) Travel Check Dialog
+ *   2) Travel Result Dialog
+ *   3) Item Forger (main + mini)
+ *   4) Dungeon Mapper
+ *   5) Conflict Builder
+ * ========================================================================== */
+
+
+/* ========================================================================== */
+/* 1) Lookfar Travel Check Dialog                                             */
+/* ========================================================================== */
+
+#lookfar-travel-check {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#lookfar-travel-check .lf-travel-flex-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+#lookfar-travel-check .lf-travel-column {
+  flex: 1;
+  min-width: 0;
+}
+
+#lookfar-travel-check .travel-check-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#lookfar-travel-check .lf-travel-caption {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+#lookfar-travel-check .lf-travel-th-row {
+  white-space: nowrap;
+}
+
+#lookfar-travel-check .lf-travel-treasure-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#lookfar-travel-check .lf-travel-inline-label {
+  margin: 0;
+}
+
+#lookfar-travel-check .lf-travel-stars {
+  display: flex;
+  gap: 5px;
+  font-size: 1.2em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#lookfar-travel-check td label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+/* ========================================================================== */
+/* 2) Lookfar Travel Result Dialog                                            */
+/* ========================================================================== */
+
+#lookfar-travel-result .travel-result-body {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+#lookfar-travel-result .travel-result-prompt {
+  margin-bottom: 1rem;
+}
+
+#lookfar-travel-result table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#lookfar-travel-result th,
+#lookfar-travel-result td {
+  padding: 5px;
+  border: 1px solid;
+  text-align: left;
+}
+
+.ff6-dialog {
+  /* Extend window styling here if desired */
+}
+
+
+/* ========================================================================== */
+/* 3) Lookfar – Item Forger (main + mini)                                     */
+/* ========================================================================== */
+
+/* Shared container */
+#if-body {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* Fieldset defaults */
+.lf-if-fieldset {
+  margin: 0 0 6px 0;
+  padding: 4px 6px;
+  border: 1px solid var(--color-border-light, #8882);
+  border-radius: 4px;
+}
+
+.lf-if-fieldset > legend {
+  font-weight: bold;
+  padding: 0 4px;
+  font-size: 0.95em;
+}
+
+/* Flex helper */
+.lf-if-flex {
+  display: flex;
+  gap: 4px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+/* ========================================================================== */
+/* 3a) Updated FORGE Layout                                                   */
+/* ========================================================================== */
+
+#if-body .lf-if-layout {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+#if-body .lf-if-col-left,
+#if-body .lf-if-col-right {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+#if-body .lf-if-col-left {
+  flex: 0 0 60%;
+}
+
+#if-body .lf-if-col-right {
+  flex: 0 0 40%;
+}
+
+/* Choose Item panel */
+#if-body .lf-if-choose-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+#if-body .lf-if-item-types {
+  flex: 0 0 auto;
+}
+
+#if-body .lf-if-template-wrapper {
+  flex: 1 1 auto;
+}
+
+/* Qualities category dropdown */
+#if-body .lf-if-qualities-select {
+  margin-bottom: 4px;
+}
+
+
+/* ========================================================================== */
+/* 3b) Template & Quality Lists                                               */
+/* ========================================================================== */
+
+#if-body #templateList,
+#if-body #qualitiesList {
+  border: 1px solid #999;
+  overflow-y: auto;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+#if-body #templateList {
+  height: 100px;
+}
+
+#if-body #qualitiesList {
+  height: 138px;
+}
+
+.if-template,
+.if-quality {
+  padding: 2px 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.if-template:hover,
+.if-quality:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.if-template[data-selected="1"],
+.if-quality[data-selected="1"] {
+  background-color: rgba(65,105,225,1);
+  color: white;
+}
+
+
+/* ========================================================================== */
+/* 3c) Attributes / Customize                                                 */
+/* ========================================================================== */
+
+#if-body #attrInner label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#if-body #customizeArea label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1;
+}
+
+#if-body #customizeArea input[type="checkbox"] {
+  transform: scale(0.9);
+  transform-origin: left center;
+  margin: 0 4px 0 0;
+}
+
+#if-body #customizeArea select {
+  height: 22px;
+}
+
+
+/* ========================================================================== */
+/* 3d) Preview Card                                                           */
+/* ========================================================================== */
+
+#if-body #itemPreviewLarge {
+  width: 100%;
+  height: 165px;
+  border: 1px solid #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+#if-body #if-preview-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+#if-body #if-preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.if-icon-wrap {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+}
+
+#if-body #if-preview-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  cursor: default;
+}
+
+.if-badge {
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  z-index: 2;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+#if-body #if-preview-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.if-row {
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.if-row-desc {
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 4px 8px;
+  white-space: normal;
+  box-sizing: border-box;
+}
+
+.if-muted { opacity: 0.7; }
+.if-tight { letter-spacing: 0.2px; }
+
+
+/* ========================================================================== */
+/* 3e) Materials Drop Zone (main + mini)                                      */
+/* ========================================================================== */
+
+.lf-if-materials-fieldset {
+  margin: 0 0 6px 0;
+}
+
+#materialsDrop.lf-if-materials-drop {
+  min-height: 72px;
+  border: 1px dashed #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+#materialsDrop.lf-if-materials-drop img[data-mat="1"] {
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+}
+
+#materialsHint.lf-if-materials-hint {
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+#lookfar-itemforge-mini #materialsDrop {
+  min-height: 96px;
+}
+
+
+/* ========================================================================== */
+/* 3f) Cost Row                                                               */
+/* ========================================================================== */
+
+#if-body #costRow {
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  height: 25px;
+}
+
+#if-body #costValue {
+  width: 4ch;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+#if-body #costRow label {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+#if-body #optFee {
+  margin-right: 4px;
+}
+
+
+/* ========================================================================== */
+/* 3g) Disabled / Locked State                                                */
+/* ========================================================================== */
+
+.lf-if-disabled {
+  opacity: 0.5 !important;
+  filter: grayscale(1) !important;
+  cursor: not-allowed !important;
+}
+
+
+/* ========================================================================== */
+/* 4) Lookfar – Dungeon Mapper                                                */
+/* ========================================================================== */
+
+#lookfar-dungeon-mapper {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+
+/* Root layout */
+#lookfar-dungeon-mapper .lf-dm-root {
+  text-align: center;
+}
+
+/* Canvas wrapper */
+#lookfar-dungeon-mapper .lf-dm-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Canvas element */
+#lookfar-dungeon-mapper .lf-dm-canvas {
+  border: 1px solid #666;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  height: auto;
+}
+
+/* Icon overlay */
+#lookfar-dungeon-mapper .lf-dm-icons {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+/* Control panel container */
+#lookfar-dungeon-mapper .lf-dm-panel {
+  margin-top: 8px;
+  font-size: 12px;
+  width: 100%;
+  margin-inline: auto;
+  text-align: left;
+}
+
+/* Generic flex rows */
+#lookfar-dungeon-mapper .lf-dm-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+#lookfar-dungeon-mapper .lf-dm-row--top {
+  margin-bottom: 6px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-row--middle {
+  margin-top: 4px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-row--buttons {
+  margin-top: 8px;
+  gap: 4px;
+}
+
+/* Fieldsets */
+#lookfar-dungeon-mapper .lf-dm-fieldset {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #aaa;
+  margin: 0;
+  border-radius: 4px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-legend {
+  font-weight: bold;
+  padding: 0 4px;
+  font-size: 0.95em;
+}
+
+/* Group content */
+#lookfar-dungeon-mapper .lf-dm-group {
+  line-height: 1.4;
+}
+
+#lookfar-dungeon-mapper .lf-dm-group--center {
+  text-align: center;
+}
+
+/* Numeric inputs */
+#lookfar-dungeon-mapper .lf-dm-input {
+  box-sizing: border-box;
+}
+
+#lookfar-dungeon-mapper .lf-dm-input--small {
+  width: 2em;
+  text-align: center;
+  margin-right: 4px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-input--seed {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 11px;
+}
+
+/* Path line examples */
+#lookfar-dungeon-mapper .lf-dm-line {
+  display: inline-block;
+  width: 28px;
+  vertical-align: middle;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line--open {
+  border-top: 1px solid #000;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line--secret {
+  border-top: 1px dashed #000;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line-wrapper--closed {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line--closed {
+  display: inline-block;
+  width: 28px;
+  border-top: 1px solid #000;
+  margin-right: 4px;
+  position: relative;
+  vertical-align: middle;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line-block {
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  height: 10px;
+  border-left: 1px solid #000;
+  transform: translateX(-50%);
+}
+
+/* Labels next to line previews */
+#lookfar-dungeon-mapper .lf-dm-label {
+  vertical-align: middle;
+}
+
+/* Icon examples in Points */
+#lookfar-dungeon-mapper .lf-dm-point-icon {
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+/* Generate / Shape buttons */
+#lookfar-dungeon-mapper .lf-dm-button {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid #888;
+  border-radius: 3px;
+  background: #eee;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#lookfar-dungeon-mapper .lf-dm-button--icon {
+  width: 20px;
+  height: 20px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-button--primary,
+#lookfar-dungeon-mapper .lf-dm-button--secondary {
+  flex: 1;
+  box-sizing: border-box;
+}
+
+/* Icons */
+#lookfar-dungeon-mapper .lf-dm-icon {
+  font-size: 14px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-icon--tiny {
+  font-size: 10px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-icon--shape {
+  font-size: 14px;
+  transform: translateX(1px);
+}
+
+/* Seed display row */
+#lookfar-dungeon-mapper .lf-dm-seed-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-seed-current {
+  font-weight: bold;
+}
+
+
+/* ========================================================================== */
+/* 5) Lookfar – Conflict Builder                                              */
+/* ========================================================================== */
+
+#conflictBuilderDialog .dialog-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 380px;
+  height: 190px;
+  gap: 8px;
+}
+
+#conflictBuilderDialog .preview-image {
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+  display: block;
+}
+
+#conflictBuilderDialog .form-fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 190px;
+  height: 297px;
+  gap: 4px;
+}
+
+#conflictBuilderDialog .form-group {
+  margin-bottom: 2px;
+}
+
+#conflictBuilderDialog .scrollable-list {
+  width: 100%;
+  height: 297px;
+  overflow-y: auto;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#conflictBuilderDialog .list-item {
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-bottom: 2px;
+}
+
+#conflictBuilderDialog .list-item:hover {
+  background: #e0e0e0;
+}
+
+#conflictBuilderDialog .list-item.selected {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+#conflictBuilderDialog .actor-attributes {
+  font-size: 14px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  text-align: left;
+  width: 190px;
+}
+
+#conflictBuilderDialog #preview-tokens-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+#conflictBuilderDialog .preview-token {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  pointer-events: auto;
+  border: none;
+}

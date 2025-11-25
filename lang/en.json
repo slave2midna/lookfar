@@ -1,473 +1,2338 @@
 {
-  "LOOKFAR": {
+    "LOOKFAR": {
 
 
-    "__SECTION__Buttons": "=== Buttons ===",
-    "Button": {
-      "TravelCheck": {
-        "Name": "Travel Check",
-        "Title": "Make a Travel Check"
-      },
-      "TreasureRoll": {
-        "Name": "Treasure Roll",
-        "Title": "Generate Some Treasure"
+
+
+        
+        "__SECTION__Buttons": "=== Buttons ===",
+        "Button": {
+            "TravelCheck": {
+                "Name": "Travel Check",
+                "Title": "Make a Travel Check"
+            },
+            "TreasureRoll": {
+                "Name": "Treasure Roll",
+                "Title": "Generate Some Treasure"
+            },
+            "DungeonBuilder": {
+                "Name": "Dungeon Mapper",
+                "Title": "Map a Dungeon"
+            },
+            "ConflictBuilder": {
+                "Name": "Conflict Builder",
+                "Title": "Create a Conflict"
+            },
+            "ItemForger": {
+                "Name": "Item Forge",
+                "Title": "Forge and Item"
+            }
+        },
+
+
+
+
+        
+        "__SECTION__Settings": "=== Settings ===",
+        "Settings": {
+            "ResultVisibility": {
+                "Name": "Result Visibility",
+                "Hint": "Choose whether results and chat outputs are public or GM only.",
+                "Choices": {
+                    "Public": "Public",
+                    "GMOnly": "GM Only"
+                }
+            },
+            "ItemForgeEditMode": {
+                "Name": "Item Forge Edit Mode",
+                "Hint": "Change how interacting with the Item Forger works for users.",
+                "Choices": {
+                    "Public": "Public",
+                    "GMOnly": "GM Only",
+                    "Locked": "Locked",
+                    "Hidden": "Hidden"
+                }
+            },
+            "EnableKeywords": {
+                "Name": "Enable Keywords",
+                "Hint": "Enable keywords when generating travel check results."
+            },
+            "UseVariantTravelRules": {
+                "Name": "Use Variant Travel Rules",
+                "Hint": "Placeholder setting: Toggles alternative travel mechanics (currently unused)."
+            },
+            "UseVariantDamageRules": {
+                "Name": "Use Playtest Damage Rules",
+                "Hint": "When generating new weapons, damage will be based on new playtest rules."
+            },
+            "DiscoveryEffectTable": {
+                "Name": "Discovery Effect Roll Table",
+                "Hint": "Select the Roll Table to use for generating discovery effects."
+            },
+            "DiscoverySourceTable": {
+                "Name": "Discovery Source Roll Table",
+                "Hint": "Select the Roll Table to use for generating discovery sources."
+            },
+            "DangerThreatTable": {
+                "Name": "Danger Threat Roll Table",
+                "Hint": "Select the Roll Table to use for generating danger threats."
+            },
+            "DangerSourceTable": {
+                "Name": "Danger Source Roll Table",
+                "Hint": "Select the Roll Table to use for generating danger sources."
+            },
+            "CustomTreasureRollTable": {
+                "Name": "Custom Treasure Roll Table",
+                "Hint": "Select the Roll Table to use for generating custom treasure."
+            },
+            "MonsterCompendium": {
+                "Name": "Monster Compendium",
+                "Hint": "Select the Actor compendium to use as the source for Conflict Builder."
+            },
+            "BattleSceneName": {
+                "Name": "Battle Scene",
+                "Hint": "Select the Scene to use for the Conflict Builder preview."
+            },
+            "DefaultRollTable": "Lookfar Defaults",
+            "NoActorCompendiums": "No Actor compendiums found",
+            "NoScenes": "No scenes found"
+        },
+
+
+
+
+        
+
+        "__SECTION__NamePatterns": "=== Name Patterns ===",
+        "NamePatterns": {
+            "Material": "{detail} {origin} {nature}",
+            "Ingredient": "{taste} {origin} {nature}",
+            "Weapon": "{quality} {element} {base}",
+            "Armor": "{quality} {base}",
+            "Shield": "{quality} {base}",
+            "Accessory": "{quality} {base}"
+        },
+
+
+
+
+        
+        "__SECTION__Keywords": "=== Keywords ===",
+        "Keywords": {
+            "Traits": {
+                "Abandoned": "Abandoned",
+                "Ancient": "Ancient",
+                "Arcane": "Arcane",
+                "Bewitched": "Bewitched",
+                "Blighted": "Blighted",
+                "Cavernous": "Cavernous",
+                "Celestial": "Celestial",
+                "Chimeric": "Chimeric",
+                "Crumbling": "Crumbling",
+                "Cryptic": "Cryptic",
+                "Cursed": "Cursed",
+                "Decayed": "Decayed",
+                "Desolate": "Desolate",
+                "Deserted": "Deserted",
+                "Dilapidated": "Dilapidated",
+                "Dimensional": "Dimensional",
+                "Eldritch": "Eldritch",
+                "Ephemeral": "Ephemeral",
+                "Ethereal": "Ethereal",
+                "Eternal": "Eternal",
+                "Fabled": "Fabled",
+                "Faded": "Faded",
+                "Forbidden": "Forbidden",
+                "Forging": "Forging",
+                "Forgotten": "Forgotten",
+                "Fractured": "Fractured",
+                "Frozen": "Frozen",
+                "Ghostly": "Ghostly",
+                "Gloomy": "Gloomy",
+                "Gossamer": "Gossamer",
+                "Hallowed": "Hallowed",
+                "Haunted": "Haunted",
+                "Hidden": "Hidden",
+                "Infernal": "Infernal",
+                "Isolated": "Isolated",
+                "Legendary": "Legendary",
+                "Luminous": "Luminous",
+                "Lurking": "Lurking",
+                "Magical": "Magical",
+                "Moonlit": "Moonlit",
+                "Mysterious": "Mysterious",
+                "Mystic": "Mystic",
+                "Mystical": "Mystical",
+                "Neglected": "Neglected",
+                "Obsidian": "Obsidian",
+                "Obscured": "Obscured",
+                "Obscure": "Obscure",
+                "Obscuring": "Obscuring",
+                "Otherworldly": "Otherworldly",
+                "Overgrown": "Overgrown",
+                "Overlooked": "Overlooked",
+                "Petrified": "Petrified",
+                "Phantasmal": "Phantasmal",
+                "Primeval": "Primeval",
+                "Pristine": "Pristine",
+                "Relic": "Relic",
+                "Resplendent": "Resplendent",
+                "Runed": "Runed",
+                "Ruined": "Ruined",
+                "Sacred": "Sacred",
+                "Sanctified": "Sanctified",
+                "Secret": "Secret",
+                "Secluded": "Secluded",
+                "Serene": "Serene",
+                "Shaded": "Shaded",
+                "Shadowed": "Shadowed",
+                "Shattered": "Shattered",
+                "Shimmering": "Shimmering",
+                "Spectral": "Spectral",
+                "Stygian": "Stygian",
+                "Sunken": "Sunken",
+                "Surreal": "Surreal",
+                "Sylvan": "Sylvan",
+                "Temporal": "Temporal",
+                "TimeWorn": "Time-worn",
+                "Twilight": "Twilight",
+                "Uncharted": "Uncharted",
+                "Unhallowed": "Unhallowed",
+                "Unseen": "Unseen",
+                "Unearthed": "Unearthed",
+                "Verdant": "Verdant",
+                "Veiled": "Veiled",
+                "Venerable": "Venerable",
+                "Vivid": "Vivid",
+                "Weathered": "Weathered",
+                "Withered": "Withered",
+                "Wraithlike": "Wraithlike"
+            },
+            "Terrain": {
+                "Alcove": "Alcove",
+                "Altar": "Altar",
+                "Aqueduct": "Aqueduct",
+                "Archipelago": "Archipelago",
+                "Arena": "Arena",
+                "Archive": "Archive",
+                "Bazaar": "Bazaar",
+                "Barracks": "Barracks",
+                "Battleground": "Battleground",
+                "Butte": "Butte",
+                "Cairn": "Cairn",
+                "Campsite": "Campsite",
+                "Catacombs": "Catacombs",
+                "Causeway": "Causeway",
+                "Cauldron": "Cauldron",
+                "Cavern": "Cavern",
+                "Castle": "Castle",
+                "Chapel": "Chapel",
+                "Chasm": "Chasm",
+                "Citadel": "Citadel",
+                "Cliff": "Cliff",
+                "Conservatory": "Conservatory",
+                "Corridor": "Corridor",
+                "Crags": "Crags",
+                "Crater": "Crater",
+                "Crypt": "Crypt",
+                "Den": "Den",
+                "Dome": "Dome",
+                "Dungeon": "Dungeon",
+                "Eddy": "Eddy",
+                "Embankment": "Embankment",
+                "Estuary": "Estuary",
+                "Expanse": "Expanse",
+                "Fane": "Fane",
+                "Fen": "Fen",
+                "Fjord": "Fjord",
+                "Forest": "Forest",
+                "Fortress": "Fortress",
+                "Fountain": "Fountain",
+                "Foundry": "Foundry",
+                "Garrison": "Garrison",
+                "Garden": "Garden",
+                "Glade": "Glade",
+                "Grove": "Grove",
+                "Grotto": "Grotto",
+                "Harbor": "Harbor",
+                "Haven": "Haven",
+                "Henge": "Henge",
+                "Isle": "Isle",
+                "Jungle": "Jungle",
+                "Keep": "Keep",
+                "Knoll": "Knoll",
+                "Labyrinth": "Labyrinth",
+                "Library": "Library",
+                "Lodge": "Lodge",
+                "Manor": "Manor",
+                "Mausoleum": "Mausoleum",
+                "Meadow": "Meadow",
+                "Menhir": "Menhir",
+                "Mesa": "Mesa",
+                "Mill": "Mill",
+                "Mire": "Mire",
+                "Monolith": "Monolith",
+                "Moat": "Moat",
+                "Nexus": "Nexus",
+                "Observatory": "Observatory",
+                "Oasis": "Oasis",
+                "Obelisk": "Obelisk",
+                "Outpost": "Outpost",
+                "Orchard": "Orchard",
+                "Parapet": "Parapet",
+                "Pathway": "Pathway",
+                "Pavilion": "Pavilion",
+                "Pit": "Pit",
+                "Plaza": "Plaza",
+                "Portal": "Portal",
+                "Promontory": "Promontory",
+                "Quarry": "Quarry",
+                "Quicksand": "Quicksand",
+                "Ravine": "Ravine",
+                "Reef": "Reef",
+                "Ridge": "Ridge",
+                "Rift": "Rift",
+                "Ruination": "Ruination",
+                "Ruins": "Ruins",
+                "Sanctuary": "Sanctuary",
+                "Sanctum": "Sanctum",
+                "Seraglio": "Seraglio",
+                "Shrine": "Shrine",
+                "Shipwreck": "Shipwreck",
+                "Shelter": "Shelter",
+                "Spire": "Spire",
+                "Spring": "Spring",
+                "Steppe": "Steppe",
+                "Stronghold": "Stronghold",
+                "Summit": "Summit",
+                "Tavern": "Tavern",
+                "Temple": "Temple",
+                "Throne": "Throne",
+                "Tomb": "Tomb",
+                "Tombstone": "Tombstone",
+                "Tower": "Tower",
+                "Trails": "Trails",
+                "Trenches": "Trenches",
+                "Tundra": "Tundra",
+                "Undercroft": "Undercroft",
+                "Valley": "Valley",
+                "Vault": "Vault",
+                "Village": "Village",
+                "Vortex": "Vortex",
+                "Waterfall": "Waterfall",
+                "Wreckage": "Wreckage",
+                "Xystus": "Xystus",
+                "Yard": "Yard",
+                "Zeppelin": "Zeppelin",
+                "Ziggurat": "Ziggurat"
+            },
+            "Nature": {
+                "Material": {
+                    "Anthropod": {
+                        "Carapace": "Carapace",
+                        "Mandible": "Mandible",
+                        "Pincer": "Pincer",
+                        "Shell": "Shell",
+                        "Stinger": "Stinger"
+                    },
+                    "Bird": {
+                        "Feather": "Feather",
+                        "Talon": "Talon",
+                        "Beak": "Beak",
+                        "Claw": "Claw",
+                        "Bone": "Bone"
+                    },
+                    "Fish": {
+                        "Fin": "Fin",
+                        "Scale": "Scale",
+                        "Gill": "Gill",
+                        "Tooth": "Tooth",
+                        "Bone": "Bone"
+                    },
+                    "Mammal": {
+                        "Bone": "Bone",
+                        "Fur": "Fur",
+                        "Horn": "Horn",
+                        "Hide": "Hide",
+                        "Tusk": "Tusk"
+                    },
+                    "Mollusk": {
+                        "Shell": "Shell",
+                        "Pearl": "Pearl",
+                        "Valve": "Valve",
+                        "Mantle": "Mantle",
+                        "Beak": "Beak"
+                    },
+                    "Reptile": {
+                        "Claw": "Claw",
+                        "Scale": "Scale",
+                        "Tail": "Tail",
+                        "Spine": "Spine",
+                        "Fang": "Fang"
+                    },
+                    "Fungus": {
+                        "Sporecase": "Sporecase",
+                        "Cap": "Cap",
+                        "Vein": "Vein",
+                        "Stem": "Stem",
+                        "Fiber": "Fiber"
+                    },
+                    "Incorporeal": {
+                        "Wisp": "Wisp",
+                        "Vapor": "Vapor",
+                        "Ash": "Ash",
+                        "Essence": "Essence",
+                        "Soul": "Soul"
+                    },
+                    "Liquid": {
+                        "Droplet": "Droplet",
+                        "Globule": "Globule",
+                        "Ichor": "Ichor",
+                        "Resin": "Resin",
+                        "Film": "Film"
+                    },
+                    "Artificial": {
+                        "Alloy": "Alloy",
+                        "Circuit": "Circuit",
+                        "Frame": "Frame",
+                        "Casing": "Casing",
+                        "Component": "Component"
+                    },
+                    "Mineral": {
+                        "Crystal": "Crystal",
+                        "Shard": "Shard",
+                        "Ore": "Ore",
+                        "Fragment": "Fragment",
+                        "Nodule": "Nodule"
+                    },
+                    "Plant": {
+                        "Branch": "Branch",
+                        "Vine": "Vine",
+                        "Bark": "Bark",
+                        "Thorn": "Thorn",
+                        "Reed": "Reed"
+                    }
+                },
+                "Ingredient": {
+                    "Anthropod": {
+                        "Meat": "Meat",
+                        "Sac": "Sac",
+                        "Egg": "Egg",
+                        "Leg": "Leg",
+                        "Juice": "Juice"
+                    },
+                    "Bird": {
+                        "Egg": "Egg",
+                        "Wing": "Wing",
+                        "Meat": "Meat",
+                        "Heart": "Heart",
+                        "Blood": "Blood"
+                    },
+                    "Fish": {
+                        "Meat": "Meat",
+                        "Egg": "Egg",
+                        "Oil": "Oil",
+                        "Eye": "Eye",
+                        "Bile": "Bile"
+                    },
+                    "Mammal": {
+                        "Meat": "Meat",
+                        "Fat": "Fat",
+                        "Organ": "Organ",
+                        "Milk": "Milk",
+                        "Blood": "Blood"
+                    },
+                    "Mollusk": {
+                        "Flesh": "Flesh",
+                        "Ink": "Ink",
+                        "Gland": "Gland",
+                        "Slurry": "Slurry",
+                        "Meat": "Meat"
+                    },
+                    "Reptile": {
+                        "Meat": "Meat",
+                        "Egg": "Egg",
+                        "Venom": "Venom",
+                        "Blood": "Blood",
+                        "Liver": "Liver"
+                    },
+                    "Fungus": {
+                        "Shroom": "Shroom",
+                        "Spore": "Spore",
+                        "Flesh": "Flesh",
+                        "Pulp": "Pulp",
+                        "Residue": "Residue"
+                    },
+                    "Incorporeal": {
+                        "Mist": "Mist",
+                        "Plasma": "Plasma",
+                        "Breath": "Breath",
+                        "Essence": "Essence",
+                        "Residue": "Residue"
+                    },
+                    "Liquid": {
+                        "Fluid": "Fluid",
+                        "Reagent": "Reagent",
+                        "Syrup": "Syrup",
+                        "Slime": "Slime",
+                        "Gel": "Gel"
+                    },
+                    "Artificial": {
+                        "Gel": "Gel",
+                        "Solution": "Solution",
+                        "Compound": "Compound",
+                        "Serum": "Serum",
+                        "Extract": "Extract"
+                    },
+                    "Mineral": {
+                        "Dust": "Dust",
+                        "Grain": "Grain",
+                        "Powder": "Powder",
+                        "Salt": "Salt",
+                        "Residue": "Residue"
+                    },
+                    "Plant": {
+                        "Leaf": "Leaf",
+                        "Seed": "Seed",
+                        "Fruit": "Fruit",
+                        "Sap": "Sap",
+                        "Root": "Root"
+                    }
+                }
+            },
+            "Origin": {
+                "Material": {
+                    "Aerial": {
+                        "Light": "Light",
+                        "Hollow": "Hollow",
+                        "Avian": "Avian",
+                        "Fowl": "Fowl",
+                        "Drift": "Drift"
+                    },
+                    "Thunderous": {
+                        "Conductive": "Conductive",
+                        "Magnetic": "Magnetic",
+                        "Charged": "Charged",
+                        "Ionic": "Ionic",
+                        "Crackling": "Crackling"
+                    },
+                    "Paradox": {
+                        "Fractured": "Fractured",
+                        "Glitched": "Glitched",
+                        "Timeless": "Timeless",
+                        "Looped": "Looped",
+                        "Entropic": "Entropic"
+                    },
+                    "Terrestrial": {
+                        "Fossilized": "Fossilized",
+                        "Quarried": "Quarried",
+                        "Sedimentary": "Sedimentary",
+                        "Iron": "Iron",
+                        "Earthen": "Earthen"
+                    },
+                    "Ardent": {
+                        "Blazing": "Blazing",
+                        "Molten": "Molten",
+                        "Smoldering": "Smoldering",
+                        "Scorched": "Scorched",
+                        "Embered": "Embered"
+                    },
+                    "Glacial": {
+                        "Crystalline": "Crystalline",
+                        "Frozen": "Frozen",
+                        "Encased": "Encased",
+                        "Glassy": "Glassy",
+                        "Still": "Still"
+                    },
+                    "Spiritual": {
+                        "Sanctified": "Sanctified",
+                        "Echoing": "Echoing",
+                        "Hallowed": "Hallowed",
+                        "Woven": "Woven",
+                        "Otherbound": "Otherbound"
+                    },
+                    "Corrupted": {
+                        "Warped": "Warped",
+                        "Blight": "Blight",
+                        "Decayed": "Decayed",
+                        "Toxic": "Toxic",
+                        "Speckled": "Speckled"
+                    },
+                    "Aquatic": {
+                        "Barnacled": "Barnacled",
+                        "Soaked": "Soaked",
+                        "Flooded": "Flooded",
+                        "Tidal": "Tidal",
+                        "Marshbound": "Marshbound"
+                    },
+                    "Mechanical": {
+                        "Cogged": "Cogged",
+                        "Bolted": "Bolted",
+                        "Clockwork": "Clockwork",
+                        "Forged": "Forged",
+                        "Powered": "Powered"
+                    }
+                },
+                "Ingredient": {
+                    "Aerial": {
+                        "Fluffy": "Fluffy",
+                        "Airy": "Airy",
+                        "Crisp": "Crisp",
+                        "Wispy": "Wispy",
+                        "Downy": "Downy"
+                    },
+                    "Thunderous": {
+                        "Crackling": "Crackling",
+                        "Zesty": "Zesty",
+                        "Sparkling": "Sparkling",
+                        "Sizzling": "Sizzling",
+                        "Charged": "Charged"
+                    },
+                    "Paradox": {
+                        "Flickering": "Flickering",
+                        "Prismatic": "Prismatic",
+                        "Twisted": "Twisted",
+                        "Mishapen": "Mishapen",
+                        "Glistening": "Glistening"
+                    },
+                    "Terrestrial": {
+                        "Coarse": "Coarse",
+                        "Earthen": "Earthen",
+                        "Grainy": "Grainy",
+                        "Brown": "Brown",
+                        "Loamy": "Loamy"
+                    },
+                    "Ardent": {
+                        "Roasted": "Roasted",
+                        "Smoked": "Smoked",
+                        "Charred": "Charred",
+                        "Toasted": "Toasted",
+                        "Glazed": "Glazed"
+                    },
+                    "Glacial": {
+                        "Chilled": "Chilled",
+                        "Crystalline": "Crystalline",
+                        "Cold": "Cold",
+                        "Smooth": "Smooth",
+                        "Brittle": "Brittle"
+                    },
+                    "Spiritual": {
+                        "Luminous": "Luminous",
+                        "Silk": "Silk",
+                        "Translucent": "Translucent",
+                        "Hollow": "Hollow",
+                        "Misted": "Misted"
+                    },
+                    "Corrupted": {
+                        "Stained": "Stained",
+                        "Wilted": "Wilted",
+                        "Marbled": "Marbled",
+                        "Fermented": "Fermented",
+                        "Spoiled": "Spoiled"
+                    },
+                    "Aquatic": {
+                        "Moist": "Moist",
+                        "Scaley": "Scaley",
+                        "Brined": "Brined",
+                        "Puffy": "Puffy",
+                        "Slick": "Slick"
+                    },
+                    "Mechanical": {
+                        "Refined": "Refined",
+                        "Pressed": "Pressed",
+                        "Distilled": "Distilled",
+                        "Tempered": "Tempered",
+                        "Infused": "Infused"
+                    }
+                }
+            },
+            "Detail": {
+                "Agility": {
+                    "Stretchy": "Stretchy",
+                    "Pointy": "Pointy",
+                    "Slender": "Slender",
+                    "Slippery": "Slippery",
+                    "Hooded": "Hooded",
+                    "Moist": "Moist",
+                    "Slimey": "Slimey",
+                    "Springy": "Springy",
+                    "Small": "Small",
+                    "Responsive": "Responsive"
+                },
+                "Powerful": {
+                    "Strong": "Strong",
+                    "Big": "Big",
+                    "Hefty": "Hefty",
+                    "Prickly": "Prickly",
+                    "Serrated": "Serrated",
+                    "Blunt": "Blunt",
+                    "Red": "Red",
+                    "Huge": "Huge",
+                    "Sharp": "Sharp",
+                    "Clubbed": "Clubbed"
+                },
+                "Protective": {
+                    "Sturdy": "Sturdy",
+                    "Plated": "Plated",
+                    "Blue": "Blue",
+                    "Shielded": "Shielded",
+                    "Hardened": "Hardened",
+                    "Tough": "Tough",
+                    "Thick": "Thick",
+                    "Layered": "Layered",
+                    "Bulbous": "Bulbous",
+                    "Bloated": "Bloated"
+                },
+                "Recovery": {
+                    "Curative": "Curative",
+                    "Steady": "Steady",
+                    "Healthy": "Healthy",
+                    "Lush": "Lush",
+                    "Hearty": "Hearty",
+                    "Repaired": "Repaired",
+                    "Stable": "Stable",
+                    "Fresh": "Fresh",
+                    "Green": "Green",
+                    "Regenerating": "Regenerating"
+                },
+                "Debilitating": {
+                    "Corrosive": "Corrosive",
+                    "Drained": "Drained",
+                    "Hexed": "Hexed",
+                    "Mutated": "Mutated",
+                    "Melting": "Melting",
+                    "Withered": "Withered",
+                    "Cursed": "Cursed",
+                    "Freckled": "Freckled",
+                    "Black": "Black",
+                    "Infected": "Infected"
+                },
+                "Support": {
+                    "Yellow": "Yellow",
+                    "Spongey": "Spongey",
+                    "Ribbed": "Ribbed",
+                    "Squeaky": "Squeaky",
+                    "Humming": "Humming",
+                    "Resonating": "Resonating",
+                    "Reflective": "Reflective",
+                    "Porous": "Porous",
+                    "Boosted": "Boosted",
+                    "Sticky": "Sticky"
+                }
+            },
+            "Taste": {
+                "Bitter": {
+                    "Astringent": "Astringent",
+                    "Harsh": "Harsh",
+                    "Tannic": "Tannic",
+                    "Sharp": "Sharp",
+                    "Acrid": "Acrid",
+                    "Dry": "Dry",
+                    "Medicinal": "Medicinal",
+                    "Pungent": "Pungent",
+                    "Bracing": "Bracing",
+                    "Earthy": "Earthy"
+                },
+                "Sour": {
+                    "Tart": "Tart",
+                    "Tangy": "Tangy",
+                    "Zesty": "Zesty",
+                    "Citrusy": "Citrusy",
+                    "Acidic": "Acidic",
+                    "LipPuckering": "Lip-puckering",
+                    "Vinegary": "Vinegary",
+                    "Fermented": "Fermented",
+                    "Lemon": "Lemon",
+                    "Crisp": "Crisp"
+                },
+                "Sweet": {
+                    "Sugary": "Sugary",
+                    "Honeyed": "Honeyed",
+                    "Syrupy": "Syrupy",
+                    "CandyLike": "Candy-like",
+                    "Nectarous": "Nectarous",
+                    "Saccharine": "Saccharine",
+                    "Luscious": "Luscious",
+                    "Caramelized": "Caramelized",
+                    "Fruity": "Fruity",
+                    "Rich": "Rich"
+                },
+                "Salty": {
+                    "Briny": "Briny",
+                    "Savory": "Savory",
+                    "Pickled": "Pickled",
+                    "Cured": "Cured",
+                    "Mineral": "Mineral",
+                    "Zingy": "Zingy",
+                    "Piquant": "Piquant",
+                    "Aged": "Aged",
+                    "Smoky": "Smoky",
+                    "Oceanic": "Oceanic"
+                },
+                "Umami": {
+                    "Meaty": "Meaty",
+                    "Brothy": "Brothy",
+                    "Rich": "Rich",
+                    "Mushroomy": "Mushroomy",
+                    "Hearty": "Hearty",
+                    "Deep": "Deep",
+                    "Robust": "Robust",
+                    "SoyLike": "Soy-like",
+                    "Mellow": "Mellow",
+                    "FullBodied": "Full-bodied"
+                }
+            },
+            "Element": {
+                "Fire": {
+                    "Flaming": "Flaming",
+                    "Fire": "Fire"
+                },
+                "Ice": {
+                    "Cold": "Cold",
+                    "Ice": "Ice"
+                },
+                "Earth": {
+                    "Stone": "Stone",
+                    "Earth": "Earth"
+                },
+                "Bolt": {
+                    "Electric": "Electric",
+                    "Bolt": "Bolt"
+                },
+                "Air": {
+                    "Energy": "Energy",
+                    "Wind": "Wind"
+                },
+                "Dark": {
+                    "Cursed": "Cursed",
+                    "Dark": "Dark"
+                },
+                "Light": {
+                    "Holy": "Holy",
+                    "Light": "Light"
+                },
+                "Poison": {
+                    "Toxic": "Toxic",
+                    "Poison": "Poison"
+                }
+            }
+        },
+
+
+
+
+        
+        "__SECTION__EQUIPMENT": "=== Equipment ===",
+        "Equipment": {
+            "Weapon": {
+                "staff": "Staff",
+                "tome": "Tome",
+                "crossbow": "Crossbow",
+                "bow": "Bow",
+                "knuckle": "Knuckle",
+                "dagger": "Dagger",
+                "pistol": "Pistol",
+                "rifle": "Rifle",
+                "flail": "Flail",
+                "hammer": "Hammer",
+                "warhammer": "Warhammer",
+                "handaxe": "Handaxe",
+                "waraxe": "Waraxe",
+                "light_spear": "Light Spear",
+                "heavy_spear": "Heavy Spear",
+                "sword": "Sword",
+                "claymore": "Claymore",
+                "katana": "Katana",
+                "rapier": "Rapier",
+                "shuriken": "Shuriken"
+            },
+            "Armor": {
+                "silk-shirt": "Shirt",
+                "travel-garb": "Garb",
+                "combat-tunic": "Tunic",
+                "sage-robe": "Robe",
+                "brigandine": "Brigandine",
+                "bronze-plate": "Hauberk",
+                "iron-plate": "Cuirass",
+                "steel-plate": "Plate"
+            },
+            "Shield": {
+                "bronze-shield": "Buckler",
+                "runic-shield": "Shield"
+            },
+            "Accessory": {
+                "amulet": "Amulet",
+                "belt": "Belt",
+                "cloak": "Cloak",
+                "charm": "Earring",
+                "hat": "Hat",
+                "helmet": "Helmet",
+                "hood": "Hood",
+                "mask": "Mask",
+                "ring": "Ring"
+            }
+        },
+
+
+
+
+        
+        "__SECTION__Qualities": "=== Qualities ===",
+        "Qualities": {
+            "basic": {
+                "anti-slow": {
+                    "Weapon": "Thin",
+                    "Armor": "Light",
+                    "Shield": "Zephyrite",
+                    "Accessory": "Swift",
+                    "Description": "grants immunity to the slow status."
+                },
+                "anti-daze": {
+                    "Weapon": "Thick",
+                    "Armor": "Heavy",
+                    "Shield": "Focussteel",
+                    "Accessory": "Steady",
+                    "Description": "grants immunity to the daze status."
+                },
+                "anti-shaken": {
+                    "Weapon": "Sturdy",
+                    "Armor": "Studded",
+                    "Shield": "Heartstone",
+                    "Accessory": "Brave",
+                    "Description": "grants immunity to the shaken status."
+                },
+                "anti-weak": {
+                    "Weapon": "Strong",
+                    "Armor": "Bulky",
+                    "Shield": "Mightwall",
+                    "Accessory": "Mighty",
+                    "Description": "grants immunity to the weak status."
+                },
+                "anti-poison": {
+                    "Weapon": "Venomguard",
+                    "Armor": "Hermetic",
+                    "Shield": "Toxbane",
+                    "Accessory": "Studded",
+                    "Description": "grants immunity to the poisoned status."
+                },
+                "anti-enrage": {
+                    "Weapon": "Soulsteel",
+                    "Armor": "Darksteel",
+                    "Shield": "Tranquilite",
+                    "Accessory": "Calm",
+                    "Description": "grants immunity to the enraged status."
+                },
+                "resist-fire": {
+                    "Weapon": "Tempered",
+                    "Armor": "Nomex",
+                    "Shield": "Pyrium",
+                    "Accessory": "Dragonscale",
+                    "Description": "grants resistance to fire damage."
+                },
+                "resist-earth": {
+                    "Weapon": "Cracked",
+                    "Armor": "Kevlar",
+                    "Shield": "Terracite",
+                    "Accessory": "Stone",
+                    "Description": "grants resistance to earth damage."
+                },
+                "resist-ice": {
+                    "Weapon": "Cold Iron",
+                    "Armor": "Insulated",
+                    "Shield": "Frostsilver",
+                    "Accessory": "Yetifur",
+                    "Description": "grants resistance to ice damage."
+                },
+                "resist-air": {
+                    "Weapon": "Grated",
+                    "Armor": "Nylon",
+                    "Shield": "Aetherglass",
+                    "Accessory": "Feather",
+                    "Description": "grants resistance to air damage."
+                },
+                "resist-bolt": {
+                    "Weapon": "Wooden",
+                    "Armor": "Neoprene",
+                    "Shield": "Stormsilver",
+                    "Accessory": "Rubber",
+                    "Description": "grants resistance to bolt damage."
+                },
+                "resist-dark": {
+                    "Weapon": "Sacred",
+                    "Armor": "Satin",
+                    "Shield": "Umbracite",
+                    "Accessory": "Obsidian",
+                    "Description": "grants resistance to dark damage."
+                },
+                "resist-light": {
+                    "Weapon": "Purified",
+                    "Armor": "Silk",
+                    "Shield": "Aurorium",
+                    "Accessory": "Ivory",
+                    "Description": "grants resistance to light damage."
+                },
+                "resist-poison": {
+                    "Weapon": "Steralized",
+                    "Armor": "Leather",
+                    "Shield": "Venomite",
+                    "Accessory": "Muddy",
+                    "Description": "grants resistance to poison damage."
+                },
+                "resist-fire-earth": {
+                    "Weapon": "Draconyx",
+                    "Armor": "Firestone",
+                    "Shield": "Moltrum",
+                    "Accessory": "Terracite",
+                    "Description": "grants resistance to fire and earth damage."
+                },
+                "resist-fire-ice": {
+                    "Weapon": "Emberfrost",
+                    "Armor": "Frostfire",
+                    "Shield": "Cryostone",
+                    "Accessory": "Frostsilver",
+                    "Description": "grants resistance to fire and ice damage."
+                },
+                "resist-fire-air": {
+                    "Weapon": "Flarewind",
+                    "Armor": "Windflame",
+                    "Shield": "Aetherglass",
+                    "Accessory": "Aethersteel",
+                    "Description": "grants resistance to fire and air damage."
+                },
+                "resist-fire-bolt": {
+                    "Weapon": "Stormflare",
+                    "Armor": "Firestorm",
+                    "Shield": "Voltplate",
+                    "Accessory": "Stormsilver",
+                    "Description": "grants resistance to fire and bolt damage."
+                },
+                "resist-fire-dark": {
+                    "Weapon": "Hellshade",
+                    "Armor": "Shadowfire",
+                    "Shield": "Umbracite",
+                    "Accessory": "Bloodiron",
+                    "Description": "grants resistance to fire and dark damage."
+                },
+                "resist-fire-light": {
+                    "Weapon": "Solflare",
+                    "Armor": "Sunfire",
+                    "Shield": "Aurorium",
+                    "Accessory": "Sunsteel",
+                    "Description": "grants resistance to fire and light damage."
+                },
+                "resist-fire-poison": {
+                    "Weapon": "Cindervenom",
+                    "Armor": "Dwarven",
+                    "Shield": "Venomite",
+                    "Accessory": "Miastrum",
+                    "Description": "grants resistance to fire and poison damage."
+                },
+                "resist-earth-ice": {
+                    "Weapon": "Stonefrost",
+                    "Armor": "Icestone",
+                    "Shield": "Glacite",
+                    "Accessory": "Cryolite",
+                    "Description": "grants resistance to earth and ice damage."
+                },
+                "resist-earth-air": {
+                    "Weapon": "Skyroot",
+                    "Armor": "Windstone",
+                    "Shield": "Cloudiron",
+                    "Accessory": "Zephyrite",
+                    "Description": "grants resistance to earth and air damage."
+                },
+                "resist-earth-bolt": {
+                    "Weapon": "Terravolt",
+                    "Armor": "Thunderstone",
+                    "Shield": "Stormcore",
+                    "Accessory": "Voltite",
+                    "Description": "grants resistance to earth and bolt damage."
+                },
+                "resist-earth-dark": {
+                    "Weapon": "Gravestone",
+                    "Armor": "Darkstone",
+                    "Shield": "Noctite",
+                    "Accessory": "Shadowsteel",
+                    "Description": "grants resistance to earth and dark damage."
+                },
+                "resist-earth-light": {
+                    "Weapon": "Solgrit",
+                    "Armor": "Lightstone",
+                    "Shield": "Sunsteel",
+                    "Accessory": "Aurorium",
+                    "Description": "grants resistance to earth and light damage."
+                },
+                "resist-earth-poison": {
+                    "Weapon": "Rotrock",
+                    "Armor": "Sylvan",
+                    "Shield": "Blightiron",
+                    "Accessory": "Verdanite",
+                    "Description": "grants resistance to earth and poison damage."
+                },
+                "resist-ice-air": {
+                    "Weapon": "Frostwind",
+                    "Armor": "Windchill",
+                    "Shield": "Aeronite",
+                    "Accessory": "Cloudiron",
+                    "Description": "grants resistance to ice and air damage."
+                },
+                "resist-ice-bolt": {
+                    "Weapon": "Cryostorm",
+                    "Armor": "Frostbolt",
+                    "Shield": "Stormsilver",
+                    "Accessory": "Voltshadow",
+                    "Description": "grants resistance to ice and bolt damage."
+                },
+                "resist-ice-dark": {
+                    "Weapon": "Rimebane",
+                    "Armor": "Blackice",
+                    "Shield": "Umbraglass",
+                    "Accessory": "Grimsteel",
+                    "Description": "grants resistance to ice and dark damage."
+                },
+                "resist-ice-light": {
+                    "Weapon": "Aurafrost",
+                    "Armor": "Frostlight",
+                    "Shield": "Celestium",
+                    "Accessory": "Luminite",
+                    "Description": "grants resistance to ice and light damage."
+                },
+                "resist-ice-poison": {
+                    "Weapon": "Venomglaze",
+                    "Armor": "Composite",
+                    "Shield": "Toxifer",
+                    "Accessory": "Virellium",
+                    "Description": "grants resistance to ice and poison damage."
+                },
+                "resist-air-bolt": {
+                    "Weapon": "Tempestral",
+                    "Armor": "Stormwind",
+                    "Shield": "Chargium",
+                    "Accessory": "Aethersteel",
+                    "Description": "grants resistance to air and bolt damage."
+                },
+                "resist-air-dark": {
+                    "Weapon": "Voidgale",
+                    "Armor": "Darkwind",
+                    "Shield": "Eclipsite",
+                    "Accessory": "Umbracite",
+                    "Description": "grants resistance to air and dark damage."
+                },
+                "resist-air-light": {
+                    "Weapon": "Zephyrlume",
+                    "Armor": "Angelic",
+                    "Shield": "Luminite",
+                    "Accessory": "Radiantite",
+                    "Description": "grants resistance to air and light damage."
+                },
+                "resist-air-poison": {
+                    "Weapon": "Virellium",
+                    "Armor": "Composite",
+                    "Shield": "Miastrum",
+                    "Accessory": "Venomite",
+                    "Description": "grants resistance to air and poison damage."
+                },
+                "resist-bolt-dark": {
+                    "Weapon": "Voltshadow",
+                    "Armor": "Shadowbolt",
+                    "Shield": "Noctium",
+                    "Accessory": "Abyssal Alloy",
+                    "Description": "grants resistance to bolt and dark damage."
+                },
+                "resist-bolt-light": {
+                    "Weapon": "Stormglow",
+                    "Armor": "Lightning",
+                    "Shield": "Radiantite",
+                    "Accessory": "Aurorium",
+                    "Description": "grants resistance to bolt and light damage."
+                },
+                "resist-bolt-poison": {
+                    "Weapon": "Venostorm",
+                    "Armor": "Composite",
+                    "Shield": "Pestelite",
+                    "Accessory": "Rotiron",
+                    "Description": "grants resistance to bolt and poison damage."
+                },
+                "resist-dark-light": {
+                    "Weapon": "Eclipsol",
+                    "Armor": "Nightlight",
+                    "Shield": "Auralite",
+                    "Accessory": "Halochrome",
+                    "Description": "grants resistance to dark and light damage."
+                },
+                "resist-dark-poison": {
+                    "Weapon": "Corvion",
+                    "Armor": "Drow",
+                    "Shield": "Rotiron",
+                    "Accessory": "Morbium",
+                    "Description": "grants resistance to dark and poison damage."
+                },
+                "resist-light-poison": {
+                    "Weapon": "Solvenom",
+                    "Armor": "Composite",
+                    "Shield": "Halochrome",
+                    "Accessory": "Solarium",
+                    "Description": "grants resistance to light and poison damage."
+                },
+                "swordbreaker": {
+                    "Weapon": "Monks",
+                    "Armor": "Adamant",
+                    "Shield": "Tower",
+                    "Accessory": "Warded",
+                    "Description": "grants resistance to physical damage."
+                },
+                "fire-immunity": {
+                    "Weapon": "Sunsteel",
+                    "Armor": "Flameward",
+                    "Shield": "Pyrium",
+                    "Accessory": "Ruby",
+                    "Description": "grants immunity to fire damage."
+                },
+                "earth-immunity": {
+                    "Weapon": "Stonewalker",
+                    "Armor": "Stoneward",
+                    "Shield": "Terracite",
+                    "Accessory": "Emerald",
+                    "Description": "grants immunity to earth damage."
+                },
+                "ice-immunity": {
+                    "Weapon": "Frostsilver",
+                    "Armor": "Frostward",
+                    "Shield": "Glacium",
+                    "Accessory": "Sapphire",
+                    "Description": "grants immunity to ice damage."
+                },
+                "air-immunity": {
+                    "Weapon": "Windwalker",
+                    "Armor": "Windward",
+                    "Shield": "Aethersteel",
+                    "Accessory": "Opal",
+                    "Description": "grants immunity to air damage."
+                },
+                "bolt-immunity": {
+                    "Weapon": "Stormwalker",
+                    "Armor": "Stormward",
+                    "Shield": "Stormcore",
+                    "Accessory": "Topaz",
+                    "Description": "grants immunity to bolt damage."
+                },
+                "dark-immunity": {
+                    "Weapon": "Umbracite",
+                    "Armor": "Shadoward",
+                    "Shield": "Noctite",
+                    "Accessory": "Amethyst",
+                    "Description": "grants immunity to dark damage."
+                },
+                "light-immunity": {
+                    "Weapon": "Sunsteel",
+                    "Armor": "Sunward",
+                    "Shield": "Aurorium",
+                    "Accessory": "Pearl",
+                    "Description": "grants immunity to light damage."
+                },
+                "poison-immunity": {
+                    "Weapon": "Bloodiron",
+                    "Armor": "Acidward",
+                    "Shield": "Venomite",
+                    "Accessory": "Rose",
+                    "Description": "grants immunity to poison damage."
+                },
+                "omnishield": {
+                    "Weapon": "Shielded",
+                    "Armor": "Orichalcum",
+                    "Shield": "Omni",
+                    "Accessory": "Studded",
+                    "Description": "gives +1 to Defense & Magic Defense."
+                },
+                "perfect-health": {
+                    "Weapon": "Sanctified",
+                    "Armor": "Physician's",
+                    "Shield": "Crusader's",
+                    "Accessory": "Angel's",
+                    "Description": "grants immunity to all status effects."
+                },
+                "magical": {
+                    "Weapon": "Magical",
+                    "Description": "targets Magic Defense instead of Defense."
+                },
+                "beast-hunter": {
+                    "Weapon": "Hunting",
+                    "Description": "deals 5 extra damage to beasts."
+                },
+                "construct-hunter": {
+                    "Weapon": "Pulse",
+                    "Description": "deals 5 extra damage to constructs."
+                },
+                "demon-hunter": {
+                    "Weapon": "Demon Slayer",
+                    "Description": "deals 5 extra damage to demons."
+                },
+                "elemental-hunter": {
+                    "Weapon": "Vorpal",
+                    "Description": "deals 5 extra damage to elementals."
+                },
+                "monster-hunter": {
+                    "Weapon": "Monster Hunter",
+                    "Description": "deals 5 extra damage to monsters."
+                },
+                "plant-hunter": {
+                    "Weapon": "Reaping",
+                    "Description": "deals 5 extra damage to plants."
+                },
+                "undead-hunter": {
+                    "Weapon": "Blessed",
+                    "Description": "deals 5 extra damage to undead."
+                },
+                "human-hunter": {
+                    "Weapon": "Assassin",
+                    "Description": "deals 5 extra damage to humanoids."
+                },
+                "piercing": {
+                    "Weapon": "Piercing",
+                    "Description": "ignores resistances."
+                },
+                "hunter-beasts-constructs": {
+                    "Weapon": "Forgestone",
+                    "Description": "deals 5 extra damage to beasts and constructs."
+                },
+                "hunter-beasts-demons": {
+                    "Weapon": "Hellfang",
+                    "Description": "deals 5 extra damage to beasts and demons."
+                },
+                "hunter-beasts-elementals": {
+                    "Weapon": "Wildspark",
+                    "Description": "deals 5 extra damage to beasts and elementals."
+                },
+                "hunter-beasts-humanoids": {
+                    "Weapon": "Bloodfang",
+                    "Description": "deals 5 extra damage to beasts and humanoids."
+                },
+                "hunter-beasts-monsters": {
+                    "Weapon": "Silver",
+                    "Description": "deals 5 extra damage to beasts and monsters."
+                },
+                "hunter-beasts-plants": {
+                    "Weapon": "Verdanite",
+                    "Description": "deals 5 extra damage to beasts and plants."
+                },
+                "hunter-beasts-undead": {
+                    "Weapon": "Grimsteel",
+                    "Description": "deals 5 extra damage to beasts and undead."
+                },
+                "hunter-constructs-demons": {
+                    "Weapon": "Runebreaker",
+                    "Description": "deals 5 extra damage to constructs and demons."
+                },
+                "hunter-constructs-elementals": {
+                    "Weapon": "Stormcore",
+                    "Description": "deals 5 extra damage to constructs and elementals."
+                },
+                "hunter-constructs-humanoids": {
+                    "Weapon": "Golemsteel",
+                    "Description": "deals 5 extra damage to constructs and humanoids."
+                },
+                "hunter-constructs-monsters": {
+                    "Weapon": "Machinite",
+                    "Description": "deals 5 extra damage to constructs and monsters."
+                },
+                "hunter-constructs-plants": {
+                    "Weapon": "Ironroot",
+                    "Description": "deals 5 extra damage to constructs and plants."
+                },
+                "hunter-constructs-undead": {
+                    "Weapon": "Soulforge",
+                    "Description": "deals 5 extra damage to constructs and undead."
+                },
+                "hunter-demons-elementals": {
+                    "Weapon": "Abyssion",
+                    "Description": "deals 5 extra damage to demons and elementals."
+                },
+                "hunter-demons-humanoids": {
+                    "Weapon": "Oathbrand",
+                    "Description": "deals 5 extra damage to demons and humanoids."
+                },
+                "hunter-demons-monsters": {
+                    "Weapon": "Hellglass",
+                    "Description": "deals 5 extra damage to demons and monsters."
+                },
+                "hunter-demons-plants": {
+                    "Weapon": "Blightsteel",
+                    "Description": "deals 5 extra damage to demons and plants."
+                },
+                "hunter-demons-undead": {
+                    "Weapon": "Blessed",
+                    "Description": "deals 5 extra damage to demons and undead."
+                },
+                "hunter-elementals-humanoids": {
+                    "Weapon": "Aetherite",
+                    "Description": "deals 5 extra damage to elementals and humanoids."
+                },
+                "hunter-elementals-monsters": {
+                    "Weapon": "Sparkstone",
+                    "Description": "deals 5 extra damage to elementals and monsters."
+                },
+                "hunter-elementals-plants": {
+                    "Weapon": "Zephyrite",
+                    "Description": "deals 5 extra damage to elementals and plants."
+                },
+                "hunter-elementals-undead": {
+                    "Weapon": "Lightforge",
+                    "Description": "deals 5 extra damage to elementals and undead."
+                },
+                "hunter-humanoids-monsters": {
+                    "Weapon": "Bloodsilver",
+                    "Description": "deals 5 extra damage to humanoids and monsters."
+                },
+                "hunter-humanoids-plants": {
+                    "Weapon": "Thorniron",
+                    "Description": "deals 5 extra damage to humanoids and plants."
+                },
+                "hunter-humanoids-undead": {
+                    "Weapon": "Gravebane",
+                    "Description": "deals 5 extra damage to humanoids and undead."
+                },
+                "hunter-monsters-plants": {
+                    "Weapon": "Vilethorn",
+                    "Description": "deals 5 extra damage to monsters and plants."
+                },
+                "hunter-monsters-undead": {
+                    "Weapon": "Shadowsteel",
+                    "Description": "deals 5 extra damage to monsters and undead."
+                },
+                "hunter-plants-undead": {
+                    "Weapon": "Rotiron",
+                    "Description": "deals 5 extra damage to plants and undead."
+                },
+                "multi": {
+                    "Weapon": "Geminisite",
+                    "Description": "gives attacks with this weapon Multi(2)."
+                },
+                "inflict-slow": {
+                    "Weapon": "Tarrynite",
+                    "Description": "causes slow on hit."
+                },
+                "inflict-daze": {
+                    "Weapon": "Lunacite",
+                    "Description": "causes daze on hit."
+                },
+                "inflict-shaken": {
+                    "Weapon": "Gravemourn",
+                    "Description": "causes shaken on hit."
+                },
+                "inflict-weak": {
+                    "Weapon": "Withersteel",
+                    "Description": "causes weak on hit."
+                },
+                "inflict-poison": {
+                    "Weapon": "Corruptium",
+                    "Description": "causes poisoned on hit."
+                },
+                "inflict-enrage": {
+                    "Weapon": "Wrathborn",
+                    "Description": "causes enraged on hit."
+                },
+                "initiative-up": {
+                    "Armor": "Mythril",
+                    "Shield": "Aetherglass",
+                    "Accessory": "Zephyrite",
+                    "Description": "gives a +4 bonus to initiative."
+                },
+                "accuracy-up": {
+                    "Armor": "Trueglass",
+                    "Shield": "Focussteel",
+                    "Accessory": "Surestone",
+                    "Description": "gives a +1 bonus to accuracy checks."
+                },
+                "magic-up": {
+                    "Armor": "Manasilver",
+                    "Shield": "Spellglass",
+                    "Accessory": "Goldleaf",
+                    "Description": "gives a +1 bonus to magic checks."
+                },
+                "vitality-up": {
+                    "Armor": "Vigormesh",
+                    "Shield": "Heartstone",
+                    "Accessory": "Lifegem",
+                    "Description": "when you recover HP, you recover 5 extra HP."
+                },
+                "healing-up": {
+                    "Armor": "Sanctweave",
+                    "Shield": "Blessplate",
+                    "Accessory": "Chorus Pearl",
+                    "Description": "spells you cast that restore HP, restore 5 extra HP."
+                },
+                "spell-up": {
+                    "Armor": "Goldveil",
+                    "Shield": "Arcstone",
+                    "Accessory": "Silversong",
+                    "Description": "spells you cast deal 5 extra damage."
+                },
+                "melee-up": {
+                    "Armor": "Battlesteel",
+                    "Shield": "Warglass",
+                    "Accessory": "Ironheart",
+                    "Description": "melee weapon attacks deal 5 extra damage."
+                },
+                "ranged-up": {
+                    "Armor": "Hawkplate",
+                    "Shield": "Sightglass",
+                    "Accessory": "Falcon’s Eye",
+                    "Description": "ranged weapon attacks deal 5 extra damage."
+                },
+                "amulet": {
+                    "Weapon": "Gilded",
+                    "Accessory": "Mythril",
+                    "Description": "gives +1 to Magic Defense."
+                },
+                "bulwark": {
+                    "Weapon": "Broad",
+                    "Accessory": "Adamant",
+                    "Description": "gives +1 to Defense."
+                }
+            },
+            "aerial": {
+                "aerial-1": {
+                    "Weapon": "Whirlwind",
+                    "Armor": "Whirlwind",
+                    "Shield": "Skyglass",
+                    "Accessory": "Whirlwind",
+                    "Description": "deals 5 extra damage during the first round of conflict."
+                },
+                "aerial-2": {
+                    "Weapon": "Finesse",
+                    "Description": "can be used in the off-hand for two-weapon fighting, regardless of category."
+                },
+                "aerial-3": {
+                    "Weapon": "Switch",
+                    "Description": "allows you to perform the EQUIP action for free when you hit one or more creatures."
+                },
+                "aerial-4": {
+                    "Weapon": "Skybreaker",
+                    "Armor": "Skybreaker",
+                    "Shield": "Stratosium",
+                    "Accessory": "Skybreaker",
+                    "Description": "grants immunity to damage dealt by flying creatures."
+                },
+                "aerial-5": {
+                    "Weapon": "Polarized",
+                    "Armor": "Polarized",
+                    "Shield": "Skyquartz",
+                    "Accessory": "Polarized",
+                    "Description": "halves the MP cost of spells targeting a creature suffering from slow."
+                },
+                "aerial-6": {
+                    "Weapon": "Slipstream",
+                    "Armor": "Slipstream",
+                    "Shield": "Galeweave",
+                    "Accessory": "Slipstream",
+                    "Description": "deals 5 extra damage to a creature when you damage a creature outside of your turn in a conflict."
+                }
+            },
+            "thunderous": {
+                "thunderous-1": {
+                    "Weapon": "Spiked",
+                    "Armor": "Spiked",
+                    "Shield": "Surgeglass",
+                    "Accessory": "Spiked",
+                    "Description": "gives one ally you can see the option to take their turn immediately after yours, when you deal bolt damage to a creature."
+                },
+                "thunderous-2": {
+                    "Weapon": "Shockwave",
+                    "Description": "causes all enemies present in the scene to suffer dazed, when damage dealt by this weapon put an enemy into crisis."
+                },
+                "thunderous-3": {
+                    "Weapon": "Livewire",
+                    "Armor": "Livewire",
+                    "Shield": "Conductrite",
+                    "Accessory": "Livewire",
+                    "Description": "grants【half your level in the Elementalist Class】as extra damage to your Cataclysm Skill."
+                },
+                "thunderous-4": {
+                    "Weapon": "Conductor's",
+                    "Armor": "Conductor's",
+                    "Shield": "Capacium",
+                    "Accessory": "Conductor's",
+                    "Description": "causes the target of your Encourage Skill to recover extra HP equal to【half your level】."
+                },
+                "thunderous-5": {
+                    "Weapon": "Jolted",
+                    "Armor": "Jolted",
+                    "Shield": "Shocksteel",
+                    "Accessory": "Jolted",
+                    "Description": "deals 5 bolt damage to a creature that hits you with a melee attack."
+                },
+                "thunderous-6": {
+                    "Weapon": "Overcharged",
+                    "Description": "causes each target of this weapon to lose 20 MP on a successful hit, if at least one of them is shaken."
+                }
+            },
+            "paradox": {
+                "paradox-1": {
+                    "Weapon": "Temporal",
+                    "Description": "deals 5 extra damage as long as you have one other weapon equipped of a different category."
+                },
+                "paradox-2": {
+                    "Weapon": "Anomalous",
+                    "Armor": "Anomalous",
+                    "Shield": "Paradoxite",
+                    "Accessory": "Anomalous",
+                    "Description": "grants you the effects of the Mirror spell at the beginning of a conflict scene."
+                },
+                "paradox-3": {
+                    "Weapon": "Bound",
+                    "Description": "tethers up to 2 targets hit by this weapon. When either target loses HP from damage they are Vulnerable to, the other loses 5 HP."
+                },
+                "paradox-4": {
+                    "Weapon": "Distorted",
+                    "Armor": "Distorted",
+                    "Shield": "Warpglass",
+                    "Accessory": "Distorted",
+                    "Description": "empowers a spell to deal 5 extra damage when it hits with critical success."
+                },
+                "paradox-5": {
+                    "Weapon": "Echoing",
+                    "Armor": "Echoing",
+                    "Shield": "Echoquartz",
+                    "Accessory": "Echoing",
+                    "Description": "causes an enemy in the scene to suffer a random status effect (1d4: dazed, shaken, slow, or weak), when that enemy heals from one or more status effects."
+                },
+                "paradox-6": {
+                    "Weapon": "Faded",
+                    "Description": "causes enemies hit by this weapon to fade. If a fading enemy would recover HP, instead they recover no HP and stop fading."
+                }
+            },
+            "terrestrial": {
+                "terrestrial-1": {
+                    "Weapon": "Earthward",
+                    "Armor": "Earthward",
+                    "Shield": "Stonebark",
+                    "Accessory": "Earthward",
+                    "Description": "grants resistance to damage caused by environmental hazards."
+                },
+                "terrestrial-2": {
+                    "Weapon": "Deeproot",
+                    "Armor": "Deeproot",
+                    "Shield": "Heartwood",
+                    "Accessory": "Deeproot",
+                    "Description": "recovers 5 additional HP when you recover HP while in crisis."
+                },
+                "terrestrial-3": {
+                    "Weapon": "Trembling",
+                    "Description": "recovers MP equal to its HR when you hit a creature with this weapon."
+                },
+                "terrestrial-4": {
+                    "Weapon": "Blooming",
+                    "Armor": "Blooming",
+                    "Shield": "Verdantine",
+                    "Accessory": "Blooming",
+                    "Description": "grants resistance to physical damage until the start of your next turn when you heal an ally in a conflict."
+                },
+                "terrestrial-5": {
+                    "Weapon": "Runestone",
+                    "Armor": "Runestone",
+                    "Shield": "Glyphstone",
+                    "Accessory": "Runestone",
+                    "Description": "gives a +2 bonus to Magic Checks for Elementalism Rituals with a total MP cost equal to or less than 60."
+                },
+                "terrestrial-6": {
+                    "Weapon": "Spinebreaker",
+                    "Armor": "Spinebreaker",
+                    "Shield": "Basaltine",
+                    "Accessory": "Spinebreaker",
+                    "Description": "causes any equipped heavy or spear weapon to deal 5 extra damage."
+                }
+            },
+            "ardent": {
+                "ardent-1": {
+                    "Weapon": "Dancing",
+                    "Armor": "Dancing",
+                    "Shield": "Flareglass",
+                    "Accessory": "Dancing",
+                    "Description": "halves the MP cost of your Bladestorm Skill when using this weapon."
+                },
+                "ardent-2": {
+                    "Weapon": "Shadowfire",
+                    "Description": "allows you to change the damage type of your Shadow Strike skill to fire instead of dark at will."
+                },
+                "ardent-3": {
+                    "Weapon": "Cauterized",
+                    "Description": "deals 1 extra damage for every status effect you are suffering from."
+                },
+                "ardent-4": {
+                    "Weapon": "Bonded",
+                    "Armor": "Bonded",
+                    "Shield": "Oathsteel",
+                    "Accessory": "Bonded",
+                    "Description": "restores 5 MP when you invoke a bond during any check."
+                },
+                "ardent-5": {
+                    "Weapon": "Silencing",
+                    "Description": "prevents a creature from taking the Spell action during their next turn when successfully hit."
+                },
+                "ardent-6": {
+                    "Weapon": "Rapidfire",
+                    "Armor": "Rapidfire",
+                    "Shield": "Cinderalloy",
+                    "Accessory": "Rapidfire",
+                    "Description": "causes any equipped bow or firearm weapon to deal 5 extra damage."
+                }
+            },
+            "glacial": {
+                "glacial-1": {
+                    "Weapon": "Frostbitten",
+                    "Armor": "Frostbitten",
+                    "Shield": "Glacium",
+                    "Accessory": "Frostbitten",
+                    "Description": "deals 5 ice damage to every enemy present in the scene when you enter Crisis for the first time."
+                },
+                "glacial-2": {
+                    "Weapon": "Niveous",
+                    "Armor": "Niveous",
+                    "Shield": "Rimeglass",
+                    "Accessory": "Niveous",
+                    "Description": "makes Ice damage you deal ignore Immunities and Resistances."
+                },
+                "glacial-3": {
+                    "Weapon": "Rimebound",
+                    "Armor": "Rimebound",
+                    "Shield": "Hoarfrost",
+                    "Accessory": "Rimebound",
+                    "Description": "causes each creature in the scene suffering weak to lose 5 HP at the start of your turn in a conflict."
+                },
+                "glacial-4": {
+                    "Weapon": "Brumal",
+                    "Armor": "Brumal",
+                    "Shield": "Winterite",
+                    "Accessory": "Brumal",
+                    "Description": "gives a +1 bonus to DEF and M.DEF against attacks and offensive spells from enraged creatures."
+                },
+                "glacial-5": {
+                    "Weapon": "Boreal",
+                    "Armor": "Boreal",
+                    "Shield": "Icequartz",
+                    "Accessory": "Boreal",
+                    "Description": "causes a creature to suffer slow, or lose 10 MP if already slowed when you deal ice damage to it."
+                },
+                "glacial-6": {
+                    "Weapon": "Gelid",
+                    "Armor": "Gelid",
+                    "Shield": "Permaferrum",
+                    "Accessory": "Gelid",
+                    "Description": "deals 5 extra damage to creatures suffering from the weak status effect."
+                }
+            },
+            "spiritual": {
+                "spiritual-1": {
+                    "Weapon": "Anima",
+                    "Armor": "Anima",
+                    "Shield": "Auralite",
+                    "Accessory": "Anima",
+                    "Description": "heals you from a single status effect of your choice when you end your turn merged with an Arcanum."
+                },
+                "spiritual-2": {
+                    "Weapon": "Aetheric",
+                    "Description": "deals 1 extra damage for each Bond of affection you have."
+                },
+                "spiritual-3": {
+                    "Weapon": "Auroral",
+                    "Armor": "Auroral",
+                    "Shield": "Halochrome",
+                    "Accessory": "Auroral",
+                    "Description": "causes damage you deal to ignore resistance as long as you are affected by a spell with the scene duration."
+                },
+                "spiritual-4": {
+                    "Weapon": "Spellbound",
+                    "Description": "applies all Accuracy Check bonuses to your Magic Check instead when using the Spellblade skill with this weapon."
+                },
+                "spiritual-5": {
+                    "Weapon": "Vitalis",
+                    "Armor": "Vitalis",
+                    "Shield": "Heartstone",
+                    "Accessory": "Vitalis",
+                    "Description": "heals an ally for 5 HP when you perform the Guard action and choose to cover that ally."
+                },
+                "spiritual-6": {
+                    "Weapon": "Sylvan",
+                    "Armor": "Sylvan",
+                    "Shield": "Sylvanwood",
+                    "Accessory": "Sylvan",
+                    "Description": "grants resistance to dark, light, and poison damage."
+                }
+            },
+            "corrupted": {
+                "corrupted-1": {
+                    "Weapon": "Tarnished",
+                    "Description": "causes dark damage dealt by a spell using the Spellblade skill ignore Immunities and Resistances."
+                },
+                "corrupted-2": {
+                    "Weapon": "Psychic",
+                    "Armor": "Psychic",
+                    "Shield": "Mindglass",
+                    "Accessory": "Psychic",
+                    "Description": "treats the M.DEF of targets of your offensive spells as being equal to their WLP die."
+                },
+                "corrupted-3": {
+                    "Weapon": "Withering",
+                    "Armor": "Withering",
+                    "Shield": "Rotiron",
+                    "Accessory": "Withering",
+                    "Description": "makes Dark and poison damage you deal ignore Immunities and Resistances."
+                },
+                "corrupted-4": {
+                    "Weapon": "Malicious",
+                    "Armor": "Malicious",
+                    "Shield": "Hateshard",
+                    "Accessory": "Malicious",
+                    "Description": "halves the total MP cost of spells targeting a creature you have a Bond of hatred towards."
+                },
+                "corrupted-5": {
+                    "Weapon": "Overlord's",
+                    "Armor": "Overlord's",
+                    "Shield": "Dreadsteel",
+                    "Accessory": "Overlord's",
+                    "Description": "grants a +1 to DEF and M.DEF against attacks and offensive spells from shaken creatures."
+                },
+                "corrupted-6": {
+                    "Weapon": "Wraith",
+                    "Description": "inflicts the poisoned status on the target of your Counterattack skill."
+                }
+            },
+            "aquatic": {
+                "aquatic-1": {
+                    "Weapon": "Coral",
+                    "Armor": "Coral",
+                    "Shield": "Seastone",
+                    "Accessory": "Coral",
+                    "Description": "allows you to treat your DEX as being one die higher until the end of your next turn when you reduce an enemy to 0 HP."
+                },
+                "aquatic-2": {
+                    "Weapon": "Barnacled",
+                    "Description": "treats the DEF score of each target of this weapon as being equal to their current MIG die size."
+                },
+                "aquatic-3": {
+                    "Weapon": "Boreal",
+                    "Armor": "Boreal",
+                    "Shield": "Tidepearl",
+                    "Accessory": "Boreal",
+                    "Description": "recovers an amount of HP equal to the HR of a successful Magic Check when you cast an offensive spell."
+                },
+                "aquatic-4": {
+                    "Weapon": "Malleable",
+                    "Description": "prevents attacks with this weapon from triggering counterattacks or other reactive skills."
+                },
+                "aquatic-5": {
+                    "Weapon": "Spring",
+                    "Armor": "Spring",
+                    "Shield": "Fountstone",
+                    "Accessory": "Spring",
+                    "Description": "causes any ally that regains full HP to recover 5 MP as well."
+                },
+                "aquatic-6": {
+                    "Weapon": "Misty",
+                    "Description": "allows you to reduce the damage of a creature hit with this weapon by the HR of its last recorded hit."
+                }
+            },
+            "mechanical": {
+                "mechanical-1": {
+                    "Weapon": "Thief's",
+                    "Armor": "Thief's",
+                    "Shield": "Gearplate",
+                    "Accessory": "Thief's",
+                    "Description": "allows you to spend your opportunity to earn 100z."
+                },
+                "mechanical-2": {
+                    "Weapon": "Breaching",
+                    "Description": "gives a +2 to your accuracy check when you use the Breach skill with this weapon."
+                },
+                "mechanical-3": {
+                    "Weapon": "Alchemist's",
+                    "Armor": "Alchemist's",
+                    "Shield": "Catalyte",
+                    "Accessory": "Alchemist's",
+                    "Description": "allows you to choose the area and effect of a potion you create using Gadget (Alchemy), if at least 2 dice show the same number."
+                },
+                "mechanical-4": {
+                    "Weapon": "Magnetic",
+                    "Description": "deals 5 additional damage to creatures with traits related to metal."
+                },
+                "mechanical-5": {
+                    "Weapon": "Bard's",
+                    "Armor": "Bard's",
+                    "Shield": "Resonance Disk",
+                    "Accessory": "Bard's",
+                    "Description": "earns you【200 x SL】worth of zenit when you use the Tavern Talk skill."
+                },
+                "mechanical-6": {
+                    "Weapon": "Energized",
+                    "Shield": "Voltframe",
+                    "Description": "deals 5 extra bolt damage when you hit two or more creatures in a single turn with this weapon."
+                }
+            }
+        },
+
+
+
+"__SECTION__TreasureRoll": "=== Treasure Roll ===",
+"TreasureRoll": {
+  "Dialogs": {
+    "TreasureRoll": {
+      "Title": "Treasure Generator",
+      "Buttons": {
+        "RollLoot": "Roll Loot"
       }
     },
-
-
-
-    "__SECTION__Settings": "=== Settings ===",
-"Settings": {
-  "ResultVisibility": {
-    "Name": "Result Visibility",
-    "Hint": "Choose whether results and chat outputs are public or GM only.",
-    "Choices": {
-      "Public": "Public",
-      "GMOnly": "GM Only"
+    "TreasureResult": {
+      "Title": "Treasure Results",
+      "Buttons": {
+        "Keep": "Keep",
+        "Stash": "Stash",
+        "Reroll": "Reroll"
+      }
     }
   },
 
-  "ItemForgeEditMode": {
-    "Name": "Item Forge Edit Mode",
-    "Hint": "Change how interacting with the Item Forger works for users.",
-    "Choices": {
-      "Public": "Public",
-      "GMOnly": "GM Only",
-      "Locked": "Locked",
-      "Hidden": "Hidden"
-    }
+  "Fields": {
+    "Budget": "Budget",
+    "Level": "Level",
+    "Origin": "Origin",
+    "Nature": "Nature",
+    "Items": "Items"
   },
 
-  "EnableKeywords": {
-    "Name": "Enable Keywords",
-    "Hint": "Enable keywords when generating travel check results."
+  "Origin": {
+    "Random": "Random",
+    "Aerial": "Aerial",
+    "Thunderous": "Thunderous",
+    "Paradox": "Paradox",
+    "Terrestrial": "Terrestrial",
+    "Ardent": "Ardent",
+    "Glacial": "Glacial",
+    "Spiritual": "Spiritual",
+    "Corrupted": "Corrupted",
+    "Aquatic": "Aquatic",
+    "Mechanical": "Mechanical"
   },
 
-  "UseVariantTravelRules": {
-    "Name": "Use Variant Travel Rules",
-    "Hint": "Placeholder setting: Toggles alternative travel mechanics (currently unused)."
+  "Nature": {
+    "Random": "Random",
+    "Anthropod": "Anthropod",
+    "Bird": "Bird",
+    "Fish": "Fish",
+    "Mammal": "Mammal",
+    "Mollusk": "Mollusk",
+    "Reptile": "Reptile",
+    "Fungus": "Fungus",
+    "Incorporeal": "Incorporeal",
+    "Liquid": "Liquid",
+    "Artificial": "Artificial",
+    "Mineral": "Mineral"
   },
 
-  "UseVariantDamageRules": {
-    "Name": "Use Playtest Damage Rules",
-    "Hint": "When generating new weapons, damage will be based on new playtest rules."
+  "Options": {
+    "IgnoreValues": "Ignore budget/level",
+    "SelectAll": "Select all"
   },
 
-  "DiscoveryEffectTable": {
-    "Name": "Discovery Effect Roll Table",
-    "Hint": "Select the Roll Table to use for generating discovery effects."
+  "Types": {
+    "Weapons": "Weapons",
+    "Armor": "Armor",
+    "Accessories": "Accessories",
+    "Shields": "Shields",
+    "Materials": "Materials",
+    "Ingredients": "Ingredients",
+    "Currency": "Currency",
+    "Custom": "Custom"
   },
 
-  "DiscoverySourceTable": {
-    "Name": "Discovery Source Roll Table",
-    "Hint": "Select the Roll Table to use for generating discovery sources."
-  },
-
-  "DangerThreatTable": {
-    "Name": "Danger Threat Roll Table",
-    "Hint": "Select the Roll Table to use for generating danger threats."
-  },
-
-  "DangerSourceTable": {
-    "Name": "Danger Source Roll Table",
-    "Hint": "Select the Roll Table to use for generating danger sources."
-  },
-
-  "CustomTreasureRollTable": {
-    "Name": "Custom Treasure Roll Table",
-    "Hint": "Select the Roll Table to use for generating custom treasure."
-  },
-
-  "MonsterCompendium": {
-    "Name": "Monster Compendium",
-    "Hint": "Select the Actor compendium to use as the source for Conflict Builder."
-  },
-
-  "BattleSceneName": {
-    "Name": "Battle Scene",
-    "Hint": "Select the Scene to use for the Conflict Builder preview."
-  },
-
-  "DefaultRollTable": "Lookfar Defaults",
-
-  "NoActorCompendiums": "No Actor compendiums found",
-  "NoScenes": "No scenes found"
-},
-
-
-
-    "__SECTION__Dialogs": "=== Dialogs ===",
-"Dialogs": {
-  "TravelCheck": {
-    "Title": "Travel Check",
-    "ThreatLevel": "Threat Level",
-    "Wayfaring": "Wayfaring",
-    "PartyLevel": "Party Level:",
-    "TreasureHunting": "Treasure Hunting",
-    "WellTraveled": "Well-Traveled"
-  },
-  "TravelResult": {
-    "Title": "Travel Result",
-    "Prompt": "Do you want to keep this result or reroll?",
-    "Waiting": "Waiting for GM decision...",
-    "NoIncident": "The travel day passed without incident."
-  },
   "Result": {
-    "Danger": "Danger!",
-    "DangerMinor": "Minor Danger!",
-    "DangerHeavy": "Heavy Danger!",
-    "DangerMassive": "Massive Danger!",
-    "Discovery": "Discovery!"
+    "Budget": {
+      "Remaining": "Remaining Budget"
+    }
   },
-  "TableHeaders": {
-    "Threat": "Threat",
-    "Source": "Source",
-    "Effect": "Effect",
-    "Traits": "Traits",
-    "Terrain": "Terrain"
+
+  "Errors": {
+    "CustomTreasureTableMissing": "No Custom Treasure Roll Table selected in settings.",
+    "CustomTreasureTableNotFound": "Selected Custom Treasure Roll Table not found.",
+    "SkippedIngredientsWarning": "Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
+    "NoLootGenerated": "No loot generated."
   }
 },
 
 
 
-    "__SECTION__Severity": "=== Severity ===",
-    "Severity": {
-      "Minor": "Minor",
-      "Heavy": "Heavy",
-      "Massive": "Massive"
+
+"__SECTION__TravelCheck": "=== Travel Check ===",
+"TravelCheck": {
+  "Dialogs": {
+    "TravelCheck": {
+      "Title": "Travel Check",
+      "ThreatLevel": "Threat Level",
+      "Wayfaring": "Wayfaring",
+      "PartyLevel": "Party Level:",
+      "TreasureHunting": "Treasure Hunting",
+      "WellTraveled": "Well-Traveled"
     },
-
-
-
-    "__SECTION__Chat": "=== Chat ===",
-    "Chat": {
-      "Alias": {
-        "Roll": "Travel Roll",
-        "Result": "Travel Result"
-      }
+    "TravelResult": {
+      "Title": "Travel Result",
+      "Prompt": "Do you want to keep this result or reroll?",
+      "Waiting": "Waiting for GM decision...",
+      "NoIncident": "The travel day passed without incident."
     },
-
-
-
-    "__SECTION__Errors": "=== Errors ===",
-    "Errors": {
-      "DataUnavailable": "Error: Data not available.",
-      "DamageMissing": "Error: Damage data not found.",
-      "ThreatUnknown": "Error: Unknown threat type.",
-      "NoDangerSource": "No danger source available.",
-      "NoDiscoveryEffect": "No discovery effect available.",
-      "NoDiscoverySource": "No discovery source available."
+    "Result": {
+      "DangerMinor": "Minor Danger!",
+      "DangerHeavy": "Heavy Danger!",
+      "DangerMassive": "Massive Danger!",
+      "Discovery": "Discovery!"
     },
-
-
-
-    "__SECTION__Keywords": "=== Keywords ===",
-    "Keywords": {
-      "Traits": {
-        "Abandoned": "abandoned",
-        "Ancient": "ancient",
-        "Arcane": "arcane",
-        "Bewitched": "bewitched",
-        "Blighted": "blighted",
-        "Cavernous": "cavernous",
-        "Celestial": "celestial",
-        "Chimeric": "chimeric",
-        "Crumbling": "crumbling",
-        "Cryptic": "cryptic",
-        "Cursed": "cursed",
-        "Decayed": "decayed",
-        "Desolate": "desolate",
-        "Deserted": "deserted",
-        "Dilapidated": "dilapidated",
-        "Dimensional": "dimensional",
-        "Eldritch": "eldritch",
-        "Ephemeral": "ephemeral",
-        "Ethereal": "ethereal",
-        "Eternal": "eternal",
-        "Fabled": "fabled",
-        "Faded": "faded",
-        "Forbidden": "forbidden",
-        "Forging": "forging",
-        "Forgotten": "forgotten",
-        "Fractured": "fractured",
-        "Frozen": "frozen",
-        "Ghostly": "ghostly",
-        "Gloomy": "gloomy",
-        "Gossamer": "gossamer",
-        "Hallowed": "hallowed",
-        "Haunted": "haunted",
-        "Hidden": "hidden",
-        "Infernal": "infernal",
-        "Isolated": "isolated",
-        "Legendary": "legendary",
-        "Luminous": "luminous",
-        "Lurking": "lurking",
-        "Magical": "magical",
-        "Moonlit": "moonlit",
-        "Mysterious": "mysterious",
-        "Mystic": "mystic",
-        "Mystical": "mystical",
-        "Neglected": "neglected",
-        "Obsidian": "obsidian",
-        "Obscured": "obscured",
-        "Obscure": "obscure",
-        "Obscuring": "obscuring",
-        "Otherworldly": "otherworldly",
-        "Overgrown": "overgrown",
-        "Overlooked": "overlooked",
-        "Petrified": "petrified",
-        "Phantasmal": "phantasmal",
-        "Primeval": "primeval",
-        "Pristine": "pristine",
-        "Relic": "relic",
-        "Resplendent": "resplendent",
-        "Runed": "runed",
-        "Ruined": "ruined",
-        "Sacred": "sacred",
-        "Sanctified": "sanctified",
-        "Secret": "secret",
-        "Secluded": "secluded",
-        "Serene": "serene",
-        "Shaded": "shaded",
-        "Shadowed": "shadowed",
-        "Shattered": "shattered",
-        "Shimmering": "shimmering",
-        "Spectral": "spectral",
-        "Stygian": "stygian",
-        "Sunken": "sunken",
-        "Surreal": "surreal",
-        "Sylvan": "sylvan",
-        "Temporal": "temporal",
-        "TimeWorn": "time-worn",
-        "Twilight": "twilight",
-        "Uncharted": "uncharted",
-        "Unhallowed": "unhallowed",
-        "Unseen": "unseen",
-        "Unearthed": "unearthed",
-        "Verdant": "verdant",
-        "Veiled": "veiled",
-        "Venerable": "venerable",
-        "Vivid": "vivid",
-        "Weathered": "weathered",
-        "Withered": "withered",
-        "Wraithlike": "wraithlike"
-      },
-      "Terrain": {
-        "Alcove": "alcove",
-        "Altar": "altar",
-        "Aqueduct": "aqueduct",
-        "Archipelago": "archipelago",
-        "Arena": "arena",
-        "Archive": "archive",
-        "Bazaar": "bazaar",
-        "Barracks": "barracks",
-        "Battleground": "battleground",
-        "Butte": "butte",
-        "Cairn": "cairn",
-        "Campsite": "campsite",
-        "Catacombs": "catacombs",
-        "Causeway": "causeway",
-        "Cauldron": "cauldron",
-        "Cavern": "cavern",
-        "Castle": "castle",
-        "Chapel": "chapel",
-        "Chasm": "chasm",
-        "Citadel": "citadel",
-        "Cliff": "cliff",
-        "Conservatory": "conservatory",
-        "Corridor": "corridor",
-        "Crags": "crags",
-        "Crater": "crater",
-        "Crypt": "crypt",
-        "Den": "den",
-        "Dome": "dome",
-        "Dungeon": "dungeon",
-        "Eddy": "eddy",
-        "Embankment": "embankment",
-        "Estuary": "estuary",
-        "Expanse": "expanse",
-        "Fane": "fane",
-        "Fen": "fen",
-        "Fjord": "fjord",
-        "Forest": "forest",
-        "Fortress": "fortress",
-        "Fountain": "fountain",
-        "Foundry": "foundry",
-        "Garrison": "garrison",
-        "Garden": "garden",
-        "Glade": "glade",
-        "Grove": "grove",
-        "Grotto": "grotto",
-        "Harbor": "harbor",
-        "Haven": "haven",
-        "Henge": "henge",
-        "Isle": "isle",
-        "Jungle": "jungle",
-        "Keep": "keep",
-        "Knoll": "knoll",
-        "Labyrinth": "labyrinth",
-        "Library": "library",
-        "Lodge": "lodge",
-        "Manor": "manor",
-        "Mausoleum": "mausoleum",
-        "Meadow": "meadow",
-        "Menhir": "menhir",
-        "Mesa": "mesa",
-        "Mill": "mill",
-        "Mire": "mire",
-        "Monolith": "monolith",
-        "Moat": "moat",
-        "Nexus": "nexus",
-        "Observatory": "observatory",
-        "Oasis": "oasis",
-        "Obelisk": "obelisk",
-        "Outpost": "outpost",
-        "Orchard": "orchard",
-        "Parapet": "parapet",
-        "Pathway": "pathway",
-        "Pavilion": "pavilion",
-        "Pit": "pit",
-        "Plaza": "plaza",
-        "Portal": "portal",
-        "Promontory": "promontory",
-        "Quarry": "quarry",
-        "Quicksand": "quicksand",
-        "Ravine": "ravine",
-        "Reef": "reef",
-        "Ridge": "ridge",
-        "Rift": "rift",
-        "Ruination": "ruination",
-        "Ruins": "ruins",
-        "Sanctuary": "sanctuary",
-        "Sanctum": "sanctum",
-        "Seraglio": "seraglio",
-        "Shrine": "shrine",
-        "Shipwreck": "shipwreck",
-        "Shelter": "shelter",
-        "Spire": "spire",
-        "Spring": "spring",
-        "Steppe": "steppe",
-        "Stronghold": "stronghold",
-        "Summit": "summit",
-        "Tavern": "tavern",
-        "Temple": "temple",
-        "Throne": "throne",
-        "Tomb": "tomb",
-        "Tombstone": "tombstone",
-        "Tower": "tower",
-        "Trails": "trails",
-        "Trenches": "trenches",
-        "Tundra": "tundra",
-        "Undercroft": "undercroft",
-        "Valley": "valley",
-        "Vault": "vault",
-        "Village": "village",
-        "Vortex": "vortex",
-        "Waterfall": "waterfall",
-        "Wreckage": "wreckage",
-        "Xystus": "xystus",
-        "Yard": "yard",
-        "Zeppelin": "zeppelin",
-        "Ziggurat": "ziggurat"
-      }
-    },
-
-
-
-    "__SECTION__Dangers": "=== Dangers ===",
-    "Dangers": {
-      "StatusEffects": {
-        "Minor": {
-          "Dazed": "Suffer dazed",
-          "Shaken": "Suffer shaken",
-          "Slow": "Suffer slow",
-          "Weak": "Suffer weak"
-        },
-        "Heavy": {
-          "Poison": "Suffer poison",
-          "Enrage": "Suffer enrage"
-        },
-        "Massive": {
-          "Dazed": "Suffer dazed",
-          "Shaken": "Suffer shaken",
-          "Slow": "Suffer slow",
-          "Weak": "Suffer weak",
-          "Poisoned": "Suffer poisoned",
-          "Enraged": "Suffer enraged"
-        }
-      },
-      "Combat": {
-        "Minor": "An easy combat encounter",
-        "Heavy": "A challenging combat encounter",
-        "Massive": "A deadly combat encounter"
-      },
-      "DangerClock": {
-        "Minor": "A 4-section danger clock begins ticking",
-        "Heavy": "A 6-section danger clock begins ticking",
-        "Massive": "An 8-section danger clock begins ticking"
-      },
-      "VillainPlanAdvance": {
-        "Minor": "The villain’s plan advances by 2 steps",
-        "Heavy": "The villain’s plan advances by 3 steps",
-        "Massive": "The villain’s plan advances by 4 steps"
-      },
-      "Sources": {
-        "Source1": "Altitude sickness, food poisoning, or general exhaustion slows the group.",
-        "Source2": "Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
-        "Source3": "Local or global political unrest causes interruptions or confrontations.",
-        "Source4": "A harsh natural event — storms, quakes, floods — brings delay and peril.",
-        "Source5": "You attract the attention of a rival, villain, or monster.",
-        "Source6": "Supernatural interference alters the path: portals, hauntings, omens.",
-        "Source7": "A mysterious NPC appears, altering or obstructing your path.",
-        "Source8": "An ancient or hidden mechanism is triggered unexpectedly.",
-        "Source9": "You trespass on sacred ground or violate a taboo unknowingly.",
-        "Source10": "The wilderness reveals a secret — but it comes at a price.",
-        "Source11": "Wildlife becomes territorial or aggressive, creating complications.",
-        "Source12": "A landmark has changed, misguiding your path.",
-        "Source13": "Resources deplete faster than expected, straining survival.",
-        "Source14": "Dreams or visions disrupt progress with cryptic warnings.",
-        "Source15": "A divine or arcane presence tests your worth or purity.",
-        "Source16": "A curse or magical interference subtly warps your environment.",
-        "Source17": "An ally reveals a secret that throws everything into question."
-      }
-    },
-
-
-
-    "__SECTION__Discoveries": "=== Discoveries ===",
-    "Discoveries": {
-      "Effects": {
-        "Effect1": "Each party member regains 1 IP.",
-        "Effect2": "Each party member regains 10 HP.",
-        "Effect3": "You discover a rare herb with healing properties.",
-        "Effect4": "You find a relic of cultural or historical importance.",
-        "Effect5": "You gain insight into a local custom or legend.",
-        "Effect6": "You learn a shortcut that will aid future travel.",
-        "Effect7": "A friendly creature aids your party temporarily.",
-        "Effect8": "You find ancient writing that hints at future events.",
-        "Effect9": "A clue to a larger mystery is uncovered.",
-        "Effect10": "The landscape inspires a sudden burst of creativity.",
-        "Effect11": "You forge a useful tool or item from salvaged parts."
-      },
-      "Sources": {
-        "Source1": "A beautiful scenery that remains almost untouched for centuries.",
-        "Source2": "Ruins of a village that tells the story of an old war.",
-        "Source3": "An altar with inscriptions from a forgotten civilization.",
-        "Source4": "A cave where an old campfire and supplies are found.",
-        "Source5": "A buried time capsule from another age.",
-        "Source6": "Tracks from an unknown species.",
-        "Source7": "A monolith covered in glowing runes.",
-        "Source8": "Bones of a massive creature never before seen.",
-        "Source9": "A place where the stars seem to align perfectly.",
-        "Source10": "An unusual weather phenomenon revealing hidden terrain.",
-        "Source11": "A melody carried on the wind, with no clear origin.",
-        "Source12": "A single tree growing out of stone, radiating magic."
-      }
+    "TableHeaders": {
+      "Threat": "Threat",
+      "Source": "Source",
+      "Effect": "Effect",
+      "Traits": "Traits",
+      "Terrain": "Terrain"
     }
+  },
 
+  "Chat": {
+    "Alias": {
+      "Roll": "Travel Roll",
+      "Result": "Travel Result"
+    }
+  },
 
-
+  "Errors": {
+    "DataUnavailable": "Error: Data not available.",
+    "DamageMissing": "Error: Damage data not found.",
+    "ThreatUnknown": "Error: Unknown threat type.",
+    "NoDangerSource": "No danger source available.",
+    "NoDiscoveryEffect": "No discovery effect available.",
+    "NoDiscoverySource": "No discovery source available."
   }
+},
+
+
+"__SECTION__ItemForge": "=== Item Forge ===",
+"ItemForge": {
+  "Dialog": {
+    "Title": "Item Forger",
+    "MiniTitle": "Item Forger: Materials",
+    "Button": {
+      "Forge": "Forge Item"
+    },
+    "Errors": {
+      "ChooseType": "Please choose an item type.",
+      "ChooseTemplate": "Please choose a template.",
+      "ForgeFailed": "Forge failed: {error}",
+      "OpenFailed": "Failed to open Item Forger dialog."
+    }
+  },
+
+  "Notifications": {
+    "Forged": "Forged: {name}"
+  },
+
+  "Errors": {
+    "NoTemplateSelected": "No template selected.",
+    "GenericForgeFailed": "The forge could not complete.",
+    "CouldNotReadDrop": "Could not read dropped data.",
+    "FilePickerOpen": "Could not open the file picker."
+  },
+
+  "ChooseItem": {
+    "Legend": "Choose Item"
+  },
+
+  "ItemType": {
+    "Weapon": "Weapon",
+    "Armor": "Armor",
+    "Shield": "Shield",
+    "Accessory": "Accessory"
+  },
+
+  "TemplateList": {
+    "Aria": "Template list",
+    "Loading": "Loading...",
+    "Empty": "No templates available."
+  },
+
+  "Attributes": {
+    "Legend": "Attributes",
+    "AttrA": {
+      "Label": "Attr A:"
+    },
+    "AttrB": {
+      "Label": "Attr B:"
+    }
+  },
+
+  "Preview": {
+    "Legend": "Preview",
+    "Placeholder": "CONTENT",
+
+    "Handed": {
+      "One": "One-Handed",
+      "Two": "Two-Handed",
+      "Unknown": "Handed"
+    },
+
+    "Stats": {
+      "Def": "DEF",
+      "MDef": "M.DEF",
+      "Init": "INIT",
+      "HR": "HR"
+    },
+
+    "Muted": {
+      "OtherKind": "Preview for another item type.",
+      "SelectWeaponTemplate": "Select a weapon template to preview."
+    },
+
+    "Error": {
+      "Generic": "Unable to render preview."
+    }
+  },
+
+  "Customize": {
+    "Legend": "Customize",
+
+    "PlusOneAccuracy": "+1 Accuracy",
+    "PlusFourDamage": "+4 Damage",
+
+    "NoOptions": "No Options",
+
+    "HandToggle": {
+      "MakeOneHanded": "Make One-Handed",
+      "MakeTwoHanded": "Make Two-Handed"
+    },
+
+    "Tooltip": {
+      "HandToggleRestricted": "This weapon cannot change its handedness.",
+      "GMOnly": "Only the GM can change this option.",
+      "PlusOneAlready": "This weapon already has at least +1 Accuracy.",
+      "VariantDamageInfo": "Damage scales from the item's value. This option is disabled."
+    },
+
+    "Element": {
+      "Label": "Type:",
+      "Physical": "Physical",
+      "Fire": "Fire",
+      "Ice": "Ice",
+      "Earth": "Earth",
+      "Air": "Air",
+      "Bolt": "Bolt",
+      "Dark": "Dark",
+      "Light": "Light",
+      "Poison": "Poison"
+    }
+  },
+
+  "Qualities": {
+    "Legend": "Qualities",
+
+    "NoneText": "No quality.",
+    "NoData": "No quality data found.",
+    "NoneAvailable": "No qualities available for this item type.",
+
+    "Category": {
+      "None": "None",
+      "Basic": "Basic",
+      "Custom": "Custom",
+      "Ardent": "Ardent",
+      "Aerial": "Aerial",
+      "Thunderous": "Thunderous",
+      "Paradox": "Paradox",
+      "Terrestrial": "Terrestrial",
+      "Glacial": "Glacial",
+      "Spiritual": "Spiritual",
+      "Corrupted": "Corrupted",
+      "Aquatic": "Aquatic",
+      "Mechanical": "Mechanical"
+    },
+
+    "List": {
+      "Aria": "Qualities list"
+    },
+
+    "Custom": {
+      "Effect": {
+        "Title": "Type your custom effect text"
+      },
+      "Cost": {
+        "Label": "Cost:",
+        "Title": "Enter a non-negative integer"
+      },
+      "Apply": "Apply"
+    }
+  },
+
+  "Cost": {
+    "Legend": "Cost",
+    "NoFee": "No Fee"
+  },
+
+  "Materials": {
+    "Legend": "Materials",
+
+    "Drop": {
+      "Aria": "Materials drop zone"
+    },
+
+    "Hint": "Drag & drop Item documents here (max 5).",
+
+    "RequireOriginHint": "At least one material with origin \"{origin}\" is required.",
+
+    "Tooltip": {
+      "OriginLabel": "Origin",
+      "CostLabel": "Cost",
+      "Remove": "Click to remove this material",
+      "RequestRemove": "Click to request removing this material"
+    },
+
+    "Errors": {
+      "OnlyItems": "Only Item documents can be used as materials.",
+      "OnlyTreasure": "Only Treasure-type items can be used as materials.",
+      "MaxMaterials": "You cannot use more than 5 materials.",
+      "NoMoreItem": "You cannot use this material any more times.",
+      "NotEnoughQuantity": "Not enough copies of {name}. Need {need}, have {have}."
+    }
+  },
+
+  "Create": {
+    "NamePattern": {
+      "Weapon": "{base} (Forged)",
+      "Armor": "{base} (Forged)",
+      "Shield": "{base} (Forged)",
+      "Accessory": "{base} (Forged)"
+    },
+    "Summary": {
+      "Weapon": "A forged weapon of the {category} type.",
+      "Armor": "Forged armor ({martialType}).",
+      "Shield": "A forged shield ({martialType}).",
+      "Accessory": "A forged accessory based on {base}."
+    }
+  },
+
+  "Fallback": {
+    "WeaponName": "Weapon",
+    "ArmorName": "Armor",
+    "ShieldName": "Shield",
+    "AccessoryName": "Accessory",
+    "WeaponCategory": "weapon"
+  },
+
+  "Armor": {
+    "Martial": "Martial armor",
+    "NonMartial": "Non-martial armor"
+  },
+
+  "Shield": {
+    "Martial": "Martial shield",
+    "NonMartial": "Non-martial shield"
+  },
+
+  "PreviewCard": {
+    "MutedText": "Unavailable"
+  }
+},
+
+
+
+       "__SECTION__Dangers": "=== Dangers ===",
+"Dangers": {
+  "Phrases": {
+    "DamageOnly": "{amount} damage",
+    "StatusAndDamage": "{status} and {amount} damage"
+  },
+  "StatusEffects": {
+    "Minor": {
+      "Dazed": "Suffer dazed",
+      "Shaken": "Suffer shaken",
+      "Slow": "Suffer slow",
+      "Weak": "Suffer weak"
+    },
+                "Heavy": {
+                    "Poison": "Suffer poison",
+                    "Enrage": "Suffer enrage"
+                },
+                "Massive": {
+                    "Dazed": "Suffer dazed",
+                    "Shaken": "Suffer shaken",
+                    "Slow": "Suffer slow",
+                    "Weak": "Suffer weak",
+                    "Poisoned": "Suffer poisoned",
+                    "Enraged": "Suffer enraged"
+                }
+            },
+            "Combat": {
+                "Minor": "An easy combat encounter",
+                "Heavy": "A challenging combat encounter",
+                "Massive": "A deadly combat encounter"
+            },
+            "DangerClock": {
+                "Minor": "A 4-section danger clock begins ticking",
+                "Heavy": "A 6-section danger clock begins ticking",
+                "Massive": "An 8-section danger clock begins ticking"
+            },
+            "VillainPlanAdvance": {
+                "Minor": "The villain’s plan advances by 2 steps",
+                "Heavy": "The villain’s plan advances by 3 steps",
+                "Massive": "The villain’s plan advances by 4 steps"
+            },
+            "Sources": {
+                "Source1": "Altitude sickness, food poisoning, or general exhaustion slows the group.",
+                "Source2": "Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
+                "Source3": "Local or global political unrest causes interruptions or confrontations.",
+                "Source4": "A harsh natural event — storms, quakes, floods — brings delay and peril.",
+                "Source5": "You attract the attention of a rival, villain, or monster.",
+                "Source6": "Supernatural interference alters the path: portals, hauntings, omens.",
+                "Source7": "A mysterious NPC appears, altering or obstructing your path.",
+                "Source8": "An ancient or hidden mechanism is triggered unexpectedly.",
+                "Source9": "You trespass on sacred ground or violate a taboo unknowingly.",
+                "Source10": "The wilderness reveals a secret — but it comes at a price.",
+                "Source11": "Wildlife becomes territorial or aggressive, creating complications.",
+                "Source12": "A landmark has changed, misguiding your path.",
+                "Source13": "Resources deplete faster than expected, straining survival.",
+                "Source14": "Dreams or visions disrupt progress with cryptic warnings.",
+                "Source15": "A divine or arcane presence tests your worth or purity.",
+                "Source16": "A curse or magical interference subtly warps your environment.",
+                "Source17": "An ally reveals a secret that throws everything into question."
+            }
+        },
+
+
+
+        
+        "__SECTION__Discoveries": "=== Discoveries ===",
+        "Discoveries": {
+            "Effects": {
+                "Effect1": "Each party member regains 1 IP.",
+                "Effect2": "Each party member regains 10 HP.",
+                "Effect3": "You discover a rare herb with healing properties.",
+                "Effect4": "You find a relic of cultural or historical importance.",
+                "Effect5": "You gain insight into a local custom or legend.",
+                "Effect6": "You learn a shortcut that will aid future travel.",
+                "Effect7": "A friendly creature aids your party temporarily.",
+                "Effect8": "You find ancient writing that hints at future events.",
+                "Effect9": "A clue to a larger mystery is uncovered.",
+                "Effect10": "The landscape inspires a sudden burst of creativity.",
+                "Effect11": "You forge a useful tool or item from salvaged parts."
+            },
+            "Sources": {
+                "Source1": "A beautiful scenery that remains almost untouched for centuries.",
+                "Source2": "Ruins of a village that tells the story of an old war.",
+                "Source3": "An altar with inscriptions from a forgotten civilization.",
+                "Source4": "A cave where an old campfire and supplies are found.",
+                "Source5": "A buried time capsule from another age.",
+                "Source6": "Tracks from an unknown species.",
+                "Source7": "A monolith covered in glowing runes.",
+                "Source8": "Bones of a massive creature never before seen.",
+                "Source9": "A place where the stars seem to align perfectly.",
+                "Source10": "An unusual weather phenomenon revealing hidden terrain.",
+                "Source11": "A melody carried on the wind, with no clear origin.",
+                "Source12": "A single tree growing out of stone, radiating magic."
+            }
+        }
+    }
 }
 
 

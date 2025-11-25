@@ -1,0 +1,144 @@
+<form id="lookfar-treasure-gen" style="display:flex; width:100%; flex-wrap:nowrap; gap:0.25rem; box-sizing:border-box;">
+
+  <!-- Left Half of Dialog/Column 1 -->
+  <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
+    
+    <!-- Budget -->
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="treasureBudget" style="flex:0 0 35%; max-width:35%; padding-right:0.5em; box-sizing:border-box;">
+        {{localize "LOOKFAR.TreasureRoll.Fields.Budget"}}
+      </label>
+      <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 65%; min-width:0; max-width:65%; box-sizing:border-box;" />
+    </div>
+
+    <!-- Level -->
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="highestPCLevel" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">
+        {{localize "LOOKFAR.TreasureRoll.Fields.Level"}}
+      </label>
+      <select id="highestPCLevel" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+        <option value="500">5+</option>
+        <option value="1000">10+</option>
+        <option value="1500">20+</option>
+        <option value="2000">30+</option>
+        <option value="999999">40+</option>
+      </select>
+    </div>
+
+    <!-- Origin -->
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="origin" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">
+        {{localize "LOOKFAR.TreasureRoll.Fields.Origin"}}
+      </label>
+      <select id="origin" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+        <option value="Random" selected>{{localize "LOOKFAR.TreasureRoll.Origin.Random"}}</option>
+        <option value="Aerial">{{localize "LOOKFAR.TreasureRoll.Origin.Aerial"}}</option>
+        <option value="Thunderous">{{localize "LOOKFAR.TreasureRoll.Origin.Thunderous"}}</option>
+        <option value="Paradox">{{localize "LOOKFAR.TreasureRoll.Origin.Paradox"}}</option>
+        <option value="Terrestrial">{{localize "LOOKFAR.TreasureRoll.Origin.Terrestrial"}}</option>
+        <option value="Ardent">{{localize "LOOKFAR.TreasureRoll.Origin.Ardent"}}</option>
+        <option value="Glacial">{{localize "LOOKFAR.TreasureRoll.Origin.Glacial"}}</option>
+        <option value="Spiritual">{{localize "LOOKFAR.TreasureRoll.Origin.Spiritual"}}</option>
+        <option value="Corrupted">{{localize "LOOKFAR.TreasureRoll.Origin.Corrupted"}}</option>
+        <option value="Aquatic">{{localize "LOOKFAR.TreasureRoll.Origin.Aquatic"}}</option>
+        <option value="Mechanical">{{localize "LOOKFAR.TreasureRoll.Origin.Mechanical"}}</option>
+      </select>
+    </div>
+
+    <!-- Nature -->
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="nature" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">
+        {{localize "LOOKFAR.TreasureRoll.Fields.Nature"}}
+      </label>
+      <select id="nature" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+        <option value="Random" selected>{{localize "LOOKFAR.TreasureRoll.Nature.Random"}}</option>
+        <option value="Anthropod">{{localize "LOOKFAR.TreasureRoll.Nature.Anthropod"}}</option>
+        <option value="Bird">{{localize "LOOKFAR.TreasureRoll.Nature.Bird"}}</option>
+        <option value="Fish">{{localize "LOOKFAR.TreasureRoll.Nature.Fish"}}</option>
+        <option value="Mammal">{{localize "LOOKFAR.TreasureRoll.Nature.Mammal"}}</option>
+        <option value="Mollusk">{{localize "LOOKFAR.TreasureRoll.Nature.Mollusk"}}</option>
+        <option value="Reptile">{{localize "LOOKFAR.TreasureRoll.Nature.Reptile"}}</option>
+        <option value="Fungus">{{localize "LOOKFAR.TreasureRoll.Nature.Fungus"}}</option>
+        <option value="Incorporeal">{{localize "LOOKFAR.TreasureRoll.Nature.Incorporeal"}}</option>
+        <option value="Liquid">{{localize "LOOKFAR.TreasureRoll.Nature.Liquid"}}</option>
+        <option value="Artificial">{{localize "LOOKFAR.TreasureRoll.Nature.Artificial"}}</option>
+        <option value="Mineral">{{localize "LOOKFAR.TreasureRoll.Nature.Mineral"}}</option>
+      </select>
+    </div>
+
+    <!-- Item Count -->
+    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
+      <label for="itemCount" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">
+        {{localize "LOOKFAR.TreasureRoll.Fields.Items"}}
+      </label>
+      <div style="display:flex; align-items:center; gap:0.25rem; flex:1 1 65%; min-width:0;">
+        <button type="button" id="subCount" style="height:2em; width:2em;">−</button>
+        <input type="number" id="itemCount" value="1" min="1" max="10" readonly 
+               style="flex:1 1 auto; box-sizing:border-box; text-align:center; min-width:0;" />
+        <button type="button" id="addCount" style="height:2em; width:2em;">+</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right half (Columns 2 & 3) -->
+  <div id="lootOptions" style="flex:1 1 60%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
+
+    <!-- Header Options -->
+    <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.75em; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
+      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
+        <input type="checkbox" id="ignoreValues" />
+        <small>{{localize "LOOKFAR.TreasureRoll.Options.IgnoreValues"}}</small>
+      </label>
+      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
+        <input type="checkbox" id="selectAllLoot" />
+        <small>{{localize "LOOKFAR.TreasureRoll.Options.SelectAll"}}</small>
+      </label>
+    </div>
+
+    <!-- Checkbox columns -->
+    <div style="display:flex; min-width:0;">
+
+      <!-- Column 1 -->
+      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeWeapons" />
+          <span>{{localize "LOOKFAR.TreasureRoll.Types.Weapons"}}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeArmor" />
+          <span>{{localize "LOOKFAR.TreasureRoll.Types.Armor"}}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeAccessories" />
+          <span>{{localize "LOOKFAR.TreasureRoll.Types.Accessories"}}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeShields" />
+          <span>{{localize "LOOKFAR.TreasureRoll.Types.Shields"}}</span>
+        </label>
+      </div>
+
+      <!-- Column 2 -->
+      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeMaterials" />
+          <span>{{localize "LOOKFAR.TreasureRoll.Types.Materials"}}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeIngredients" />
+          <span>{{localize "LOOKFAR.TreasureRoll.Types.Ingredients"}}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeCurrency" />
+          <span>{{localize "LOOKFAR.TreasureRoll.Types.Currency"}}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+          <input type="checkbox" id="includeCustom" />
+          <span>{{localize "LOOKFAR.TreasureRoll.Types.Custom"}}</span>
+        </label>
+      </div>
+
+    </div>
+  </div>
+</form>

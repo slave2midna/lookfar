@@ -1,9 +1,7 @@
+// ============================================================================
 // Lookfar GM: Conflict Builder (Foundry v13+)
-// - Provides a tool to rapidly assemble and inspect enemy groups for scenes.
-// - Uses a configured Actor compendium as the bestiary source.
-// - Uses a configured Scene for preview, falling back to the active scene.
-// - Includes stat preview, quantity controls, creature selection UI,
-//   and places tokens on the configured battle scene based on preview positions.
+// Cleaned version – all UI now powered by conflict-builder.hbs + lookfar.css
+// ============================================================================
 
 import { cacheManager } from "./cacheManager.js";
 
@@ -11,183 +9,118 @@ import { cacheManager } from "./cacheManager.js";
 // CONFIG
 // ---------------------------------------------------------------------------
 const LOOKFAR_CONFLICT_BUILDER_CONFIG = {
-  playlistNames: ["Normal Battle", "Decisive Battle", "Final Battle"] // Optional music dropdown
+  playlistNames: ["Normal Battle", "Decisive Battle", "Final Battle"]
 };
 
-// Simple HTML escape helper
+// HTML escape helper
 const lfEsc = (s) => {
-  try {
-    return foundry.utils.escapeHTML(String(s));
-  } catch {
-    return String(s);
-  }
+  try { return foundry.utils.escapeHTML(String(s)); }
+  catch { return String(s); }
 };
 
 // ---------------------------------------------------------------------------
-// MONKEY PATCH: Suppress thumbnail progress bar
+// MONKEY PATCH – Suppress Foundry’s thumbnail progress bar
 // ---------------------------------------------------------------------------
-// We patch TextureLoader.prototype.load once, and only touch loads while
-// globalThis._lookfarSuppressTextureProgress === true.
 (function patchLookfarTextureLoader() {
   try {
-    // Try to grab the same TextureLoader that Foundry uses for scenes.
     const TL = globalThis.TextureLoader ?? CONFIG.Canvas?.textureLoader;
-    if (!TL || !TL.prototype?.load) {
-      console.warn("Lookfar Conflict Builder | TextureLoader not found; cannot suppress thumbnail progress.");
-      return;
-    }
+    if (!TL || !TL.prototype?.load) return;
 
-    if (TL.prototype._lookfarPatched) return; // avoid double-patching
+    if (TL.prototype._lookfarPatched) return;
+    const original = TL.prototype.load;
 
-    const _origLoad = TL.prototype.load;
     TL.prototype.load = function (...args) {
       try {
         if (globalThis._lookfarSuppressTextureProgress) {
-          // In v13-style APIs, args[1] is commonly an options object.
-          let options = args[1];
-          if (!options || typeof options !== "object") {
-            options = {};
-            args[1] = options;
+          let opts = args[1];
+          if (!opts || typeof opts !== "object") {
+            opts = {};
+            args[1] = opts;
           }
-          // Best-effort: if Foundry honors displayProgress, turn it off.
-          options.displayProgress = false;
+          opts.displayProgress = false;
         }
       } catch (e) {
-        console.warn("Lookfar Conflict Builder | Error adjusting TextureLoader options:", e);
+        console.warn("Lookfar Conflict Builder | Texture suppression failed:", e);
       }
 
-      return _origLoad.apply(this, args);
+      return original.apply(this, args);
     };
 
     TL.prototype._lookfarPatched = true;
   } catch (e) {
-    console.warn("Lookfar Conflict Builder | Failed to patch TextureLoader:", e);
+    console.warn("Lookfar Conflict Builder | Patch failed:", e);
   }
 })();
 
 // ---------------------------------------------------------------------------
-// MAIN FUNCTION — Conflict Builder Dialog
+// MAIN DIALOG
 // ---------------------------------------------------------------------------
 async function openConflictBuilderDialog() {
   const { playlistNames } = LOOKFAR_CONFLICT_BUILDER_CONFIG;
 
-  // -------------------------------------------------------------------------
-  // Resolve battle scene (settings → active scene fallback)
-  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------
+  // Battle Scene Resolution
+  // -------------------------------------------------------------
   const sceneSettingId = game.settings.get("lookfar", "battleSceneName") || "";
-  let previewScene = null;
-
-  if (sceneSettingId && game.scenes?.get(sceneSettingId)) {
-    // Expecting this to be a Scene ID
-    previewScene = game.scenes.get(sceneSettingId);
-  } else {
-    // Fallback to current scene if setting not set/invalid
-    previewScene = canvas.scene;
-  }
+  let previewScene = game.scenes?.get(sceneSettingId) || canvas.scene;
 
   if (!previewScene) {
-    ui.notifications.error("No valid battle scene or active scene is available.");
+    ui.notifications.error("No valid battle scene available.");
     return;
   }
 
-  // -------------------------------------------------------------------------
-  // Compute preview size based on scene aspect (max 380 x 214)
-  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------
+  // Thumbnail Sizing
+  // -------------------------------------------------------------
   const dims = previewScene.dimensions ?? canvas?.dimensions;
-  const sceneWidthPx  = dims?.sceneWidth  || 1920;
-  const sceneHeightPx = dims?.sceneHeight || 1080;
+  const sceneW = dims?.sceneWidth ?? 1920;
+  const sceneH = dims?.sceneHeight ?? 1080;
 
-  const MAX_PREVIEW_W = 380;
-  const MAX_PREVIEW_H = 214;
+  const MAX_W = 380;
+  const MAX_H = 214;
 
-  const sceneAspect  = sceneWidthPx / sceneHeightPx;
-  const frameAspect  = MAX_PREVIEW_W / MAX_PREVIEW_H;
+  const sceneAspect = sceneW / sceneH;
+  const frameAspect = MAX_W / MAX_H;
 
   let previewW, previewH;
   if (!Number.isFinite(sceneAspect)) {
-    previewW = MAX_PREVIEW_W;
-    previewH = MAX_PREVIEW_H;
+    previewW = MAX_W; previewH = MAX_H;
   } else if (sceneAspect >= frameAspect) {
-    // Scene is wider than frame → limit by width
-    previewW = MAX_PREVIEW_W;
-    previewH = Math.round(MAX_PREVIEW_W / sceneAspect);
+    previewW = MAX_W;
+    previewH = Math.round(MAX_W / sceneAspect);
   } else {
-    // Scene is taller than frame → limit by height
-    previewH = MAX_PREVIEW_H;
-    previewW = Math.round(MAX_PREVIEW_H * sceneAspect);
+    previewH = MAX_H;
+    previewW = Math.round(MAX_H * sceneAspect);
   }
 
-  // We'll store these so the callback math is always aligned.
-  let thumbWidth  = previewW;
-  let thumbHeight = previewH;
-
-  // -------------------------------------------------------------------------
-  // Generate real scene thumbnail at previewW x previewH (no letterboxing)
-  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------
+  // Generate Scene Thumbnail
+  // -------------------------------------------------------------
   let sceneThumb = "";
   try {
     globalThis._lookfarSuppressTextureProgress = true;
 
-    const thumbData = await previewScene.createThumbnail({
-      width: previewW,
-      height: previewH
-    });
-    // Document#createThumbnail typically returns { thumb, width, height }
-    sceneThumb  = thumbData?.thumb || "";
-    thumbWidth  = thumbData?.width  || previewW;
-    thumbHeight = thumbData?.height || previewH;
+    const t = await previewScene.createThumbnail({ width: previewW, height: previewH });
+    sceneThumb = t?.thumb ?? "";
   } catch (e) {
-    console.warn("Conflict Builder: failed to create scene thumbnail.", e);
+    console.warn("Conflict Builder: Thumbnail generation failed.", e);
   } finally {
     globalThis._lookfarSuppressTextureProgress = false;
   }
 
-  // -------------------------------------------------------------------------
-  // Resolve monster compendium (Actor pack only)
-  // -------------------------------------------------------------------------
-  const compendiumKey = game.settings.get("lookfar", "monsterCompendium") || "";
-  const pack = game.packs?.get(compendiumKey);
+  // -------------------------------------------------------------
+  // Monster Compendium
+  // -------------------------------------------------------------
+  const compKey = game.settings.get("lookfar", "monsterCompendium") || "";
+  const pack = game.packs?.get(compKey);
 
   if (!pack || pack.documentName !== "Actor") {
-    ui.notifications.error("Selected Monster Compendium is invalid or missing.");
+    ui.notifications.error("Invalid Monster Compendium selected.");
     return;
   }
 
-  // Use compendium index (name + img) instead of loading full documents
   const index = await pack.getIndex({ fields: ["img"] });
-  const indexEntries = Array.from(index.values());
-
-  if (!indexEntries.length) {
-    ui.notifications.error(`No actors found in compendium "${pack.title || pack.collection}".`);
-    return;
-  }
-
-  // -------------------------------------------------------------------------
-  // Compendium folder support (for filtering)
-  // -------------------------------------------------------------------------
-  const folderMap = new Map();
-  let compFolders = [];
-
-  if (pack.folders) {
-    compFolders = Array.from(pack.folders);
-
-    compFolders.sort((a, b) => a.name.localeCompare(b.name));
-
-    for (const folder of compFolders) {
-      const docs = folder.contents || [];
-      const ids = docs.map(d => d._id);
-      if (ids.length) folderMap.set(folder.id, new Set(ids));
-    }
-  }
-
-  const folderOptions =
-    `<option value="all">${lfEsc("All Types")}</option>` +
-    compFolders.map(f =>
-      `<option value="${f.id}">${lfEsc(f.name)}</option>`
-    ).join("");
-
-  // Index-level actor data (no full docs yet)
-  const actorIndexData = indexEntries
+  const actorEntries = Array.from(index.values())
     .map(e => ({
       id: e._id,
       name: e.name,
@@ -195,728 +128,505 @@ async function openConflictBuilderDialog() {
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const renderOptions = {
-    id: "conflictBuilderDialog",
-    height: "600px",
-    width: "400px"
-  };
+  if (!actorEntries.length) {
+    ui.notifications.error("No actors in the selected compendium.");
+    return;
+  }
 
-  // -------------------------------------------------------------------------
-  // Playlist dropdown options
-  // -------------------------------------------------------------------------
-  const playlistOptions =
-    `<option value="default">Default</option>` +
-    game.playlists
-      .filter(pl => playlistNames.includes(pl.name))
-      .map(pl => `<option value="${pl.id}">${lfEsc(pl.name)}</option>`)
-      .join("");
+  // -------------------------------------------------------------
+  // Folder Filter Support
+  // -------------------------------------------------------------
+  const folderMap = new Map();
+  let folders = [];
 
-  // -------------------------------------------------------------------------
-  // World NPC cache wiring
-  // -------------------------------------------------------------------------
+  if (pack.folders) {
+    folders = Array.from(pack.folders).sort((a, b) => a.name.localeCompare(b.name));
+    for (const folder of folders) {
+      const docs = folder.contents ?? [];
+      const ids = docs.map(d => d._id);
+      if (ids.length) folderMap.set(folder.id, new Set(ids));
+    }
+  }
+
+  // -------------------------------------------------------------
+  // Playlist Options
+  // -------------------------------------------------------------
+  const playlistData = game.playlists
+    .filter(pl => playlistNames.includes(pl.name))
+    .map(pl => ({ id: pl.id, name: pl.name }));
+
+  // -------------------------------------------------------------
+  // NPC Cache
+  // -------------------------------------------------------------
   const ActorCls = CONFIG.Actor?.documentClass ?? Actor;
-  const npcCacheFolder = await cacheManager.getOrCreateNpcCacheFolder().catch(() => null);
+  const npcCache = await cacheManager.getOrCreateNpcCacheFolder().catch(() => null);
 
-  /**
-   * Ensure a world Actor exists in the Lookfar NPC Cache folder
-   * for the given compendium actorId. Reuse if already present.
-   * Falls back to compendium actor if cache folder isn't available.
-   */
-  async function ensureWorldActorFromCompendium(actorId) {
-    // Fallback: if cache folder is unavailable, just use compendium actor
+  async function ensureWorldActor(actorId) {
     const src = await pack.getDocument(actorId);
     if (!src) return null;
-    if (!npcCacheFolder) return src;
+    if (!npcCache) return src;
 
-    // Try to find existing world actor by flags
-    let worldActor = game.actors.find(a =>
-      a.folder?.id === npcCacheFolder.id &&
+    let w = game.actors.find(a =>
+      a.folder?.id === npcCache.id &&
       a.getFlag?.("lookfar", "sourcePack") === pack.collection &&
       a.getFlag?.("lookfar", "sourceId") === actorId
     );
-    if (worldActor) return worldActor;
 
-    // Create new world actor in NPC cache
+    if (w) return w;
+
     const data = src.toObject();
     delete data._id;
-    data.folder = npcCacheFolder.id;
+    data.folder = npcCache.id;
 
-    data.flags = data.flags || {};
-    data.flags.lookfar = data.flags.lookfar || {};
+    data.flags ??= {};
+    data.flags.lookfar ??= {};
     data.flags.lookfar.sourcePack = pack.collection;
-    data.flags.lookfar.sourceId   = actorId;
+    data.flags.lookfar.sourceId = actorId;
 
-    worldActor = await ActorCls.create(data);
-    return worldActor;
+    return ActorCls.create(data);
   }
 
-  // -------------------------------------------------------------------------
-  // Dialog Content
-  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------
+  // RENDER HBS TEMPLATE
+  // -------------------------------------------------------------
+  const template = await renderTemplate(
+    "modules/lookfar/templates/conflict-builder.hbs",
+    {
+      previewWidth: previewW,
+      previewHeight: previewH,
+      sceneThumb,
+      playlists: playlistData,
+      folders: folders.map(f => ({ id: f.id, name: f.name })),
+      actors: actorEntries,
+      initialActorImg: actorEntries[0]?.img || ""
+    }
+  );
+
   const dialogData = {
     title: "Conflict Builder",
-    content: `
-      <form>
-        <style>
-          #conflictBuilderDialog .dialog-body {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 380px;
-            height: 190px;
-            gap: 8px;
-          }
-          #conflictBuilderDialog .preview-image {
-            width: 190px;
-            height: 190px;
-            object-fit: contain;
-            display: block;
-          }
-          #conflictBuilderDialog .form-fields {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 190px;
-            height: 297px;
-            gap: 4px;
-          }
-          #conflictBuilderDialog .form-group {
-            margin-bottom: 2px;
-          }
-          #conflictBuilderDialog .scrollable-list {
-            width: 100%;
-            height: 297px;
-            overflow-y: auto;
-            padding: 2px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-          }
-          #conflictBuilderDialog .list-item {
-            padding: 2px 4px;
-            cursor: pointer;
-            border-radius: 3px;
-            margin-bottom: 2px;
-          }
-          #conflictBuilderDialog .list-item:hover {
-            background: #e0e0e0;
-          }
-          #conflictBuilderDialog .list-item.selected {
-            background: #3b82f6;
-            color: #ffffff;
-          }
-          #conflictBuilderDialog .actor-attributes {
-            font-size: 14px;
-            margin-top: 8px;
-            margin-bottom: 10px;
-            text-align: left;
-            width: 190px;
-          }
-          #conflictBuilderDialog #preview-tokens-layer {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            pointer-events: auto;
-          }
-          #conflictBuilderDialog .preview-token {
-            position: absolute;
-            width: 64px;
-            height: 64px;
-            object-fit: contain;
-            pointer-events: auto;
-            border: none;
-          }
-        </style>
-
-        <!-- Scene Thumbnail Preview (aspect-matched to scene) -->
-        <div style="margin-bottom: 6px; display:flex; justify-content:center;">
-          <div id="conflict-preview"
-               style="position:relative; width:${previewW}px; height:${previewH}px;
-                      overflow:hidden; margin:0 auto 6px auto; background:#000;">
-            <img id="scene-thumbnail" src="${sceneThumb}"
-                 style="position:absolute; width:100%; height:100%;
-                        object-fit:fill; z-index:1;" />
-            <div id="preview-tokens-layer"></div>
-          </div>
-        </div>
-
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom: 8px;">
-          <label for="playlist-select">Music:</label>
-          <select id="playlist-select" style="flex:1;">
-            ${playlistOptions}
-          </select>
-        </div>
-
-        <!-- Creature Selection -->
-        <div class="dialog-body">
-          <div>
-            <img id="creature-image" src="${actorIndexData[0].img}" class="preview-image">
-          </div>
-
-          <div class="form-fields">
-            <div class="form-group">
-              <label for="folder-filter">Subfolder:</label>
-              <select id="folder-filter" style="width:100%;">
-                ${folderOptions}
-              </select>
-            </div>
-
-            <div class="form-group">
-              <input type="text" id="search-input" placeholder="Search..." style="width:100%; padding:4px;">
-            </div>
-
-            <div class="scrollable-list">
-              ${actorIndexData.map(a => `
-                <div class="list-item" data-id="${a.id}">
-                  ${lfEsc(a.name)}
-                </div>`).join("")}
-            </div>
-
-            <div class="form-group" style="display:flex; align-items:center; gap:4px;">
-              <label style="flex:0 0 auto;">Quantity:</label>
-              <input
-                type="number"
-                id="creature-quantity"
-                value="1"
-                min="1"
-                max="10"
-                style="flex:1; padding:4px;"
-              >
-              <button type="button" id="add-to-encounter" style="flex:0 0 60px;">Add</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stat Preview -->
-        <div class="actor-attributes">
-          <table style="width:100%; border-collapse:collapse;">
-            <tr>
-              <td>HP:</td><td id="creature-hp">--</td>
-              <td>MP:</td><td id="creature-mp">--</td>
-              <td>Init:</td><td id="creature-init">--</td>
-            </tr>
-          </table>
-
-          <div style="margin-top:4px;">
-            <label style="width:35px;">Level:</label>
-            <button id="decrease-level" type="button" style="width:22px; padding:0;">-</button>
-            <input type="number" id="creature-level" value="5" min="5" max="60" step="5" style="width:40px; text-align:center;">
-            <button id="increase-level" type="button" style="width:22px; padding:0;">+</button>
-          </div>
-
-          <div style="margin-top:5px; display:flex; align-items:center;">
-            <label style="width:35px;">Rank:</label>
-            <select id="creature-rank" style="width:95px;">
-              <option value="soldier">Soldier</option>
-              <option value="elite">Elite</option>
-              <option value="champion">Champion</option>
-            </select>
-
-            <div id="replaced-soldiers-cell" style="display:none; padding-left:5px;">
-              <input type="number" id="replaced-soldiers" value="1" min="1" max="6" style="width:40px; text-align:center;">
-            </div>
-          </div>
-        </div>
-      </form>
-    `,
-
-    // -----------------------------------------------------------------------
-    // Buttons
-    // -----------------------------------------------------------------------
+    content: template,
     buttons: {
       summon: {
         label: "Fight",
-        callback: async (html) => {
-          const $html = html instanceof HTMLElement ? $(html) : html;
-
-          const $tokensLayer = $html.find("#preview-tokens-layer");
-          const $preview     = $html.find("#conflict-preview");
-          const $tokens      = $tokensLayer.find(".preview-token");
-
-          if (!$tokens.length) {
-            ui.notifications.error("No creatures have been added to the encounter.");
-            return;
-          }
-
-          const previewEl   = $preview[0];
-          const previewRect = previewEl?.getBoundingClientRect();
-          if (!previewRect || !previewRect.width || !previewRect.height) {
-            ui.notifications.error("Preview area size is invalid.");
-            return;
-          }
-
-          const previewW = previewRect.width;
-          const previewH = previewRect.height;
-
-          // --- STEP 1: capture normalized positions before we touch scenes ---
-          const previewTokens = [];
-          for (const el of $tokens.toArray()) {
-            const $tok    = $(el);
-            const actorId = $tok.data("actorId");
-            if (!actorId) continue;
-
-            const tokRect = el.getBoundingClientRect();
-
-            let centerX = (tokRect.left + tokRect.width / 2) - previewRect.left;
-            let centerY = (tokRect.top  + tokRect.height / 2) - previewRect.top;
-
-            let u = centerX / previewW;
-            let v = centerY / previewH;
-
-            if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
-            u = Math.min(0.999, Math.max(0, u));
-            v = Math.min(0.999, Math.max(0, v));
-
-            previewTokens.push({
-              actorId,
-              u,
-              v,
-              flipped: $tok.data("lfFlipped") === true
-            });
-          }
-
-          if (!previewTokens.length) {
-            ui.notifications.error("No valid preview tokens to place.");
-            return;
-          }
-
-          // --- STEP 2: activate the battle scene & give the canvas a bit more time ---
-          const targetScene = previewScene;
-          if (!targetScene) {
-            ui.notifications.error("Could not access the battle scene.");
-            return;
-          }
-
-          try {
-            if (!targetScene.active) {
-              await targetScene.update({ active: true });
-            }
-          } catch (e) {
-            console.warn("Conflict Builder: unable to activate battle scene.", e);
-          }
-
-          // Slight delay so the canvas has time to settle before placement
-          await new Promise(r => setTimeout(r, 750));
-
-          const dims2 = canvas.dimensions;
-          if (!dims2) {
-            ui.notifications.error("Canvas dimensions are not ready.");
-            return;
-          }
-
-          const sceneWidth  = dims2.sceneWidth;
-          const sceneHeight = dims2.sceneHeight;
-
-          const tokenData  = [];
-          const actorCache = new Map();
-
-          const level = parseInt($html.find("#creature-level").val(), 10) || 5;
-          const rank  = $html.find("#creature-rank").val() || "soldier";
-          const replacedSoldiers = rank === "champion"
-            ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
-            : 1;
-
-          // --- STEP 3: map u,v → scene pixels, compensating for canvas padding ---
-          for (const pt of previewTokens) {
-            const { actorId, u, v, flipped } = pt;
-
-            let actor = actorCache.get(actorId);
-            if (!actor) {
-              actor = await ensureWorldActorFromCompendium(actorId);
-              if (!actor) continue;
-              actorCache.set(actorId, actor);
-            }
-
-            const proto = actor.prototypeToken.toObject();
-
-            const tokenGridW = proto.width  ?? 1;
-            const tokenGridH = proto.height ?? 1;
-            const tokenPxW   = tokenGridW * dims2.size;
-            const tokenPxH   = tokenGridH * dims2.size;
-
-            // Background (scene) size, not including padding
-            const bgSceneWidth  = dims2.sceneWidth;
-            const bgSceneHeight = dims2.sceneHeight;
-
-            // Where the background actually sits inside the padded canvas
-            const bgOffsetX = dims2.sceneX ?? 0;
-            const bgOffsetY = dims2.sceneY ?? 0;
-
-            const maxX = Math.max(0, bgSceneWidth  - tokenPxW);
-            const maxY = Math.max(0, bgSceneHeight - tokenPxH);
-
-            // Treat (u, v) as normalized background coordinates directly
-            let u_bg = Math.min(0.999, Math.max(0, u));
-            let v_bg = Math.min(0.999, Math.max(0, v));
-
-            // Pixel positions within the *background* area
-            let rawBgX = u_bg * maxX;
-            let rawBgY = v_bg * maxY;
-
-            // Now place tokens in canvas space by adding the background offset
-            const clampedBgX = Math.min(maxX, Math.max(0, rawBgX));
-            const clampedBgY = Math.min(maxY, Math.max(0, rawBgY));
-
-            proto.x = bgOffsetX + clampedBgX;
-            proto.y = bgOffsetY + clampedBgY;
-            proto.alpha = 0;
-
-            if (flipped) {
-              proto.mirrorX = !proto.mirrorX;
-            }
-
-            tokenData.push({ proto, actor });
-          }
-
-          if (!tokenData.length) {
-            ui.notifications.error("No valid creatures could be placed from the preview.");
-            return;
-          }
-
-          const toCreate = tokenData.map(t => t.proto);
-          const created  = await targetScene.createEmbeddedDocuments("Token", toCreate);
-
-          // --- STEP 4: apply stats (level/rank + HP/MP) ----------------------
-          for (const tokenDoc of created) {
-            const actor = tokenDoc.actor;
-            if (!actor) continue;
-
-            await actor.update({
-              "system.level.value": level,
-              "system.rank.value": rank,
-              "system.rank.replacedSoldiers": replacedSoldiers
-            });
-
-            const maxHP = actor.system.resources.hp.max;
-            const maxMP = actor.system.resources.mp.max;
-
-            await actor.update({
-              "system.resources.hp.value": maxHP,
-              "system.resources.mp.value": maxMP
-            });
-          }
-
-          // --- STEP 5: slower fade-in animation (~2s total) -------------------
-          try {
-            // Helper: wait for the created tokens to show up on the canvas
-            async function waitForPlaceables(createdDocs, timeout = 3000) {
-              const createdIds = new Set(createdDocs.map(d => d.id));
-              const start = Date.now();
-
-              // Poll until we see them or timeout
-              while (Date.now() - start < timeout) {
-                const placeables = canvas.tokens.placeables.filter(t => createdIds.has(t.document.id));
-                if (placeables.length) return placeables;
-                await new Promise(r => setTimeout(r, 50));
-              }
-
-              return [];
-            }
-
-            const placeables = await waitForPlaceables(created, 3000);
-            if (!placeables.length) {
-              console.warn("Conflict Builder: could not find created tokens on canvas for fade-in.");
-              return;
-            }
-
-            // 1) Make sure the *documents* start at alpha 0
-            await targetScene.updateEmbeddedDocuments(
-              "Token",
-              placeables.map(t => ({
-                _id: t.document.id,
-                alpha: 0
-              }))
-            );
-
-            // 2) Fade documents 0 → 1 over ~2000ms
-            const fadeDuration = 2000; // ms total
-            const fadeSteps    = 10;   // 0.1 increments => 200ms per step
-
-            for (let i = 1; i <= fadeSteps; i++) {
-              const alpha = i / fadeSteps; // 0.1, 0.2, ... , 1.0
-              setTimeout(() => {
-                const updates = placeables.map(t => ({
-                  _id: t.document.id,
-                  alpha
-                }));
-                // Fire-and-forget; no need to await inside setTimeout
-                targetScene.updateEmbeddedDocuments("Token", updates);
-              }, (fadeDuration / fadeSteps) * i);
-            }
-          } catch (e) {
-            console.warn("Conflict Builder: fade-in animation failed.", e);
-          }
-        }
+        callback: async (html) => await summonCreatures(html, previewScene, ensureWorldActor, folderMap, actorEntries, pack)
       }
     },
     default: "summon",
-
-    // -----------------------------------------------------------------------
-    // RENDER HOOK
-    // -----------------------------------------------------------------------
-    render: html => {
-      const $html = html instanceof HTMLElement ? $(html) : html;
-
-      const levelInput       = $html.find("#creature-level");
-      const rankSelect       = $html.find("#creature-rank");
-      const replacedInput    = $html.find("#replaced-soldiers");
-      const imageElement     = $html.find("#creature-image");
-      const listItems        = $html.find(".list-item");
-      const searchInput      = $html.find("#search-input");
-      const folderSelect     = $html.find("#folder-filter");
-      const addButton        = $html.find("#add-to-encounter");
-      const tokensLayer      = $html.find("#preview-tokens-layer");
-      const previewContainer = $html.find("#conflict-preview");
-
-      let dragState = null;
-
-      if (listItems.length) {
-        listItems.first().addClass("selected");
-      }
-
-      async function updateStatsForId(id, level, rank, replacedSoldiers) {
-        // Note: For stats, we still use the compendium actor (no need for world copy).
-        const actor = await pack.getDocument(id);
-        if (!actor) return;
-
-        const { dex, ins, mig, wlp } = actor.system.attributes;
-        const initBase   = (dex.base + ins.base) / 2;
-        const maxHpBase  = (level * 2) + (mig.base * 5);
-        const maxMpBase  = level + (wlp.base * 5);
-
-        let init = initBase;
-        let hp   = maxHpBase;
-        let mp   = maxMpBase;
-
-        if (rank === "elite") {
-          init += 2;
-          hp   *= 2;
-        } else if (rank === "champion") {
-          init += replacedSoldiers;
-          hp   *= replacedSoldiers;
-          mp   *= 2;
-        }
-
-        $html.find("#creature-hp").text(Math.round(hp));
-        $html.find("#creature-mp").text(Math.round(mp));
-        $html.find("#creature-init").text(Math.round(init));
-      }
-
-      function filterList() {
-        const searchTerm     = (searchInput.val() || "").toString().toLowerCase();
-        const selectedFolder = folderSelect.val();
-
-        listItems.each(function() {
-          const item      = $(this);
-          const id        = item.data("id");
-          const nameMatch = item.text().toLowerCase().includes(searchTerm);
-
-          let folderMatch = true;
-          if (selectedFolder && selectedFolder !== "all") {
-            const idsSet = folderMap.get(selectedFolder);
-            folderMatch  = idsSet ? idsSet.has(id) : false;
-          }
-
-          item.toggle(nameMatch && folderMatch);
-        });
-      }
-
-      // Level +/- buttons
-      $html.find("#increase-level").on("click", async () => {
-        const v = Math.min(60, parseInt(levelInput.val(), 10) + 5);
-        levelInput.val(v);
-        const selected = $html.find(".list-item.selected");
-        const id = selected.data("id");
-        if (id) {
-          await updateStatsForId(
-            id,
-            v,
-            rankSelect.val(),
-            parseInt(replacedInput.val(), 10) || 1
-          );
-        }
-      });
-
-      $html.find("#decrease-level").on("click", async () => {
-        const v = Math.max(5, parseInt(levelInput.val(), 10) - 5);
-        levelInput.val(v);
-        const selected = $html.find(".list-item.selected");
-        const id = selected.data("id");
-        if (id) {
-          await updateStatsForId(
-            id,
-            v,
-            rankSelect.val(),
-            parseInt(replacedInput.val(), 10) || 1
-          );
-        }
-      });
-
-      // List selection
-      listItems.on("click", async function() {
-        listItems.removeClass("selected");
-        $(this).addClass("selected");
-
-        const id         = $(this).data("id");
-        const indexEntry = actorIndexData.find(a => a.id === id);
-        if (indexEntry) {
-          imageElement.attr("src", indexEntry.img);
-        }
-
-        const lvl  = parseInt(levelInput.val(), 10) || 5;
-        const rank = rankSelect.val();
-        const repl = parseInt(replacedInput.val(), 10) || 1;
-        await updateStatsForId(id, lvl, rank, repl);
-      });
-
-      // Filters (search + folder)
-      searchInput.on("input", filterList);
-      folderSelect.on("change", () => {
-        filterList();
-        const visible = $html.find(".list-item:visible").first();
-        if (visible.length) {
-          listItems.removeClass("selected");
-          visible.addClass("selected");
-        }
-      });
-
-      // Rank change → show/hide replaced soldiers and recompute stats
-      rankSelect.on("change", async () => {
-        const isChamp = rankSelect.val() === "champion";
-        $html.find("#replaced-soldiers-cell").toggle(isChamp);
-
-        const selected = $html.find(".list-item.selected");
-        const id = selected.data("id");
-        if (id) {
-          const lvl  = parseInt(levelInput.val(), 10) || 5;
-          const repl = parseInt(replacedInput.val(), 10) || 1;
-          await updateStatsForId(id, lvl, rankSelect.val(), repl);
-        }
-      });
-
-      // Add button → add small prototype token previews onto the scene preview
-      addButton.on("click", async () => {
-        const selected = $html.find(".list-item.selected");
-        if (!selected.length) {
-          ui.notifications.error("No creature selected to add.");
-          return;
-        }
-
-        const id  = selected.data("id");
-        const qty = Math.max(1, parseInt($html.find("#creature-quantity").val(), 10) || 1);
-
-        const actor = await pack.getDocument(id);
-        if (!actor) {
-          ui.notifications.error("Actor not found in compendium.");
-          return;
-        }
-
-        const texSrc =
-          actor.prototypeToken?.texture?.src ||
-          actor.img ||
-          "icons/svg/mystery-man.svg";
-
-        const existing = tokensLayer.find(".preview-token").length;
-
-        for (let i = 0; i < qty; i++) {
-          const idx = existing + i;
-          const col = idx % 5;
-          const row = Math.floor(idx / 5);
-
-          const left = 4 + col * 68;
-          const top  = 4 + row * 68;
-
-          const $img = $(`<img class="preview-token" src="${lfEsc(texSrc)}">`);
-
-          $img.css({ left: `${left}px`, top: `${top}px` });
-          $img.data("actorId", id);
-
-          tokensLayer.append($img);
-        }
-      });
-
-      // ---------- Preview token interactions ----------
-      tokensLayer.on("mousedown", ".preview-token", ev => {
-        if (ev.button !== 0) return; // left button only
-        ev.preventDefault();
-
-        const $token = $(ev.currentTarget);
-
-        dragState = {
-          $token,
-          startMouseX: ev.pageX,
-          startMouseY: ev.pageY,
-          startLeft: parseFloat($token.css("left")) || 0,
-          startTop: parseFloat($token.css("top")) || 0,
-          containerWidth: previewContainer.width(),
-          containerHeight: previewContainer.height(),
-          tokenWidth: $token.outerWidth(),
-          tokenHeight: $token.outerHeight()
-        };
-
-        $(document).on("mousemove.conflictDrag", onDragMove);
-        $(document).on("mouseup.conflictDrag", onDragEnd);
-      });
-
-      function onDragMove(ev) {
-        if (!dragState) return;
-        ev.preventDefault();
-
-        const dx = ev.pageX - dragState.startMouseX;
-        const dy = ev.pageY - dragState.startMouseY;
-
-        let left = dragState.startLeft + dx;
-        let top  = dragState.startTop + dy;
-
-        const maxLeft = Math.max(0, dragState.containerWidth - dragState.tokenWidth);
-        const maxTop  = Math.max(0, dragState.containerHeight - dragState.tokenHeight);
-
-        left = Math.max(0, Math.min(maxLeft, left));
-        top  = Math.max(0, Math.min(maxTop, top));
-
-        dragState.$token.css({ left: `${left}px`, top: `${top}px` });
-      }
-
-      function onDragEnd(_ev) {
-        $(document).off(".conflictDrag");
-        dragState = null;
-      }
-
-      // Right-click: remove; Ctrl+right-click: flip horizontally
-      tokensLayer.on("contextmenu", ".preview-token", ev => {
-        ev.preventDefault();
-        const e = ev.originalEvent || ev;
-        const $token = $(ev.currentTarget);
-
-        const hasCtrl = e.ctrlKey || e.metaKey;
-
-        if (hasCtrl) {
-          const flipped = $token.data("lfFlipped") === true;
-          if (flipped) {
-            $token.css("transform", "");
-            $token.data("lfFlipped", false);
-          } else {
-            $token.css("transform", "scaleX(-1)");
-            $token.data("lfFlipped", true);
-          }
-        } else {
-          $token.remove();
-        }
-      });
-
-      // Initial filter pass
-      filterList();
-    }
+    render: html => setupConflictBuilderUI(html, actorEntries, pack, folderMap)
   };
 
-  new Dialog(dialogData, renderOptions).render(true);
+  new Dialog(dialogData, { id: "conflictBuilderDialog", width: 400, height: "auto" }).render(true);
+}
+
+// ============================================================================
+// UI SETUP LOGIC (moved out of inline style)
+// ============================================================================
+function setupConflictBuilderUI(html, actorEntries, pack, folderMap) {
+  const $html = html instanceof HTMLElement ? $(html) : html;
+
+  const levelInput       = $html.find("#creature-level");
+  const rankSelect       = $html.find("#creature-rank");
+  const replacedInput    = $html.find("#replaced-soldiers");
+  const imageElement     = $html.find("#creature-image");
+  const listItems        = $html.find(".list-item");
+  const searchInput      = $html.find("#search-input");
+  const folderSelect     = $html.find("#folder-filter");
+  const addButton        = $html.find("#add-to-encounter");
+  const tokensLayer      = $html.find("#preview-tokens-layer");
+  const previewContainer = $html.find("#conflict-preview");
+
+  let dragState = null;
+
+  if (listItems.length) listItems.first().addClass("selected");
+
+  // ---------------- STAT PREVIEW ----------------
+  async function updateStats(id, level, rank, replaced) {
+    const actor = await pack.getDocument(id);
+    if (!actor) return;
+
+    const { dex, ins, mig, wlp } = actor.system.attributes;
+    const initBase = (dex.base + ins.base) / 2;
+    const hpBase   = (level * 2) + (mig.base * 5);
+    const mpBase   = level + (wlp.base * 5);
+
+    let init = initBase;
+    let hp = hpBase;
+    let mp = mpBase;
+
+    if (rank === "elite") {
+      init += 2; hp *= 2;
+    } else if (rank === "champion") {
+      init += replaced; hp *= replaced; mp *= 2;
+    }
+
+    $html.find("#creature-hp").text(Math.round(hp));
+    $html.find("#creature-mp").text(Math.round(mp));
+    $html.find("#creature-init").text(Math.round(init));
+  }
+
+  // ---------------- FILTER LIST ----------------
+  function filterList() {
+    const search = (searchInput.val() || "").toLowerCase();
+    const folder = folderSelect.val();
+
+    listItems.each(function () {
+      const item = $(this);
+      const id   = item.data("id");
+      const matchName = item.text().toLowerCase().includes(search);
+
+      let matchFolder = true;
+      if (folder !== "all") {
+        const set = folderMap.get(folder);
+        matchFolder = set?.has(id);
+      }
+
+      item.toggle(matchName && matchFolder);
+    });
+  }
+
+  searchInput.on("input", filterList);
+  folderSelect.on("change", () => {
+    filterList();
+    const visible = $html.find(".list-item:visible").first();
+    if (visible.length) {
+      listItems.removeClass("selected");
+      visible.addClass("selected");
+    }
+  });
+
+  // ---------------- SELECT LIST ITEM ----------------
+  listItems.on("click", async function () {
+    listItems.removeClass("selected");
+    $(this).addClass("selected");
+
+    const id = $(this).data("id");
+    const entry = actorEntries.find(a => a.id === id);
+    if (entry) imageElement.attr("src", entry.img);
+
+    await updateStats(
+      id,
+      parseInt(levelInput.val(), 10) || 5,
+      rankSelect.val(),
+      parseInt(replacedInput.val(), 10) || 1
+    );
+  });
+
+  // ---------------- LEVEL ADJUST ----------------
+  $html.find("#increase-level").on("click", async () => {
+    const v = Math.min(60, parseInt(levelInput.val(), 10) + 5);
+    levelInput.val(v);
+    const id = $html.find(".list-item.selected").data("id");
+    if (id) updateStats(id, v, rankSelect.val(), parseInt(replacedInput.val(), 10) || 1);
+  });
+
+  $html.find("#decrease-level").on("click", async () => {
+    const v = Math.max(5, parseInt(levelInput.val(), 10) - 5);
+    levelInput.val(v);
+    const id = $html.find(".list-item.selected").data("id");
+    if (id) updateStats(id, v, rankSelect.val(), parseInt(replacedInput.val(), 10) || 1);
+  });
+
+  // ---------------- RANK CHANGE ----------------
+  rankSelect.on("change", async () => {
+    const isChamp = rankSelect.val() === "champion";
+    $html.find("#replaced-soldiers-cell").toggle(isChamp);
+
+    const id = $html.find(".list-item.selected").data("id");
+    if (id) updateStats(
+      id,
+      parseInt(levelInput.val(), 10) || 5,
+      rankSelect.val(),
+      parseInt(replacedInput.val(), 10) || 1
+    );
+  });
+
+  // ---------------- ADD PREVIEW TOKENS ----------------
+  addButton.on("click", async () => {
+    const selected = $html.find(".list-item.selected");
+    if (!selected.length) return ui.notifications.error("No creature selected.");
+
+    const id = selected.data("id");
+    const qty = Math.max(1, parseInt($html.find("#creature-quantity").val(), 10) || 1);
+
+    const actor = await pack.getDocument(id);
+    if (!actor) return ui.notifications.error("Actor not found.");
+
+    const texSrc =
+      actor.prototypeToken?.texture?.src ||
+      actor.img ||
+      "icons/svg/mystery-man.svg";
+
+    const existing = tokensLayer.find(".preview-token").length;
+
+    for (let i = 0; i < qty; i++) {
+      const idx = existing + i;
+      const col = idx % 5;
+      const row = Math.floor(idx / 5);
+
+      const left = 4 + col * 68;
+      const top  = 4 + row * 68;
+
+      const $img = $(`<img class="preview-token" src="${lfEsc(texSrc)}">`);
+      $img.css({ left: `${left}px`, top: `${top}px` });
+      $img.data("actorId", id);
+      tokensLayer.append($img);
+    }
+  });
+
+  // ---------------- DRAG TOKENS ----------------
+  tokensLayer.on("mousedown", ".preview-token", ev => {
+    if (ev.button !== 0) return;
+    ev.preventDefault();
+
+    const $token = $(ev.currentTarget);
+
+    dragState = {
+      $token,
+      startMouseX: ev.pageX,
+      startMouseY: ev.pageY,
+      startLeft: parseFloat($token.css("left")) || 0,
+      startTop: parseFloat($token.css("top")) || 0,
+      containerWidth: previewContainer.width(),
+      containerHeight: previewContainer.height(),
+      tokenWidth: $token.outerWidth(),
+      tokenHeight: $token.outerHeight()
+    };
+
+    $(document).on("mousemove.conflictDrag", onDragMove);
+    $(document).on("mouseup.conflictDrag", onDragEnd);
+  });
+
+  function onDragMove(ev) {
+    if (!dragState) return;
+    ev.preventDefault();
+
+    const dx = ev.pageX - dragState.startMouseX;
+    const dy = ev.pageY - dragState.startMouseY;
+
+    let left = dragState.startLeft + dx;
+    let top  = dragState.startTop + dy;
+
+    const maxLeft = Math.max(0, dragState.containerWidth - dragState.tokenWidth);
+    const maxTop  = Math.max(0, dragState.containerHeight - dragState.tokenHeight);
+
+    left = Math.max(0, Math.min(maxLeft, left));
+    top  = Math.max(0, Math.min(maxTop, top));
+
+    dragState.$token.css({ left: `${left}px`, top: `${top}px` });
+  }
+
+  function onDragEnd() {
+    $(document).off(".conflictDrag");
+    dragState = null;
+  }
+
+  // ---------------- RIGHT CLICK INTERACTIONS ----------------
+  tokensLayer.on("contextmenu", ".preview-token", ev => {
+    ev.preventDefault();
+    const e = ev.originalEvent || ev;
+    const $token = $(ev.currentTarget);
+
+    const ctrl = e.ctrlKey || e.metaKey;
+
+    if (ctrl) {
+      const flipped = $token.data("lfFlipped") === true;
+      if (flipped) {
+        $token.css("transform", "");
+        $token.data("lfFlipped", false);
+      } else {
+        $token.css("transform", "scaleX(-1)");
+        $token.data("lfFlipped", true);
+      }
+    } else {
+      $token.remove();
+    }
+  });
+
+  // Initial filter
+  filterList();
+}
+
+// ============================================================================
+// SUMMON CREATURES ACTION
+// ============================================================================
+async function summonCreatures(html, previewScene, ensureWorldActor, folderMap, actorEntries, pack) {
+  const $html = html instanceof HTMLElement ? $(html) : html;
+
+  const $tokensLayer = $html.find("#preview-tokens-layer");
+  const $preview = $html.find("#conflict-preview");
+  const $tokens = $tokensLayer.find(".preview-token");
+
+  if (!$tokens.length) {
+    ui.notifications.error("No creatures added.");
+    return;
+  }
+
+  const previewEl = $preview[0];
+  const previewRect = previewEl?.getBoundingClientRect();
+  if (!previewRect?.width || !previewRect?.height) {
+    ui.notifications.error("Invalid preview area.");
+    return;
+  }
+
+  const previewW = previewRect.width;
+  const previewH = previewRect.height;
+
+  // Gather normalized positions
+  const previewTokens = [];
+  for (const el of $tokens.toArray()) {
+    const $tok = $(el);
+    const actorId = $tok.data("actorId");
+    if (!actorId) continue;
+
+    const tokRect = el.getBoundingClientRect();
+
+    let cx = (tokRect.left + tokRect.width / 2) - previewRect.left;
+    let cy = (tokRect.top + tokRect.height / 2) - previewRect.top;
+
+    let u = cx / previewW;
+    let v = cy / previewH;
+
+    if (!Number.isFinite(u) || !Number.isFinite(v)) continue;
+    previewTokens.push({
+      actorId,
+      u: Math.min(0.999, Math.max(0, u)),
+      v: Math.min(0.999, Math.max(0, v)),
+      flipped: $tok.data("lfFlipped") === true
+    });
+  }
+
+  if (!previewTokens.length) {
+    ui.notifications.error("No valid preview tokens.");
+    return;
+  }
+
+  // Activate scene
+  try {
+    if (!previewScene.active) await previewScene.update({ active: true });
+  } catch (e) {
+    console.warn("Conflict Builder: scene activation failed.", e);
+  }
+
+  await new Promise(r => setTimeout(r, 750));
+
+  const dims = canvas.dimensions;
+  if (!dims) {
+    ui.notifications.error("Canvas dimensions not ready.");
+    return;
+  }
+
+  const createdTokens = [];
+  const actorCache = new Map();
+
+  const level = parseInt($html.find("#creature-level").val(), 10) || 5;
+  const rank = $html.find("#creature-rank").val() || "soldier";
+  const replacedSoldiers = rank === "champion"
+    ? Math.max(1, parseInt($html.find("#replaced-soldiers").val(), 10) || 1)
+    : 1;
+
+  for (const pt of previewTokens) {
+    const { actorId, u, v, flipped } = pt;
+
+    let actor = actorCache.get(actorId);
+    if (!actor) {
+      actor = await ensureWorldActor(actorId);
+      if (!actor) continue;
+      actorCache.set(actorId, actor);
+    }
+
+    const proto = actor.prototypeToken.toObject();
+
+    const tokenPxW = (proto.width ?? 1) * dims.size;
+    const tokenPxH = (proto.height ?? 1) * dims.size;
+
+    const maxX = Math.max(0, dims.sceneWidth - tokenPxW);
+    const maxY = Math.max(0, dims.sceneHeight - tokenPxH);
+
+    let x = Math.min(maxX, Math.max(0, u * maxX));
+    let y = Math.min(maxY, Math.max(0, v * maxY));
+
+    proto.x = (dims.sceneX ?? 0) + x;
+    proto.y = (dims.sceneY ?? 0) + y;
+    proto.alpha = 0;
+
+    if (flipped) proto.mirrorX = !proto.mirrorX;
+
+    createdTokens.push(proto);
+  }
+
+  if (!createdTokens.length) {
+    ui.notifications.error("No creatures could be placed.");
+    return;
+  }
+
+  const created = await previewScene.createEmbeddedDocuments("Token", createdTokens);
+
+  // Apply stats
+  for (const token of created) {
+    const actor = token.actor;
+    if (!actor) continue;
+
+    await actor.update({
+      "system.level.value": level,
+      "system.rank.value": rank,
+      "system.rank.replacedSoldiers": replacedSoldiers
+    });
+
+    const maxHP = actor.system.resources.hp.max;
+    const maxMP = actor.system.resources.mp.max;
+
+    await actor.update({
+      "system.resources.hp.value": maxHP,
+      "system.resources.mp.value": maxMP
+    });
+  }
+
+  // Fade-in animation
+  try {
+    async function waitPlaceables(docs, timeout = 3000) {
+      const ids = new Set(docs.map(d => d.id));
+      const start = Date.now();
+
+      while (Date.now() - start < timeout) {
+        const found = canvas.tokens.placeables.filter(t => ids.has(t.document.id));
+        if (found.length) return found;
+        await new Promise(r => setTimeout(r, 50));
+      }
+      return [];
+    }
+
+    const placeables = await waitPlaceables(created);
+
+    if (!placeables.length) return;
+
+    await previewScene.updateEmbeddedDocuments(
+      "Token",
+      placeables.map(t => ({ _id: t.document.id, alpha: 0 }))
+    );
+
+    const fadeSteps = 10;
+    const duration = 2000;
+
+    for (let i = 1; i <= fadeSteps; i++) {
+      const alpha = i / fadeSteps;
+      setTimeout(() => {
+        previewScene.updateEmbeddedDocuments(
+          "Token",
+          placeables.map(t => ({ _id: t.document.id, alpha }))
+        );
+      }, (duration / fadeSteps) * i);
+    }
+
+  } catch (e) {
+    console.warn("Conflict Builder fade-in failed:", e);
+  }
 }
 
 // ---------------------------------------------------------------------------
-// Hook Registration
+// HOOKS
 // ---------------------------------------------------------------------------
 Hooks.once("ready", () => {
   game.lookfar ??= {};
-
   game.lookfar.conflictBuilder = openConflictBuilderDialog;
   Hooks.on("lookfarShowConflictBuilderDialog", openConflictBuilderDialog);
 });

@@ -1,0 +1,129 @@
+{{!-- modules/lookfar/templates/conflict-builder.hbs --}}
+
+<form>
+  {{!-- Scene Thumbnail Preview (aspect-matched to scene) --}}
+  <div style="margin-bottom: 6px; display:flex; justify-content:center;">
+    <div id="conflict-preview"
+         style="position:relative; width:{{previewWidth}}px; height:{{previewHeight}}px;
+                overflow:hidden; margin:0 auto 6px auto; background:#000;">
+      <img id="scene-thumbnail"
+           src="{{sceneThumb}}"
+           style="position:absolute; width:100%; height:100%;
+                  object-fit:fill; z-index:1;" />
+      <div id="preview-tokens-layer"></div>
+    </div>
+  </div>
+
+  {{!-- Music / Playlist selection --}}
+  <div style="display:flex; align-items:center; gap:8px; margin-bottom: 8px;">
+    <label for="playlist-select">Music:</label>
+    <select id="playlist-select" style="flex:1;">
+      <option value="default">Default</option>
+      {{#each playlists}}
+        <option value="{{id}}">{{name}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  {{!-- Creature Selection --}}
+  <div class="dialog-body">
+    {{!-- Left: Creature image preview --}}
+    <div>
+      <img id="creature-image"
+           src="{{initialActorImg}}"
+           class="preview-image">
+    </div>
+
+    {{!-- Right: Filters, list, quantity --}}
+    <div class="form-fields">
+      <div class="form-group">
+        <label for="folder-filter">Subfolder:</label>
+        <select id="folder-filter" style="width:100%;">
+          <option value="all">All Types</option>
+          {{#each folders}}
+            <option value="{{id}}">{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <input type="text"
+               id="search-input"
+               placeholder="Search..."
+               style="width:100%; padding:4px;">
+      </div>
+
+      <div class="scrollable-list">
+        {{#each actors}}
+          <div class="list-item" data-id="{{id}}">
+            {{name}}
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="form-group" style="display:flex; align-items:center; gap:4px;">
+        <label style="flex:0 0 auto;">Quantity:</label>
+        <input
+          type="number"
+          id="creature-quantity"
+          value="1"
+          min="1"
+          max="10"
+          style="flex:1; padding:4px;"
+        >
+        <button type="button"
+                id="add-to-encounter"
+                style="flex:0 0 60px;">
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {{!-- Stat Preview --}}
+  <div class="actor-attributes">
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td>HP:</td><td id="creature-hp">--</td>
+        <td>MP:</td><td id="creature-mp">--</td>
+        <td>Init:</td><td id="creature-init">--</td>
+      </tr>
+    </table>
+
+    <div style="margin-top:4px;">
+      <label style="width:35px;">Level:</label>
+      <button id="decrease-level"
+              type="button"
+              style="width:22px; padding:0;">-</button>
+      <input type="number"
+             id="creature-level"
+             value="5"
+             min="5"
+             max="60"
+             step="5"
+             style="width:40px; text-align:center;">
+      <button id="increase-level"
+              type="button"
+              style="width:22px; padding:0;">+</button>
+    </div>
+
+    <div style="margin-top:5px; display:flex; align-items:center;">
+      <label style="width:35px;">Rank:</label>
+      <select id="creature-rank" style="width:95px;">
+        <option value="soldier">Soldier</option>
+        <option value="elite">Elite</option>
+        <option value="champion">Champion</option>
+      </select>
+
+      <div id="replaced-soldiers-cell"
+           style="display:none; padding-left:5px;">
+        <input type="number"
+               id="replaced-soldiers"
+               value="1"
+               min="1"
+               max="6"
+               style="width:40px; text-align:center;">
+      </div>
+    </div>
+  </div>
+</form>

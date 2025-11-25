@@ -1,4 +1,6 @@
-import {dataLoader} from "./dataLoader.js";
+import { dataLoader } from "./dataLoader.js";
+
+// ---- Data roots -------------------------------------------------------------
 
 // load equipment templates
 const getEquipmentRoot = () => dataLoader?.equipmentData || dataLoader || {};
@@ -12,7 +14,34 @@ const getArmorList = d => d?.armor?.armorList ?? d?.armorData?.armorList ?? d?.a
 const getShieldList = d => d?.shields?.shieldList ?? d?.shieldsData?.shieldList ?? d?.shieldList ?? [];
 const getAccessoryList = d => d?.accessories?.accessoryList ?? d?.accessoriesData?.accessoryList ?? d?.accessoryList ?? [];
 
-const getName = r => r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
+// ---- Localization helpers ---------------------------------------------------
+
+const L = (key) => {
+  try {
+    return game.i18n?.localize?.(key) ?? key;
+  } catch {
+    return key;
+  }
+};
+
+const F = (key, data) => {
+  try {
+    return game.i18n?.format?.(key, data) ?? key;
+  } catch {
+    return key;
+  }
+};
+
+// ---- General helpers --------------------------------------------------------
+
+const getName = r =>
+  r?.name ??
+  r?.weaponName ??
+  r?.armorName ??
+  r?.shieldName ??
+  r?.accessoryName ??
+  "(Unnamed)";
+
 const esc = s => {
   try {
     return foundry.utils.escapeHTML(String(s));
@@ -44,7 +73,10 @@ const normHand = (h) => {
   return null;
 };
 
-// --- Setting Helpers ----------------------------------------------
+// Path to the extracted preview template
+const PREVIEW_TEMPLATE_PATH = "modules/lookfar/templates/item-forge-preview.hbs";
+
+// --- Setting Helpers ---------------------------------------------------------
 
 // Item Forge edit mode
 const getItemForgeEditMode = () => {
@@ -55,7 +87,7 @@ const getItemForgeEditMode = () => {
   }
 };
 
-// Public mode: collabortive, allows players and GM to control dialog
+// Public mode: collaborative, allows players and GM to control dialog
 const isItemForgeSharedMode = () => {
   const mode = getItemForgeEditMode();
   return mode === "public" || mode === "locked";
@@ -76,18 +108,18 @@ const useVariantDamageRules = () => {
   }
 };
 
-// --- FU Socket Helpers ----------------------------------------------
+// --- FU Socket Helpers -------------------------------------------------------
 
 // Message names (unique within FU socket handler)
 const IF_MSG = {
-  HostOpen:          "lookfar:itemforge:host-open",
-  HostClose:         "lookfar:itemforge:host-close",
-  MaterialsRequest:  "lookfar:itemforge:materials-request",
-  MaterialsReplace:  "lookfar:itemforge:materials-replace",
-  MaterialsAdd:      "lookfar:itemforge:materials-add",
-  MaterialsRemove:   "lookfar:itemforge:materials-remove",
-  MaterialsNotify:   "lookfar:itemforge:materials-notify",
-  UIStateReplace:    "lookfar:itemforge:ui-state-replace",
+  HostOpen:         "lookfar:itemforge:host-open",
+  HostClose:        "lookfar:itemforge:host-close",
+  MaterialsRequest: "lookfar:itemforge:materials-request",
+  MaterialsReplace: "lookfar:itemforge:materials-replace",
+  MaterialsAdd:     "lookfar:itemforge:materials-add",
+  MaterialsRemove:  "lookfar:itemforge:materials-remove",
+  MaterialsNotify:  "lookfar:itemforge:materials-notify",
+  UIStateReplace:   "lookfar:itemforge:ui-state-replace"
 };
 
 let _forgeAppId = null;      // window id for GM full forge dialog (on this client)
@@ -114,8 +146,8 @@ function ensureIFSocket() {
     return;
   }
 
-   // warning notifier so the host can ping specific clients
-   sock.register(IF_MSG.MaterialsNotify, (payload) => {
+  // warning notifier so the host can ping specific clients
+  sock.register(IF_MSG.MaterialsNotify, (payload) => {
     const text = payload?.text;
     if (text) ui.notifications?.warn(text);
   });
@@ -124,7 +156,10 @@ function ensureIFSocket() {
   sock.register(IF_MSG.HostOpen, (payload) => {
     _hostId = payload?.hostId ?? null;
     if (game.user.isGM && game.user.id === _hostId) {
-      sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
+      sock.executeForEveryone(
+        IF_MSG.MaterialsReplace,
+        { materials: _materials, originReq: _requiredOriginKey }
+      );
     }
   });
 
@@ -136,40 +171,45 @@ function ensureIFSocket() {
   // A client (mini or fresh joiner) asks the host for the latest materials
   sock.register(IF_MSG.MaterialsRequest, (_payload, msg) => {
     if (game.user.isGM && game.user.id === _hostId) {
-      sock.executeForUsers(IF_MSG.MaterialsReplace, [msg.sender], { materials: _materials, originReq: _requiredOriginKey });
+      sock.executeForUsers(
+        IF_MSG.MaterialsReplace,
+        [msg.sender],
+        { materials: _materials, originReq: _requiredOriginKey }
+      );
     }
   });
 
   // Everyone: receive authoritative materials
-sock.register(IF_MSG.MaterialsReplace, (payload) => {
-  _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
-  _requiredOriginKey = String(payload?.originReq || "").toLowerCase();
+  sock.register(IF_MSG.MaterialsReplace, (payload) => {
+    _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
+    _requiredOriginKey = String(payload?.originReq || "").toLowerCase();
 
-  try {
-    // Push into ANY open Item Forger window on this client
-    for (const [id, app] of Object.entries(ui.windows)) {
-      const html = app?.element;
-      if (!html?.length) continue;
+    try {
+      // Push into ANY open Item Forger window on this client
+      for (const [id, app] of Object.entries(ui.windows)) {
+        const html = app?.element;
+        if (!html?.length) continue;
 
-      // Only touch windows that have our materials drop zone
-      const $drop = html.find('#materialsDrop');
-      if (!$drop.length) continue;
+        // Only touch windows that have our materials drop zone
+        const $drop = html.find("#materialsDrop");
+        if (!$drop.length) continue;
 
-      html.data('ifMaterials', _materials);
-      html.data('ifRequiredOriginKey', _requiredOriginKey);
-      $drop.trigger('repaint');
+        html.data("ifMaterials", _materials);
+        html.data("ifRequiredOriginKey", _requiredOriginKey);
+        $drop.trigger("repaint");
+      }
+    } catch (e) {
+      console.warn("[Item Forger] MaterialsReplace repaint failed:", e);
     }
-  } catch (e) {
-    console.warn("[Item Forger] MaterialsReplace repaint failed:", e);
-  }
-});
+  });
 
   // Player proposes ADD (host validates → updates → broadcasts)
   sock.register(IF_MSG.MaterialsAdd, async (payload, msg) => {
     if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
 
     // Helper: warn the user who attempted the add (or fallback to host)
-    const warnUser = (text) => {
+    const warnUser = (textKey, data = {}) => {
+      const text = Object.keys(data).length ? F(textKey, data) : L(textKey);
       const targetId = msg?.sender;
       if (targetId && game.projectfu?.socket) {
         // Show the warning only on the client who initiated the drag
@@ -191,14 +231,14 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
 
       const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
       if (qty <= 0) {
-        warnUser("You do not have any more of this item.");
+        warnUser("LOOKFAR.ItemForge.Materials.Errors.NoMoreItem");
         return;
       }
 
       // How many times this uuid is already in the materials list
       const alreadyUsed = _materials.filter(m => m.uuid === uuid).length;
       if (alreadyUsed >= qty) {
-        warnUser("You do not have any more of this item.");
+        warnUser("LOOKFAR.ItemForge.Materials.Errors.NoMoreItem");
         return;
       }
 
@@ -212,14 +252,16 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
       };
 
       _materials = [..._materials, entry].slice(0, 5);
-      sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
+      sock.executeForEveryone(
+        IF_MSG.MaterialsReplace,
+        { materials: _materials, originReq: _requiredOriginKey }
+      );
     } catch (e) {
       console.error("[Item Forger] MaterialsAdd failed:", e);
     }
   });
 
   // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
-    // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
   sock.register(IF_MSG.MaterialsRemove, (payload) => {
     if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
     const { index, uuid } = payload ?? {};
@@ -232,7 +274,10 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
       newList = _materials.filter(m => m.uuid !== uuid);
     }
     _materials = newList;
-    sock.executeForEveryone(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
+    sock.executeForEveryone(
+      IF_MSG.MaterialsReplace,
+      { materials: _materials, originReq: _requiredOriginKey }
+    );
   });
 
   // UI state replace (item type, template, qualities, toggles, etc.)
@@ -254,7 +299,7 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
   });
 }
 
-// --- Cost Helpers ------------------------------------------------------------ //
+// --- Cost Helpers ------------------------------------------------------------
 
 const asAttrKey = (s) => {
   const v = String(s ?? "").toLowerCase();
@@ -267,68 +312,71 @@ const toInt = (v) => {
 };
 
 // resolve equipment.json cost value
-const getEquipCost = (r) => toInt(r?.cost ?? r?.value ?? r?.data?.cost ?? r?.data?.cost?.value ?? 0);
+const getEquipCost = (r) =>
+  toInt(r?.cost ?? r?.value ?? r?.data?.cost ?? r?.data?.cost?.value ?? 0);
 
 // resolve qualities.json cost value
 const getQualityCost = (q) => toInt(q?.cost ?? 0);
 
 // resolve material item cost value
-const getTreasureCost = (doc) => toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
+const getTreasureCost = (doc) =>
+  toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
 
 // resolve material origin value
-const getTreasureOrigin = (doc) => String(doc?.system?.origin?.value ?? "").trim().toLowerCase();
+const getTreasureOrigin = (doc) =>
+  String(doc?.system?.origin?.value ?? "").trim().toLowerCase();
 
 // resolve origin requirement for specific quality
 const getRequiredOriginKey = (html) => {
-  const key = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
+  const key = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
   // No origin requirement for "none", "basic", or "custom"
   return (key === "none" || key === "basic" || key === "custom") ? "" : key;
 };
 
-// --- Item Helpers ------------------------------------------------------------ //
+// --- Item Helpers ------------------------------------------------------------
 
 // Read custom-quality value
 const readCustomQuality = (html) => {
-  const eff = String(html.find('#customEffect').val() ?? html.data('customEffect') ?? '').trim();
-  const raw = String(html.find('#customCost').val() ?? html.data('customCost') ?? '');
-  const cost = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+  const eff = String(html.find("#customEffect").val() ?? html.data("customEffect") ?? "").trim();
+  const raw = String(html.find("#customCost").val() ?? html.data("customCost") ?? "");
+  const cost = Math.max(0, parseInt(raw.replace(/\D+/g, ""), 10) || 0);
   return { eff, cost };
 };
 
 const getSelectedBase = (html, currentTemplates) => {
-  const $sel = html.find('#templateList [data-selected="1"]').first();
+  const $sel = html.find("#templateList [data-selected='1']").first();
   const idx = Number($sel.data("idx"));
   return Number.isFinite(idx) ? currentTemplates[idx] : null;
 };
 
 const getSelectedQualityInfo = (html, currentQualities) => {
-  const catKey = String(html.find('#qualitiesCategory').val() || "none").toLowerCase();
+  const catKey = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
   if (catKey === "custom") {
     const { eff, cost } = readCustomQuality(html);
     return {
-      desc: eff || "No quality",
+      desc: eff || L("LOOKFAR.ItemForge.Qualities.NoneText"),
       cost
     };
   }
   if (catKey === "none" || !currentQualities?.length) {
     return {
-      desc: "No quality",
+      desc: L("LOOKFAR.ItemForge.Qualities.NoneText"),
       cost: 0
     };
   }
-  const $q = html.find('#qualitiesList [data-selected="1"]').first();
+  const $q = html.find("#qualitiesStandardBlock [data-selected='1']").first();
   const qi = Number($q.data("idx"));
   const q = Number.isFinite(qi) ? currentQualities[qi] : null;
   return {
-    desc: q?.description ?? q?.desc ?? "No quality",
+    desc: q?.description ?? q?.desc ?? L("LOOKFAR.ItemForge.Qualities.NoneText"),
     cost: Number(q?.cost ?? 0) || 0
   };
 };
 
 const getPreviewIcon = (html, fallback) => {
-  const override = html.data('iconOverride');
+  const override = html.data("iconOverride");
   if (override) return override;
-  const src = html.find('#if-preview-icon').attr('src');
+  const src = html.find("#if-preview-icon").attr("src");
   return src || fallback || "icons/svg/mystery-man.svg";
 };
 
@@ -336,7 +384,11 @@ const validateMaterialsOrigin = (html, materials) => {
   const needKey = getRequiredOriginKey(html);
   if (!needKey) return true;
   const ok = materials.some(m => String(m.origin) === needKey);
-  if (!ok) ui.notifications?.warn(`This quality requires at least one ${needKey} material.`);
+  if (!ok) {
+    ui.notifications?.warn(
+      F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: needKey })
+    );
+  }
   return ok;
 };
 
@@ -345,49 +397,49 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
   const base = getEquipCost(tmpl);
 
   // Handles quality cost
-  const catKey = String(html.find('#qualitiesCategory').val() || 'none').toLowerCase();
+  const catKey = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
   let qcost = 0;
-  if (catKey === 'custom') {
+  if (catKey === "custom") {
     const { cost } = readCustomQuality(html);
     qcost = toInt(cost);
-  } else if (catKey !== 'none') {
-    const $q = html.find('#qualitiesList [data-selected="1"]').first();
-    const qi = Number($q.data('idx'));
+  } else if (catKey !== "none") {
+    const $q = html.find("#qualitiesStandardBlock [data-selected='1']").first();
+    const qi = Number($q.data("idx"));
     const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
     qcost = getQualityCost(qual);
   }
 
   // Handles weapon surcharges
-  const kind = html.find('input[name="itemType"]:checked').val();
+  const kind = html.find("input[name='itemType']:checked").val();
   let custom = 0;
-  if (kind === 'weapon') {
-    const plus1 = html.find('#optPlusOne').is(':checked');
-    const plus4 = html.find('#optPlusDamage').is(':checked');
-    const eleSel = (html.find('#optElement').val() || 'physical').toString();
+  if (kind === "weapon") {
+    const plus1 = html.find("#optPlusOne").is(":checked");
+    const plus4 = html.find("#optPlusDamage").is(":checked");
+    const eleSel = (html.find("#optElement").val() || "physical").toString();
     if (plus1) custom += 100;
     if (plus4) custom += 200;
-    if (eleSel !== 'physical') custom += 100;
+    if (eleSel !== "physical") custom += 100;
 
-    const baseA = String(tmpl?.attrA ?? '').toUpperCase();
-    const baseB = String(tmpl?.attrB ?? '').toUpperCase();
-    const selA = String(html.find('#optAttrA').val() || baseA).toUpperCase();
-    const selB = String(html.find('#optAttrB').val() || baseB).toUpperCase();
+    const baseA = String(tmpl?.attrA ?? "").toUpperCase();
+    const baseB = String(tmpl?.attrB ?? "").toUpperCase();
+    const selA = String(html.find("#optAttrA").val() || baseA).toUpperCase();
+    const selB = String(html.find("#optAttrB").val() || baseB).toUpperCase();
     const isMatchingNow = selA && selB && (selA === selB);
     const sameAsOriginalPair = (selA === baseA) && (selB === baseB);
     if (isMatchingNow && !sameAsOriginalPair) custom += 50;
   }
 
   // Handles materials subtotal
-  const materials = html.data('ifMaterials') || [];
+  const materials = html.data("ifMaterials") || [];
   const matTotal = materials.reduce((s, m) => s + toInt(m.cost), 0);
 
-  // Output seperate cost values
+  // Output separate cost values
   const worth = Math.max(0, base + qcost + custom); // saves to crafted item
   let craft = Math.max(0, worth - matTotal);        // shows in dialog
 
   // Apply a 10% fee by default, unless "No Fee" is checked.
   // Fee is applied after all surcharges and materials, rounded down.
-  const noFee = html.find('#optFee').is(':checked');
+  const noFee = html.find("#optFee").is(":checked");
   if (!noFee) {
     craft = Math.floor(craft * 1.10);
   }
@@ -411,12 +463,12 @@ const computeWeaponStats = (base, html, worthOverride) => {
   const variant = useVariantDamageRules();
 
   const baseHand = normHand(base?.hand) || null; // "1" | "2" | null
-  const plus1 = html.find('#optPlusOne').is(':checked');
-  const plus4 = html.find('#optPlusDamage').is(':checked');
-  const flip  = html.find('#optToggleHand').is(':checked');
-  const selA  = String(html.find('#optAttrA').val() || base?.attrA || "").toUpperCase();
-  const selB  = String(html.find('#optAttrB').val() || base?.attrB || "").toUpperCase();
-  const elementVal = (html.find('#optElement').val() || base?.element || "physical").toString();
+  const plus1 = html.find("#optPlusOne").is(":checked");
+  const plus4 = html.find("#optPlusDamage").is(":checked");
+  const flip  = html.find("#optToggleHand").is(":checked");
+  const selA  = String(html.find("#optAttrA").val() || base?.attrA || "").toUpperCase();
+  const selB  = String(html.find("#optAttrB").val() || base?.attrB || "").toUpperCase();
+  const elementVal = (html.find("#optElement").val() || base?.element || "physical").toString();
 
   // hands
   let handsOut = base?.hand || "";
@@ -462,28 +514,30 @@ const computeWeaponStats = (base, html, worthOverride) => {
 };
 
 // Build itemData for the selected item.
-const buildItemData = (kind, html, {
-  currentTemplates,
-  currentQualities
-}) => {
+const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
   const base = getSelectedBase(html, currentTemplates);
-  if (!base) throw new Error("No template selected.");
+  if (!base) throw new Error(L("LOOKFAR.ItemForge.Errors.NoTemplateSelected"));
 
-  const {
-    desc: qualDesc
-  } = getSelectedQualityInfo(html, currentQualities);
+  const { desc: qualDesc } = getSelectedQualityInfo(html, currentQualities);
   const img = getPreviewIcon(html, dataLoader.getRandomIconFor(kind, base));
-  const $t = html.find('#templateList [data-selected="1"]').first();
+  const $t = html.find("#templateList [data-selected='1']").first();
   const ti = Number($t.data("idx"));
   const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
   const { worth } = getCurrentCosts(html, tmpl, currentQualities);
   const costField = worth;
 
+  // Localized fallbacks for unnamed base templates
+  const fallbackWeaponName    = L("LOOKFAR.ItemForge.Fallback.WeaponName");
+  const fallbackArmorName     = L("LOOKFAR.ItemForge.Fallback.ArmorName");
+  const fallbackShieldName    = L("LOOKFAR.ItemForge.Fallback.ShieldName");
+  const fallbackAccessoryName = L("LOOKFAR.ItemForge.Fallback.AccessoryName");
+
   // handle weapon item data.
   if (kind === "weapon") {
+    const baseName = base?.name || fallbackWeaponName;
     const w = computeWeaponStats(base, html, worth);
     return {
-      name: `Crafted ${base?.name ?? "Weapon"}`,
+      name: F("LOOKFAR.ItemForge.Create.NamePattern.Weapon", { base: baseName }),
       type: "weapon",
       img,
       system: {
@@ -518,7 +572,7 @@ const buildItemData = (kind, html, {
           value: !!w.isMartial
         },
         quality: {
-          value: qualDesc || "No quality"
+          value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
         },
         cost: {
           value: costField
@@ -527,16 +581,23 @@ const buildItemData = (kind, html, {
           value: "LOOKFAR"
         },
         summary: {
-          value: `A finely crafted ${base?.category ?? "weapon"} weapon.`
+          value: F("LOOKFAR.ItemForge.Create.Summary.Weapon", {
+            category: base?.category ?? L("LOOKFAR.ItemForge.Fallback.WeaponCategory")
+          })
         }
       }
     };
   }
 
-  // handle armor item data.  
+  // handle armor item data.
   if (kind === "armor") {
+    const baseName = base?.name || fallbackArmorName;
+    const martialKey = base?.isMartial
+      ? "LOOKFAR.ItemForge.Armor.Martial"
+      : "LOOKFAR.ItemForge.Armor.NonMartial";
+
     return {
-      name: `Crafted ${base?.name ?? "Armor"}`,
+      name: F("LOOKFAR.ItemForge.Create.NamePattern.Armor", { base: baseName }),
       type: "armor",
       img,
       system: {
@@ -555,23 +616,31 @@ const buildItemData = (kind, html, {
           value: !!base?.isMartial
         },
         quality: {
-          value: qualDesc || "No quality"
+          value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
         },
         cost: {
           value: costField
         },
+        // NOTE: Armor must use scalar source here (system quirk).
         source: "LOOKFAR",
         summary: {
-          value: `A set of finely crafted ${base?.isMartial ? "martial" : "non-martial"} armor.`
+          value: F("LOOKFAR.ItemForge.Create.Summary.Armor", {
+            martialType: L(martialKey)
+          })
         }
       }
     };
   }
 
-  // handle shield item data. 
+  // handle shield item data.
   if (kind === "shield") {
+    const baseName = base?.name || fallbackShieldName;
+    const martialKey = base?.isMartial
+      ? "LOOKFAR.ItemForge.Shield.Martial"
+      : "LOOKFAR.ItemForge.Shield.NonMartial";
+
     return {
-      name: `Crafted ${base?.name ?? "Shield"}`,
+      name: F("LOOKFAR.ItemForge.Create.NamePattern.Shield", { base: baseName }),
       type: "shield",
       img,
       system: {
@@ -590,7 +659,7 @@ const buildItemData = (kind, html, {
           value: !!base?.isMartial
         },
         quality: {
-          value: qualDesc || "No quality"
+          value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
         },
         cost: {
           value: costField
@@ -599,15 +668,18 @@ const buildItemData = (kind, html, {
           value: "LOOKFAR"
         },
         summary: {
-          value: `A well crafted ${base?.isMartial ? "martial" : "non-martial"} shield.`
+          value: F("LOOKFAR.ItemForge.Create.Summary.Shield", {
+            martialType: L(martialKey)
+          })
         }
       }
     };
   }
 
   // handle accessory item data.
+  const baseName = base?.name || fallbackAccessoryName;
   return {
-    name: `Crafted ${base?.name ?? "Accessory"}`,
+    name: F("LOOKFAR.ItemForge.Create.NamePattern.Accessory", { base: baseName }),
     type: "accessory",
     img,
     system: {
@@ -621,7 +693,7 @@ const buildItemData = (kind, html, {
         value: Number(base?.init ?? 0) || 0
       },
       quality: {
-        value: qualDesc || "No quality"
+        value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
       },
       cost: {
         value: costField
@@ -630,166 +702,18 @@ const buildItemData = (kind, html, {
         value: "LOOKFAR"
       },
       summary: {
-        value: `A well crafted ${base?.name ?? "Accessory"}.`
+        value: F("LOOKFAR.ItemForge.Create.Summary.Accessory", {
+          base: baseName
+        })
       }
     }
   };
 };
 
-// --- Dialog Behavior ------------------------------------------------------------//
+// --- Dialog Behavior ---------------------------------------------------------
 
-const CATEGORY_OPTIONS = [
-  ["Basic", "basic"],
-  ["Custom", "custom"],
-  ["Ardent", "ardent"],
-  ["Aerial", "aerial"],
-  ["Thunderous", "thunderous"],
-  ["Paradox", "paradox"],
-  ["Terrestrial", "terrestrial"],
-  ["Glacial", "glacial"],
-  ["Spiritual", "spiritual"],
-  ["Corrupted", "corrupted"],
-  ["Aquatic", "aquatic"],
-  ["Mechanical", "mechanical"],
-];
-
-const ATTR_ROW_FIXED_HEIGHT = "30px";
-
-const content = `
-<div id="if-body">
-  <form>
-    <div style="display:flex; gap:4px; align-items:flex-start; min-width:0; margin-bottom:0;">
-
-      <!-- Left Column: Item selection, attributes, preview -->
-      <div style="flex:0 0 60%; min-width:0; display:flex; flex-direction:column;">
-
-        <!-- Choose Item -->
-        <fieldset style="margin:0;">
-          <legend>Choose Item</legend>
-          <div style="display:flex; align-items:flex-start; min-width:0;">
-            <div style="flex:0 0 100px;">
-              <label><input type="radio" name="itemType" value="weapon" checked> Weapon</label><br>
-              <label><input type="radio" name="itemType" value="armor"> Armor</label><br>
-              <label><input type="radio" name="itemType" value="shield"> Shield</label><br>
-              <label><input type="radio" name="itemType" value="accessory"> Accessory</label>
-            </div>
-            <div style="flex:1 1 auto; min-width:0;">
-              <div id="templateList" aria-label="Template list"
-                   style="height:100px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
-                <div>Loading…</div>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-
-        <!-- Attributes -->
-        <div id="attrRow">
-          <fieldset style="margin:0;">
-            <legend>Attributes</legend>
-            <div id="attrInner"
-                 style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;
-                        height:${ATTR_ROW_FIXED_HEIGHT}; box-sizing:border-box;">
-            </div>
-          </fieldset>
-        </div>
-
-        <!-- Preview -->
-        <fieldset style="margin:0;">
-          <legend>Preview</legend>
-          <div id="itemPreviewLarge" title="Crafted item preview"
-               style="width:100%; height:165px; border:1px solid #999;
-                      display:flex; align-items:center; justify-content:center;">
-            CONTENT
-          </div>
-        </fieldset>
-
-      </div>
-
-      <!-- Right Column: Customize, Qualities, Cost -->
-      <div style="flex:0 0 40%; min-width:0; display:flex; flex-direction:column;">
-
-        <!-- Customize -->
-        <fieldset>
-          <legend>Customize</legend>
-          <div id="customizeArea" style="width:100%; height:100px;"></div>
-        </fieldset>
-
-        <!-- Qualities -->
-        <fieldset>
-          <legend>Qualities</legend>
-          <div style="margin-bottom:4px;">
-            <select id="qualitiesCategory" style="width:100%;">
-              <option value="none" selected>None</option>
-              ${CATEGORY_OPTIONS.map(([label, key]) => `
-                <option value="${key}">${label}</option>
-              `).join("")}
-            </select>
-          </div>
-          <div id="qualitiesList" aria-label="Qualities list"
-               style="width:100%; height:138px; overflow-y:auto;
-                      border:1px solid #999; box-sizing:border-box;">
-            <div>Loading…</div>
-          </div>
-        </fieldset>
-
-        <!-- Cost -->
-        <fieldset>
-          <legend>Cost</legend>
-          <div id="costRow"
-               style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:25px;">
-            <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
-            <span id="costValue"
-                  style="display:inline-block; width:4ch; text-align:left;
-                         font-variant-numeric: tabular-nums;
-                         font-feature-settings:'tnum';">0</span>
-            <label style="display:inline-flex; align-items:center; font-size:14px; white-space:nowrap;">
-              <input type="checkbox" id="optFee" style="margin-right:4px;">
-              <span>No Fee</span>
-            </label>
-          </div>
-        </fieldset>
-
-      </div>
-    </div>
-
-    <!-- Materials -->
-    <fieldset style="margin:0 0 6px 0;">
-      <legend>Materials</legend>
-      <div id="materialsDrop" aria-label="Materials drop zone"
-           style="min-height:72px; border:1px dashed #999;
-                  display:flex; align-items:center; justify-content:center;
-                  gap:8px; padding:6px; box-sizing:border-box; user-select:none;">
-        <div id="materialsHint" style="opacity:0.6; font-size:12px;">
-          Drag & drop Item documents here (max 5)
-        </div>
-      </div>
-    </fieldset>
-
-  </form>
-</div>
-`;
-
-// --- Mini Materials Dialog (players & observers) -----------------------------
-
-const contentMini = `
-<div id="if-body">
-  <form>
-    <fieldset style="margin:0 0 6px 0;">
-      <legend>Materials</legend>
-      <div id="materialsDrop" aria-label="Materials drop zone"
-           style="min-height:96px; border:1px dashed #999;
-                  display:flex; align-items:center; justify-content:center;
-                  gap:8px; padding:6px; box-sizing:border-box; user-select:none;">
-        <div id="materialsHint" style="opacity:0.6; font-size:12px;">
-          Drag & drop Treasure Items here (max 5)
-        </div>
-      </div>
-    </fieldset>
-  </form>
-</div>
-`;
-
-function openMaterialsMiniDialog() {
+// Mini Materials Dialog (players & observers) uses item-forge-mini.hbs
+async function openMaterialsMiniDialog() {
   ensureIFSocket();
 
   // singleton mini on this client
@@ -798,17 +722,22 @@ function openMaterialsMiniDialog() {
     return;
   }
 
+  const content = await renderTemplate(
+    "modules/lookfar/templates/item-forge-mini.hbs",
+    {}
+  );
+
   const dlg = new Dialog({
-    title: "Item Forger — Materials",
-    content: contentMini,
+    title: L("LOOKFAR.ItemForge.Dialog.MiniTitle"),
+    content,
     buttons: {},
     render: async (html) => {
       const appId = Number(html.closest(".window-app").attr("data-appid"));
       _miniAppId = appId;
 
       const sock = game.projectfu?.socket;
-      html.data('ifMaterials', _materials || []);
-      html.data('ifRequiredOriginKey', _requiredOriginKey || "");
+      html.data("ifMaterials", _materials || []);
+      html.data("ifRequiredOriginKey", _requiredOriginKey || "");
 
       const $dlg = html.closest(".window-app");
       $dlg.css({ width: "420px" });
@@ -824,55 +753,63 @@ function openMaterialsMiniDialog() {
       };
 
       const renderMaterialsMini = () => {
-  const list    = html.data('ifMaterials') || [];
-  const needKey = String(html.data('ifRequiredOriginKey') || "").toLowerCase();
-  const hasReq  = !needKey || list.some(m => String(m.origin) === needKey);
+        const list    = html.data("ifMaterials") || [];
+        const needKey = String(html.data("ifRequiredOriginKey") || "").toLowerCase();
+        const hasReq  = !needKey || list.some(m => String(m.origin) === needKey);
 
-  $materialsDrop.children('img[data-mat="1"]').remove();
+        $materialsDrop.children("img[data-mat='1']").remove();
 
-  if (!list.length) {
-    if (needKey) {
-      $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
-    } else {
-      $materialsHint.text("Drag & drop Treasure Items here (max 5)");
-    }
-    $materialsHint.show();
-  } else {
-    $materialsHint.hide();
-    list.forEach((m, i) => {
-      const tip = [
-        m.name || "",
-        m.origin ? `Origin: ${m.origin}` : "",
-        Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
-      ].filter(Boolean).join(" • ");
+        if (!list.length) {
+          if (needKey) {
+            $materialsHint.text(
+              F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: needKey })
+            );
+          } else {
+            $materialsHint.text(L("LOOKFAR.ItemForge.Materials.Hint"));
+          }
+          $materialsHint.show();
+        } else {
+          $materialsHint.hide();
+          list.forEach((m, i) => {
+            const originLabel = L("LOOKFAR.ItemForge.Materials.Tooltip.OriginLabel");
+            const costLabel   = L("LOOKFAR.ItemForge.Materials.Tooltip.CostLabel");
 
-      const $img = $(`
-        <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-             title="Click to request removal\n${esc(tip)}"
-             style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">
-      `);
+            const tip = [
+              m.name || "",
+              m.origin ? `${originLabel}: ${m.origin}` : "",
+              Number.isFinite(m.cost) ? `${costLabel}: ${m.cost}` : ""
+            ].filter(Boolean).join(" • ");
 
-      // Players click to REQUEST removal (host decides)
-      $img.on("click", () => {
-        sock?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
-      });
+            const tooltipRemove = L("LOOKFAR.ItemForge.Materials.Tooltip.RequestRemove");
 
-      $materialsDrop.append($img);
-    });
-  }
+            const $img = $(`
+              <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+                   title="${esc(tooltipRemove)}\n${esc(tip)}">
+            `);
 
-  // Match main dialog: red border when requirement not satisfied
-  $materialsDrop.css({ borderColor: (!hasReq && needKey) ? "red" : "#999" });
+            $img.addClass("lf-if-material-icon");
 
-  // repaint hook for socket pushes
-  html.find('#materialsDrop').off('repaint').on('repaint', () => {
-    html.data('ifMaterials', _materials);
-    html.data('ifRequiredOriginKey', _requiredOriginKey);
-    renderMaterialsMini();
-  });
+            // Players click to REQUEST removal (host decides)
+            $img.on("click", () => {
+              sock?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
+            });
 
-  relayout();
-};
+            $materialsDrop.append($img);
+          });
+        }
+
+        // Match main dialog: red border when requirement not satisfied
+        $materialsDrop.css({ borderColor: (!hasReq && needKey) ? "red" : "#999" });
+
+        // repaint hook for socket pushes
+        html.find("#materialsDrop").off("repaint").on("repaint", () => {
+          html.data("ifMaterials", _materials);
+          html.data("ifRequiredOriginKey", _requiredOriginKey);
+          renderMaterialsMini();
+        });
+
+        relayout();
+      };
 
       // Drag & drop to request ADD (host validates)
       $materialsDrop
@@ -898,8 +835,11 @@ function openMaterialsMiniDialog() {
         });
 
       // Ask the host for the authoritative list immediately
-      if (_hostId)  sock?.executeAsUser?.(IF_MSG.MaterialsRequest, _hostId, {});
-      else if (game.users.activeGM?.id) sock?.executeAsUser?.(IF_MSG.MaterialsRequest, game.users.activeGM.id, {});
+      if (_hostId) {
+        sock?.executeAsUser?.(IF_MSG.MaterialsRequest, _hostId, {});
+      } else if (game.users.activeGM?.id) {
+        sock?.executeAsUser?.(IF_MSG.MaterialsRequest, game.users.activeGM.id, {});
+      }
 
       renderMaterialsMini();
     },
@@ -909,9 +849,8 @@ function openMaterialsMiniDialog() {
   dlg.render(true);
 }
 
-
-// Item Forger Dialog
-function openItemForgeDialog() {
+// Item Forger Dialog (main) uses item-forge.hbs
+async function openItemForgeDialog() {
   ensureIFSocket();
 
   // GM full dialog should be singleton on this client
@@ -926,22 +865,35 @@ function openItemForgeDialog() {
   let currentTemplates = [];
   let currentQualities = [];
 
+  const content = await renderTemplate(
+    "modules/lookfar/templates/item-forge.hbs",
+    {}
+  );
+
   const dlg = new Dialog({
-    title: "Item Forger",
+    title: L("LOOKFAR.ItemForge.Dialog.Title"),
     content,
     buttons: {
       forge: {
-        label: "Forge",
+        label: L("LOOKFAR.ItemForge.Dialog.Button.Forge"),
         icon: '<i class="fas fa-hammer"></i>',
         callback: async (html) => {
           try {
-            const kind = html.find('input[name="itemType"]:checked').val();
-            if (!kind) return ui.notifications.warn("Choose an item type first.");
+            const kind = html.find("input[name='itemType']:checked").val();
+            if (!kind) {
+              return ui.notifications.warn(
+                L("LOOKFAR.ItemForge.Dialog.Errors.ChooseType")
+              );
+            }
 
             const base = getSelectedBase(html, currentTemplates);
-            if (!base) return ui.notifications.warn("Select a template first.");
+            if (!base) {
+              return ui.notifications.warn(
+                L("LOOKFAR.ItemForge.Dialog.Errors.ChooseTemplate")
+              );
+            }
 
-            const mats = html.data('ifMaterials') || [];
+            const mats = html.data("ifMaterials") || [];
             if (!validateMaterialsOrigin(html, mats)) return false;
 
             // Only the host GM should ever actually consume items
@@ -960,7 +912,11 @@ function openItemForgeDialog() {
                 const currQty = Number(doc.system?.quantity?.value ?? 0) || 0;
                 if (currQty < used) {
                   ui.notifications?.error(
-                    `Not enough quantity of ${doc.name} to forge (need ${used}, have ${currQty}).`
+                    F("LOOKFAR.ItemForge.Materials.Errors.NotEnoughQuantity", {
+                      name: doc.name,
+                      need: used,
+                      have: currQty
+                    })
                   );
                   return false;  // keep dialog open
                 }
@@ -979,10 +935,16 @@ function openItemForgeDialog() {
             const itemData = buildItemData(kind, html, { currentTemplates, currentQualities });
             const created = await Item.create(itemData, { renderSheet: true });
             if (!created) throw new Error("Item creation failed.");
-            ui.notifications.info(`${created.name} forged.`);
+            ui.notifications.info(
+              F("LOOKFAR.ItemForge.Notifications.Forged", { name: created.name })
+            );
           } catch (err) {
             console.error("[Item Forger] Forge failed:", err);
-            ui.notifications?.error(`Item Forger: ${err.message || "Failed to forge item."}`);
+            ui.notifications?.error(
+              F("LOOKFAR.ItemForge.Dialog.Errors.ForgeFailed", {
+                error: err.message || L("LOOKFAR.ItemForge.Errors.GenericForgeFailed")
+              })
+            );
             return false;
           }
         }
@@ -999,19 +961,18 @@ function openItemForgeDialog() {
       if (game.user.isGM) {
         _hostId = game.user.id;
         // Use our current in-memory list (might be empty on first open)
-        html.data('ifMaterials', _materials);
+        html.data("ifMaterials", _materials);
         sock?.executeForEveryone?.(IF_MSG.HostOpen, { hostId: game.user.id });
         // Immediately share the state
-        sock?.executeForEveryone?.(IF_MSG.MaterialsReplace, { materials: _materials, originReq: _requiredOriginKey });
+        sock?.executeForEveryone?.(
+          IF_MSG.MaterialsReplace,
+          { materials: _materials, originReq: _requiredOriginKey }
+        );
       } else {
-        // Non-GM shouldn't have the full dialog; (safety) mirror the list & bail
-        html.data('ifMaterials', _materials);
+        // Non-GM shouldn't have the full dialog; (safety) mirror the list
+        html.data("ifMaterials", _materials);
       }
 
-      // --- your existing layout/preview/template/qualities wiring stays the same ---
-      // (Keep all of your original code here unchanged EXCEPT the Materials area)
-
-      // Grab handles you already use
       const $dlg = html.closest(".window-app");
       const $wc  = $dlg.find(".window-content");
       $wc.css({ display: "block", overflow: "visible" });
@@ -1021,7 +982,7 @@ function openItemForgeDialog() {
       const setForgeEnabled = (enabled) => {
         const $btn = $dlg.find('button[data-button="forge"]');
         if (!$btn.length) return;
-        $btn.prop('disabled', !enabled);
+        $btn.prop("disabled", !enabled);
         $btn.css({
           opacity: enabled ? 1 : 0.5,
           filter: enabled ? "" : "grayscale(1)"
@@ -1040,15 +1001,17 @@ function openItemForgeDialog() {
       const $templateList    = html.find("#templateList");
       const $qualitiesList   = html.find("#qualitiesList");
       const $qualitiesSelect = html.find("#qualitiesCategory");
-      const $customize       = html.find("#customizeArea");
-      const $attrInner       = html.find("#attrInner");
       const $materialsDrop   = html.find("#materialsDrop");
       const $materialsHint   = html.find("#materialsHint");
       const $preview         = html.find("#itemPreviewLarge");
 
+      const $attrRow         = html.find("#attrRow");
+      const $weaponCustomize = html.find("#weaponCustomize");
+      const $noCustomize     = html.find("#noCustomize");
+
       // Hide fee checkbox for non-GM users
       if (!game.user.isGM) {
-        html.find('#optFee').closest('label').hide();
+        html.find("#optFee").closest("label").hide();
       }
 
       // Locked mode: non-GMs see full dialog but controls are read-only
@@ -1060,62 +1023,62 @@ function openItemForgeDialog() {
       const applyLockState = () => {
         if (!lockControlsForPlayer) return;
 
-     // Item type radios
-     html.find('input[name="itemType"]').prop('disabled', true);
+        // Item type radios
+        html.find("input[name='itemType']").prop("disabled", true);
 
-     // Weapon customize + attrs + fee
-     html.find('#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee')
-         .prop('disabled', true);
+        // Weapon customize + attrs + fee
+        html
+          .find("#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee")
+          .prop("disabled", true);
 
-     // Qualities category select
-     html.find('#qualitiesCategory').prop('disabled', true);
+        // Qualities category select
+        html.find("#qualitiesCategory").prop("disabled", true);
 
-     // Custom quality controls (if present)
-     html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
-   };
+        // Custom quality controls
+        html.find("#customEffect, #customCost, #customApply").prop("disabled", true);
+      };
 
-    // Initial pass (in case some controls exist already)
-    applyLockState();
-
+      // Initial pass (in case some controls exist already)
+      applyLockState();
 
       // --- Shared Forge UI state helpers (only used when visibility is "Public") ---
       let suppressStateBroadcast = false;
 
       const collectForgeState = () => {
-        const kind = html.find('input[name="itemType"]:checked').val() || "weapon";
+        const kind = html.find("input[name='itemType']:checked").val() || "weapon";
 
-        const $t = html.find('#templateList [data-selected="1"]').first();
+        const $t = html.find("#templateList [data-selected='1']").first();
         const tIdxRaw = Number($t.data("idx"));
         const templateIdx = Number.isFinite(tIdxRaw) ? tIdxRaw : null;
 
         const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
         let qualityIdx = null;
         if (catKey !== "none" && catKey !== "custom") {
-          const $q = html.find('#qualitiesList [data-selected="1"]').first();
+          const $q = html.find("#qualitiesStandardBlock [data-selected='1']").first();
           const qIdxRaw = Number($q.data("idx"));
           qualityIdx = Number.isFinite(qIdxRaw) ? qIdxRaw : null;
         }
 
-        const plusOne     = html.find('#optPlusOne').is(':checked');
-        const plusDamage  = html.find('#optPlusDamage').is(':checked');
-        const toggleHand  = html.find('#optToggleHand').is(':checked');
-        const element     = (html.find('#optElement').val() || 'physical').toString();
-        const attrA       = (html.find('#optAttrA').val() || '').toString();
-        const attrB       = (html.find('#optAttrB').val() || '').toString();
-        const fee         = html.find('#optFee').is(':checked');
+        const plusOne     = html.find("#optPlusOne").is(":checked");
+        const plusDamage  = html.find("#optPlusDamage").is(":checked");
+        const toggleHand  = html.find("#optToggleHand").is(":checked");
+        const element     = (html.find("#optElement").val() || "physical").toString();
+        const attrA       = (html.find("#optAttrA").val() || "").toString();
+        const attrB       = (html.find("#optAttrB").val() || "").toString();
+        const fee         = html.find("#optFee").is(":checked");
 
         // Custom quality; if inputs not present, fall back to stored data
-        const $customEffect = html.find('#customEffect');
-        const $customCost   = html.find('#customCost');
+        const $customEffect = html.find("#customEffect");
+        const $customCost   = html.find("#customCost");
         const customEffect  = $customEffect.length
-          ? String($customEffect.val() ?? '').trim()
-          : String(html.data('customEffect') ?? '').trim();
+          ? String($customEffect.val() ?? "").trim()
+          : String(html.data("customEffect") ?? "").trim();
         const customCost    = $customCost.length
           ? toInt($customCost.val())
-          : toInt(html.data('customCost') ?? 0);
+          : toInt(html.data("customCost") ?? 0);
 
-        const previewSrc = html.find('#if-preview-icon').attr('src') || "";
-        const iconPath = html.data('iconPath') || previewSrc || "";
+        const previewSrc = html.find("#if-preview-icon").attr("src") || "";
+        const iconPath = html.data("iconPath") || previewSrc || "";
 
         return {
           kind,
@@ -1150,10 +1113,10 @@ function openItemForgeDialog() {
         sock.executeForEveryone(IF_MSG.UIStateReplace, { state });
       };
 
-      // COST updater (unchanged)
+      // COST updater
       function updateCost() {
-        const $val = html.find('#costValue');
-        const $t   = html.find('#templateList [data-selected="1"]').first();
+        const $val = html.find("#costValue");
+        const $t   = html.find("#templateList [data-selected='1']").first();
         const ti   = Number($t.data("idx"));
         const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
         const { craft } = getCurrentCosts(html, tmpl, currentQualities);
@@ -1161,15 +1124,23 @@ function openItemForgeDialog() {
       }
 
       const getNameSafe = (r) => esc(getName(r));
-      const getItemImage = (item) => {
 
+      const getItemImage = (item) => {
         if (item?.img) return item.img;
 
-        const kind = html.find('input[name="itemType"]:checked').val(); // "weapon" | "armor" | "shield" | "accessory"
-        if (!kind) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+        const kind = html.find("input[name='itemType']:checked").val(); // "weapon" | "armor" | "shield" | "accessory"
+        if (!kind) {
+          return item?.texture?.src ||
+                 item?.prototypeToken?.texture?.src ||
+                 "icons/svg/mystery-man.svg";
+        }
 
         const templateId = item?.system?.templateId;
-        if (!templateId) return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+        if (!templateId) {
+          return item?.texture?.src ||
+                 item?.prototypeToken?.texture?.src ||
+                 "icons/svg/mystery-man.svg";
+        }
 
         // pick a random icon from the manifest
         const byKindList = {
@@ -1177,26 +1148,30 @@ function openItemForgeDialog() {
           armor: dataLoader.armorData?.armorList,
           shield: dataLoader.shieldsData?.shieldList,
           accessory: dataLoader.accessoriesData?.accessoryList
-        } [kind] || [];
+        }[kind] || [];
 
         const base = byKindList.find(e => e?.id === templateId);
         const img = base ? dataLoader.getRandomIconFor(kind, base) : null;
         if (img) return img;
 
-        return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
+        return item?.texture?.src ||
+               item?.prototypeToken?.texture?.src ||
+               "icons/svg/mystery-man.svg";
       };
 
-      // handles attribute selection
+      // handles attribute selection defaults when a template is picked
       const applyAttrDefaultsFromTemplate = (selectedEl) => {
-        const kind = html.find('input[name="itemType"]:checked').val();
+        const kind = html.find("input[name='itemType']:checked").val();
         if (kind !== "weapon") return;
 
-        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+        const $sel = selectedEl
+          ? $(selectedEl)
+          : html.find("#templateList [data-selected='1']").first();
         const idx = Number($sel.data("idx"));
         const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-        const $a = html.find('#optAttrA');
-        const $b = html.find('#optAttrB');
+        const $a = html.find("#optAttrA");
+        const $b = html.find("#optAttrB");
         if (!$a.length || !$b.length) return;
 
         const allowed = new Set(["MIG", "DEX", "INS", "WLP"]);
@@ -1208,29 +1183,33 @@ function openItemForgeDialog() {
       };
 
       // handles Preview item card
-      const clip = (v, n = 14) => {
+      const clip = (v, n = 64) => {
         const s = String(v ?? "");
         return s.length > n ? s.slice(0, n - 1) + "…" : s;
       };
 
-      const addModIfNumber = (val, mod) => {
-        const num = Number(val);
-        return Number.isFinite(num) ? (num + mod) : val;
+      const handLabel = (h) => {
+        const one  = L("LOOKFAR.ItemForge.Preview.Handed.One");
+        const two  = L("LOOKFAR.ItemForge.Preview.Handed.Two");
+        const dash = L("LOOKFAR.ItemForge.Preview.Handed.Unknown");
+        return (h === "1") ? one
+          : (h === "2") ? two
+          : (h || dash);
       };
-      const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
+      // NEW: renderPreview now delegates to item-forge-preview.hbs and uses rows[]
       function renderPreview(kind, selectedEl, opts = {}) {
         const rerollIcon = !!opts.rerollIcon;
 
         // cache for auto-picked icons (GM only)
-        let iconMap = html.data('autoIconMap');
+        let iconMap = html.data("autoIconMap");
         if (!iconMap) {
           iconMap = {};
-          html.data('autoIconMap', iconMap);
+          html.data("autoIconMap", iconMap);
         }
 
-        const override   = html.data('iconOverride');
-        const savedPath  = html.data('iconPath');
+        const override   = html.data("iconOverride");
+        const savedPath  = html.data("iconPath");
 
         const getKindIcon = (k) => ({
           weapon: "icons/svg/sword.svg",
@@ -1239,7 +1218,9 @@ function openItemForgeDialog() {
           accessory: "icons/svg/stoned.svg"
         }[k] || "icons/svg/mystery-man.svg");
 
-        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+        const $sel = selectedEl
+          ? $(selectedEl)
+          : html.find("#templateList [data-selected='1']").first();
         const idx  = Number($sel.data("idx"));
         const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
         const baseId   = base?.id ?? base?._id ?? getName(base);
@@ -1248,137 +1229,41 @@ function openItemForgeDialog() {
         let icon = getKindIcon(kind);
 
         if (override) {
-  // GM-chosen custom icon (always authoritative)
-  icon = override;
-  html.data('iconPath', icon);
+          // GM-chosen custom icon (always authoritative)
+          icon = override;
+          html.data("iconPath", icon);
 
-} else if (savedPath) {
-  // Path that came from ANY client via socket or previous roll
-  // Always respected unless a GM override is present.
-  icon = savedPath;
+        } else if (savedPath) {
+          // Path that came from ANY client via socket or previous roll
+          // Always respected unless a GM override is present.
+          icon = savedPath;
 
-} else if (base && (!restrictInputs || isHostGM)) {
-  // In collaborative mode (restrictInputs === false), ANY user can roll
-  // a random icon when interacting with the forge (last-touch wins).
-  // In restricted mode, only the host GM may do this.
-  if (!rerollIcon && iconMap[cacheKey]) {
-    icon = iconMap[cacheKey];
-  } else {
-    try {
-      const pick = dataLoader.getRandomIconFor(kind, base);
-      icon = pick || icon;
-    } catch (e) {
-      console.warn("[Item Forger] preview icon pick failed:", e);
-    }
-    iconMap[cacheKey] = icon;
-  }
-  html.data('iconPath', icon);
-}
+        } else if (base && (!restrictInputs || isHostGM)) {
+          // In collaborative mode (restrictInputs === false), ANY user can roll
+          // a random icon when interacting with the forge (last-touch wins).
+          // In restricted mode, only the host GM may do this.
+          if (!rerollIcon && iconMap[cacheKey]) {
+            icon = iconMap[cacheKey];
+          } else {
+            try {
+              const pick = dataLoader.getRandomIconFor(kind, base);
+              icon = pick || icon;
+            } catch (e) {
+              console.warn("[Item Forger] preview icon pick failed:", e);
+            }
+            iconMap[cacheKey] = icon;
+          }
+          html.data("iconPath", icon);
+        }
 
         try {
-          const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
-          html.data('lastIconDir', dir);
+          const dir = String(icon || "").includes("/")
+            ? String(icon).replace(/\/[^/]*$/, "/")
+            : "/";
+          html.data("lastIconDir", dir);
         } catch {
           /* noop */
         }
-
-        // preview item card styling
-        const style = `
-  <style>
-  #if-preview-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-    height: 100%;
-    padding: 6px;
-    box-sizing: border-box;
-    gap: 8px;
-  }
-
-  /* head row to hold the icon */
-  #if-preview-head {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-
-  /* icon wrapper to allow absolute-positioned badge */
-  .if-icon-wrap {
-    position: relative;
-    display: inline-block;
-
-    width: 32px;
-    height: 32px;
-  }
-
-  #if-preview-icon {
-    display: block;
-    width: 32px;
-    height: 32px;
-
-    object-fit: contain;
-    image-rendering: auto;
-    cursor: default;
-    pointer-events: auto;
-  }
-
-  /* the badge that overlaps the icon (uses your system class + positioning) */
-  .if-badge {
-    position: absolute;
-    left: -2px;
-    top: -2px;
-    z-index: 2;
-
-    transform: scale(0.9);
-    pointer-events: none; /* avoid accidental clicks */
- }
-
-  #if-preview-rows {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 4px;
-  }
-
-  .if-row {
-    width: 100%;
-    text-align: center;
-
-    font-size: 11px;
-    line-height: 1.15;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .if-muted {
-    opacity: 0.7;
-  }
-
-  .if-tight {
-    letter-spacing: 0.2px;
-  }
-
-  .if-row-desc {
-    width: 100%;
-    text-align: center;
-
-    font-size: 11px;
-    line-height: 1.2;
-
-    white-space: normal;
-    overflow: hidden;
-
-    padding: 4px 8px;
-    box-sizing: border-box;
-  }
-</style>
-`;
 
         // quality description helper
         const qdesc = () => {
@@ -1386,270 +1271,257 @@ function openItemForgeDialog() {
           if (catKeyNow === "custom") {
             return readCustomQuality(html).eff;
           }
-          const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+          const $qsel = html.find("#qualitiesStandardBlock [data-selected='1']").first();
           const qIdx = Number($qsel.data("idx"));
           const q = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
           return q?.description ?? q?.desc ?? "";
         };
 
+        const kindNow = html.find("input[name='itemType']:checked").val();
+
+        const ctx = {
+          kind,
+          icon,
+          isMartial: false,
+          muted: false,
+          mutedText: "",
+          rows: [],
+          desc: ""
+        };
+
+        const renderCtx = (context) => {
+          return renderTemplate(PREVIEW_TEMPLATE_PATH, context)
+            .then(htmlStr => {
+              $preview.html(htmlStr);
+            })
+            .catch(e => {
+              console.error("[Item Forger] Failed to render preview template:", e);
+              $preview.html(
+                `<div class="if-preview-error">${esc(L("LOOKFAR.ItemForge.Preview.Error.Generic"))}</div>`
+              );
+            });
+        };
+
         // dial sanity check
-        const kindNow = html.find('input[name="itemType"]:checked').val();
         if (kindNow !== kind) {
-          $preview.html(`${style}
-            <div id="if-preview-card">
-              <img id="if-preview-icon" src="${icon}">
-              <div id="if-preview-rows" class="if-muted">
-                <div class="if-row">Preview coming soon…</div>
-              </div>
-            </div>
-          `);
-          return;
+          ctx.muted = true;
+          ctx.mutedText = L("LOOKFAR.ItemForge.Preview.Muted.OtherKind");
+          return renderCtx(ctx);
         }
 
         // ---------- ARMOR PREVIEW ----------
         if (kind === "armor") {
-          // current template selection
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const a = Number.isFinite(idx) ? currentTemplates[idx] : null;
+          const $sel2 = selectedEl
+            ? $(selectedEl)
+            : html.find("#templateList [data-selected='1']").first();
+          const idx2 = Number($sel2.data("idx"));
+          const a = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
-          // pull fields from equipment.json
           const isMartial = !!a?.isMartial;
-          const defAttr = (a?.defAttr ?? "").toString().toUpperCase();
-          const def = (a?.def ?? "—");
-          const mdefAttr = (a?.mdefAttr ?? "").toString().toUpperCase();
-          const mdef = (a?.mdef ?? "—");
-          const init = (a?.init ?? "—");
+          const defAttr   = (a?.defAttr ?? "").toString().toUpperCase();
+          const def       = (a?.def ?? "—");
+          const mdefAttr  = (a?.mdefAttr ?? "").toString().toUpperCase();
+          const mdef      = (a?.mdef ?? "—");
+          const init      = (a?.init ?? "—");
 
-          // armor preview stat row
-          const rowArmor = !isMartial ?
-            `<strong>DEF:</strong> ${esc(defAttr)}+${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}` :
-            `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
+          const defLabel   = L("LOOKFAR.ItemForge.Preview.Stats.Def");
+          const mdefLabel  = L("LOOKFAR.ItemForge.Preview.Stats.MDef");
+          const initLabel  = L("LOOKFAR.ItemForge.Preview.Stats.Init");
 
-          // armor preview item card
-          $preview.html(`${style}
-              <div id="if-preview-card">
-                <div id="if-preview-head">
-                  <div class="if-icon-wrap">
-                    <img id="if-preview-icon" src="${icon}">
-                    ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
-                  </div>
-                </div>
-                <div id="if-preview-rows">
-                  <div class="if-row if-tight">${rowArmor}</div>
-                  <div class="if-row-desc">${esc(qdesc())}</div>
-                </div>
-              </div>
-            `);
-            return;
+          const rowArmor = !isMartial
+            ? `${defLabel}: ${defAttr}+${def} | ${mdefLabel}: ${mdefAttr}+${mdef} | ${initLabel}: ${init}`
+            : `${defLabel}: ${def} | ${mdefLabel}: ${mdefAttr}+${mdef} | ${initLabel}: ${init}`;
+
+          ctx.isMartial = isMartial;
+          ctx.rows = [esc(clip(rowArmor))];
+          ctx.desc = esc(qdesc());
+
+          return renderCtx(ctx);
         }
 
         // ---------- SHIELD PREVIEW ----------
         if (kind === "shield") {
-          // current template selection
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const s = Number.isFinite(idx) ? currentTemplates[idx] : null;
+          const $sel2 = selectedEl
+            ? $(selectedEl)
+            : html.find("#templateList [data-selected='1']").first();
+          const idx2 = Number($sel2.data("idx"));
+          const s = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
-          // pull fields from equipment.json
           const isMartial = !!s?.isMartial;
-          const def = (s?.def ?? "—");
-          const mdef = (s?.mdef ?? "—");
+          const def       = (s?.def ?? "—");
+          const mdef      = (s?.mdef ?? "—");
 
-          // shield preview stat row
-          const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
+          const defLabel  = L("LOOKFAR.ItemForge.Preview.Stats.Def");
+          const mdefLabel = L("LOOKFAR.ItemForge.Preview.Stats.MDef");
 
-          // shield preview item card
-          $preview.html(`${style}
-              <div id="if-preview-card">
-                <div id="if-preview-head">
-                  <div class="if-icon-wrap">
-                    <img id="if-preview-icon" src="${icon}">
-                    ${isMartial ? `<span class="is-martial if-badge"></span>` : ``}
-                  </div>
-                </div>
-                <div id="if-preview-rows">
-                  <div class="if-row if-tight">${rowShield}</div>
-                  <div class="if-row-desc">${esc(qdesc())}</div>
-                </div>
-              </div>
-            `);
-            return;
+          const rowShield = `${defLabel}: +${def} | ${mdefLabel}: +${mdef}`;
+
+          ctx.isMartial = isMartial;
+          ctx.rows = [esc(clip(rowShield))];
+          ctx.desc = esc(qdesc());
+
+          return renderCtx(ctx);
         }
 
         // ---------- ACCESSORY PREVIEW ----------
         if (kind === "accessory") {
-
-          // accessory preview item card
-          $preview.html(`${style}
-              <div id="if-preview-card">
-                <div id="if-preview-head">
-                  <div class="if-icon-wrap">
-                    <img id="if-preview-icon" src="${icon}">
-                  </div>
-                </div>
-                <div id="if-preview-rows">
-                  <div class="if-row-desc">${esc(qdesc())}</div>
-                </div>
-              </div>
-            `);
-            return;
+          // Accessories are mostly about the quality; we keep rows empty and show desc.
+          ctx.desc = esc(qdesc());
+          return renderCtx(ctx);
         }
 
         // ---------- WEAPON PREVIEW ----------
-if (kind === "weapon") {
-  // current template selection
-  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-  const idx  = Number($sel.data("idx"));
-  const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+        if (kind === "weapon") {
+          const $sel2 = selectedEl
+            ? $(selectedEl)
+            : html.find("#templateList [data-selected='1']").first();
+          const idx2  = Number($sel2.data("idx"));
+          const base2 = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
-  // guard
-  if (!base) {
-    $preview.html(`${style}
-      <div id="if-preview-card">
-        <img id="if-preview-icon" src="${icon}">
-        <div id="if-preview-rows" class="if-muted">
-          <div class="if-row">Select a weapon template…</div>
-        </div>
-      </div>
-    `);
-    return;
-  }
+          if (!base2) {
+            ctx.muted = true;
+            ctx.mutedText = L("LOOKFAR.ItemForge.Preview.Muted.SelectWeaponTemplate");
+            return renderCtx(ctx);
+          }
 
-  // pull fields from equipment.json
-  const baseHand     = normHand(base?.hand) || null; // "1" | "2" | null
-  const baseHandText = handLabel(baseHand ?? (base?.hand ?? "—"));
-  const baseType     = base?.type ?? "—";
-  const baseCat      = base?.category ?? base?.cat ?? "—";
+          const baseHand     = normHand(base2?.hand) || null;
+          const baseHandText = handLabel(baseHand ?? (base2?.hand ?? "—"));
+          const baseType     = base2?.type ?? "—";
+          const baseCat      = base2?.category ?? base2?.cat ?? "—";
 
-  // Compute worth for preview (base + quality + surcharges, no fee)
-  let worthForPreview = 0;
-  try {
-    const { worth } = getCurrentCosts(html, base, currentQualities);
-    worthForPreview = worth;
-  } catch {
-    worthForPreview = 0;
-  }
+          let worthForPreview = 0;
+          try {
+            const { worth } = getCurrentCosts(html, base2, currentQualities);
+            worthForPreview = worth;
+          } catch {
+            worthForPreview = 0;
+          }
 
-  // Let the shared routine do all the damage / martial logic
-  const stats   = computeWeaponStats(base, html, worthForPreview);
-  const handNorm = normHand(stats.hands) || baseHand;
-  const dispHandText = handLabel(handNorm ?? baseHandText);
+          const stats   = computeWeaponStats(base2, html, worthForPreview);
+          const handNorm = normHand(stats.hands) || baseHand;
+          const dispHandText = handLabel(handNorm ?? baseHandText);
 
-  // weapon preview stat rows
-  const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-  const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+ ${stats.acc} | HR+${stats.dmg} ${stats.dmgType}`;
+          const hrLabel = L("LOOKFAR.ItemForge.Preview.Stats.HR");
+          const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
+          const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+${stats.acc} | ${hrLabel}+${stats.dmg} ${stats.dmgType}`;
 
-  // weapon preview item card
-  $preview.html(`${style}
-      <div id="if-preview-card">
-        <div id="if-preview-head">
-          <div class="if-icon-wrap">
-            <img id="if-preview-icon" src="${icon}">
-            ${stats.isMartial ? `<span class="is-martial if-badge"></span>` : ``}
-          </div>
-        </div>
-        <div id="if-preview-rows">
-          <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
-          <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
-          <div class="if-row-desc">${esc(qdesc())}</div>
-        </div>
-      </div>
-    `);
-  return;
-}
+          ctx.isMartial = !!stats.isMartial;
+          ctx.rows = [esc(clip(row1)), esc(clip(row2))];
+          ctx.desc = esc(qdesc());
+
+          return renderCtx(ctx);
+        }
+
+        // Fallback (shouldn’t normally hit)
+        return renderCtx(ctx);
       }
 
-      // --- Hooks & Wiring ------------------------------------------------------------//
+      // --- Hooks & Wiring -----------------------------------------------------
 
       // handles scroll box selection list
-const wireSelectableList = ($container, itemSel, {
-  onSelect,
-  initialIndex,
-  blockClicks = false
-} = {}) => {
-  const $items = $container.find(itemSel);
+      const wireSelectableList = ($container, itemSel, {
+        onSelect,
+        initialIndex,
+        blockClicks = false
+      } = {}) => {
+        const $items = $container.find(itemSel);
 
-  // helper: select an element programmatically
-  const applySelection = (el, triggerCallback = true) => {
-    $container.find(itemSel).each(function() {
-      this.dataset.selected = "";
-      $(this).css({ backgroundColor: "", color: "" });
-    });
-    if (!el) return;
-    el.dataset.selected = "1";
-    $(el).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" });
-    if (triggerCallback) onSelect?.(el);
-  };
+        // helper: select an element programmatically
+        const applySelection = (el, triggerCallback = true) => {
+          $container.find(itemSel).each(function () {
+            this.dataset.selected = "";
+            $(this).css({ backgroundColor: "", color: "" });
+          });
+          if (!el) return;
+          el.dataset.selected = "1";
+          $(el).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" });
+          if (triggerCallback) onSelect?.(el);
+        };
 
-  $items.on("mouseenter", function() {
-    if (this.dataset.selected === "1") return;
-    if (blockClicks) return; // no hover styling when locked
-    $(this).css({ backgroundColor: "rgba(0,0,0,0.08)" });
-  }).on("mouseleave", function() {
-    if (this.dataset.selected === "1") return;
-    if (blockClicks) return; // no hover styling when locked
-    $(this).css({ backgroundColor: "", color: "" });
-  });
+        $items
+          .on("mouseenter", function () {
+            if (this.dataset.selected === "1") return;
+            if (blockClicks) return;
+            $(this).css({ backgroundColor: "rgba(0,0,0,0.08)" });
+          })
+          .on("mouseleave", function () {
+            if (this.dataset.selected === "1") return;
+            if (blockClicks) return;
+            $(this).css({ backgroundColor: "", color: "" });
+          });
 
-  $items.on("click", function(ev) {
-    if (blockClicks) {
-      ev.preventDefault();
-      ev.stopImmediatePropagation?.();
-      return;
-    }
-    applySelection(this, true);
-  });
+        $items.on("click", function (ev) {
+          if (blockClicks) {
+            ev.preventDefault();
+            ev.stopImmediatePropagation?.();
+            return;
+          }
+          applySelection(this, true);
+        });
 
-  // initial selection (used by both GM and non-GM when socket sends a state)
-  const $initial = Number.isInteger(initialIndex)
-    ? $items.eq(initialIndex)
-    : $items.first();
-  if ($initial.length) applySelection($initial[0], true);
-};
+        const $initial = Number.isInteger(initialIndex)
+          ? $items.eq(initialIndex)
+          : $items.first();
+        if ($initial.length) applySelection($initial[0], true);
+      };
 
       // === Materials UI (GM authoritative editing) ===========================
+
       const renderMaterials = () => {
-        const mats  = html.data('ifMaterials') || [];
+        const mats    = html.data("ifMaterials") || [];
         const needKey = getRequiredOriginKey(html);
         const hasReq  = !needKey || mats.some(m => String(m.origin) === needKey);
 
         _requiredOriginKey = needKey;
-        html.data('ifRequiredOriginKey', _requiredOriginKey);
+        html.data("ifRequiredOriginKey", _requiredOriginKey);
 
-        // Reset hint
-        $materialsHint.text("Drag & drop Item documents here (max 5)");
-        // Clean and rebuild thumbnails
-        $materialsDrop.children('img[data-mat="1"]').remove();
+        $materialsHint.text(L("LOOKFAR.ItemForge.Materials.Hint"));
+        $materialsDrop.children("img[data-mat='1']").remove();
 
         if (!mats.length) {
-          if (needKey) $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
+          if (needKey) {
+            $materialsHint.text(
+              F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: needKey })
+            );
+          }
           $materialsHint.show();
         } else {
           $materialsHint.hide();
           mats.forEach((m, i) => {
-            const tip = [ m.name || "", m.origin ? `Origin: ${m.origin}` : "", Number.isFinite(m.cost) ? `Cost: ${m.cost}` : "" ]
-              .filter(Boolean).join(" • ");
+            const originLabel = L("LOOKFAR.ItemForge.Materials.Tooltip.OriginLabel");
+            const costLabel   = L("LOOKFAR.ItemForge.Materials.Tooltip.CostLabel");
+            const removeLabel = L("LOOKFAR.ItemForge.Materials.Tooltip.Remove");
 
-            const $img = $(`<img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-    title="Click to remove\n${esc(tip)}"
-    style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`);
+            const tip = [
+              m.name || "",
+              m.origin ? `${originLabel}: ${m.origin}` : "",
+              Number.isFinite(m.cost) ? `${costLabel}: ${m.cost}` : ""
+            ].filter(Boolean).join(" • ");
 
-$img.on("click", () => {
-  // If this client is NOT the host GM, send a remove request instead
-  if (!(game.user.isGM && game.user.id === _hostId)) {
-    game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
-    return;
-  }
+            const $img = $(`
+              <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+                   title="${esc(removeLabel)}\n${esc(tip)}">
+            `);
+            $img.addClass("lf-if-material-icon");
 
-  // Host GM mutates & broadcasts
-  _materials = _materials.filter((_m, idx) => idx !== i);
-  html.data('ifMaterials', _materials);
-  game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-    materials: _materials,
-    originReq: _requiredOriginKey
-  });
-});
+            $img.on("click", () => {
+              // If this client is NOT the host GM, send a remove request instead
+              if (!(game.user.isGM && game.user.id === _hostId)) {
+                game.projectfu?.socket?.executeAsGM?.(
+                  IF_MSG.MaterialsRemove,
+                  { index: i }
+                );
+                return;
+              }
+
+              // Host GM mutates & broadcasts
+              _materials = _materials.filter((_m, idx) => idx !== i);
+              html.data("ifMaterials", _materials);
+              game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+                materials: _materials,
+                originReq: _requiredOriginKey
+              });
+            });
 
             $materialsDrop.append($img);
           });
@@ -1661,8 +1533,8 @@ $img.on("click", () => {
         setForgeEnabled(hasReq);
 
         // repaint hook (socket pushes call this)
-        html.find('#materialsDrop').off('repaint').on('repaint', () => {
-          html.data('ifMaterials', _materials);
+        html.find("#materialsDrop").off("repaint").on("repaint", () => {
+          html.data("ifMaterials", _materials);
           renderMaterials();
           updateCost();
         });
@@ -1671,121 +1543,148 @@ $img.on("click", () => {
       };
 
       // GM drag & drop adds directly (then broadcasts)
-      $materialsDrop
-        .on("drop", async (ev) => {
-  ev.preventDefault();
-  $materialsDrop.css("background", "");
-  const dt  = ev.originalEvent?.dataTransfer;
-  if (!dt) return;
-  const raw = dt.getData("text/plain");
-  if (!raw) return;
+      $materialsDrop.on("drop", async (ev) => {
+        ev.preventDefault();
+        $materialsDrop.css("background", "");
+        const dt  = ev.originalEvent?.dataTransfer;
+        if (!dt) return;
+        const raw = dt.getData("text/plain");
+        if (!raw) return;
 
-  let data;
-  try {
-    data = JSON.parse(raw);
-  } catch (e) {
-    console.error("[Item Forger] Drop parse failed (JSON):", e);
-    return;
-  }
-  if (!data?.uuid) return;
+        let data;
+        try {
+          data = JSON.parse(raw);
+        } catch (e) {
+          console.error("[Item Forger] Drop parse failed (JSON):", e);
+          ui.notifications?.error(L("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
+          return;
+        }
+        if (!data?.uuid) return;
 
-  // If this client is NOT the host GM, propose the add to the GM instead
-  if (!(game.user.isGM && game.user.id === _hostId)) {
-    game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsAdd, { uuid: data.uuid });
-    return;
-  }
+        // If this client is NOT the host GM, propose the add to the GM instead
+        if (!(game.user.isGM && game.user.id === _hostId)) {
+          game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsAdd, { uuid: data.uuid });
+          return;
+        }
 
-  // Host GM branch: validate, mutate, broadcast
-  try {
-    const doc = await fromUuid(data.uuid);
-    if (!doc || doc.documentName !== "Item")
-      return ui.notifications?.warn("Only Item documents can be dropped here.");
-    if (String(doc.type) !== "treasure")
-      return ui.notifications?.warn("Only Treasure items can be used as materials.");
-    if (_materials.length >= 5)
-      return ui.notifications?.warn("You can only add up to 5 materials.");
+        // Host GM branch: validate, mutate, broadcast
+        try {
+          const doc = await fromUuid(data.uuid);
+          if (!doc || doc.documentName !== "Item") {
+            return ui.notifications?.warn(
+              L("LOOKFAR.ItemForge.Materials.Errors.OnlyItems")
+            );
+          }
+          if (String(doc.type) !== "treasure") {
+            return ui.notifications?.warn(
+              L("LOOKFAR.ItemForge.Materials.Errors.OnlyTreasure")
+            );
+          }
+          if (_materials.length >= 5) {
+            return ui.notifications?.warn(
+              L("LOOKFAR.ItemForge.Materials.Errors.MaxMaterials")
+            );
+          }
 
-    const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
-    if (qty <= 0) {
-      return ui.notifications?.warn("You do not have any more of this item.");
-    }
+          const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
+          if (qty <= 0) {
+            return ui.notifications?.warn(
+              L("LOOKFAR.ItemForge.Materials.Errors.NoMoreItem")
+            );
+          }
 
-    const alreadyUsed = _materials.filter(m => m.uuid === data.uuid).length;
-    if (alreadyUsed >= qty) {
-      return ui.notifications?.warn("You do not have any more of this item.");
-    }
+          const alreadyUsed = _materials.filter(m => m.uuid === data.uuid).length;
+          if (alreadyUsed >= qty) {
+            return ui.notifications?.warn(
+              L("LOOKFAR.ItemForge.Materials.Errors.NoMoreItem")
+            );
+          }
 
-    const entry = {
-      uuid: data.uuid,
-      img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
-      name: doc.name,
-      cost: getTreasureCost(doc),
-      origin: getTreasureOrigin(doc),
-      quantity: qty           // optional
-    };
+          const entry = {
+            uuid: data.uuid,
+            img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
+            name: doc.name,
+            cost: getTreasureCost(doc),
+            origin: getTreasureOrigin(doc),
+            quantity: qty
+          };
 
-    _materials = [..._materials, entry].slice(0, 5);
-    html.data('ifMaterials', _materials);
-    renderMaterials();
-    updateCost();
+          _materials = [..._materials, entry].slice(0, 5);
+          html.data("ifMaterials", _materials);
+          renderMaterials();
+          updateCost();
 
-    game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-      materials: _materials,
-      originReq: _requiredOriginKey
-    });
-  } catch (e) {
-    console.error("[Item Forger] Drop parse failed:", e);
-    ui.notifications?.error("Could not read dropped data.");
-  }
-});
+          game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+            materials: _materials,
+            originReq: _requiredOriginKey
+          });
+        } catch (e) {
+          console.error("[Item Forger] Drop parse failed:", e);
+          ui.notifications?.error(L("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
+        }
+      });
 
       function renderTemplates(rows, initialIndex = null) {
         currentTemplates = Array.isArray(rows) ? rows : [];
         if (!currentTemplates.length) {
-          $templateList.html(`<div style="text-align:center; opacity:0.75;">No templates found.</div>`);
-          const kind = html.find('input[name="itemType"]:checked').val();
+          $templateList.html(`
+            <div style="text-align:center; opacity:0.75;">
+              ${esc(L("LOOKFAR.ItemForge.TemplateList.Empty"))}
+            </div>
+          `);
+          const kind = html.find("input[name='itemType']:checked").val();
           renderPreview(kind, null);
           return;
         }
         const items = currentTemplates.map((r, i) => `
-  <div class="if-template" data-idx="${i}">
-    <span class="if-template-label"
-          style="display:inline-block; padding-left:4px; width:100%; box-sizing:border-box;">
-      ${getNameSafe(r)}
-    </span>
-  </div>
-`).join("");
-$templateList.html(items);
+          <div class="if-template" data-idx="${i}">
+            <span class="if-template-label">
+              ${getNameSafe(r)}
+            </span>
+          </div>
+        `).join("");
+        $templateList.html(items);
         wireSelectableList($templateList, ".if-template", {
-  initialIndex,
-  onSelect: (el) => {
-    updateHandToggle(el);
-    updatePlusOneToggle(el);
-    applyAttrDefaultsFromTemplate(el);
-    html.removeData('iconOverride');
+          initialIndex,
+          onSelect: (el) => {
+            updateHandToggle(el);
+            updatePlusOneToggle(el);
+            applyAttrDefaultsFromTemplate(el);
+            html.removeData("iconOverride");
 
-    // Clear any previous auto-picked icon so we can roll a new one:
-    // - In collab mode (restrictInputs === false), ANY user can do this.
-    // - In restricted mode, only the host GM may do it.
-    if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
-      html.removeData('iconPath');
-    }
+            // Clear any previous auto-picked icon so we can roll a new one:
+            // - In collab mode (restrictInputs === false), ANY user can do this.
+            // - In restricted mode, only the host GM may do it.
+            if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
+              html.removeData("iconPath");
+            }
 
-    const kind = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kind, el, { rerollIcon: true });
-    updateCost();
-    broadcastForgeState();
-  },
-  blockClicks: lockControlsForPlayer
-});
+            const kind = html.find("input[name='itemType']:checked").val();
+            renderPreview(kind, el, { rerollIcon: true });
+            updateCost();
+            broadcastForgeState();
+          },
+          blockClicks: lockControlsForPlayer
+        });
       }
 
       const renderQualities = (type, initialIndex = null, state = null) => {
+        const $standardBlock = html.find("#qualitiesStandardBlock");
+        const $customBlock   = html.find("#qualitiesCustomBlock");
+        const $customEffect  = html.find("#customEffect");
+        const $customCost    = html.find("#customCost");
+        const $customApply   = html.find("#customApply");
+
         if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
-          $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
           currentQualities = [];
-          const kind = html.find('input[name="itemType"]:checked').val();
-          renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+          $standardBlock.html(`
+            <div style="text-align:center;">
+              ${esc(L("LOOKFAR.ItemForge.Qualities.NoData"))}
+            </div>
+          `);
+          $customBlock.hide();
+          const kind = html.find("input[name='itemType']:checked").val();
+          renderPreview(kind, html.find("#templateList [data-selected='1']").first());
           updateCost();
           return;
         }
@@ -1793,198 +1692,135 @@ $templateList.html(items);
         const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
 
         // handle custom qualities
-if (catKey === "custom") {
-  currentQualities = [];
+        if (catKey === "custom") {
+          currentQualities = [];
+          $standardBlock.empty();
+          $customBlock.show();
 
-  const effCommitted = state
-    ? String(state.customEffect ?? "").trim()
-    : String(html.data('customEffect') ?? "Custom effect text");
-  const cstCommitted = state
-    ? toInt(state.customCost ?? 0)
-    : toInt(html.data('customCost') ?? 0);
+          // Restore or seed stored custom effect/cost
+          const effCommitted = state
+            ? String(state.customEffect ?? "").trim()
+            : String(html.data("customEffect") ?? "").trim();
+          const cstCommitted = state
+            ? toInt(state.customCost ?? 0)
+            : toInt(html.data("customCost") ?? 0);
 
-  html.data('customEffect', effCommitted);
-  html.data('customCost', cstCommitted);
+          html.data("customEffect", effCommitted);
+          html.data("customCost", cstCommitted);
 
-  $qualitiesList.html(`
-    <div id="customQualityWrap"
-         style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
+          // Push values into the static fields
+          if ($customEffect.length) $customEffect.val(effCommitted);
+          if ($customCost.length)   $customCost.val(cstCommitted);
 
-      <textarea id="customEffect"
-          rows="2" wrap="soft"
-          style="
-            width:100%;
-            height:44px;
-            box-sizing:border-box;
-            overflow-y:auto;
-            resize:none;
-          "
-          title="Type your custom effect text">${esc(effCommitted)}</textarea>
+          // Immediately lock custom inputs when in restricted mode
+          if (lockControlsForPlayer) {
+            $customEffect.prop("disabled", true);
+            $customCost.prop("disabled", true);
+            $customApply.prop("disabled", true);
+          } else {
+            // Wire input constraints and Apply button
+            $customCost
+              .off(".customUX")
+              .on("keydown.customUX", (ev) => {
+                if (ev.key === "Enter") ev.preventDefault();
+              })
+              .on("keypress.customUX", (ev) => {
+                if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
+              })
+              .on("paste.customUX", (ev) => {
+                ev.preventDefault();
+                const txt = (ev.originalEvent || ev).clipboardData.getData("text") ?? "";
+                const digits = txt.replace(/\D+/g, "");
+                const el = ev.currentTarget;
+                const start = el.selectionStart ?? el.value.length;
+                const end = el.selectionEnd ?? el.value.length;
+                el.value = el.value.slice(0, start) + digits + el.value.slice(end);
+              });
 
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label for="customCost" style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">Cost:</label>
-        <input id="customCost" type="number" min="0" step="1" inputmode="numeric" pattern="\\d*"
-               value="${cstCommitted}"
-               style="width:100%; height:25px; box-sizing:border-box;"
-               title="Enter a non-negative integer">
-      </div>
+            $customApply
+              .off(".customUX")
+              .on("click.customUX", () => {
+                if (lockControlsForPlayer) return;
 
-      <button type="button" id="customApply"
-  style="
-    width:auto;
-    height:28px;
-    margin:2px auto 0;
-    display:block;
-    padding:0 10px;
-    line-height:1;
-    box-sizing:border-box;
-  ">
-  Apply
-</button>
-    </div>
-  `);
+                const eff = String($customEffect.val() ?? "").trim();
+                const raw = String($customCost.val() ?? "");
+                const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ""), 10) || 0);
+                $customCost.val(cst);
 
-         // Immediately lock custom inputs when in restricted mode
-  if (lockControlsForPlayer) {
-    html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
-  }
+                html.data("customEffect", eff);
+                html.data("customCost", cst);
 
-  $qualitiesList
-    .off('.customUX')
-      .on('keydown.customUX', '#customCost', (ev) => {
-        if (ev.key === 'Enter') ev.preventDefault();
-      })
-      .on('keypress.customUX', '#customCost', (ev) => {
-        if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
-      })
-      .on('paste.customUX', '#customCost', (ev) => {
-        ev.preventDefault();
-        const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
-        const digits = txt.replace(/\D+/g, '');
-        const el = ev.currentTarget;
-        const start = el.selectionStart ?? el.value.length;
-        const end = el.selectionEnd ?? el.value.length;
-        el.value = el.value.slice(0, start) + digits + el.value.slice(end);
-      })
-      .on('click.customUX', '#customApply', () => {
-  if (lockControlsForPlayer) return;   // NEW
+                const kindNow = html.find("input[name='itemType']:checked").val();
+                renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
+                updateCost();
+                broadcastForgeState();
+              });
+          }
 
-  const eff = String(html.find('#customEffect').val() ?? '').trim();
-  const raw = String(html.find('#customCost').val() ?? '');
-  const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
-  html.find('#customCost').val(cst);
+          const kindNow = html.find("input[name='itemType']:checked").val();
+          renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
+          updateCost();
+          return;
+        }
 
-  html.data('customEffect', eff);
-  html.data('customCost', cst);
+        // Non-custom categories: hide custom block, show standard
+        $customBlock.hide();
+        $standardBlock.show();
 
-  const kindNow = html.find('input[name="itemType"]:checked').val();
-  renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-  updateCost();
-  broadcastForgeState();
-});
+        if (catKey === "none") {
+          currentQualities = [];
+          $standardBlock.empty();
+          const kindNow = html.find("input[name='itemType']:checked").val();
+          renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
+          updateCost();
+          return;
+        }
 
-    const kindNow = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-    updateCost();
-    return;
-  }
+        const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
+        currentQualities = catList.filter(q => matchesAppliesTo(q, type));
 
-  if (catKey === "none") {
-    currentQualities = [];
-    $qualitiesList.html("");
-    const kindNow = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-    updateCost();
-    return;
-  }
-
-  const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
-  currentQualities = catList.filter(q => matchesAppliesTo(q, type));
-
-  if (!currentQualities.length) {
-    $qualitiesList.html("");
-    const kindNow = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-    updateCost();
-    return;
-  }
-
-  const items = currentQualities.map((q, i) => `
-  <div class="if-quality" data-idx="${i}">
-    <span class="if-quality-label"
-          style="display:inline-block; padding-left:4px; width:100%; box-sizing:border-box;">
-      ${esc(qualityDisplayName(q, type))}
-    </span>
-  </div>
-`).join("");
-$qualitiesList.html(items);
-
-  wireSelectableList($qualitiesList, ".if-quality", {
-  initialIndex,
-  onSelect: () => {
-    const kindNow = html.find('input[name="itemType"]:checked').val();
-    renderPreview(
-      kindNow,
-      html.find('#templateList [data-selected="1"]').first(),
-      { rerollIcon: true }
-    );
-    updateCost();
-    broadcastForgeState();
-  },
-  blockClicks: lockControlsForPlayer   // NEW
-});
-};
-
-      const renderAttrs = (type) => {
-        if (type !== "weapon") return $attrInner.html("");
-        $attrInner.html(`
-            <label>Attr A:
-              <select id="optAttrA" style="max-width:160px;">
-                <option value="MIG">MIG</option><option value="DEX">DEX</option>
-                <option value="INS">INS</option><option value="WLP">WLP</option>
-              </select>
-            </label>
-            <label>Attr B:
-              <select id="optAttrB" style="max-width:160px;">
-                <option value="MIG">MIG</option><option value="DEX">DEX</option>
-                <option value="INS">INS</option><option value="WLP">WLP</option>
-              </select>
-            </label>
-          `);
-      };
-
-      const renderCustomize = (type) => {
-        if (type !== "weapon") return $customize.html(`<div style="opacity:0.8;">No Options</div>`);
-        $customize.html(`
-            <style>
-              #customizeArea label { display:flex; align-items:center; gap:4px; line-height:1; }
-              #customizeArea input[type="checkbox"] { transform: scale(0.9); transform-origin: left center; margin:0 4px 0 0; }
-              #customizeArea select { height: 22px; }
-            </style>
-            <div style="display:flex; flex-direction:column; gap:4px;">
-              <label><input type="checkbox" id="optPlusOne"><span>+1 Accuracy</span></label>
-              <label><input type="checkbox" id="optPlusDamage"><span>+4 Damage</span></label>
-              <label id="handToggleWrap" style="display:none;">
-                <input type="checkbox" id="optToggleHand"><span id="handToggleLabel"></span>
-              </label>
-              <label>Type:
-                <select id="optElement" style="max-width:160px;">
-                  <option value="physical" selected>Physical</option>
-                  <option value="fire">Fire</option><option value="ice">Ice</option>
-                  <option value="earth">Earth</option><option value="air">Air</option>
-                  <option value="bolt">Bolt</option><option value="dark">Dark</option>
-                  <option value="light">Light</option><option value="poison">Poison</option>
-                </select>
-              </label>
+        if (!currentQualities.length) {
+          $standardBlock.html(`
+            <div style="text-align:center; opacity:0.75;">
+              ${esc(L("LOOKFAR.ItemForge.Qualities.NoneAvailable"))}
             </div>
           `);
+          const kindNow = html.find("input[name='itemType']:checked").val();
+          renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
+          updateCost();
+          return;
+        }
+
+        const items = currentQualities.map((q, i) => `
+          <div class="if-quality" data-idx="${i}">
+            <span class="if-quality-label">
+              ${esc(qualityDisplayName(q, type))}
+            </span>
+          </div>
+        `).join("");
+        $standardBlock.html(items);
+
+        wireSelectableList($standardBlock, ".if-quality", {
+          initialIndex,
+          onSelect: () => {
+            const kindNow = html.find("input[name='itemType']:checked").val();
+            renderPreview(
+              kindNow,
+              html.find("#templateList [data-selected='1']").first(),
+              { rerollIcon: true }
+            );
+            updateCost();
+            broadcastForgeState();
+          },
+          blockClicks: lockControlsForPlayer
+        });
       };
 
       function populateTemplates(kind, state = null) {
-        const data = kind === "armor" ? getArmorList(equipmentRoot) :
-          kind === "shield" ? getShieldList(equipmentRoot) :
-          kind === "accessory" ? getAccessoryList(equipmentRoot) :
-          getWeaponList(equipmentRoot);
+        const data = kind === "armor" ? getArmorList(equipmentRoot)
+          : kind === "shield" ? getShieldList(equipmentRoot)
+          : kind === "accessory" ? getAccessoryList(equipmentRoot)
+          : getWeaponList(equipmentRoot);
 
         const initialIndex = state && Number.isFinite(state.templateIdx)
           ? state.templateIdx
@@ -1994,21 +1830,22 @@ $qualitiesList.html(items);
       }
 
       function updateHandToggle(selectedEl) {
-        const kind = html.find('input[name="itemType"]:checked').val();
+        const kind = html.find("input[name='itemType']:checked").val();
         const $wrap = html.find("#handToggleWrap");
         const $labelSpan = html.find("#handToggleLabel");
         const $checkbox = html.find("#optToggleHand");
         if (kind !== "weapon") return $wrap.hide();
 
-        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+        const $sel = selectedEl
+          ? $(selectedEl)
+          : html.find("#templateList [data-selected='1']").first();
         const idx = Number($sel.data("idx"));
         const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-        const h = normHand(base?.hand); // "1" | "2" | null
+        const h = normHand(base?.hand);
         const cat = String(base?.category ?? base?.cat ?? "").toLowerCase();
         const restricted = new Set(["brawling", "dagger", "thrown"]);
 
-        // helper to style disabled fields
         const setDisabled = (disabled, title = "") => {
           $checkbox.prop("disabled", disabled);
           if (disabled) $checkbox.prop("checked", false);
@@ -2020,17 +1857,19 @@ $qualitiesList.html(items);
           else $wrap.removeAttr("title");
         };
 
+        const makeOneHandLabel = L("LOOKFAR.ItemForge.Customize.HandToggle.MakeOneHanded");
+        const makeTwoHandLabel = L("LOOKFAR.ItemForge.Customize.HandToggle.MakeTwoHanded");
+        const restrictedLabel  = L("LOOKFAR.ItemForge.Customize.Tooltip.HandToggleRestricted");
+
         if (h === "2") {
-          // Base is 2H → show "Make 1-handed" and allow it (no restriction)
-          $labelSpan.text("Make 1-handed");
+          $labelSpan.text(makeOneHandLabel);
           $wrap.show();
           setDisabled(false);
         } else if (h === "1") {
-          // Base is 1H → show "Make 2-handed"; for certain categories this is not allowed
-          $labelSpan.text("Make 2-handed");
+          $labelSpan.text(makeTwoHandLabel);
           $wrap.show();
           if (restricted.has(cat)) {
-            setDisabled(true, "This category cannot be made 2-handed");
+            setDisabled(true, restrictedLabel);
           } else {
             setDisabled(false);
           }
@@ -2040,105 +1879,109 @@ $qualitiesList.html(items);
       }
 
       function updatePlusOneToggle(selectedEl) {
-  const kind = html.find('input[name="itemType"]:checked').val();
-  const $cb = html.find('#optPlusOne');
-  const $label = $cb.closest('label');
+        const kind = html.find("input[name='itemType']:checked").val();
+        const $cb = html.find("#optPlusOne");
+        const $label = $cb.closest("label");
 
-  // If this client is a locked player, keep current checked state but disable & grey it out
-  if (!game.user.isGM && lockControlsForPlayer) {
-    $cb.prop('disabled', true);
-    $label
-      .attr('title', 'Only the GM can modify this option.')
-      .css({ opacity: 0.5, filter: 'grayscale(1)' });
-    return;
-  }
+        const gmOnlyLabel   = L("LOOKFAR.ItemForge.Customize.Tooltip.GMOnly");
+        const alreadyPlusOne = L("LOOKFAR.ItemForge.Customize.Tooltip.PlusOneAlready");
 
-  // Non-weapons: just reset to normal
-  if (kind !== "weapon") {
-    $cb.prop('disabled', false);
-    $label.css({ opacity: 1, filter: "" }).attr('title', '');
-    return;
-  }
+        // If this client is a locked player, keep current checked state but disable & grey it out
+        if (!game.user.isGM && lockControlsForPlayer) {
+          $cb.prop("disabled", true);
+          $label
+            .attr("title", gmOnlyLabel)
+            .css({ opacity: 0.5, filter: "grayscale(1)" });
+          return;
+        }
 
-  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-  const idx = Number($sel.data("idx"));
-  const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+        // Non-weapons: just reset to normal
+        if (kind !== "weapon") {
+          $cb.prop("disabled", false);
+          $label.css({ opacity: 1, filter: "" }).attr("title", "");
+          return;
+        }
 
-  if (!base) {
-    // No template selected → reset
-    $cb.prop('disabled', false);
-    $label.css({ opacity: 1, filter: "" }).attr('title', '');
-    return;
-  }
+        const $sel = selectedEl
+          ? $(selectedEl)
+          : html.find("#templateList [data-selected='1']").first();
+        const idx = Number($sel.data("idx"));
+        const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-  const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
-  const hasBasePlusOne = baseAcc >= 1; // treat any >=1 as "already has +1"
+        if (!base) {
+          $cb.prop("disabled", false);
+          $label.css({ opacity: 1, filter: "" }).attr("title", "");
+          return;
+        }
 
-  if (hasBasePlusOne) {
-    // Hard-disable the toggle and grey it out
-    $cb.prop('checked', false).prop('disabled', true);
-    $label
-      .attr('title', 'This weapon already has +1 Accuracy from its base profile.')
-      .css({ opacity: 0.5, filter: 'grayscale(1)' });
-  } else {
-    // Make sure it's usable and visually normal
-    $cb.prop('disabled', false);
-    $label
-      .attr('title', '')
-      .css({ opacity: 1, filter: '' });
-  }
-}
+        const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
+        const hasBasePlusOne = baseAcc >= 1;
+
+        if (hasBasePlusOne) {
+          $cb.prop("checked", false).prop("disabled", true);
+          $label
+            .attr("title", alreadyPlusOne)
+            .css({ opacity: 0.5, filter: "grayscale(1)" });
+        } else {
+          $cb.prop("disabled", false);
+          $label
+            .attr("title", "")
+            .css({ opacity: 1, filter: "" });
+        }
+      }
 
       const updateForKind = (kind, state = null) => {
-  renderCustomize(kind);
-  renderAttrs(kind);
+        const isWeapon = (kind === "weapon");
 
-  // When Playtest Damage Rules are enabled, completely disable the +4 Damage toggle
-  if (kind === "weapon") {
-    const $pd = html.find('#optPlusDamage');
-    const $pdLabel = $pd.closest('label');
+        // Show/hide static HBS blocks instead of regenerating HTML
+        $attrRow.toggle(isWeapon);
+        $weaponCustomize.toggle(isWeapon);
+        $noCustomize.toggle(!isWeapon);
 
-    if (useVariantDamageRules()) {
-      $pd.prop('checked', false)
-         .prop('disabled', true);
-      $pdLabel
-        .attr(
-          'title',
-          'Playtest Damage Rules: damage scales with item cost instead of using the +4 Damage toggle.'
-        )
-        .css({ opacity: 0.5, filter: 'grayscale(1)' });   // NEW: grey out label
-    } else {
-      // Restore normal behavior when variant rules are off
-      $pd.prop('disabled', false);
-      $pdLabel
-        .attr('title', '')
-        .css({ opacity: 1, filter: '' });
-    }
-  }
+        // When Playtest Damage Rules are enabled, completely disable the +4 Damage toggle
+        if (isWeapon) {
+          const $pd = html.find("#optPlusDamage");
+          const $pdLabel = $pd.closest("label");
 
-  if (state?.qualitiesCategory) {
-    $qualitiesSelect.val(state.qualitiesCategory);
-  }
+          const variantTooltip = L("LOOKFAR.ItemForge.Customize.Tooltip.VariantDamageInfo");
 
-  populateTemplates(kind, state);
-  renderQualities(kind, state?.qualityIdx ?? null, state);
-  renderPreview(kind, null);
+          if (useVariantDamageRules()) {
+            $pd.prop("checked", false)
+               .prop("disabled", true);
+            $pdLabel
+              .attr("title", variantTooltip)
+              .css({ opacity: 0.5, filter: "grayscale(1)" });
+          } else {
+            $pd.prop("disabled", false);
+            $pdLabel
+              .attr("title", "")
+              .css({ opacity: 1, filter: "" });
+          }
+        }
 
-  if (kind === "weapon") {
-    updateHandToggle();
-    updatePlusOneToggle();    // NEW: enforce +1 Acc rule on initial weapon load
-  }
+        if (state?.qualitiesCategory) {
+          $qualitiesSelect.val(state.qualitiesCategory);
+        }
 
-  relayout();
-  updateCost();
-  applyLockState();
-};
+        populateTemplates(kind, state);
+        renderQualities(kind, state?.qualityIdx ?? null, state);
+        renderPreview(kind, null);
+
+        if (isWeapon) {
+          updateHandToggle();
+          updatePlusOneToggle();
+        }
+
+        relayout();
+        updateCost();
+        applyLockState();
+      };
 
       const refreshPreviewFromUI = () => {
-        const kind = html.find('input[name="itemType"]:checked').val();
+        const kind = html.find("input[name='itemType']:checked").val();
         renderPreview(
           kind,
-          html.find('#templateList [data-selected="1"]').first(),
+          html.find("#templateList [data-selected='1']").first(),
           { rerollIcon: false }
         );
         updateCost();
@@ -2147,173 +1990,171 @@ $qualitiesList.html(items);
 
       // ------------- SOCKET-DRIVEN UI STATE -------------------
       const applyForgeState = (state) => {
-  if (!state) return;
-  suppressStateBroadcast = true;
-  try {
-    const kind = state.kind || "weapon";
+        if (!state) return;
+        suppressStateBroadcast = true;
+        try {
+          const kind = state.kind || "weapon";
 
-    // Set item type radio
-    html.find('input[name="itemType"]').prop('checked', false);
-    html.find(`input[name="itemType"][value="${kind}"]`).prop('checked', true);
+          // Set item type radio
+          html.find("input[name='itemType']").prop("checked", false);
+          html.find(`input[name='itemType'][value='${kind}']`).prop("checked", true);
 
-    // Ensure the category select matches first, so renderQualities uses it
-    if (state.qualitiesCategory) {
-      $qualitiesSelect.val(state.qualitiesCategory);
-    }
+          // Ensure the category select matches first, so renderQualities uses it
+          if (state.qualitiesCategory) {
+            $qualitiesSelect.val(state.qualitiesCategory);
+          }
 
-    // Adopt the GM's chosen iconPath (random or custom)
-    if (state.iconPath) {
-      html.data('iconPath', state.iconPath);
-      if (!game.user.isGM) {
-        // Players should never keep their own override
-        html.removeData('iconOverride');
-      }
-    }
+          if (state.iconPath) {
+            html.data("iconPath", state.iconPath);
+            if (!game.user.isGM) {
+              html.removeData("iconOverride");
+            }
+          }
 
-    // Build customize/attrs/templates/qualities with the given state
-    updateForKind(kind, state);
+          updateForKind(kind, state);
 
-    // Weapon / cost toggles
-html.find('#optPlusOne').prop('checked', !!state.plusOne);
+          html.find("#optPlusOne").prop("checked", !!state.plusOne);
 
-// Only honor plusDamage when NOT using variant rules
-if (!useVariantDamageRules()) {
-  html.find('#optPlusDamage').prop('checked', !!state.plusDamage);
-}
+          if (!useVariantDamageRules()) {
+            html.find("#optPlusDamage").prop("checked", !!state.plusDamage);
+          }
 
-html.find('#optToggleHand').prop('checked', !!state.toggleHand);
-html.find('#optElement').val(state.element || 'physical');
-html.find('#optAttrA').val(state.attrA || 'MIG');
-html.find('#optAttrB').val(state.attrB || 'MIG');
-html.find('#optFee').prop('checked', !!state.fee);
+          html.find("#optToggleHand").prop("checked", !!state.toggleHand);
+          html.find("#optElement").val(state.element || "physical");
+          html.find("#optAttrA").val(state.attrA || "MIG");
+          html.find("#optAttrB").val(state.attrB || "MIG");
+          html.find("#optFee").prop("checked", !!state.fee);
 
-    if (kind === "weapon") {
-      updatePlusOneToggle();  // re-enforce base-accuracy rule after applying state
-    }
-    if (typeof state.customEffect === "string") {
-      html.data('customEffect', state.customEffect); // Custom quality persistence
-    }
-    if (typeof state.customCost !== "undefined") {
-      html.data('customCost', toInt(state.customCost));
-    }
+          if (kind === "weapon") {
+            updatePlusOneToggle();
+          }
+          if (typeof state.customEffect === "string") {
+            html.data("customEffect", state.customEffect);
+            html.find("#customEffect").val(state.customEffect);
+          }
+          if (typeof state.customCost !== "undefined") {
+            const cst = toInt(state.customCost);
+            html.data("customCost", cst);
+            html.find("#customCost").val(cst);
+          }
 
-    // Re-render preview & cost (this will *not* rebroadcast because of the flag)
-    refreshPreviewFromUI();
+          refreshPreviewFromUI();
 
-    // Ensure the preview icon exactly matches the GM's choice
-    if (state.iconPath) {
-      html.data('iconPath', state.iconPath);
-      try {
-        $preview.find('#if-preview-icon').attr('src', state.iconPath);
-      } catch (e) {
-        console.warn("[Item Forger] Failed to apply synced iconPath:", e);
-      }
-    }
+          if (state.iconPath) {
+            html.data("iconPath", state.iconPath);
+            try {
+              $preview.find("#if-preview-icon").attr("src", state.iconPath);
+            } catch (e) {
+              console.warn("[Item Forger] Failed to apply synced iconPath:", e);
+            }
+          }
 
-    // recompute materials origin requirement locally
-    renderMaterials();
+          renderMaterials();
 
-    // NEW: if this client is the host GM, rebroadcast MaterialsReplace
-    if (game.user.isGM && game.user.id === _hostId) {
-      game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-        materials: _materials,
-        originReq: _requiredOriginKey
-      });
-    }
-  } finally {
-    suppressStateBroadcast = false;
-  }
-};
+          if (game.user.isGM && game.user.id === _hostId) {
+            game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+              materials: _materials,
+              originReq: _requiredOriginKey
+            });
+          }
+        } finally {
+          suppressStateBroadcast = false;
+        }
+      };
 
-      // Expose for the socket handler in ensureIFSocket
       dlg._applyForgeStateFromSocket = (state) => {
-        // Only full dialogs care; minis never set this property
         applyForgeState(state);
       };
-      
-      $dlg.off('.ifPrev');
-$dlg.on('change.ifPrev',
-  '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
-  (ev) => {
-    if (lockControlsForPlayer) {
-      ev.preventDefault();
-      ev.stopImmediatePropagation?.();
-      return;
-    }
-    refreshPreviewFromUI();
-  }
-);
+
+      $dlg.off(".ifPrev");
+      $dlg.on(
+        "change.ifPrev",
+        "#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee",
+        (ev) => {
+          if (lockControlsForPlayer) {
+            ev.preventDefault();
+            ev.stopImmediatePropagation?.();
+            return;
+          }
+          refreshPreviewFromUI();
+        }
+      );
 
       $qualitiesSelect.on("change", () => {
-  if (lockControlsForPlayer) return;
+        if (lockControlsForPlayer) return;
 
-  const kind = html.find('input[name="itemType"]:checked').val();
-  renderQualities(kind);
-  renderPreview(
-    kind,
-    html.find('#templateList [data-selected="1"]').first(),
-    { rerollIcon: false }
-  );
-  renderMaterials();
-  updateCost();
+        const kind = html.find("input[name='itemType']:checked").val();
+        renderQualities(kind);
+        renderPreview(
+          kind,
+          html.find("#templateList [data-selected='1']").first(),
+          { rerollIcon: false }
+        );
+        renderMaterials();
+        updateCost();
 
-  if (game.user.isGM && game.user.id === _hostId) {
-    game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-      materials: _materials,
-      originReq: _requiredOriginKey
-    });
-  }
-  broadcastForgeState();
-});
+        if (game.user.isGM && game.user.id === _hostId) {
+          game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+            materials: _materials,
+            originReq: _requiredOriginKey
+          });
+        }
+        broadcastForgeState();
+      });
 
-      // Clickable preview image
-      html.off('click.ifIconPick');
-html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
-  if (!game.user.isGM) return; 
+      // Clickable preview image (icon picker)
+      html.off("click.ifIconPick");
+      html.on("click.ifIconPick", "#if-preview-icon", async (ev) => {
+        if (!game.user.isGM) return;
 
-  ev.preventDefault();
-  ev.stopPropagation();
-        console.debug('[Item Forger] preview icon clicked');
+        ev.preventDefault();
+        ev.stopPropagation();
+        console.debug("[Item Forger] preview icon clicked");
 
-        const kind = html.find('input[name="itemType"]:checked').val();
-        const fromOverride = html.data('iconOverride');
-        const fromPreview = $('#if-preview-icon').attr('src');
-        const derivedDir = (fromOverride || fromPreview || "").includes("/") ?
-          String(fromOverride || fromPreview).replace(/\/[^/]*$/, "/") :
-          "/";
-        const startDir = html.data('lastIconDir') || derivedDir || "/";
+        const kind = html.find("input[name='itemType']:checked").val();
+        const fromOverride = html.data("iconOverride");
+        const fromPreview = $("#if-preview-icon").attr("src");
+        const derivedDir = (fromOverride || fromPreview || "").includes("/")
+          ? String(fromOverride || fromPreview).replace(/\/[^/]*$/, "/")
+          : "/";
+        const startDir = html.data("lastIconDir") || derivedDir || "/";
 
         try {
           const fp = new FilePicker({
             type: "image",
             current: startDir,
             callback: (path) => {
-              console.debug('[Item Forger] FilePicker selected:', path);
-              html.data('iconOverride', path);
+              console.debug("[Item Forger] FilePicker selected:", path);
+              html.data("iconOverride", path);
               try {
-                html.data('lastIconDir', String(path).replace(/\/[^/]*$/, "/"));
-              } catch {}
-              renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
+                html.data("lastIconDir", String(path).replace(/\/[^/]*$/, "/"));
+              } catch { /* noop */ }
+              renderPreview(
+                kind,
+                html.find("#templateList [data-selected='1']").first()
+              );
               broadcastForgeState();
             }
           });
           fp.render(true);
         } catch (err) {
-          console.error('[Item Forger] FilePicker error:', err);
-          ui.notifications?.error('Could not open FilePicker (see console).');
+          console.error("[Item Forger] FilePicker error:", err);
+          ui.notifications?.error(
+            L("LOOKFAR.ItemForge.Errors.FilePickerOpen")
+          );
         }
       });
 
-      html.on("change", 'input[name="itemType"]', (ev) => {
-  if (lockControlsForPlayer) {
-    ev.preventDefault();
-    return;
-  }
-  const kind = ev.currentTarget.value;
-  html.removeData('iconOverride');
-  updateForKind(kind);
-  broadcastForgeState();
-});
+      html.on("change", "input[name='itemType']", (ev) => {
+        if (lockControlsForPlayer) {
+          ev.preventDefault();
+          return;
+        }
+        const kind = ev.currentTarget.value;
+        html.removeData("iconOverride");
+        updateForKind(kind);
+        broadcastForgeState();
+      });
 
       updateForKind("weapon");
       renderMaterials();
@@ -2321,13 +2162,22 @@ html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
       // Ask host for authoritative list if somehow we're not the host (safety)
       if (!(game.user.isGM && game.user.id === _hostId)) {
         const targetHost = _hostId || game.users.activeGM?.id;
-        if (targetHost) game.projectfu?.socket?.executeAsUser(IF_MSG.MaterialsRequest, targetHost, {});
+        if (targetHost) {
+          game.projectfu?.socket?.executeAsUser(
+            IF_MSG.MaterialsRequest,
+            targetHost,
+            {}
+          );
+        }
       }
     },
     close: async () => {
       try {
         if (game.user.isGM && game.user.id === _hostId) {
-          game.projectfu?.socket?.executeForEveryone(IF_MSG.HostClose, { hostId: game.user.id });
+          game.projectfu?.socket?.executeForEveryone(
+            IF_MSG.HostClose,
+            { hostId: game.user.id }
+          );
         }
       } finally {
         _forgeAppId = null;
@@ -2358,7 +2208,6 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
 
     // Hidden: players should not see any Item Forge UI at all
     if (mode === "hidden") {
-      // No alert, just silently ignore the request
       return;
     }
 
@@ -2376,6 +2225,8 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
 
   } catch (err) {
     console.error("[Item Forger] failed to open:", err);
-    ui.notifications?.error("Item Forger: failed to open (see console).");
+    ui.notifications?.error(
+      L("LOOKFAR.ItemForge.Dialog.Errors.OpenFailed")
+    );
   }
 });
