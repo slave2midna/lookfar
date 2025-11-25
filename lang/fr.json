@@ -1,181 +1,256 @@
 {
 	"LOOKFAR": {
-	  "Button": {
-		"TravelCheck": {
-		  "Name": "Vérification de voyage",
-		  "Title": "Effectuer une vérification de voyage"
-		},
-		"TreasureRoll": {
-		  "Name": "Lancer de trésor",
-		  "Title": "Générer un trésor"
+
+
+	"__SECTION__Buttons": "=== Buttons ===",
+	"Button": {
+	"TravelCheck": {
+		"Name": "Test de voyage",
+		"Title": "Effectuer une test de voyage"
+	},
+	"TreasureRoll": {
+		"Name": "Lancer de trésor",
+		"Title": "Générer un trésor"
+	}
+	},
+
+
+
+	"__SECTION__Settings": "=== Settings ===",
+	"Settings": {
+	"ResultVisibility": {
+		"Name": "Visibilité des résultats",
+		"Hint": "Choisissez si les résultats et les sorties de chat sont publics ou réservés au MJ.",
+		"Choices": {
+		"Public": "Public",
+		"GMOnly": "MJ uniquement"
 		}
-	  },
-	  "Settings": {
-		"ResultVisibility": {
-		  "Name": "Visibilité des résultats",
-		  "Hint": "Choisissez si les résultats et les sorties de chat sont publics ou réservés au MJ.",
-		  "Choices": {
-			"Public": "Public",
-			"GMOnly": "MJ uniquement"
-		  }
-		},
-		"EnableKeywords": {
-		  "Name": "Activer les mots-clés",
-		  "Hint": "Activer les mots-clés lors de la génération des résultats de vérification de voyage."
-		},
-		"DiscoveryEffectTable": {
-		  "Name": "Table aléatoire des effets de découverte",
-		  "Hint": "Sélectionnez la table aléatoire à utiliser pour générer les effets de découverte."
-		},
-		"DiscoverySourceTable": {
-		  "Name": "Table aléatoire des sources de découverte",
-		  "Hint": "Sélectionnez la table aléatoire à utiliser pour générer les sources de découverte."
-		},
-		"DangerThreatTable": {
-		  "Name": "Table aléatoire des menaces de danger",
-		  "Hint": "Sélectionnez la table aléatoire à utiliser pour générer les menaces de danger."
-		},
-		"DangerSourceTable": {
-		  "Name": "Table aléatoire des sources de danger",
-		  "Hint": "Sélectionnez la table aléatoire à utiliser pour générer les sources de danger."
-		},
-		"DefaultRollTable": "Défauts de Lookfar"
-	  },
-	  "Dialogs": {
-		"TravelCheck": {
-		  "Title": "Vérification de voyage",
-		  "ThreatLevel": "Niveau de menace",
-		  "Wayfaring": "Voyage",
-		  "PartyLevel": "Niveau du groupe :",
-		  "TreasureHunting": "Chasse au trésor",
-		  "WellTraveled": "Chasseur de trésors"
-		},
-		"TravelResult": {
-		  "Title": "Résultat de voyage",
-		  "Prompt": "Voulez-vous conserver ce résultat ou relancer ?",
-		  "Waiting": "En attente de la décision du MJ...",
-		  "NoIncident": "La journée de voyage s'est déroulée sans incident."
-		},
-		"Result": {
-		  "Danger": "Danger !",
-		  "Discovery": "Découverte !"
-		},
-		"TableHeaders": {
-		  "Threat": "Menace",
-		  "Source": "Source",
-		  "Effect": "Effet",
-		  "Traits": "Caractéristiques",
-		  "Terrain": "Terrain"
-		}
-	  },
-	  "Severity": {
+	},
+
+	"ItemForgeEditMode": {
+	  "Name": "Mode d'édition de la forge des objets",
+	  "Hint": "Modifier le fonctionnement de l'interaction avec la forge d'objet pour les utilisateurs.",
+	  "Choices": {
+		"Public": "Publique",
+		"GMOnly": "MJ Uniquement",
+		"Locked": "Verrouillé",
+		"Hidden": "Caché"
+	  }
+	},
+
+	"EnableKeywords": {
+		"Name": "Activer les mots-clés",
+		"Hint": "Activer les mots-clés lors de la génération des résultats de tests de voyage."
+	},
+
+	"UseVariantTravelRules": {
+		"Name": "Utiliser les règles alternatives de voyage",
+		"Hint": "Paramètres réservés : active ou désactive les mécanismes de voyages alternatifs (actuellement inutilisés)."
+	},
+
+	"UseVariantDamageRules": {
+		"Name": "Utilisé les règles de dégâts du playtest",
+		"Hint": "Lors de la création de nouvelles armes, les dégâts seront basés sur les nouvelles règles du playtest."
+	},
+
+	"DiscoveryEffectTable": {
+		"Name": "Table aléatoire des effets de découverte",
+		"Hint": "Sélectionnez la table aléatoire à utiliser pour générer les effets de découverte."
+	},
+
+	"DiscoverySourceTable": {
+		"Name": "Table aléatoire des sources de découverte",
+		"Hint": "Sélectionnez la table aléatoire à utiliser pour générer les sources de découverte."
+	},
+
+	"DangerThreatTable": {
+		"Name": "Table aléatoire des menaces de danger",
+		"Hint": "Sélectionnez la table aléatoire à utiliser pour générer les menaces de danger."
+	},
+
+	"DangerSourceTable": {
+		"Name": "Table aléatoire des sources de danger",
+		"Hint": "Sélectionnez la table aléatoire à utiliser pour générer les sources de danger."
+	},
+
+	"CustomTreasureRollTable": {
+	  "Name": "Table aléatoire de trésor personnalisée",
+	  "Hint": "Sélectionner la table aléatoire utilisée pour générer les trésors personnalisés."
+	},
+  
+	"MonsterCompendium": {
+	  "Name": "Compendium de Créatures",
+	  "Hint": "Sélectionnez le compendium d'acteurs à utiliser comme source pour le générateur de conflits."
+	},
+  
+	"BattleSceneName": {
+	  "Name": "Scène de conflit",
+	  "Hint": "Sélectionnez la scène à utiliser pour l'aperçu du générateur de conflits."
+	},
+
+	"DefaultRollTable": "Défauts de Lookfar",
+
+	"NoActorCompendiums": "Aucun compendium d'acteur trouvé",
+	"NoScenes": "Aucune scène trouvée"
+	},
+
+
+
+    "__SECTION__Dialogs": "=== Dialogs ===",
+	"Dialogs": {
+	"TravelCheck": {
+		"Title": "Test de voyage",
+		"ThreatLevel": "Niveau de menace",
+		"Wayfaring": "Voyage",
+		"PartyLevel": "Niveau du groupe :",
+		"TreasureHunting": "Chasse au trésor",
+		"WellTraveled": "Chasseur de trésors"
+	},
+	"TravelResult": {
+		"Title": "Résultat de voyage",
+		"Prompt": "Voulez-vous conserver ce résultat ou relancer ?",
+		"Waiting": "En attente de la décision du MJ...",
+		"NoIncident": "La journée de voyage s'est déroulée sans incident."
+	},
+	"Result": {
+		"Danger": "Danger !",
+		"DangerMinor": "Danger mineur !",
+		"DangerHeavy": "Danger lourd !",
+		"DangerMassive": "Danger massif !",
+		"Discovery": "Découverte !"
+	},
+	"TableHeaders": {
+		"Threat": "Menace",
+		"Source": "Source",
+		"Effect": "Effet",
+		"Traits": "Caractéristiques",
+		"Terrain": "Terrain"
+	}
+	},
+
+
+
+    "__SECTION__Severity": "=== Severity ===",
+	"Severity": {
 		"Minor": "Mineur",
 		"Heavy": "Lourd",
 		"Massive": "Massif"
-	  },
-	  "Chat": {
+	},
+
+
+
+    "__SECTION__Chat": "=== Chat ===",
+	"Chat": {
 		"Alias": {
-		  "Roll": "Lancer de voyage",
-		  "Result": "Résultat de voyage"
+			"Roll": "Test de voyage",
+			"Result": "Résultat du voyage"
 		}
-	  },
-	  "Errors": {
+	},
+
+
+
+    "__SECTION__Errors": "=== Errors ===",
+	"Errors": {
 		"DataUnavailable": "Erreur : Données non disponibles.",
 		"DamageMissing": "Erreur : Données de dégâts introuvables.",
 		"ThreatUnknown": "Erreur : Type de menace inconnu.",
 		"NoDangerSource": "Aucune source de danger disponible.",
 		"NoDiscoveryEffect": "Aucun effet de découverte disponible.",
 		"NoDiscoverySource": "Aucune source de découverte disponible."
-	  },
-	  "Keywords": {
+	},
+
+
+
+    "__SECTION__Keywords": "=== Keywords ===",
+	"Keywords": {
 		"Traits": {
-		  "Abandoned": "abandonné",
-		  "Ancient": "ancien",
-		  "Arcane": "arcanique",
-		  "Bewitched": "ensorcelé",
-		  "Blighted": "dévasté",
-		  "Cavernous": "caverneux",
-		  "Celestial": "céleste",
-		  "Chimeric": "chimérique",
-		  "Crumbling": "en ruine",
-		  "Cryptic": "cryptique",
-		  "Cursed": "maudit",
-		  "Decayed": "décomposé",
-		  "Desolate": "désolé",
-		  "Deserted": "déserté",
-		  "Dilapidated": "délabré",
-		  "Dimensional": "dimensionnel",
-		  "Eldritch": "étrange",
-		  "Ephemeral": "éphémère",
-		  "Ethereal": "éthéré",
-		  "Eternal": "éternel",
-		  "Fabled": "légendaire",
-		  "Faded": "fané",
-		  "Forbidden": "interdit",
-		  "Forging": "forge",
-		  "Forgotten": "oublié",
-		  "Fractured": "fracturé",
-		  "Frozen": "gelé",
-		  "Ghostly": "fantomatique",
-		  "Gloomy": "sombre",
-		  "Gossamer": "vaporeux",
-		  "Hallowed": "sacré",
-		  "Haunted": "hanté",
-		  "Hidden": "caché",
-		  "Infernal": "infernal",
-		  "Isolated": "isolé",
-		  "Legendary": "légendaire",
-		  "Luminous": "lumineux",
-		  "Lurking": "rôdeur",
-		  "Magical": "magique",
-		  "Moonlit": "éclairé par la lune",
-		  "Mysterious": "mystérieux",
-		  "Mystic": "mystique",
-		  "Mystical": "mystique",
-		  "Neglected": "négligé",
-		  "Obsidian": "obsidienne",
-		  "Obscured": "obscurci",
-		  "Obscure": "obscur",
-		  "Obscuring": "obscurcissant",
-		  "Otherworldly": "d'un autre monde",
-		  "Overgrown": "envahi par la végétation",
-		  "Overlooked": "négligé",
-		  "Petrified": "pétrifié",
-		  "Phantasmal": "fantomatique",
-		  "Primeval": "primitif",
-		  "Pristine": "immaculé",
-		  "Relic": "relique",
-		  "Resplendent": "resplendissant",
-		  "Runed": "runique",
-		  "Ruined": "ruiné",
-		  "Sacred": "sacré",
-		  "Sanctified": "sanctifié",
-		  "Secret": "secret",
-		  "Secluded": "isolé",
-		  "Serene": "serein",
-		  "Shaded": "ombragé",
-		  "Shadowed": "ombragé",
-		  "Shattered": "brisée",
-		  "Shimmering": "scintillant",
-		  "Spectral": "spectral",
-		  "Stygian": "stygien",
-		  "Sunken": "englouti",
-		  "Surreal": "surréaliste",
-		  "Sylvan": "sylvestre",
-		  "Temporal": "temporel",
-		  "TimeWorn": "usé par le temps",
-		  "Twilight": "crépuscule",
-		  "Uncharted": "inconnu",
-		  "Unhallowed": "profané",
-		  "Unseen": "invisible",
-		  "Unearthed": "déterré",
-		  "Verdant": "verdoyant",
-		  "Veiled": "voilé",
-		  "Venerable": "vénérable",
-		  "Vivid": "vif",
-		  "Weathered": "usé par les intempéries",
-		  "Withered": "flétri",
-		  "Wraithlike": "semblable à un spectre"
+			"Abandoned": "abandonné",
+			"Ancient": "ancien",
+			"Arcane": "arcanique",
+			"Bewitched": "ensorcelé",
+			"Blighted": "dévasté",
+			"Cavernous": "caverneux",
+			"Celestial": "céleste",
+			"Chimeric": "chimérique",
+			"Crumbling": "en ruine",
+			"Cryptic": "cryptique",
+			"Cursed": "maudit",
+			"Decayed": "décomposé",
+			"Desolate": "désolé",
+			"Deserted": "déserté",
+			"Dilapidated": "délabré",
+			"Dimensional": "dimensionnel",
+			"Eldritch": "étrange",
+			"Ephemeral": "éphémère",
+			"Ethereal": "éthéré",
+			"Eternal": "éternel",
+			"Fabled": "légendaire",
+			"Faded": "fané",
+			"Forbidden": "interdit",
+			"Forging": "forge",
+			"Forgotten": "oublié",
+			"Fractured": "fracturé",
+			"Frozen": "gelé",
+			"Ghostly": "fantomatique",
+			"Gloomy": "sombre",
+			"Gossamer": "vaporeux",
+			"Hallowed": "sacré",
+			"Haunted": "hanté",
+			"Hidden": "caché",
+			"Infernal": "infernal",
+			"Isolated": "isolé",
+			"Legendary": "légendaire",
+			"Luminous": "lumineux",
+			"Lurking": "rôdeur",
+			"Magical": "magique",
+			"Moonlit": "éclairé par la lune",
+			"Mysterious": "mystérieux",
+			"Mystic": "mystique",
+			"Mystical": "mystique",
+			"Neglected": "négligé",
+			"Obsidian": "obsidienne",
+			"Obscured": "obscurci",
+			"Obscure": "obscur",
+			"Obscuring": "obscurcissant",
+			"Otherworldly": "d'un autre monde",
+			"Overgrown": "envahi par la végétation",
+			"Overlooked": "négligé",
+			"Petrified": "pétrifié",
+			"Phantasmal": "fantomatique",
+			"Primeval": "primitif",
+			"Pristine": "immaculé",
+			"Relic": "relique",
+			"Resplendent": "resplendissant",
+			"Runed": "runique",
+			"Ruined": "ruiné",
+			"Sacred": "sacré",
+			"Sanctified": "sanctifié",
+			"Secret": "secret",
+			"Secluded": "isolé",
+			"Serene": "serein",
+			"Shaded": "ombragé",
+			"Shadowed": "ombragé",
+			"Shattered": "brisée",
+			"Shimmering": "scintillant",
+			"Spectral": "spectral",
+			"Stygian": "stygien",
+			"Sunken": "englouti",
+			"Surreal": "surréaliste",
+			"Sylvan": "sylvestre",
+			"Temporal": "temporel",
+			"TimeWorn": "usé par le temps",
+			"Twilight": "crépuscule",
+			"Uncharted": "inconnu",
+			"Unhallowed": "profané",
+			"Unseen": "invisible",
+			"Unearthed": "déterré",
+			"Verdant": "verdoyant",
+			"Veiled": "voilé",
+			"Venerable": "vénérable",
+			"Vivid": "vif",
+			"Weathered": "usé par les intempéries",
+			"Withered": "flétri",
+			"Wraithlike": "semblable à un spectre"
 		},
 		"Terrain": {
 		  "Alcove": "alcôve",
@@ -295,8 +370,12 @@
 		  "Zeppelin": "zeppelin",
 		  "Ziggurat": "ziggourat"
 		}
-	  },
-	  "Dangers": {
+	},
+
+
+
+    "__SECTION__Dangers": "=== Dangers ===",
+	"Dangers": {
 		"StatusEffects": {
 		  "Minor": {
 			"Dazed": "Subissez l'état étourdit",
@@ -351,36 +430,43 @@
 		  "Source16": "Une malédiction ou une interférence magique déforme subtilement votre environnement.",
 		  "Source17": "Un allié révèle un secret qui remet tout en question."
 		}
-	  },
-	  "Discoveries": {
+	},
+
+
+
+    "__SECTION__Discoveries": "=== Discoveries ===",
+	"Discoveries": {
 		"Effects": {
-		  "Effect1": "Chaque membre du groupe récupère 1 PI.",
-		  "Effect2": "Chaque membre du groupe récupère 10 PV.",
-		  "Effect3": "Vous découvrez une herbe rare aux propriétés curatives.",
-		  "Effect4": "Vous trouvez une relique d'importance culturelle ou historique.",
-		  "Effect5": "Vous obtenez des informations sur une coutume ou une légende locale.",
-		  "Effect6": "Vous apprenez un raccourci qui facilitera les voyages futurs.",
-		  "Effect7": "Une créature amicale aide temporairement votre groupe.",
-		  "Effect8": "Vous trouvez une écriture ancienne qui fait allusion à des événements futurs.",
-		  "Effect9": "Un indice sur un mystère plus grand est découvert.",
-		  "Effect10": "Le paysage inspire une soudaine bouffée de créativité.",
-		  "Effect11": "Vous forgez un outil ou un objet utile à partir de pièces récupérées."
+			"Effect1": "Chaque membre du groupe récupère 1 PI.",
+			"Effect2": "Chaque membre du groupe récupère 10 PV.",
+			"Effect3": "Vous découvrez une herbe rare aux propriétés curatives.",
+			"Effect4": "Vous trouvez une relique d'importance culturelle ou historique.",
+			"Effect5": "Vous obtenez des informations sur une coutume ou une légende locale.",
+			"Effect6": "Vous apprenez un raccourci qui facilitera les voyages futurs.",
+			"Effect7": "Une créature amicale aide temporairement votre groupe.",
+			"Effect8": "Vous trouvez une écriture ancienne qui fait allusion à des événements futurs.",
+			"Effect9": "Un indice sur un mystère plus grand est découvert.",
+			"Effect10": "Le paysage inspire une soudaine bouffée de créativité.",
+			"Effect11": "Vous forgez un outil ou un objet utile à partir de pièces récupérées."
 		},
 		"Sources": {
-		  "Source1": "Un paysage magnifique resté presque intact pendant des siècles.",
-		  "Source2": "Les ruines d'un village qui racontent l'histoire d'une ancienne guerre.",
-		  "Source3": "Un autel avec des inscriptions d'une civilisation oubliée.",
-		  "Source4": "Une grotte où un ancien feu de camp et des fournitures sont trouvés.",
-		  "Source5": "Une capsule temporelle enterrée d'une autre époque.",
-		  "Source6": "Des traces d'une espèce inconnue.",
-		  "Source7": "Un monolithe couvert de runes lumineuses.",
-		  "Source8": "Les os d'une créature massive jamais vue auparavant.",
-		  "Source9": "Un endroit où les étoiles semblent s'aligner parfaitement.",
-		  "Source10": "Un phénomène météorologique inhabituel révélant un terrain caché.",
-		  "Source11": "Une mélodie portée par le vent, sans origine claire.",
-		  "Source12": "Un arbre unique poussant sur de la pierre, irradiant la magie."
+			"Source1": "Un paysage magnifique resté presque intact pendant des siècles.",
+			"Source2": "Les ruines d'un village qui racontent l'histoire d'une ancienne guerre.",
+			"Source3": "Un autel avec des inscriptions d'une civilisation oubliée.",
+			"Source4": "Une grotte où un ancien feu de camp et des fournitures sont trouvés.",
+			"Source5": "Une capsule temporelle enterrée d'une autre époque.",
+			"Source6": "Des traces d'une espèce inconnue.",
+			"Source7": "Un monolithe couvert de runes lumineuses.",
+			"Source8": "Les os d'une créature massive jamais vue auparavant.",
+			"Source9": "Un endroit où les étoiles semblent s'aligner parfaitement.",
+			"Source10": "Un phénomène météorologique inhabituel révélant un terrain caché.",
+			"Source11": "Une mélodie portée par le vent, sans origine claire.",
+			"Source12": "Un arbre unique poussant sur de la pierre, irradiant la magie."
 		}
 	  }
+	
+	  
+	
 	}
   }
   
