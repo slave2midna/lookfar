@@ -1,24 +1,18 @@
-# Lookfar GM Assistant
+# Lookfar GM Toolkit
 
 ![fu-sitecover.jpg](https://trello.com/1/cards/64db0994c4a8791322c8b2e2/attachments/64f476a7f1dc332714f44c8c/download/fu-sitecover.jpg)
 
-Hello and welcome to Lookfar! A GM Assistant module for [Foundry VTT](https://foundryvtt.com/). This module is designed to help make travel events and discoveries easier to manage while playing [Fabula Ultima](https://www.needgames.it/fabula-ultima-en/) by [Need Games](https://www.needgames.it/). It also provides quick and efficient methods of generating loot and rare equipment for players on the fly.
+Hello and welcome to Lookfar! A GM Toolkit for [Foundry VTT](https://foundryvtt.com/). This module is for [Fabula Ultima](https://www.needgames.it/fabula-ultima-en/) by [Need Games](https://www.needgames.it/). It is designed to make running games easier and more efficient for solo players and game masters. It provides several tools for quick and efficient generation of loot, dungeons, and encounters. It also offers a means of handling travel checks, and rare equipment crafting on the fly.
 
-Please note that licensed Fabula Ultima content is not provided with this system. As an endeavour of the League of Fabulous Developers, this module adheres to RoosterEma's guidelines and strives to ensure that the core book and supplements remain essential to player and GM experience.
+This module is a WIP and can change at any time. It requires the [Project FU](https://github.com/League-of-Fabulous-Developers/FoundryVTT-Fabula-Ultima) Fabula Ultima system (v4.0+), and is actively in development for Foundry v13. New features are not supported for Foundry v12 or any earlier version of PFU.
 
-**Note:** This module is a WIP and can change at any time. At the current moment, it requires the [Project FU](https://github.com/League-of-Fabulous-Developers/FoundryVTT-Fabula-Ultima) Fabula Ultima system (v4.0+). It is actively being tested on Foundry v13, and is unsupported for Foundry v12 or any earlier version of PFU.
-
-| Features               |                                                                                                                                                          |
+| Current Features               |                                                                                                                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Travel Check** | Adds a travel button to tools UI for Users and Gamemasters to perform Travel Checks, generate dangers and discoveries. Includes a popup with suggestions for improv, located by project FU toolbar. |
 | **Treasure Generator** | Adds a treasure button to tools UI for Gamemasters to generate loot based on party level and reward budget. Loot generated can be kept as items in foundry to be given to players. |
-| **Item Forger** | Adds an item forger the tools UI for Gamemasters and Users to collaborate and build custom items based on the core and playtest rules. Settings can be changed to restrict this function. |
-
-You can call the travel Check Helper via: `game.lookfar.showTravelCheckDialog();`
-
-You can call the treasure Roll Helper via: `game.lookfar.showTreasureRollDialog();`
-
-You can call the item forge Helper via: `game.lookfar.showItemForgerDialog();`
+| **Item Forge** | Adds an item forger the tools UI for Gamemasters and Users to collaborate and build custom items based on the core and playtest rules. Settings can be changed to restrict this function. |
+| **Dungeon Mapper** | Genertates a quick dungeon map in a similar style to Mythic Bastionland sites. It also provided tokens for tracking player progression through generates dungeons. |
+| **Conflict Builder** | Give the GM the ability to filter through a compendium of NPC's (not included) and spawn enemy tokens onto a Battle Scene for quick encounter setup on the fly. |
 
 **Manifest URL:** `https://github.com//slave2midna/lookfar/releases/latest/download/module.json`
 
