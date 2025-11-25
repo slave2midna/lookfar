@@ -2011,9 +2011,33 @@
 },
 
 
-
-        "__SECTION__ItemForge": "=== Item Forge ===",
+"__SECTION__ItemForge": "=== Item Forge ===",
 "ItemForge": {
+  "Dialog": {
+    "Title": "Item Forger",
+    "MiniTitle": "Item Forger: Materials",
+    "Button": {
+      "Forge": "Forge Item"
+    },
+    "Errors": {
+      "ChooseType": "Please choose an item type.",
+      "ChooseTemplate": "Please choose a template.",
+      "ForgeFailed": "Forge failed: {error}",
+      "OpenFailed": "Failed to open Item Forger dialog."
+    }
+  },
+
+  "Notifications": {
+    "Forged": "Forged: {name}"
+  },
+
+  "Errors": {
+    "NoTemplateSelected": "No template selected.",
+    "GenericForgeFailed": "The forge could not complete.",
+    "CouldNotReadDrop": "Could not read dropped data.",
+    "FilePickerOpen": "Could not open the file picker."
+  },
+
   "ChooseItem": {
     "Legend": "Choose Item"
   },
@@ -2027,7 +2051,8 @@
 
   "TemplateList": {
     "Aria": "Template list",
-    "Loading": "Loading…"
+    "Loading": "Loading...",
+    "Empty": "No templates available."
   },
 
   "Attributes": {
@@ -2042,7 +2067,29 @@
 
   "Preview": {
     "Legend": "Preview",
-    "Placeholder": "CONTENT"
+    "Placeholder": "CONTENT",
+
+    "Handed": {
+      "One": "One-Handed",
+      "Two": "Two-Handed",
+      "Unknown": "Handed"
+    },
+
+    "Stats": {
+      "Def": "DEF",
+      "MDef": "M.DEF",
+      "Init": "INIT",
+      "HR": "HR"
+    },
+
+    "Muted": {
+      "OtherKind": "Preview for another item type.",
+      "SelectWeaponTemplate": "Select a weapon template to preview."
+    },
+
+    "Error": {
+      "Generic": "Unable to render preview."
+    }
   },
 
   "Customize": {
@@ -2052,6 +2099,18 @@
     "PlusFourDamage": "+4 Damage",
 
     "NoOptions": "No Options",
+
+    "HandToggle": {
+      "MakeOneHanded": "Make One-Handed",
+      "MakeTwoHanded": "Make Two-Handed"
+    },
+
+    "Tooltip": {
+      "HandToggleRestricted": "This weapon cannot change its handedness.",
+      "GMOnly": "Only the GM can change this option.",
+      "PlusOneAlready": "This weapon already has at least +1 Accuracy.",
+      "VariantDamageInfo": "Damage scales from the item's value. This option is disabled."
+    },
 
     "Element": {
       "Label": "Type:",
@@ -2069,6 +2128,10 @@
 
   "Qualities": {
     "Legend": "Qualities",
+
+    "NoneText": "No quality.",
+    "NoData": "No quality data found.",
+    "NoneAvailable": "No qualities available for this item type.",
 
     "Category": {
       "None": "None",
@@ -2109,17 +2172,68 @@
 
   "Materials": {
     "Legend": "Materials",
+
     "Drop": {
       "Aria": "Materials drop zone"
     },
-    "Hint": "Drag & drop Item documents here (max 5)"
+
+    "Hint": "Drag & drop Item documents here (max 5).",
+
+    "RequireOriginHint": "At least one material with origin \"{origin}\" is required.",
+
+    "Tooltip": {
+      "OriginLabel": "Origin",
+      "CostLabel": "Cost",
+      "Remove": "Click to remove this material",
+      "RequestRemove": "Click to request removing this material"
+    },
+
+    "Errors": {
+      "OnlyItems": "Only Item documents can be used as materials.",
+      "OnlyTreasure": "Only Treasure-type items can be used as materials.",
+      "MaxMaterials": "You cannot use more than 5 materials.",
+      "NoMoreItem": "You cannot use this material any more times.",
+      "NotEnoughQuantity": "Not enough copies of {name}. Need {need}, have {have}."
+    }
+  },
+
+  "Create": {
+    "NamePattern": {
+      "Weapon": "{base} (Forged)",
+      "Armor": "{base} (Forged)",
+      "Shield": "{base} (Forged)",
+      "Accessory": "{base} (Forged)"
+    },
+    "Summary": {
+      "Weapon": "A forged weapon of the {category} type.",
+      "Armor": "Forged armor ({martialType}).",
+      "Shield": "A forged shield ({martialType}).",
+      "Accessory": "A forged accessory based on {base}."
+    }
+  },
+
+  "Fallback": {
+    "WeaponName": "Weapon",
+    "ArmorName": "Armor",
+    "ShieldName": "Shield",
+    "AccessoryName": "Accessory",
+    "WeaponCategory": "weapon"
+  },
+
+  "Armor": {
+    "Martial": "Martial armor",
+    "NonMartial": "Non-martial armor"
+  },
+
+  "Shield": {
+    "Martial": "Martial shield",
+    "NonMartial": "Non-martial shield"
   },
 
   "PreviewCard": {
     "MutedText": "Unavailable"
   }
 },
-
 
 
 
@@ -2220,6 +2334,7 @@
         }
     }
 }
+
 
 
 
