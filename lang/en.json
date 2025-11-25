@@ -1871,6 +1871,95 @@
         },
 
 
+
+"__SECTION__TreasureRoll": "=== Treasure Roll ===",
+
+"Dialogs": {
+  "TreasureRoll": {
+    "Title": "Treasure Generator",
+    "Buttons": {
+      "RollLoot": "Roll Loot"
+    }
+  },
+  "TreasureResult": {
+    "Title": "Treasure Results",
+    "Buttons": {
+      "Keep": "Keep",
+      "Stash": "Stash",
+      "Reroll": "Reroll"
+    }
+  }
+},
+
+"TreasureRoll": {
+  "Fields": {
+    "Budget": "Budget",
+    "Level": "Level",
+    "Origin": "Origin",
+    "Nature": "Nature",
+    "Items": "Items"
+  },
+  "Origin": {
+    "Random": "Random",
+    "Aerial": "Aerial",
+    "Thunderous": "Thunderous",
+    "Paradox": "Paradox",
+    "Terrestrial": "Terrestrial",
+    "Ardent": "Ardent",
+    "Glacial": "Glacial",
+    "Spiritual": "Spiritual",
+    "Corrupted": "Corrupted",
+    "Aquatic": "Aquatic",
+    "Mechanical": "Mechanical"
+  },
+  "Nature": {
+    "Random": "Random",
+    "Anthropod": "Anthropod",
+    "Bird": "Bird",
+    "Fish": "Fish",
+    "Mammal": "Mammal",
+    "Mollusk": "Mollusk",
+    "Reptile": "Reptile",
+    "Fungus": "Fungus",
+    "Incorporeal": "Incorporeal",
+    "Liquid": "Liquid",
+    "Artificial": "Artificial",
+    "Mineral": "Mineral"
+  },
+  "Options": {
+    "IgnoreValues": "Ignore budget/level",
+    "SelectAll": "Select all"
+  },
+  "Types": {
+    "Weapons": "Weapons",
+    "Armor": "Armor",
+    "Accessories": "Accessories",
+    "Shields": "Shields",
+    "Materials": "Materials",
+    "Ingredients": "Ingredients",
+    "Currency": "Currency",
+    "Custom": "Custom"
+  }
+},
+
+"TreasureResult": {
+  "Budget": {
+    "Remaining": "Remaining Budget"
+  }
+},
+
+"Errors": {
+  "CustomTreasureTableMissing": "No Custom Treasure Roll Table selected in settings.",
+  "CustomTreasureTableNotFound": "Selected Custom Treasure Roll Table not found.",
+  "SkippedIngredientsWarning": "Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
+  "NoLootGenerated": "No loot generated."
+},
+
+
+        
+
+        
+
 "__SECTION__TravelRoll": "=== Travel Roll ===",
 "Dialogs": {
   "TravelCheck": {
@@ -2014,6 +2103,7 @@
         }
     }
 }
+
 
 
 
