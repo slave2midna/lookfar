@@ -5,6 +5,19 @@
     {{{resultHtml}}}
   </div>
 
+  {{#if keywords}}
+    <table class="lf-keyword-table">
+      <tr>
+        <th>{{localize "LOOKFAR.Dialogs.TableHeaders.Traits"}}</th>
+        <td>{{keywords.traitKeywords}}</td>
+      </tr>
+      <tr>
+        <th>{{localize "LOOKFAR.Dialogs.TableHeaders.Terrain"}}</th>
+        <td>{{keywords.terrainKeywords}}</td>
+      </tr>
+    </table>
+  {{/if}}
+
   <p class="travel-result-prompt">
     {{promptText}}
   </p>
