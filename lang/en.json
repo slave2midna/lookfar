@@ -15,16 +15,16 @@
     "Title": "Generate Some Treasure"
   },
   "DungeonBuilder": {
-    "Name": "Dungeon Builder",
-    "Title": "Open the Dungeon Builder"
+    "Name": "Dungeon Mapper",
+    "Title": "Map a Dungeon"
   },
   "ConflictBuilder": {
     "Name": "Conflict Builder",
-    "Title": "Open the Conflict Builder"
+    "Title": "Create a Conflict"
   },
   "ItemForger": {
-    "Name": "Item Forger",
-    "Title": "Forge or Edit Items"
+    "Name": "Item Forge",
+    "Title": "Forge and Item"
   }
 },
 
@@ -965,4 +965,5 @@
         }
     }
 }
+
 
