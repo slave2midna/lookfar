@@ -31,11 +31,7 @@
             </div>
 
             <div class="lf-if-template-wrapper">
-              <div
-                id="templateList"
-                class="lf-if-scroll lf-if-template-list"
-                aria-label="Template list"
-              >
+              <div id="templateList" class="lf-if-scroll lf-if-template-list" aria-label="Template list">
                 <div>Loading…</div>
               </div>
             </div>
@@ -46,8 +42,28 @@
         <div id="attrRow" class="lf-if-attr-row">
           <fieldset class="lf-if-fieldset">
             <legend>Attributes</legend>
+
             <div id="attrInner" class="lf-if-attr-inner">
-              {{!-- Populated dynamically by itemForge.js --}}
+
+              {{!-- Always present, JS will show/hide --}}
+              <label>Attr A:
+                <select id="optAttrA" style="max-width:160px;">
+                  <option value="MIG">MIG</option>
+                  <option value="DEX">DEX</option>
+                  <option value="INS">INS</option>
+                  <option value="WLP">WLP</option>
+                </select>
+              </label>
+
+              <label>Attr B:
+                <select id="optAttrB" style="max-width:160px;">
+                  <option value="MIG">MIG</option>
+                  <option value="DEX">DEX</option>
+                  <option value="INS">INS</option>
+                  <option value="WLP">WLP</option>
+                </select>
+              </label>
+
             </div>
           </fieldset>
         </div>
@@ -68,8 +84,48 @@
         {{!-- Customize --}}
         <fieldset class="lf-if-fieldset">
           <legend>Customize</legend>
+
           <div id="customizeArea" class="lf-if-customize">
-            {{!-- Populated dynamically by itemForge.js --}}
+
+            {{!-- Weapon-only customize options --}}
+            <div id="weaponCustomize" style="display:flex; flex-direction:column; gap:4px;">
+
+              <label>
+                <input type="checkbox" id="optPlusOne">
+                <span>+1 Accuracy</span>
+              </label>
+
+              <label>
+                <input type="checkbox" id="optPlusDamage">
+                <span>+4 Damage</span>
+              </label>
+
+              <label id="handToggleWrap" style="display:none;">
+                <input type="checkbox" id="optToggleHand">
+                <span id="handToggleLabel"></span>
+              </label>
+
+              <label>Type:
+                <select id="optElement" style="max-width:160px;">
+                  <option value="physical" selected>Physical</option>
+                  <option value="fire">Fire</option>
+                  <option value="ice">Ice</option>
+                  <option value="earth">Earth</option>
+                  <option value="air">Air</option>
+                  <option value="bolt">Bolt</option>
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                  <option value="poison">Poison</option>
+                </select>
+              </label>
+
+            </div>
+
+            {{!-- Non-weapon fallback --}}
+            <div id="noCustomize" style="opacity:0.8; display:none;">
+              No Options
+            </div>
+
           </div>
         </fieldset>
 
@@ -95,12 +151,44 @@
             </select>
           </div>
 
-          <div
-            id="qualitiesList"
-            class="lf-if-scroll lf-if-qualities-list"
-            aria-label="Qualities list"
-          >
-            <div>Loading…</div>
+          <div id="qualitiesList" class="lf-if-scroll lf-if-qualities-list" aria-label="Qualities list">
+
+            {{!-- STANDARD QUALITY LIST --}}
+            <div id="qualitiesStandardBlock"></div>
+
+            {{!-- CUSTOM QUALITY BLOCK --}}
+            <div id="qualitiesCustomBlock" style="display:none; padding:6px;">
+
+              <textarea id="customEffect"
+                rows="2"
+                wrap="soft"
+                style="width:100%; height:44px; box-sizing:border-box; resize:none; overflow-y:auto;"
+                title="Type your custom effect text">
+              </textarea>
+
+              <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                <label for="customCost"
+                       style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">
+                  Cost:
+                </label>
+                <input id="customCost"
+                       type="number"
+                       min="0"
+                       step="1"
+                       inputmode="numeric"
+                       pattern="\\d*"
+                       value="0"
+                       style="width:100%; height:25px; box-sizing:border-box;"
+                       title="Enter a non-negative integer">
+              </div>
+
+              <button type="button" id="customApply"
+                style="width:auto; height:28px; margin:4px auto 0; padding:0 10px;">
+                Apply
+              </button>
+
+            </div>
+
           </div>
         </fieldset>
 
@@ -109,12 +197,7 @@
           <legend>Cost</legend>
           <div id="costRow" class="lf-if-cost-row">
             <i class="fuk fu-zenit" aria-hidden="true"></i>
-            <span
-              id="costValue"
-              class="lf-if-cost-value"
-            >
-              0
-            </span>
+            <span id="costValue" class="lf-if-cost-value">0</span>
             <label class="lf-if-cost-fee">
               <input type="checkbox" id="optFee">
               <span>No Fee</span>
@@ -129,15 +212,8 @@
     {{!-- Materials --}}
     <fieldset class="lf-if-fieldset lf-if-materials-fieldset">
       <legend>Materials</legend>
-      <div
-        id="materialsDrop"
-        class="lf-if-materials-drop"
-        aria-label="Materials drop zone"
-      >
-        <div
-          id="materialsHint"
-          class="lf-if-materials-hint"
-        >
+      <div id="materialsDrop" class="lf-if-materials-drop" aria-label="Materials drop zone">
+        <div id="materialsHint" class="lf-if-materials-hint">
           Drag & drop Item documents here (max 5)
         </div>
       </div>
