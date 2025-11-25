@@ -3,6 +3,72 @@
 const CANVAS_WIDTH  = 360;
 const CANVAS_HEIGHT = 360;
 
+// ===== SVG Helpers =====
+function createSVG(size = 24) {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("xmlns", svgNS);
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("width", size);
+  svg.setAttribute("height", size);
+  svg.setAttribute("aria-hidden", "true");
+  return svg;
+}
+
+function createPolygon(points) {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const poly = document.createElementNS(svgNS, "polygon");
+  poly.setAttribute("points", points);
+  poly.setAttribute("fill", "none");
+  poly.setAttribute("stroke", "currentColor");
+  poly.setAttribute("stroke-width", "2");
+  poly.setAttribute("stroke-linejoin", "round");
+  return poly;
+}
+
+function iconPentagon(size = 24) {
+  const svg = createSVG(size);
+  svg.appendChild(createPolygon("12 3 20 9.5 16.5 20 7.5 20 4 9.5"));
+  return svg;
+}
+
+function iconHexagon(size = 24) {
+  const svg = createSVG(size);
+  svg.appendChild(createPolygon("12 3 19 8 19 16 12 21 5 16 5 8"));
+  return svg;
+}
+
+function iconHeptagon(size = 24) {
+  const svg = createSVG(size);
+  svg.appendChild(createPolygon("12 3 18.5 7 20.5 14 16 20 8 20 3.5 14 5.5 7"));
+  return svg;
+}
+
+function iconOctagon(size = 24) {
+  const svg = createSVG(size);
+  svg.appendChild(createPolygon("9 3 15 3 21 9 21 15 15 21 9 21 3 15 3 9"));
+  return svg;
+}
+
+// Small helper to inject SVG icons into the shape buttons
+function injectShapeIcons(html) {
+  const shapes = {
+    pentagon: iconPentagon,
+    hexagon: iconHexagon,
+    heptagon: iconHeptagon,
+    octagon: iconOctagon
+  };
+
+  html.find(".lf-dm-shape-icon").each(function () {
+    const shape = this.dataset.shape;
+    const makeIcon = shapes[shape];
+    if (!makeIcon) return;
+    const svg = makeIcon(20);
+    // Replace any existing contents (e.g. old <i> tags)
+    this.replaceChildren(svg);
+  });
+}
+
 // Simple array shuffle (legacy helper)
 function shuffle(arr) {
   const a = arr.slice();
@@ -1018,6 +1084,10 @@ export async function openDungeonMapper() {
       _builderAppId = generatorAppId;
 
       const $html = html;
+
+      // Inject custom SVG icons into the shape buttons
+      injectShapeIcons($html);
+
       const canvas = $html.find("#dungeon-builder-canvas")[0];
       const ctx    = canvas.getContext("2d");
       const iconLayer = $html.find("#dungeon-builder-icons")[0];
