@@ -58,7 +58,7 @@ const getItemForgeEditMode = () => {
   }
 };
 
-// Public mode: collabortive, allows players and GM to control dialog
+// Public mode: collaborative, allows players and GM to control dialog
 const isItemForgeSharedMode = () => {
   const mode = getItemForgeEditMode();
   return mode === "public" || mode === "locked";
@@ -318,7 +318,7 @@ const getSelectedQualityInfo = (html, currentQualities) => {
       cost: 0
     };
   }
-  const $q = html.find('#qualitiesList [data-selected="1"]').first();
+  const $q = html.find('#qualitiesStandardBlock [data-selected="1"]').first();
   const qi = Number($q.data("idx"));
   const q = Number.isFinite(qi) ? currentQualities[qi] : null;
   return {
@@ -353,7 +353,7 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
     const { cost } = readCustomQuality(html);
     qcost = toInt(cost);
   } else if (catKey !== 'none') {
-    const $q = html.find('#qualitiesList [data-selected="1"]').first();
+    const $q = html.find('#qualitiesStandardBlock [data-selected="1"]').first();
     const qi = Number($q.data('idx'));
     const qual = Number.isFinite(qi) ? currentQualities[qi] : null;
     qcost = getQualityCost(qual);
@@ -894,11 +894,13 @@ async function openItemForgeDialog() {
       const $templateList    = html.find("#templateList");
       const $qualitiesList   = html.find("#qualitiesList");
       const $qualitiesSelect = html.find("#qualitiesCategory");
-      const $customize       = html.find("#customizeArea");
-      const $attrInner       = html.find("#attrInner");
       const $materialsDrop   = html.find("#materialsDrop");
       const $materialsHint   = html.find("#materialsHint");
       const $preview         = html.find("#itemPreviewLarge");
+
+      const $attrRow         = html.find("#attrRow");
+      const $weaponCustomize = html.find("#weaponCustomize");
+      const $noCustomize     = html.find("#noCustomize");
 
       // Hide fee checkbox for non-GM users
       if (!game.user.isGM) {
@@ -924,7 +926,7 @@ async function openItemForgeDialog() {
         // Qualities category select
         html.find('#qualitiesCategory').prop('disabled', true);
 
-        // Custom quality controls (if present)
+        // Custom quality controls
         html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
       };
 
@@ -944,7 +946,7 @@ async function openItemForgeDialog() {
         const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
         let qualityIdx = null;
         if (catKey !== "none" && catKey !== "custom") {
-          const $q = html.find('#qualitiesList [data-selected="1"]').first();
+          const $q = html.find('#qualitiesStandardBlock [data-selected="1"]').first();
           const qIdxRaw = Number($q.data("idx"));
           qualityIdx = Number.isFinite(qIdxRaw) ? qIdxRaw : null;
         }
@@ -1039,7 +1041,7 @@ async function openItemForgeDialog() {
         return item?.texture?.src || item?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg";
       };
 
-      // handles attribute selection
+      // handles attribute selection defaults when a template is picked
       const applyAttrDefaultsFromTemplate = (selectedEl) => {
         const kind = html.find('input[name="itemType"]:checked').val();
         if (kind !== "weapon") return;
@@ -1068,7 +1070,7 @@ async function openItemForgeDialog() {
 
       const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
-      // NEW: renderPreview now delegates to item-forge-preview.hbs
+      // NEW: renderPreview now delegates to item-forge-preview.hbs and uses rows[]
       function renderPreview(kind, selectedEl, opts = {}) {
         const rerollIcon = !!opts.rerollIcon;
 
@@ -1138,7 +1140,7 @@ async function openItemForgeDialog() {
           if (catKeyNow === "custom") {
             return readCustomQuality(html).eff;
           }
-          const $qsel = html.find('#qualitiesList [data-selected="1"]').first();
+          const $qsel = html.find('#qualitiesStandardBlock [data-selected="1"]').first();
           const qIdx = Number($qsel.data("idx"));
           const q = Number.isFinite(qIdx) ? currentQualities[qIdx] : null;
           return q?.description ?? q?.desc ?? "";
@@ -1152,8 +1154,7 @@ async function openItemForgeDialog() {
           isMartial: false,
           muted: false,
           mutedText: "",
-          line1: "",
-          line2: "",
+          rows: [],
           desc: ""
         };
 
@@ -1188,12 +1189,13 @@ async function openItemForgeDialog() {
           const mdef = (a?.mdef ?? "—");
           const init = (a?.init ?? "—");
 
+          // Keep this purely textual; no HTML tags.
           const rowArmor = !isMartial ?
-            `<strong>DEF:</strong> ${esc(defAttr)}+${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}` :
-            `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
+            `DEF: ${defAttr}+${def} | M.DEF: ${mdefAttr}+${mdef} | INIT: ${init}` :
+            `DEF: ${def} | M.DEF: ${mdefAttr}+${mdef} | INIT: ${init}`;
 
           ctx.isMartial = isMartial;
-          ctx.line1 = rowArmor;
+          ctx.rows = [esc(clip(rowArmor))];
           ctx.desc = esc(qdesc());
 
           return renderCtx(ctx);
@@ -1209,10 +1211,10 @@ async function openItemForgeDialog() {
           const def = (s?.def ?? "—");
           const mdef = (s?.mdef ?? "—");
 
-          const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
+          const rowShield = `DEF: +${def} | M.DEF: +${mdef}`;
 
           ctx.isMartial = isMartial;
-          ctx.line1 = rowShield;
+          ctx.rows = [esc(clip(rowShield))];
           ctx.desc = esc(qdesc());
 
           return renderCtx(ctx);
@@ -1220,6 +1222,7 @@ async function openItemForgeDialog() {
 
         // ---------- ACCESSORY PREVIEW ----------
         if (kind === "accessory") {
+          // Accessories are mostly about the quality; we keep rows empty and show desc.
           ctx.desc = esc(qdesc());
           return renderCtx(ctx);
         }
@@ -1254,11 +1257,10 @@ async function openItemForgeDialog() {
           const dispHandText = handLabel(handNorm ?? baseHandText);
 
           const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-          const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+ ${stats.acc} | HR+${stats.dmg} ${stats.dmgType}`;
+          const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+${stats.acc} | HR+${stats.dmg} ${stats.dmgType}`;
 
           ctx.isMartial = !!stats.isMartial;
-          ctx.line1 = esc(clip(row1));
-          ctx.line2 = esc(clip(row2));
+          ctx.rows = [esc(clip(row1)), esc(clip(row2))];
           ctx.desc = esc(qdesc());
 
           return renderCtx(ctx);
@@ -1487,9 +1489,16 @@ async function openItemForgeDialog() {
       }
 
       const renderQualities = (type, initialIndex = null, state = null) => {
+        const $standardBlock = html.find("#qualitiesStandardBlock");
+        const $customBlock   = html.find("#qualitiesCustomBlock");
+        const $customEffect  = html.find("#customEffect");
+        const $customCost    = html.find("#customCost");
+        const $customApply   = html.find("#customApply");
+
         if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
-          $qualitiesList.html(`<div style="text-align:center;">No qualities data.</div>`);
           currentQualities = [];
+          $standardBlock.html(`<div style="text-align:center;">No qualities data.</div>`);
+          $customBlock.hide();
           const kind = html.find('input[name="itemType"]:checked').val();
           renderPreview(kind, html.find('#templateList [data-selected="1"]').first());
           updateCost();
@@ -1501,10 +1510,13 @@ async function openItemForgeDialog() {
         // handle custom qualities
         if (catKey === "custom") {
           currentQualities = [];
+          $standardBlock.empty();
+          $customBlock.show();
 
+          // Restore or seed stored custom effect/cost
           const effCommitted = state
             ? String(state.customEffect ?? "").trim()
-            : String(html.data('customEffect') ?? "Custom effect text");
+            : String(html.data('customEffect') ?? "").trim();
           const cstCommitted = state
             ? toInt(state.customCost ?? 0)
             : toInt(html.data('customCost') ?? 0);
@@ -1512,82 +1524,54 @@ async function openItemForgeDialog() {
           html.data('customEffect', effCommitted);
           html.data('customCost', cstCommitted);
 
-          $qualitiesList.html(`
-    <div id="customQualityWrap"
-         style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
-
-      <textarea id="customEffect"
-          rows="2" wrap="soft"
-          style="
-            width:100%;
-            height:44px;
-            box-sizing:border-box;
-            overflow-y:auto;
-            resize:none;
-          "
-          title="Type your custom effect text">${esc(effCommitted)}</textarea>
-
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label for="customCost" style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">Cost:</label>
-        <input id="customCost" type="number" min="0" step="1" inputmode="numeric" pattern="\\d*"
-               value="${cstCommitted}"
-               style="width:100%; height:25px; box-sizing:border-box;"
-               title="Enter a non-negative integer">
-      </div>
-
-      <button type="button" id="customApply"
-        style="
-          width:auto;
-          height:28px;
-          margin:2px auto 0;
-          display:block;
-          padding:0 10px;
-          line-height:1;
-          box-sizing:border-box;
-        ">
-        Apply
-      </button>
-    </div>
-  `);
+          // Push values into the static fields
+          if ($customEffect.length) $customEffect.val(effCommitted);
+          if ($customCost.length)   $customCost.val(cstCommitted);
 
           // Immediately lock custom inputs when in restricted mode
           if (lockControlsForPlayer) {
-            html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
+            $customEffect.prop('disabled', true);
+            $customCost.prop('disabled', true);
+            $customApply.prop('disabled', true);
+          } else {
+            // Wire input constraints and Apply button
+            $customCost
+              .off('.customUX')
+              .on('keydown.customUX', (ev) => {
+                if (ev.key === 'Enter') ev.preventDefault();
+              })
+              .on('keypress.customUX', (ev) => {
+                if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
+              })
+              .on('paste.customUX', (ev) => {
+                ev.preventDefault();
+                const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
+                const digits = txt.replace(/\D+/g, '');
+                const el = ev.currentTarget;
+                const start = el.selectionStart ?? el.value.length;
+                const end = el.selectionEnd ?? el.value.length;
+                el.value = el.value.slice(0, start) + digits + el.value.slice(end);
+              });
+
+            $customApply
+              .off('.customUX')
+              .on('click.customUX', () => {
+                if (lockControlsForPlayer) return;
+
+                const eff = String($customEffect.val() ?? '').trim();
+                const raw = String($customCost.val() ?? '');
+                const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+                $customCost.val(cst);
+
+                html.data('customEffect', eff);
+                html.data('customCost', cst);
+
+                const kindNow = html.find('input[name="itemType"]:checked').val();
+                renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+                updateCost();
+                broadcastForgeState();
+              });
           }
-
-          $qualitiesList
-            .off('.customUX')
-            .on('keydown.customUX', '#customCost', (ev) => {
-              if (ev.key === 'Enter') ev.preventDefault();
-            })
-            .on('keypress.customUX', '#customCost', (ev) => {
-              if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
-            })
-            .on('paste.customUX', '#customCost', (ev) => {
-              ev.preventDefault();
-              const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
-              const digits = txt.replace(/\D+/g, '');
-              const el = ev.currentTarget;
-              const start = el.selectionStart ?? el.value.length;
-              const end = el.selectionEnd ?? el.value.length;
-              el.value = el.value.slice(0, start) + digits + el.value.slice(end);
-            })
-            .on('click.customUX', '#customApply', () => {
-              if (lockControlsForPlayer) return;
-
-              const eff = String(html.find('#customEffect').val() ?? '').trim();
-              const raw = String(html.find('#customCost').val() ?? '');
-              const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
-              html.find('#customCost').val(cst);
-
-              html.data('customEffect', eff);
-              html.data('customCost', cst);
-
-              const kindNow = html.find('input[name="itemType"]:checked').val();
-              renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-              updateCost();
-              broadcastForgeState();
-            });
 
           const kindNow = html.find('input[name="itemType"]:checked').val();
           renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
@@ -1595,9 +1579,13 @@ async function openItemForgeDialog() {
           return;
         }
 
+        // Non-custom categories: hide custom block, show standard
+        $customBlock.hide();
+        $standardBlock.show();
+
         if (catKey === "none") {
           currentQualities = [];
-          $qualitiesList.html("");
+          $standardBlock.empty();
           const kindNow = html.find('input[name="itemType"]:checked').val();
           renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
           updateCost();
@@ -1608,7 +1596,7 @@ async function openItemForgeDialog() {
         currentQualities = catList.filter(q => matchesAppliesTo(q, type));
 
         if (!currentQualities.length) {
-          $qualitiesList.html("");
+          $standardBlock.html(`<div style="text-align:center; opacity:0.75;">No qualities available.</div>`);
           const kindNow = html.find('input[name="itemType"]:checked').val();
           renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
           updateCost();
@@ -1622,9 +1610,9 @@ async function openItemForgeDialog() {
     </span>
   </div>
 `).join("");
-        $qualitiesList.html(items);
+        $standardBlock.html(items);
 
-        wireSelectableList($qualitiesList, ".if-quality", {
+        wireSelectableList($standardBlock, ".if-quality", {
           initialIndex,
           onSelect: () => {
             const kindNow = html.find('input[name="itemType"]:checked').val();
@@ -1638,49 +1626,6 @@ async function openItemForgeDialog() {
           },
           blockClicks: lockControlsForPlayer
         });
-      };
-
-      const renderAttrs = (type) => {
-        if (type !== "weapon") return $attrInner.html("");
-        $attrInner.html(`
-            <label>Attr A:
-              <select id="optAttrA" style="max-width:160px;">
-                <option value="MIG">MIG</option><option value="DEX">DEX</option>
-                <option value="INS">INS</option><option value="WLP">WLP</option>
-              </select>
-            </label>
-            <label>Attr B:
-              <select id="optAttrB" style="max-width:160px;">
-                <option value="MIG">MIG</option><option value="DEX">DEX</option>
-                <option value="INS">INS</option><option value="WLP">WLP</option>
-              </select>
-            </label>
-          `);
-      };
-
-      const renderCustomize = (type) => {
-        if (type !== "weapon") {
-          $customize.html(`<div style="opacity:0.8;">No Options</div>`);
-          return;
-        }
-        $customize.html(`
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <label><input type="checkbox" id="optPlusOne"><span>+1 Accuracy</span></label>
-            <label><input type="checkbox" id="optPlusDamage"><span>+4 Damage</span></label>
-            <label id="handToggleWrap" style="display:none;">
-              <input type="checkbox" id="optToggleHand"><span id="handToggleLabel"></span>
-            </label>
-            <label>Type:
-              <select id="optElement" style="max-width:160px;">
-                <option value="physical" selected>Physical</option>
-                <option value="fire">Fire</option><option value="ice">Ice</option>
-                <option value="earth">Earth</option><option value="air">Air</option>
-                <option value="bolt">Bolt</option><option value="dark">Dark</option>
-                <option value="light">Light</option><option value="poison">Poison</option>
-              </select>
-            </label>
-          </div>
-        `);
       };
 
       function populateTemplates(kind, state = null) {
@@ -1787,11 +1732,15 @@ async function openItemForgeDialog() {
       }
 
       const updateForKind = (kind, state = null) => {
-        renderCustomize(kind);
-        renderAttrs(kind);
+        const isWeapon = (kind === "weapon");
+
+        // Show/hide static HBS blocks instead of regenerating HTML
+        $attrRow.toggle(isWeapon);
+        $weaponCustomize.toggle(isWeapon);
+        $noCustomize.toggle(!isWeapon);
 
         // When Playtest Damage Rules are enabled, completely disable the +4 Damage toggle
-        if (kind === "weapon") {
+        if (isWeapon) {
           const $pd = html.find('#optPlusDamage');
           const $pdLabel = $pd.closest('label');
 
@@ -1820,7 +1769,7 @@ async function openItemForgeDialog() {
         renderQualities(kind, state?.qualityIdx ?? null, state);
         renderPreview(kind, null);
 
-        if (kind === "weapon") {
+        if (isWeapon) {
           updateHandToggle();
           updatePlusOneToggle();
         }
@@ -1883,9 +1832,12 @@ async function openItemForgeDialog() {
           }
           if (typeof state.customEffect === "string") {
             html.data('customEffect', state.customEffect);
+            html.find('#customEffect').val(state.customEffect);
           }
           if (typeof state.customCost !== "undefined") {
-            html.data('customCost', toInt(state.customCost));
+            const cst = toInt(state.customCost);
+            html.data('customCost', cst);
+            html.find('#customCost').val(cst);
           }
 
           refreshPreviewFromUI();
