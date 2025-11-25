@@ -625,6 +625,11 @@
   transform: none;
 }
 
+/* Slight horizontal shift for FA icons under Generate */
+#lookfar-dungeon-mapper .lf-dm-generate-options .lf-dm-icon {
+  transform: translateX(2px); /* try 1px, 2px, or even 0.5px */
+}
+
 /* Fix SVG alignment inside shape buttons */
 #lookfar-dungeon-mapper .lf-dm-shape-icon {
   display: flex;
