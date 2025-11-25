@@ -1,1 +1,90 @@
-Coming...
+/* ===== Lookfar Travel Check Dialog ===== */
+
+#lookfar-travel-check {
+  /* Just ensure it uses full dialog width */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#lookfar-travel-check .lf-travel-flex-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+#lookfar-travel-check .lf-travel-column {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Base styling for both tables in the dialog */
+#lookfar-travel-check .travel-check-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#lookfar-travel-check .lf-travel-caption {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+/* Treasure hunter row (stars) */
+#lookfar-travel-check .lf-travel-th-row {
+  white-space: nowrap;
+}
+
+#lookfar-travel-check .lf-travel-treasure-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#lookfar-travel-check .lf-travel-inline-label {
+  margin: 0;
+}
+
+#lookfar-travel-check .lf-travel-stars {
+  display: flex;
+  gap: 5px;
+  font-size: 1.2em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Optional: nicer spacing for radio labels */
+#lookfar-travel-check td label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== Lookfar Travel Result Dialog ===== */
+
+#lookfar-travel-result .travel-result-body {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+#lookfar-travel-result .travel-result-prompt {
+  margin-bottom: 1rem;
+}
+
+/* If you want all tables inside the result to align nicely */
+#lookfar-travel-result table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#lookfar-travel-result th,
+#lookfar-travel-result td {
+  padding: 5px;
+  border: 1px solid;
+  text-align: left;
+}
+
+/* You already add .ff6-dialog in render; keep/extend that here if desired */
+.ff6-dialog {
+  /* existing styles… */
+}
