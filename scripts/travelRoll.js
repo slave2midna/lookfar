@@ -494,7 +494,9 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
     // Use Lookfar Defaults: Pick a random source from dangers.json
     if (dataLoader.sourceData && Array.isArray(dataLoader.sourceData)) {
       const randomSourceIndex = Math.floor(Math.random() * dataLoader.sourceData.length);
-      sourceText = game.i18n.localize(dataLoader.sourceData[randomSourceIndex]); // Randomly select from dangers.json sources
+      const sourceId = dataLoader.sourceData[randomSourceIndex]; // e.g. "Source3"
+      const i18nKey = `LOOKFAR.Dangers.Sources.${sourceId}`;
+      sourceText = game.i18n.localize(i18nKey);
     } else {
       console.error("No source data available in dangers.json.");
     }
@@ -524,17 +526,24 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
       case "statusEffect":
         result += handleStatusEffect(dataLoader.threatsData, dangerSeverity, groupLevel);
         break;
-      case "Combat":
-        result += game.i18n.localize(dataLoader.threatsData.Combat[dangerSeverity]);
+      case "Combat": {
+        // LOOKFAR.Dangers.Combat.Minor/Heavy/Massive
+        const key = `LOOKFAR.Dangers.Combat.${dangerSeverity}`;
+        result += game.i18n.localize(key);
         break;
-      case "dangerClock":
-        result += game.i18n.localize(dataLoader.threatsData.dangerClock[dangerSeverity]);
+      }
+      case "dangerClock": {
+        // LOOKFAR.Dangers.DangerClock.Minor/Heavy/Massive
+        const key = `LOOKFAR.Dangers.DangerClock.${dangerSeverity}`;
+        result += game.i18n.localize(key);
         break;
-      case "villainPlanAdvance":
-        result += game.i18n.localize(
-          dataLoader.threatsData.villainPlanAdvance[dangerSeverity]
-        );
+      }
+      case "villainPlanAdvance": {
+        // LOOKFAR.Dangers.VillainPlanAdvance.Minor/Heavy/Massive
+        const key = `LOOKFAR.Dangers.VillainPlanAdvance.${dangerSeverity}`;
+        result += game.i18n.localize(key);
         break;
+      }
       default:
         console.error("Unknown threat type:", threatType);
         return {
@@ -581,26 +590,33 @@ function handleDamage(threatsData, groupLevel, dangerSeverity) {
 }
 
 function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
-  const statusEffectsListMinor = threatsData.statusEffects["Minor"];
-  const statusEffectsListHeavy = threatsData.statusEffects["Heavy"];
+  const minorKeys = threatsData.statusEffects["Minor"] || [];
+  const heavyKeys = threatsData.statusEffects["Heavy"] || [];
 
   if (dangerSeverity === "Massive") {
-    // 50% chance to pull either a Minor status effect with Heavy damage
-    // or a Heavy status effect with Minor damage
+    // 50% chance: Minor effect + Heavy damage OR Heavy effect + Minor damage
     const useMinorEffect = Math.random() < 0.5;
 
     if (useMinorEffect) {
-      const statusEffect = game.i18n.localize(getRandomElement(statusEffectsListMinor));
+      const key = getRandomElement(minorKeys); // e.g. "Dazed"
+      const effect = game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.Minor.${key}`);
       const heavyDamage = threatsData.Damage[groupLevel]["Heavy"];
-      return `${statusEffect} and ${heavyDamage} damage`;
+      return `${effect} and ${heavyDamage} damage`;
     } else {
-      const statusEffect = game.i18n.localize(getRandomElement(statusEffectsListHeavy));
+      const key = getRandomElement(heavyKeys); // e.g. "Poison"
+      const effect = game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.Heavy.${key}`);
       const minorDamage = threatsData.Damage[groupLevel]["Minor"];
-      return `${statusEffect} and ${minorDamage} damage`;
+      return `${effect} and ${minorDamage} damage`;
     }
   } else {
-    const statusEffectsList = threatsData.statusEffects[dangerSeverity];
-    return game.i18n.localize(getRandomElement(statusEffectsList));
+    const list = threatsData.statusEffects[dangerSeverity] || [];
+    if (!list.length) {
+      console.error(`No status effects for dangerSeverity: ${dangerSeverity}`);
+      return game.i18n.localize("LOOKFAR.Errors.ThreatUnknown");
+    }
+
+    const key = getRandomElement(list); // e.g. "Dazed", "Poison"
+    return game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.${dangerSeverity}.${key}`);
   }
 }
 
@@ -672,9 +688,11 @@ async function generateDiscovery() {
       console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
     }
   } else {
+    // Use Lookfar defaults via i18n
     if (dataLoader.discoveryData?.effects && Array.isArray(dataLoader.discoveryData.effects)) {
       const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
-      effectText = game.i18n.localize(dataLoader.discoveryData.effects[randomIndex]);
+      const effectId = dataLoader.discoveryData.effects[randomIndex]; // e.g. "Effect3"
+      effectText = game.i18n.localize(`LOOKFAR.Discoveries.Effects.${effectId}`);
     } else {
       console.error("No effects data available in discovery.json.");
     }
@@ -693,9 +711,11 @@ async function generateDiscovery() {
       console.error("Selected Discovery Source Roll Table not found. Falling back to defaults.");
     }
   } else {
+    // Use Lookfar defaults via i18n
     if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
       const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
-      sourceText = game.i18n.localize(dataLoader.discoveryData.sources[randomIndex]);
+      const sourceId = dataLoader.discoveryData.sources[randomIndex]; // e.g. "Source5"
+      sourceText = game.i18n.localize(`LOOKFAR.Discoveries.Sources.${sourceId}`);
     } else {
       console.error("No source data available in discovery.json.");
     }
