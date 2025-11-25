@@ -1,16 +1,32 @@
 {
     "LOOKFAR": {
+
+
+
+        
         "__SECTION__Buttons": "=== Buttons ===",
-        "Button": {
-            "TravelCheck": {
-                "Name": "Travel Check",
-                "Title": "Make a Travel Check"
-            },
-            "TreasureRoll": {
-                "Name": "Treasure Roll",
-                "Title": "Generate Some Treasure"
-            }
-        },
+"Button": {
+  "TravelCheck": {
+    "Name": "Travel Check",
+    "Title": "Make a Travel Check"
+  },
+  "TreasureRoll": {
+    "Name": "Treasure Roll",
+    "Title": "Generate Some Treasure"
+  },
+  "DungeonBuilder": {
+    "Name": "Dungeon Builder",
+    "Title": "Open the Dungeon Builder"
+  },
+  "ConflictBuilder": {
+    "Name": "Conflict Builder",
+    "Title": "Open the Conflict Builder"
+  },
+  "ItemForger": {
+    "Name": "Item Forger",
+    "Title": "Forge or Edit Items"
+  }
+},
 
 
 
@@ -949,3 +965,4 @@
         }
     }
 }
+
