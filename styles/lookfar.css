@@ -594,6 +594,22 @@
   box-sizing: border-box;
 }
 
+/* Generate / Shape option rows */
+#lookfar-dungeon-mapper .lf-dm-generate-options,
+#lookfar-dungeon-mapper .lf-dm-shape-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+#lookfar-dungeon-mapper .lf-dm-generate-options .lf-dm-button,
+#lookfar-dungeon-mapper .lf-dm-shape-options .lf-dm-button {
+  flex: 0 0 auto;
+}
+
 /* Icons */
 #lookfar-dungeon-mapper .lf-dm-icon {
   font-size: 14px;
