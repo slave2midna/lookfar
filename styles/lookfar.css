@@ -5,6 +5,7 @@
  *   2) Travel Result Dialog
  *   3) Item Forger (main + mini)
  *   4) Dungeon Mapper
+ *   5) Conflict Builder
  * ========================================================================== */
 
 
@@ -617,4 +618,87 @@
 
 #lookfar-dungeon-mapper .lf-dm-seed-current {
   font-weight: bold;
+}
+
+
+/* ========================================================================== */
+/* 5) Lookfar – Conflict Builder                                              */
+/* ========================================================================== */
+
+#conflictBuilderDialog .dialog-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 380px;
+  height: 190px;
+  gap: 8px;
+}
+
+#conflictBuilderDialog .preview-image {
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+  display: block;
+}
+
+#conflictBuilderDialog .form-fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 190px;
+  height: 297px;
+  gap: 4px;
+}
+
+#conflictBuilderDialog .form-group {
+  margin-bottom: 2px;
+}
+
+#conflictBuilderDialog .scrollable-list {
+  width: 100%;
+  height: 297px;
+  overflow-y: auto;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#conflictBuilderDialog .list-item {
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-bottom: 2px;
+}
+
+#conflictBuilderDialog .list-item:hover {
+  background: #e0e0e0;
+}
+
+#conflictBuilderDialog .list-item.selected {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+#conflictBuilderDialog .actor-attributes {
+  font-size: 14px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  text-align: left;
+  width: 190px;
+}
+
+#conflictBuilderDialog #preview-tokens-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+#conflictBuilderDialog .preview-token {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  pointer-events: auto;
+  border: none;
 }
