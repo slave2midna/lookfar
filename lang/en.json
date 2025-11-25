@@ -1961,8 +1961,8 @@
 
 
 
-"__SECTION__TravelRoll": "=== Travel Roll ===",
-"TravelRoll": {
+"__SECTION__TravelCheck": "=== Travel Check ===",
+"TravelCheck": {
   "Dialogs": {
     "TravelCheck": {
       "Title": "Travel Check",
@@ -2111,6 +2111,7 @@
         }
     }
 }
+
 
 
 
