@@ -2,7 +2,7 @@ import "./cacheManager.js";
 import { LookfarSettings } from "./settings.js";
 import { dataLoader } from "./dataLoader.js";
 
-import "./travelRoll.js";
+import "./travelCheck.js";
 import "./treasureRoll.js";
 import "./itemForge.js";
 import "./dungeonMapper.js";
@@ -25,3 +25,4 @@ Hooks.once("ready", () => {
   // Register dynamic settings that require game ready
   LookfarSettings.registerDynamicRollTableSettings();
 });
+
