@@ -12,7 +12,6 @@
 /* ========================================================================== */
 
 #lookfar-travel-check {
-  /* Ensure it uses full dialog width */
   width: 100%;
   box-sizing: border-box;
 }
@@ -28,7 +27,6 @@
   min-width: 0;
 }
 
-/* Base styling for both tables in the dialog */
 #lookfar-travel-check .travel-check-table {
   width: 100%;
   border-collapse: collapse;
@@ -41,7 +39,6 @@
   margin-bottom: 4px;
 }
 
-/* Treasure hunter row (stars) */
 #lookfar-travel-check .lf-travel-th-row {
   white-space: nowrap;
 }
@@ -64,7 +61,6 @@
   cursor: pointer;
 }
 
-/* Nicer spacing for radio labels */
 #lookfar-travel-check td label {
   display: inline-flex;
   align-items: center;
@@ -85,7 +81,6 @@
   margin-bottom: 1rem;
 }
 
-/* Tables inside the result */
 #lookfar-travel-result table {
   width: 100%;
   border-collapse: collapse;
@@ -98,10 +93,8 @@
   text-align: left;
 }
 
-/* Dialog frame (you already add .ff6-dialog in render) */
 .ff6-dialog {
-  /* You can extend your FF6-style window here if desired */
-  /* e.g. font-family, background, border, etc. */
+  /* Extend window styling here if desired */
 }
 
 
@@ -109,8 +102,7 @@
 /* 3) Lookfar – Item Forger (main + mini)                                     */
 /* ========================================================================== */
 
-/* --- Shared container ----------------------------------------------------- */
-
+/* Shared container */
 #if-body {
   width: 100%;
   box-sizing: border-box;
@@ -131,7 +123,7 @@
   font-size: 0.95em;
 }
 
-/* Flex helpers */
+/* Flex helper */
 .lf-if-flex {
   display: flex;
   gap: 4px;
@@ -139,24 +131,55 @@
   min-width: 0;
 }
 
-/* Left / Right columns in main forge dialog */
-#if-body .lf-if-left {
-  flex: 0 0 60%;
-  min-width: 0;
+/* ========================================================================== */
+/* 3a) Updated FORGE Layout                                                   */
+/* ========================================================================== */
+
+#if-body .lf-if-layout {
   display: flex;
-  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
 }
 
-#if-body .lf-if-right {
-  flex: 0 0 40%;
-  min-width: 0;
+#if-body .lf-if-col-left,
+#if-body .lf-if-col-right {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+}
+
+#if-body .lf-if-col-left {
+  flex: 0 0 60%;
+}
+
+#if-body .lf-if-col-right {
+  flex: 0 0 40%;
+}
+
+/* Choose Item panel */
+#if-body .lf-if-choose-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+#if-body .lf-if-item-types {
+  flex: 0 0 auto;
+}
+
+#if-body .lf-if-template-wrapper {
+  flex: 1 1 auto;
+}
+
+/* Qualities category dropdown */
+#if-body .lf-if-qualities-select {
+  margin-bottom: 4px;
 }
 
 
 /* ========================================================================== */
-/* 3a) Template and Quality Lists                                             */
+/* 3b) Template & Quality Lists                                               */
 /* ========================================================================== */
 
 #if-body #templateList,
@@ -175,7 +198,6 @@
   height: 138px;
 }
 
-/* Selectable rows */
 .if-template,
 .if-quality {
   padding: 2px 4px;
@@ -190,13 +212,13 @@
 
 .if-template[data-selected="1"],
 .if-quality[data-selected="1"] {
-  background-color: rgba(65, 105, 225, 1);
+  background-color: rgba(65,105,225,1);
   color: white;
 }
 
 
 /* ========================================================================== */
-/* 3b) Attributes / Customize                                                 */
+/* 3c) Attributes / Customize                                                 */
 /* ========================================================================== */
 
 #if-body #attrInner label {
@@ -224,20 +246,19 @@
 
 
 /* ========================================================================== */
-/* 3c) Preview Card                                                           */
+/* 3d) Preview Card                                                           */
 /* ========================================================================== */
 
 #if-body #itemPreviewLarge {
   width: 100%;
   height: 165px;
   border: 1px solid #999;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
-/* Inner preview structure */
 #if-body #if-preview-card {
   display: flex;
   flex-direction: column;
@@ -257,23 +278,20 @@
   gap: 6px;
 }
 
-/* Icon wrapper allowing badge overlays */
 .if-icon-wrap {
   position: relative;
-  display: inline-block;
   width: 32px;
   height: 32px;
+  display: inline-block;
 }
 
 #if-body #if-preview-icon {
   width: 32px;
   height: 32px;
   object-fit: contain;
-  image-rendering: auto;
   cursor: default;
 }
 
-/* Martial badge */
 .if-badge {
   position: absolute;
   left: -2px;
@@ -283,16 +301,14 @@
   pointer-events: none;
 }
 
-/* Rows inside preview card */
 #if-body #if-preview-rows {
   display: flex;
   flex-direction: column;
-  width: 100%;
   gap: 4px;
+  width: 100%;
 }
 
 .if-row {
-  width: 100%;
   text-align: center;
   font-size: 11px;
   line-height: 1.15;
@@ -302,27 +318,20 @@
 }
 
 .if-row-desc {
-  width: 100%;
   text-align: center;
   font-size: 11px;
   line-height: 1.2;
-  white-space: normal;
-  overflow: hidden;
   padding: 4px 8px;
+  white-space: normal;
   box-sizing: border-box;
 }
 
-.if-muted {
-  opacity: 0.7;
-}
-
-.if-tight {
-  letter-spacing: 0.2px;
-}
+.if-muted { opacity: 0.7; }
+.if-tight { letter-spacing: 0.2px; }
 
 
 /* ========================================================================== */
-/* 3d) Materials Drop Zone (main + mini)                                      */
+/* 3e) Materials Drop Zone (main + mini)                                      */
 /* ========================================================================== */
 
 .lf-if-materials-fieldset {
@@ -337,16 +346,14 @@
   justify-content: center;
   gap: 8px;
   padding: 6px;
-  box-sizing: border-box;
   user-select: none;
+  box-sizing: border-box;
 }
 
 #materialsDrop.lf-if-materials-drop img[data-mat="1"] {
   width: 48px;
   height: 48px;
-  object-fit: contain;
   cursor: pointer;
-  image-rendering: auto;
 }
 
 #materialsHint.lf-if-materials-hint {
@@ -354,14 +361,13 @@
   font-size: 12px;
 }
 
-/* Mini-forge: slightly taller materials box */
 #lookfar-itemforge-mini #materialsDrop {
   min-height: 96px;
 }
 
 
 /* ========================================================================== */
-/* 3e) Cost Row                                                               */
+/* 3f) Cost Row                                                               */
 /* ========================================================================== */
 
 #if-body #costRow {
@@ -372,7 +378,6 @@
 }
 
 #if-body #costValue {
-  display: inline-block;
   width: 4ch;
   text-align: left;
   font-variant-numeric: tabular-nums;
@@ -391,7 +396,7 @@
 
 
 /* ========================================================================== */
-/* 3f) Disabled / Locked State                                                */
+/* 3g) Disabled / Locked State                                                */
 /* ========================================================================== */
 
 .lf-if-disabled {
