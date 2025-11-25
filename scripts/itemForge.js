@@ -114,8 +114,8 @@ function ensureIFSocket() {
     return;
   }
 
-   // warning notifier so the host can ping specific clients
-   sock.register(IF_MSG.MaterialsNotify, (payload) => {
+  // warning notifier so the host can ping specific clients
+  sock.register(IF_MSG.MaterialsNotify, (payload) => {
     const text = payload?.text;
     if (text) ui.notifications?.warn(text);
   });
@@ -141,28 +141,28 @@ function ensureIFSocket() {
   });
 
   // Everyone: receive authoritative materials
-sock.register(IF_MSG.MaterialsReplace, (payload) => {
-  _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
-  _requiredOriginKey = String(payload?.originReq || "").toLowerCase();
+  sock.register(IF_MSG.MaterialsReplace, (payload) => {
+    _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
+    _requiredOriginKey = String(payload?.originReq || "").toLowerCase();
 
-  try {
-    // Push into ANY open Item Forger window on this client
-    for (const [id, app] of Object.entries(ui.windows)) {
-      const html = app?.element;
-      if (!html?.length) continue;
+    try {
+      // Push into ANY open Item Forger window on this client
+      for (const [id, app] of Object.entries(ui.windows)) {
+        const html = app?.element;
+        if (!html?.length) continue;
 
-      // Only touch windows that have our materials drop zone
-      const $drop = html.find('#materialsDrop');
-      if (!$drop.length) continue;
+        // Only touch windows that have our materials drop zone
+        const $drop = html.find('#materialsDrop');
+        if (!$drop.length) continue;
 
-      html.data('ifMaterials', _materials);
-      html.data('ifRequiredOriginKey', _requiredOriginKey);
-      $drop.trigger('repaint');
+        html.data('ifMaterials', _materials);
+        html.data('ifRequiredOriginKey', _requiredOriginKey);
+        $drop.trigger('repaint');
+      }
+    } catch (e) {
+      console.warn("[Item Forger] MaterialsReplace repaint failed:", e);
     }
-  } catch (e) {
-    console.warn("[Item Forger] MaterialsReplace repaint failed:", e);
-  }
-});
+  });
 
   // Player proposes ADD (host validates → updates → broadcasts)
   sock.register(IF_MSG.MaterialsAdd, async (payload, msg) => {
@@ -219,7 +219,6 @@ sock.register(IF_MSG.MaterialsReplace, (payload) => {
   });
 
   // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
-    // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
   sock.register(IF_MSG.MaterialsRemove, (payload) => {
     if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
     const { index, uuid } = payload ?? {};
@@ -533,7 +532,7 @@ const buildItemData = (kind, html, {
     };
   }
 
-  // handle armor item data.  
+  // handle armor item data.
   if (kind === "armor") {
     return {
       name: `Crafted ${base?.name ?? "Armor"}`,
@@ -560,6 +559,7 @@ const buildItemData = (kind, html, {
         cost: {
           value: costField
         },
+        // NOTE: Armor must use scalar source here (system quirk).
         source: "LOOKFAR",
         summary: {
           value: `A set of finely crafted ${base?.isMartial ? "martial" : "non-martial"} armor.`
@@ -568,7 +568,7 @@ const buildItemData = (kind, html, {
     };
   }
 
-  // handle shield item data. 
+  // handle shield item data.
   if (kind === "shield") {
     return {
       name: `Crafted ${base?.name ?? "Shield"}`,
@@ -638,158 +638,8 @@ const buildItemData = (kind, html, {
 
 // --- Dialog Behavior ------------------------------------------------------------//
 
-const CATEGORY_OPTIONS = [
-  ["Basic", "basic"],
-  ["Custom", "custom"],
-  ["Ardent", "ardent"],
-  ["Aerial", "aerial"],
-  ["Thunderous", "thunderous"],
-  ["Paradox", "paradox"],
-  ["Terrestrial", "terrestrial"],
-  ["Glacial", "glacial"],
-  ["Spiritual", "spiritual"],
-  ["Corrupted", "corrupted"],
-  ["Aquatic", "aquatic"],
-  ["Mechanical", "mechanical"],
-];
-
-const ATTR_ROW_FIXED_HEIGHT = "30px";
-
-const content = `
-<div id="if-body">
-  <form>
-    <div style="display:flex; gap:4px; align-items:flex-start; min-width:0; margin-bottom:0;">
-
-      <!-- Left Column: Item selection, attributes, preview -->
-      <div style="flex:0 0 60%; min-width:0; display:flex; flex-direction:column;">
-
-        <!-- Choose Item -->
-        <fieldset style="margin:0;">
-          <legend>Choose Item</legend>
-          <div style="display:flex; align-items:flex-start; min-width:0;">
-            <div style="flex:0 0 100px;">
-              <label><input type="radio" name="itemType" value="weapon" checked> Weapon</label><br>
-              <label><input type="radio" name="itemType" value="armor"> Armor</label><br>
-              <label><input type="radio" name="itemType" value="shield"> Shield</label><br>
-              <label><input type="radio" name="itemType" value="accessory"> Accessory</label>
-            </div>
-            <div style="flex:1 1 auto; min-width:0;">
-              <div id="templateList" aria-label="Template list"
-                   style="height:100px; overflow-y:auto; border:1px solid #999; box-sizing:border-box;">
-                <div>Loading…</div>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-
-        <!-- Attributes -->
-        <div id="attrRow">
-          <fieldset style="margin:0;">
-            <legend>Attributes</legend>
-            <div id="attrInner"
-                 style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;
-                        height:${ATTR_ROW_FIXED_HEIGHT}; box-sizing:border-box;">
-            </div>
-          </fieldset>
-        </div>
-
-        <!-- Preview -->
-        <fieldset style="margin:0;">
-          <legend>Preview</legend>
-          <div id="itemPreviewLarge" title="Crafted item preview"
-               style="width:100%; height:165px; border:1px solid #999;
-                      display:flex; align-items:center; justify-content:center;">
-            CONTENT
-          </div>
-        </fieldset>
-
-      </div>
-
-      <!-- Right Column: Customize, Qualities, Cost -->
-      <div style="flex:0 0 40%; min-width:0; display:flex; flex-direction:column;">
-
-        <!-- Customize -->
-        <fieldset>
-          <legend>Customize</legend>
-          <div id="customizeArea" style="width:100%; height:100px;"></div>
-        </fieldset>
-
-        <!-- Qualities -->
-        <fieldset>
-          <legend>Qualities</legend>
-          <div style="margin-bottom:4px;">
-            <select id="qualitiesCategory" style="width:100%;">
-              <option value="none" selected>None</option>
-              ${CATEGORY_OPTIONS.map(([label, key]) => `
-                <option value="${key}">${label}</option>
-              `).join("")}
-            </select>
-          </div>
-          <div id="qualitiesList" aria-label="Qualities list"
-               style="width:100%; height:138px; overflow-y:auto;
-                      border:1px solid #999; box-sizing:border-box;">
-            <div>Loading…</div>
-          </div>
-        </fieldset>
-
-        <!-- Cost -->
-        <fieldset>
-          <legend>Cost</legend>
-          <div id="costRow"
-               style="font-size:14px; line-height:1; display:inline-flex; align-items:center; height:25px;">
-            <i class="fuk fu-zenit" aria-hidden="true" style="margin-right:4px;"></i>
-            <span id="costValue"
-                  style="display:inline-block; width:4ch; text-align:left;
-                         font-variant-numeric: tabular-nums;
-                         font-feature-settings:'tnum';">0</span>
-            <label style="display:inline-flex; align-items:center; font-size:14px; white-space:nowrap;">
-              <input type="checkbox" id="optFee" style="margin-right:4px;">
-              <span>No Fee</span>
-            </label>
-          </div>
-        </fieldset>
-
-      </div>
-    </div>
-
-    <!-- Materials -->
-    <fieldset style="margin:0 0 6px 0;">
-      <legend>Materials</legend>
-      <div id="materialsDrop" aria-label="Materials drop zone"
-           style="min-height:72px; border:1px dashed #999;
-                  display:flex; align-items:center; justify-content:center;
-                  gap:8px; padding:6px; box-sizing:border-box; user-select:none;">
-        <div id="materialsHint" style="opacity:0.6; font-size:12px;">
-          Drag & drop Item documents here (max 5)
-        </div>
-      </div>
-    </fieldset>
-
-  </form>
-</div>
-`;
-
-// --- Mini Materials Dialog (players & observers) -----------------------------
-
-const contentMini = `
-<div id="if-body">
-  <form>
-    <fieldset style="margin:0 0 6px 0;">
-      <legend>Materials</legend>
-      <div id="materialsDrop" aria-label="Materials drop zone"
-           style="min-height:96px; border:1px dashed #999;
-                  display:flex; align-items:center; justify-content:center;
-                  gap:8px; padding:6px; box-sizing:border-box; user-select:none;">
-        <div id="materialsHint" style="opacity:0.6; font-size:12px;">
-          Drag & drop Treasure Items here (max 5)
-        </div>
-      </div>
-    </fieldset>
-  </form>
-</div>
-`;
-
-function openMaterialsMiniDialog() {
+// Mini Materials Dialog (players & observers) uses item-forge-mini.hbs
+async function openMaterialsMiniDialog() {
   ensureIFSocket();
 
   // singleton mini on this client
@@ -798,9 +648,11 @@ function openMaterialsMiniDialog() {
     return;
   }
 
+  const content = await renderTemplate("modules/lookfar/templates/item-forge-mini.hbs", {});
+
   const dlg = new Dialog({
     title: "Item Forger — Materials",
-    content: contentMini,
+    content,
     buttons: {},
     render: async (html) => {
       const appId = Number(html.closest(".window-app").attr("data-appid"));
@@ -824,55 +676,56 @@ function openMaterialsMiniDialog() {
       };
 
       const renderMaterialsMini = () => {
-  const list    = html.data('ifMaterials') || [];
-  const needKey = String(html.data('ifRequiredOriginKey') || "").toLowerCase();
-  const hasReq  = !needKey || list.some(m => String(m.origin) === needKey);
+        const list    = html.data('ifMaterials') || [];
+        const needKey = String(html.data('ifRequiredOriginKey') || "").toLowerCase();
+        const hasReq  = !needKey || list.some(m => String(m.origin) === needKey);
 
-  $materialsDrop.children('img[data-mat="1"]').remove();
+        $materialsDrop.children('img[data-mat="1"]').remove();
 
-  if (!list.length) {
-    if (needKey) {
-      $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
-    } else {
-      $materialsHint.text("Drag & drop Treasure Items here (max 5)");
-    }
-    $materialsHint.show();
-  } else {
-    $materialsHint.hide();
-    list.forEach((m, i) => {
-      const tip = [
-        m.name || "",
-        m.origin ? `Origin: ${m.origin}` : "",
-        Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
-      ].filter(Boolean).join(" • ");
+        if (!list.length) {
+          if (needKey) {
+            $materialsHint.text(`Needs 1 ${needKey} material to craft.`);
+          } else {
+            $materialsHint.text("Drag & drop Treasure Items here (max 5)");
+          }
+          $materialsHint.show();
+        } else {
+          $materialsHint.hide();
+          list.forEach((m, i) => {
+            const tip = [
+              m.name || "",
+              m.origin ? `Origin: ${m.origin}` : "",
+              Number.isFinite(m.cost) ? `Cost: ${m.cost}` : ""
+            ].filter(Boolean).join(" • ");
 
-      const $img = $(`
+            const $img = $(`
         <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-             title="Click to request removal\n${esc(tip)}"
-             style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">
+             title="Click to request removal\n${esc(tip)}">
       `);
 
-      // Players click to REQUEST removal (host decides)
-      $img.on("click", () => {
-        sock?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
-      });
+            $img.addClass("lf-if-material-icon");
 
-      $materialsDrop.append($img);
-    });
-  }
+            // Players click to REQUEST removal (host decides)
+            $img.on("click", () => {
+              sock?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
+            });
 
-  // Match main dialog: red border when requirement not satisfied
-  $materialsDrop.css({ borderColor: (!hasReq && needKey) ? "red" : "#999" });
+            $materialsDrop.append($img);
+          });
+        }
 
-  // repaint hook for socket pushes
-  html.find('#materialsDrop').off('repaint').on('repaint', () => {
-    html.data('ifMaterials', _materials);
-    html.data('ifRequiredOriginKey', _requiredOriginKey);
-    renderMaterialsMini();
-  });
+        // Match main dialog: red border when requirement not satisfied
+        $materialsDrop.css({ borderColor: (!hasReq && needKey) ? "red" : "#999" });
 
-  relayout();
-};
+        // repaint hook for socket pushes
+        html.find('#materialsDrop').off('repaint').on('repaint', () => {
+          html.data('ifMaterials', _materials);
+          html.data('ifRequiredOriginKey', _requiredOriginKey);
+          renderMaterialsMini();
+        });
+
+        relayout();
+      };
 
       // Drag & drop to request ADD (host validates)
       $materialsDrop
@@ -910,8 +763,8 @@ function openMaterialsMiniDialog() {
 }
 
 
-// Item Forger Dialog
-function openItemForgeDialog() {
+// Item Forger Dialog (main) uses item-forge.hbs
+async function openItemForgeDialog() {
   ensureIFSocket();
 
   // GM full dialog should be singleton on this client
@@ -925,6 +778,8 @@ function openItemForgeDialog() {
 
   let currentTemplates = [];
   let currentQualities = [];
+
+  const content = await renderTemplate("modules/lookfar/templates/item-forge.hbs", {});
 
   const dlg = new Dialog({
     title: "Item Forger",
@@ -1008,10 +863,6 @@ function openItemForgeDialog() {
         html.data('ifMaterials', _materials);
       }
 
-      // --- your existing layout/preview/template/qualities wiring stays the same ---
-      // (Keep all of your original code here unchanged EXCEPT the Materials area)
-
-      // Grab handles you already use
       const $dlg = html.closest(".window-app");
       const $wc  = $dlg.find(".window-content");
       $wc.css({ display: "block", overflow: "visible" });
@@ -1060,23 +911,22 @@ function openItemForgeDialog() {
       const applyLockState = () => {
         if (!lockControlsForPlayer) return;
 
-     // Item type radios
-     html.find('input[name="itemType"]').prop('disabled', true);
+        // Item type radios
+        html.find('input[name="itemType"]').prop('disabled', true);
 
-     // Weapon customize + attrs + fee
-     html.find('#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee')
-         .prop('disabled', true);
+        // Weapon customize + attrs + fee
+        html.find('#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee')
+            .prop('disabled', true);
 
-     // Qualities category select
-     html.find('#qualitiesCategory').prop('disabled', true);
+        // Qualities category select
+        html.find('#qualitiesCategory').prop('disabled', true);
 
-     // Custom quality controls (if present)
-     html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
-   };
+        // Custom quality controls (if present)
+        html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
+      };
 
-    // Initial pass (in case some controls exist already)
-    applyLockState();
-
+      // Initial pass (in case some controls exist already)
+      applyLockState();
 
       // --- Shared Forge UI state helpers (only used when visibility is "Public") ---
       let suppressStateBroadcast = false;
@@ -1150,7 +1000,7 @@ function openItemForgeDialog() {
         sock.executeForEveryone(IF_MSG.UIStateReplace, { state });
       };
 
-      // COST updater (unchanged)
+      // COST updater
       function updateCost() {
         const $val = html.find('#costValue');
         const $t   = html.find('#templateList [data-selected="1"]').first();
@@ -1161,8 +1011,8 @@ function openItemForgeDialog() {
       }
 
       const getNameSafe = (r) => esc(getName(r));
-      const getItemImage = (item) => {
 
+      const getItemImage = (item) => {
         if (item?.img) return item.img;
 
         const kind = html.find('input[name="itemType"]:checked').val(); // "weapon" | "armor" | "shield" | "accessory"
@@ -1208,15 +1058,11 @@ function openItemForgeDialog() {
       };
 
       // handles Preview item card
-      const clip = (v, n = 14) => {
+      const clip = (v, n = 64) => {
         const s = String(v ?? "");
         return s.length > n ? s.slice(0, n - 1) + "…" : s;
       };
 
-      const addModIfNumber = (val, mod) => {
-        const num = Number(val);
-        return Number.isFinite(num) ? (num + mod) : val;
-      };
       const handLabel = (h) => (h === "1" ? "1-handed" : h === "2" ? "2-handed" : h || "—");
 
       function renderPreview(kind, selectedEl, opts = {}) {
@@ -1248,32 +1094,32 @@ function openItemForgeDialog() {
         let icon = getKindIcon(kind);
 
         if (override) {
-  // GM-chosen custom icon (always authoritative)
-  icon = override;
-  html.data('iconPath', icon);
+          // GM-chosen custom icon (always authoritative)
+          icon = override;
+          html.data('iconPath', icon);
 
-} else if (savedPath) {
-  // Path that came from ANY client via socket or previous roll
-  // Always respected unless a GM override is present.
-  icon = savedPath;
+        } else if (savedPath) {
+          // Path that came from ANY client via socket or previous roll
+          // Always respected unless a GM override is present.
+          icon = savedPath;
 
-} else if (base && (!restrictInputs || isHostGM)) {
-  // In collaborative mode (restrictInputs === false), ANY user can roll
-  // a random icon when interacting with the forge (last-touch wins).
-  // In restricted mode, only the host GM may do this.
-  if (!rerollIcon && iconMap[cacheKey]) {
-    icon = iconMap[cacheKey];
-  } else {
-    try {
-      const pick = dataLoader.getRandomIconFor(kind, base);
-      icon = pick || icon;
-    } catch (e) {
-      console.warn("[Item Forger] preview icon pick failed:", e);
-    }
-    iconMap[cacheKey] = icon;
-  }
-  html.data('iconPath', icon);
-}
+        } else if (base && (!restrictInputs || isHostGM)) {
+          // In collaborative mode (restrictInputs === false), ANY user can roll
+          // a random icon when interacting with the forge (last-touch wins).
+          // In restricted mode, only the host GM may do this.
+          if (!rerollIcon && iconMap[cacheKey]) {
+            icon = iconMap[cacheKey];
+          } else {
+            try {
+              const pick = dataLoader.getRandomIconFor(kind, base);
+              icon = pick || icon;
+            } catch (e) {
+              console.warn("[Item Forger] preview icon pick failed:", e);
+            }
+            iconMap[cacheKey] = icon;
+          }
+          html.data('iconPath', icon);
+        }
 
         try {
           const dir = String(icon || "").includes("/") ? String(icon).replace(/\/[^/]*$/, "/") : "/";
@@ -1281,104 +1127,6 @@ function openItemForgeDialog() {
         } catch {
           /* noop */
         }
-
-        // preview item card styling
-        const style = `
-  <style>
-  #if-preview-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-    height: 100%;
-    padding: 6px;
-    box-sizing: border-box;
-    gap: 8px;
-  }
-
-  /* head row to hold the icon */
-  #if-preview-head {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-
-  /* icon wrapper to allow absolute-positioned badge */
-  .if-icon-wrap {
-    position: relative;
-    display: inline-block;
-
-    width: 32px;
-    height: 32px;
-  }
-
-  #if-preview-icon {
-    display: block;
-    width: 32px;
-    height: 32px;
-
-    object-fit: contain;
-    image-rendering: auto;
-    cursor: default;
-    pointer-events: auto;
-  }
-
-  /* the badge that overlaps the icon (uses your system class + positioning) */
-  .if-badge {
-    position: absolute;
-    left: -2px;
-    top: -2px;
-    z-index: 2;
-
-    transform: scale(0.9);
-    pointer-events: none; /* avoid accidental clicks */
- }
-
-  #if-preview-rows {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 4px;
-  }
-
-  .if-row {
-    width: 100%;
-    text-align: center;
-
-    font-size: 11px;
-    line-height: 1.15;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .if-muted {
-    opacity: 0.7;
-  }
-
-  .if-tight {
-    letter-spacing: 0.2px;
-  }
-
-  .if-row-desc {
-    width: 100%;
-    text-align: center;
-
-    font-size: 11px;
-    line-height: 1.2;
-
-    white-space: normal;
-    overflow: hidden;
-
-    padding: 4px 8px;
-    box-sizing: border-box;
-  }
-</style>
-`;
 
         // quality description helper
         const qdesc = () => {
@@ -1395,9 +1143,13 @@ function openItemForgeDialog() {
         // dial sanity check
         const kindNow = html.find('input[name="itemType"]:checked').val();
         if (kindNow !== kind) {
-          $preview.html(`${style}
+          $preview.html(`
             <div id="if-preview-card">
-              <img id="if-preview-icon" src="${icon}">
+              <div id="if-preview-head">
+                <div class="if-icon-wrap">
+                  <img id="if-preview-icon" src="${icon}">
+                </div>
+              </div>
               <div id="if-preview-rows" class="if-muted">
                 <div class="if-row">Preview coming soon…</div>
               </div>
@@ -1408,12 +1160,10 @@ function openItemForgeDialog() {
 
         // ---------- ARMOR PREVIEW ----------
         if (kind === "armor") {
-          // current template selection
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const a = Number.isFinite(idx) ? currentTemplates[idx] : null;
+          const $sel2 = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+          const idx2 = Number($sel2.data("idx"));
+          const a = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
-          // pull fields from equipment.json
           const isMartial = !!a?.isMartial;
           const defAttr = (a?.defAttr ?? "").toString().toUpperCase();
           const def = (a?.def ?? "—");
@@ -1421,13 +1171,11 @@ function openItemForgeDialog() {
           const mdef = (a?.mdef ?? "—");
           const init = (a?.init ?? "—");
 
-          // armor preview stat row
           const rowArmor = !isMartial ?
             `<strong>DEF:</strong> ${esc(defAttr)}+${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}` :
             `<strong>DEF:</strong> ${esc(def)} | <strong>M.DEF:</strong> ${esc(mdefAttr)}+${esc(mdef)} | <strong>INIT:</strong> ${esc(init)}`;
 
-          // armor preview item card
-          $preview.html(`${style}
+          $preview.html(`
               <div id="if-preview-card">
                 <div id="if-preview-head">
                   <div class="if-icon-wrap">
@@ -1441,26 +1189,22 @@ function openItemForgeDialog() {
                 </div>
               </div>
             `);
-            return;
+          return;
         }
 
         // ---------- SHIELD PREVIEW ----------
         if (kind === "shield") {
-          // current template selection
-          const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-          const idx = Number($sel.data("idx"));
-          const s = Number.isFinite(idx) ? currentTemplates[idx] : null;
+          const $sel2 = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+          const idx2 = Number($sel2.data("idx"));
+          const s = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
-          // pull fields from equipment.json
           const isMartial = !!s?.isMartial;
           const def = (s?.def ?? "—");
           const mdef = (s?.mdef ?? "—");
 
-          // shield preview stat row
           const rowShield = `<strong>DEF:</strong> +${esc(def)} | <strong>M.DEF:</strong> +${esc(mdef)}`;
 
-          // shield preview item card
-          $preview.html(`${style}
+          $preview.html(`
               <div id="if-preview-card">
                 <div id="if-preview-head">
                   <div class="if-icon-wrap">
@@ -1474,14 +1218,12 @@ function openItemForgeDialog() {
                 </div>
               </div>
             `);
-            return;
+          return;
         }
 
         // ---------- ACCESSORY PREVIEW ----------
         if (kind === "accessory") {
-
-          // accessory preview item card
-          $preview.html(`${style}
+          $preview.html(`
               <div id="if-preview-card">
                 <div id="if-preview-head">
                   <div class="if-icon-wrap">
@@ -1493,55 +1235,52 @@ function openItemForgeDialog() {
                 </div>
               </div>
             `);
-            return;
+          return;
         }
 
         // ---------- WEAPON PREVIEW ----------
-if (kind === "weapon") {
-  // current template selection
-  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-  const idx  = Number($sel.data("idx"));
-  const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+        if (kind === "weapon") {
+          const $sel2 = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+          const idx2  = Number($sel2.data("idx"));
+          const base2 = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
-  // guard
-  if (!base) {
-    $preview.html(`${style}
-      <div id="if-preview-card">
-        <img id="if-preview-icon" src="${icon}">
-        <div id="if-preview-rows" class="if-muted">
-          <div class="if-row">Select a weapon template…</div>
-        </div>
-      </div>
-    `);
-    return;
-  }
+          if (!base2) {
+            $preview.html(`
+              <div id="if-preview-card">
+                <div id="if-preview-head">
+                  <div class="if-icon-wrap">
+                    <img id="if-preview-icon" src="${icon}">
+                  </div>
+                </div>
+                <div id="if-preview-rows" class="if-muted">
+                  <div class="if-row">Select a weapon template…</div>
+                </div>
+              </div>
+            `);
+            return;
+          }
 
-  // pull fields from equipment.json
-  const baseHand     = normHand(base?.hand) || null; // "1" | "2" | null
-  const baseHandText = handLabel(baseHand ?? (base?.hand ?? "—"));
-  const baseType     = base?.type ?? "—";
-  const baseCat      = base?.category ?? base?.cat ?? "—";
+          const baseHand     = normHand(base2?.hand) || null;
+          const baseHandText = handLabel(baseHand ?? (base2?.hand ?? "—"));
+          const baseType     = base2?.type ?? "—";
+          const baseCat      = base2?.category ?? base2?.cat ?? "—";
 
-  // Compute worth for preview (base + quality + surcharges, no fee)
-  let worthForPreview = 0;
-  try {
-    const { worth } = getCurrentCosts(html, base, currentQualities);
-    worthForPreview = worth;
-  } catch {
-    worthForPreview = 0;
-  }
+          let worthForPreview = 0;
+          try {
+            const { worth } = getCurrentCosts(html, base2, currentQualities);
+            worthForPreview = worth;
+          } catch {
+            worthForPreview = 0;
+          }
 
-  // Let the shared routine do all the damage / martial logic
-  const stats   = computeWeaponStats(base, html, worthForPreview);
-  const handNorm = normHand(stats.hands) || baseHand;
-  const dispHandText = handLabel(handNorm ?? baseHandText);
+          const stats   = computeWeaponStats(base2, html, worthForPreview);
+          const handNorm = normHand(stats.hands) || baseHand;
+          const dispHandText = handLabel(handNorm ?? baseHandText);
 
-  // weapon preview stat rows
-  const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-  const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+ ${stats.acc} | HR+${stats.dmg} ${stats.dmgType}`;
+          const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
+          const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+ ${stats.acc} | HR+${stats.dmg} ${stats.dmgType}`;
 
-  // weapon preview item card
-  $preview.html(`${style}
+          $preview.html(`
       <div id="if-preview-card">
         <div id="if-preview-head">
           <div class="if-icon-wrap">
@@ -1550,63 +1289,62 @@ if (kind === "weapon") {
           </div>
         </div>
         <div id="if-preview-rows">
-          <div class="if-row if-tight">${esc(clip(row1, 64))}</div>
-          <div class="if-row if-tight">${esc(clip(row2, 64))}</div>
+          <div class="if-row if-tight">${esc(clip(row1))}</div>
+          <div class="if-row if-tight">${esc(clip(row2))}</div>
           <div class="if-row-desc">${esc(qdesc())}</div>
         </div>
       </div>
     `);
-  return;
-}
+          return;
+        }
       }
 
       // --- Hooks & Wiring ------------------------------------------------------------//
 
       // handles scroll box selection list
-const wireSelectableList = ($container, itemSel, {
-  onSelect,
-  initialIndex,
-  blockClicks = false
-} = {}) => {
-  const $items = $container.find(itemSel);
+      const wireSelectableList = ($container, itemSel, {
+        onSelect,
+        initialIndex,
+        blockClicks = false
+      } = {}) => {
+        const $items = $container.find(itemSel);
 
-  // helper: select an element programmatically
-  const applySelection = (el, triggerCallback = true) => {
-    $container.find(itemSel).each(function() {
-      this.dataset.selected = "";
-      $(this).css({ backgroundColor: "", color: "" });
-    });
-    if (!el) return;
-    el.dataset.selected = "1";
-    $(el).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" });
-    if (triggerCallback) onSelect?.(el);
-  };
+        // helper: select an element programmatically
+        const applySelection = (el, triggerCallback = true) => {
+          $container.find(itemSel).each(function() {
+            this.dataset.selected = "";
+            $(this).css({ backgroundColor: "", color: "" });
+          });
+          if (!el) return;
+          el.dataset.selected = "1";
+          $(el).css({ backgroundColor: "rgba(65,105,225,1)", color: "white" });
+          if (triggerCallback) onSelect?.(el);
+        };
 
-  $items.on("mouseenter", function() {
-    if (this.dataset.selected === "1") return;
-    if (blockClicks) return; // no hover styling when locked
-    $(this).css({ backgroundColor: "rgba(0,0,0,0.08)" });
-  }).on("mouseleave", function() {
-    if (this.dataset.selected === "1") return;
-    if (blockClicks) return; // no hover styling when locked
-    $(this).css({ backgroundColor: "", color: "" });
-  });
+        $items.on("mouseenter", function() {
+          if (this.dataset.selected === "1") return;
+          if (blockClicks) return;
+          $(this).css({ backgroundColor: "rgba(0,0,0,0.08)" });
+        }).on("mouseleave", function() {
+          if (this.dataset.selected === "1") return;
+          if (blockClicks) return;
+          $(this).css({ backgroundColor: "", color: "" });
+        });
 
-  $items.on("click", function(ev) {
-    if (blockClicks) {
-      ev.preventDefault();
-      ev.stopImmediatePropagation?.();
-      return;
-    }
-    applySelection(this, true);
-  });
+        $items.on("click", function(ev) {
+          if (blockClicks) {
+            ev.preventDefault();
+            ev.stopImmediatePropagation?.();
+            return;
+          }
+          applySelection(this, true);
+        });
 
-  // initial selection (used by both GM and non-GM when socket sends a state)
-  const $initial = Number.isInteger(initialIndex)
-    ? $items.eq(initialIndex)
-    : $items.first();
-  if ($initial.length) applySelection($initial[0], true);
-};
+        const $initial = Number.isInteger(initialIndex)
+          ? $items.eq(initialIndex)
+          : $items.first();
+        if ($initial.length) applySelection($initial[0], true);
+      };
 
       // === Materials UI (GM authoritative editing) ===========================
       const renderMaterials = () => {
@@ -1617,9 +1355,7 @@ const wireSelectableList = ($container, itemSel, {
         _requiredOriginKey = needKey;
         html.data('ifRequiredOriginKey', _requiredOriginKey);
 
-        // Reset hint
         $materialsHint.text("Drag & drop Item documents here (max 5)");
-        // Clean and rebuild thumbnails
         $materialsDrop.children('img[data-mat="1"]').remove();
 
         if (!mats.length) {
@@ -1631,25 +1367,27 @@ const wireSelectableList = ($container, itemSel, {
             const tip = [ m.name || "", m.origin ? `Origin: ${m.origin}` : "", Number.isFinite(m.cost) ? `Cost: ${m.cost}` : "" ]
               .filter(Boolean).join(" • ");
 
-            const $img = $(`<img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-    title="Click to remove\n${esc(tip)}"
-    style="width:48px; height:48px; object-fit:contain; image-rendering:auto; cursor:pointer;">`);
+            const $img = $(`
+              <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+                   title="Click to remove\n${esc(tip)}">
+            `);
+            $img.addClass("lf-if-material-icon");
 
-$img.on("click", () => {
-  // If this client is NOT the host GM, send a remove request instead
-  if (!(game.user.isGM && game.user.id === _hostId)) {
-    game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
-    return;
-  }
+            $img.on("click", () => {
+              // If this client is NOT the host GM, send a remove request instead
+              if (!(game.user.isGM && game.user.id === _hostId)) {
+                game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsRemove, { index: i });
+                return;
+              }
 
-  // Host GM mutates & broadcasts
-  _materials = _materials.filter((_m, idx) => idx !== i);
-  html.data('ifMaterials', _materials);
-  game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-    materials: _materials,
-    originReq: _requiredOriginKey
-  });
-});
+              // Host GM mutates & broadcasts
+              _materials = _materials.filter((_m, idx) => idx !== i);
+              html.data('ifMaterials', _materials);
+              game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+                materials: _materials,
+                originReq: _requiredOriginKey
+              });
+            });
 
             $materialsDrop.append($img);
           });
@@ -1673,71 +1411,71 @@ $img.on("click", () => {
       // GM drag & drop adds directly (then broadcasts)
       $materialsDrop
         .on("drop", async (ev) => {
-  ev.preventDefault();
-  $materialsDrop.css("background", "");
-  const dt  = ev.originalEvent?.dataTransfer;
-  if (!dt) return;
-  const raw = dt.getData("text/plain");
-  if (!raw) return;
+          ev.preventDefault();
+          $materialsDrop.css("background", "");
+          const dt  = ev.originalEvent?.dataTransfer;
+          if (!dt) return;
+          const raw = dt.getData("text/plain");
+          if (!raw) return;
 
-  let data;
-  try {
-    data = JSON.parse(raw);
-  } catch (e) {
-    console.error("[Item Forger] Drop parse failed (JSON):", e);
-    return;
-  }
-  if (!data?.uuid) return;
+          let data;
+          try {
+            data = JSON.parse(raw);
+          } catch (e) {
+            console.error("[Item Forger] Drop parse failed (JSON):", e);
+            return;
+          }
+          if (!data?.uuid) return;
 
-  // If this client is NOT the host GM, propose the add to the GM instead
-  if (!(game.user.isGM && game.user.id === _hostId)) {
-    game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsAdd, { uuid: data.uuid });
-    return;
-  }
+          // If this client is NOT the host GM, propose the add to the GM instead
+          if (!(game.user.isGM && game.user.id === _hostId)) {
+            game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsAdd, { uuid: data.uuid });
+            return;
+          }
 
-  // Host GM branch: validate, mutate, broadcast
-  try {
-    const doc = await fromUuid(data.uuid);
-    if (!doc || doc.documentName !== "Item")
-      return ui.notifications?.warn("Only Item documents can be dropped here.");
-    if (String(doc.type) !== "treasure")
-      return ui.notifications?.warn("Only Treasure items can be used as materials.");
-    if (_materials.length >= 5)
-      return ui.notifications?.warn("You can only add up to 5 materials.");
+          // Host GM branch: validate, mutate, broadcast
+          try {
+            const doc = await fromUuid(data.uuid);
+            if (!doc || doc.documentName !== "Item")
+              return ui.notifications?.warn("Only Item documents can be dropped here.");
+            if (String(doc.type) !== "treasure")
+              return ui.notifications?.warn("Only Treasure items can be used as materials.");
+            if (_materials.length >= 5)
+              return ui.notifications?.warn("You can only add up to 5 materials.");
 
-    const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
-    if (qty <= 0) {
-      return ui.notifications?.warn("You do not have any more of this item.");
-    }
+            const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
+            if (qty <= 0) {
+              return ui.notifications?.warn("You do not have any more of this item.");
+            }
 
-    const alreadyUsed = _materials.filter(m => m.uuid === data.uuid).length;
-    if (alreadyUsed >= qty) {
-      return ui.notifications?.warn("You do not have any more of this item.");
-    }
+            const alreadyUsed = _materials.filter(m => m.uuid === data.uuid).length;
+            if (alreadyUsed >= qty) {
+              return ui.notifications?.warn("You do not have any more of this item.");
+            }
 
-    const entry = {
-      uuid: data.uuid,
-      img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
-      name: doc.name,
-      cost: getTreasureCost(doc),
-      origin: getTreasureOrigin(doc),
-      quantity: qty           // optional
-    };
+            const entry = {
+              uuid: data.uuid,
+              img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
+              name: doc.name,
+              cost: getTreasureCost(doc),
+              origin: getTreasureOrigin(doc),
+              quantity: qty
+            };
 
-    _materials = [..._materials, entry].slice(0, 5);
-    html.data('ifMaterials', _materials);
-    renderMaterials();
-    updateCost();
+            _materials = [..._materials, entry].slice(0, 5);
+            html.data('ifMaterials', _materials);
+            renderMaterials();
+            updateCost();
 
-    game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-      materials: _materials,
-      originReq: _requiredOriginKey
-    });
-  } catch (e) {
-    console.error("[Item Forger] Drop parse failed:", e);
-    ui.notifications?.error("Could not read dropped data.");
-  }
-});
+            game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+              materials: _materials,
+              originReq: _requiredOriginKey
+            });
+          } catch (e) {
+            console.error("[Item Forger] Drop parse failed:", e);
+            ui.notifications?.error("Could not read dropped data.");
+          }
+        });
 
       function renderTemplates(rows, initialIndex = null) {
         currentTemplates = Array.isArray(rows) ? rows : [];
@@ -1749,35 +1487,34 @@ $img.on("click", () => {
         }
         const items = currentTemplates.map((r, i) => `
   <div class="if-template" data-idx="${i}">
-    <span class="if-template-label"
-          style="display:inline-block; padding-left:4px; width:100%; box-sizing:border-box;">
+    <span class="if-template-label">
       ${getNameSafe(r)}
     </span>
   </div>
 `).join("");
-$templateList.html(items);
+        $templateList.html(items);
         wireSelectableList($templateList, ".if-template", {
-  initialIndex,
-  onSelect: (el) => {
-    updateHandToggle(el);
-    updatePlusOneToggle(el);
-    applyAttrDefaultsFromTemplate(el);
-    html.removeData('iconOverride');
+          initialIndex,
+          onSelect: (el) => {
+            updateHandToggle(el);
+            updatePlusOneToggle(el);
+            applyAttrDefaultsFromTemplate(el);
+            html.removeData('iconOverride');
 
-    // Clear any previous auto-picked icon so we can roll a new one:
-    // - In collab mode (restrictInputs === false), ANY user can do this.
-    // - In restricted mode, only the host GM may do it.
-    if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
-      html.removeData('iconPath');
-    }
+            // Clear any previous auto-picked icon so we can roll a new one:
+            // - In collab mode (restrictInputs === false), ANY user can do this.
+            // - In restricted mode, only the host GM may do it.
+            if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
+              html.removeData('iconPath');
+            }
 
-    const kind = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kind, el, { rerollIcon: true });
-    updateCost();
-    broadcastForgeState();
-  },
-  blockClicks: lockControlsForPlayer
-});
+            const kind = html.find('input[name="itemType"]:checked').val();
+            renderPreview(kind, el, { rerollIcon: true });
+            updateCost();
+            broadcastForgeState();
+          },
+          blockClicks: lockControlsForPlayer
+        });
       }
 
       const renderQualities = (type, initialIndex = null, state = null) => {
@@ -1793,20 +1530,20 @@ $templateList.html(items);
         const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
 
         // handle custom qualities
-if (catKey === "custom") {
-  currentQualities = [];
+        if (catKey === "custom") {
+          currentQualities = [];
 
-  const effCommitted = state
-    ? String(state.customEffect ?? "").trim()
-    : String(html.data('customEffect') ?? "Custom effect text");
-  const cstCommitted = state
-    ? toInt(state.customCost ?? 0)
-    : toInt(html.data('customCost') ?? 0);
+          const effCommitted = state
+            ? String(state.customEffect ?? "").trim()
+            : String(html.data('customEffect') ?? "Custom effect text");
+          const cstCommitted = state
+            ? toInt(state.customCost ?? 0)
+            : toInt(html.data('customCost') ?? 0);
 
-  html.data('customEffect', effCommitted);
-  html.data('customCost', cstCommitted);
+          html.data('customEffect', effCommitted);
+          html.data('customCost', cstCommitted);
 
-  $qualitiesList.html(`
+          $qualitiesList.html(`
     <div id="customQualityWrap"
          style="display:flex; flex-direction:column; gap:6px; padding:6px; height:100%; box-sizing:border-box;">
 
@@ -1830,110 +1567,109 @@ if (catKey === "custom") {
       </div>
 
       <button type="button" id="customApply"
-  style="
-    width:auto;
-    height:28px;
-    margin:2px auto 0;
-    display:block;
-    padding:0 10px;
-    line-height:1;
-    box-sizing:border-box;
-  ">
-  Apply
-</button>
+        style="
+          width:auto;
+          height:28px;
+          margin:2px auto 0;
+          display:block;
+          padding:0 10px;
+          line-height:1;
+          box-sizing:border-box;
+        ">
+        Apply
+      </button>
     </div>
   `);
 
-         // Immediately lock custom inputs when in restricted mode
-  if (lockControlsForPlayer) {
-    html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
-  }
+          // Immediately lock custom inputs when in restricted mode
+          if (lockControlsForPlayer) {
+            html.find('#customEffect, #customCost, #customApply').prop('disabled', true);
+          }
 
-  $qualitiesList
-    .off('.customUX')
-      .on('keydown.customUX', '#customCost', (ev) => {
-        if (ev.key === 'Enter') ev.preventDefault();
-      })
-      .on('keypress.customUX', '#customCost', (ev) => {
-        if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
-      })
-      .on('paste.customUX', '#customCost', (ev) => {
-        ev.preventDefault();
-        const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
-        const digits = txt.replace(/\D+/g, '');
-        const el = ev.currentTarget;
-        const start = el.selectionStart ?? el.value.length;
-        const end = el.selectionEnd ?? el.value.length;
-        el.value = el.value.slice(0, start) + digits + el.value.slice(end);
-      })
-      .on('click.customUX', '#customApply', () => {
-  if (lockControlsForPlayer) return;   // NEW
+          $qualitiesList
+            .off('.customUX')
+            .on('keydown.customUX', '#customCost', (ev) => {
+              if (ev.key === 'Enter') ev.preventDefault();
+            })
+            .on('keypress.customUX', '#customCost', (ev) => {
+              if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
+            })
+            .on('paste.customUX', '#customCost', (ev) => {
+              ev.preventDefault();
+              const txt = (ev.originalEvent || ev).clipboardData.getData('text') ?? '';
+              const digits = txt.replace(/\D+/g, '');
+              const el = ev.currentTarget;
+              const start = el.selectionStart ?? el.value.length;
+              const end = el.selectionEnd ?? el.value.length;
+              el.value = el.value.slice(0, start) + digits + el.value.slice(end);
+            })
+            .on('click.customUX', '#customApply', () => {
+              if (lockControlsForPlayer) return;
 
-  const eff = String(html.find('#customEffect').val() ?? '').trim();
-  const raw = String(html.find('#customCost').val() ?? '');
-  const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
-  html.find('#customCost').val(cst);
+              const eff = String(html.find('#customEffect').val() ?? '').trim();
+              const raw = String(html.find('#customCost').val() ?? '');
+              const cst = Math.max(0, parseInt(raw.replace(/\D+/g, ''), 10) || 0);
+              html.find('#customCost').val(cst);
 
-  html.data('customEffect', eff);
-  html.data('customCost', cst);
+              html.data('customEffect', eff);
+              html.data('customCost', cst);
 
-  const kindNow = html.find('input[name="itemType"]:checked').val();
-  renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-  updateCost();
-  broadcastForgeState();
-});
+              const kindNow = html.find('input[name="itemType"]:checked').val();
+              renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+              updateCost();
+              broadcastForgeState();
+            });
 
-    const kindNow = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-    updateCost();
-    return;
-  }
+          const kindNow = html.find('input[name="itemType"]:checked').val();
+          renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+          updateCost();
+          return;
+        }
 
-  if (catKey === "none") {
-    currentQualities = [];
-    $qualitiesList.html("");
-    const kindNow = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-    updateCost();
-    return;
-  }
+        if (catKey === "none") {
+          currentQualities = [];
+          $qualitiesList.html("");
+          const kindNow = html.find('input[name="itemType"]:checked').val();
+          renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+          updateCost();
+          return;
+        }
 
-  const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
-  currentQualities = catList.filter(q => matchesAppliesTo(q, type));
+        const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
+        currentQualities = catList.filter(q => matchesAppliesTo(q, type));
 
-  if (!currentQualities.length) {
-    $qualitiesList.html("");
-    const kindNow = html.find('input[name="itemType"]:checked').val();
-    renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
-    updateCost();
-    return;
-  }
+        if (!currentQualities.length) {
+          $qualitiesList.html("");
+          const kindNow = html.find('input[name="itemType"]:checked').val();
+          renderPreview(kindNow, html.find('#templateList [data-selected="1"]').first());
+          updateCost();
+          return;
+        }
 
-  const items = currentQualities.map((q, i) => `
+        const items = currentQualities.map((q, i) => `
   <div class="if-quality" data-idx="${i}">
-    <span class="if-quality-label"
-          style="display:inline-block; padding-left:4px; width:100%; box-sizing:border-box;">
+    <span class="if-quality-label">
       ${esc(qualityDisplayName(q, type))}
     </span>
   </div>
 `).join("");
-$qualitiesList.html(items);
+        $qualitiesList.html(items);
 
-  wireSelectableList($qualitiesList, ".if-quality", {
-  initialIndex,
-  onSelect: () => {
-    const kindNow = html.find('input[name="itemType"]:checked').val();
-    renderPreview(
-      kindNow,
-      html.find('#templateList [data-selected="1"]').first(),
-      { rerollIcon: true }
-    );
-    updateCost();
-    broadcastForgeState();
-  },
-  blockClicks: lockControlsForPlayer   // NEW
-});
-};
+        wireSelectableList($qualitiesList, ".if-quality", {
+          initialIndex,
+          onSelect: () => {
+            const kindNow = html.find('input[name="itemType"]:checked').val();
+            renderPreview(
+              kindNow,
+              html.find('#templateList [data-selected="1"]').first(),
+              { rerollIcon: true }
+            );
+            updateCost();
+            broadcastForgeState();
+          },
+          blockClicks: lockControlsForPlayer
+        });
+      };
 
       const renderAttrs = (type) => {
         if (type !== "weapon") return $attrInner.html("");
@@ -1954,30 +1690,28 @@ $qualitiesList.html(items);
       };
 
       const renderCustomize = (type) => {
-        if (type !== "weapon") return $customize.html(`<div style="opacity:0.8;">No Options</div>`);
+        if (type !== "weapon") {
+          $customize.html(`<div style="opacity:0.8;">No Options</div>`);
+          return;
+        }
         $customize.html(`
-            <style>
-              #customizeArea label { display:flex; align-items:center; gap:4px; line-height:1; }
-              #customizeArea input[type="checkbox"] { transform: scale(0.9); transform-origin: left center; margin:0 4px 0 0; }
-              #customizeArea select { height: 22px; }
-            </style>
-            <div style="display:flex; flex-direction:column; gap:4px;">
-              <label><input type="checkbox" id="optPlusOne"><span>+1 Accuracy</span></label>
-              <label><input type="checkbox" id="optPlusDamage"><span>+4 Damage</span></label>
-              <label id="handToggleWrap" style="display:none;">
-                <input type="checkbox" id="optToggleHand"><span id="handToggleLabel"></span>
-              </label>
-              <label>Type:
-                <select id="optElement" style="max-width:160px;">
-                  <option value="physical" selected>Physical</option>
-                  <option value="fire">Fire</option><option value="ice">Ice</option>
-                  <option value="earth">Earth</option><option value="air">Air</option>
-                  <option value="bolt">Bolt</option><option value="dark">Dark</option>
-                  <option value="light">Light</option><option value="poison">Poison</option>
-                </select>
-              </label>
-            </div>
-          `);
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <label><input type="checkbox" id="optPlusOne"><span>+1 Accuracy</span></label>
+            <label><input type="checkbox" id="optPlusDamage"><span>+4 Damage</span></label>
+            <label id="handToggleWrap" style="display:none;">
+              <input type="checkbox" id="optToggleHand"><span id="handToggleLabel"></span>
+            </label>
+            <label>Type:
+              <select id="optElement" style="max-width:160px;">
+                <option value="physical" selected>Physical</option>
+                <option value="fire">Fire</option><option value="ice">Ice</option>
+                <option value="earth">Earth</option><option value="air">Air</option>
+                <option value="bolt">Bolt</option><option value="dark">Dark</option>
+                <option value="light">Light</option><option value="poison">Poison</option>
+              </select>
+            </label>
+          </div>
+        `);
       };
 
       function populateTemplates(kind, state = null) {
@@ -2004,11 +1738,10 @@ $qualitiesList.html(items);
         const idx = Number($sel.data("idx"));
         const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-        const h = normHand(base?.hand); // "1" | "2" | null
+        const h = normHand(base?.hand);
         const cat = String(base?.category ?? base?.cat ?? "").toLowerCase();
         const restricted = new Set(["brawling", "dagger", "thrown"]);
 
-        // helper to style disabled fields
         const setDisabled = (disabled, title = "") => {
           $checkbox.prop("disabled", disabled);
           if (disabled) $checkbox.prop("checked", false);
@@ -2021,12 +1754,10 @@ $qualitiesList.html(items);
         };
 
         if (h === "2") {
-          // Base is 2H → show "Make 1-handed" and allow it (no restriction)
           $labelSpan.text("Make 1-handed");
           $wrap.show();
           setDisabled(false);
         } else if (h === "1") {
-          // Base is 1H → show "Make 2-handed"; for certain categories this is not allowed
           $labelSpan.text("Make 2-handed");
           $wrap.show();
           if (restricted.has(cat)) {
@@ -2040,99 +1771,95 @@ $qualitiesList.html(items);
       }
 
       function updatePlusOneToggle(selectedEl) {
-  const kind = html.find('input[name="itemType"]:checked').val();
-  const $cb = html.find('#optPlusOne');
-  const $label = $cb.closest('label');
+        const kind = html.find('input[name="itemType"]:checked').val();
+        const $cb = html.find('#optPlusOne');
+        const $label = $cb.closest('label');
 
-  // If this client is a locked player, keep current checked state but disable & grey it out
-  if (!game.user.isGM && lockControlsForPlayer) {
-    $cb.prop('disabled', true);
-    $label
-      .attr('title', 'Only the GM can modify this option.')
-      .css({ opacity: 0.5, filter: 'grayscale(1)' });
-    return;
-  }
+        // If this client is a locked player, keep current checked state but disable & grey it out
+        if (!game.user.isGM && lockControlsForPlayer) {
+          $cb.prop('disabled', true);
+          $label
+            .attr('title', 'Only the GM can modify this option.')
+            .css({ opacity: 0.5, filter: 'grayscale(1)' });
+          return;
+        }
 
-  // Non-weapons: just reset to normal
-  if (kind !== "weapon") {
-    $cb.prop('disabled', false);
-    $label.css({ opacity: 1, filter: "" }).attr('title', '');
-    return;
-  }
+        // Non-weapons: just reset to normal
+        if (kind !== "weapon") {
+          $cb.prop('disabled', false);
+          $label.css({ opacity: 1, filter: "" }).attr('title', '');
+          return;
+        }
 
-  const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
-  const idx = Number($sel.data("idx"));
-  const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
+        const $sel = selectedEl ? $(selectedEl) : html.find('#templateList [data-selected="1"]').first();
+        const idx = Number($sel.data("idx"));
+        const base = Number.isFinite(idx) ? currentTemplates[idx] : null;
 
-  if (!base) {
-    // No template selected → reset
-    $cb.prop('disabled', false);
-    $label.css({ opacity: 1, filter: "" }).attr('title', '');
-    return;
-  }
+        if (!base) {
+          $cb.prop('disabled', false);
+          $label.css({ opacity: 1, filter: "" }).attr('title', '');
+          return;
+        }
 
-  const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
-  const hasBasePlusOne = baseAcc >= 1; // treat any >=1 as "already has +1"
+        const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
+        const hasBasePlusOne = baseAcc >= 1;
 
-  if (hasBasePlusOne) {
-    // Hard-disable the toggle and grey it out
-    $cb.prop('checked', false).prop('disabled', true);
-    $label
-      .attr('title', 'This weapon already has +1 Accuracy from its base profile.')
-      .css({ opacity: 0.5, filter: 'grayscale(1)' });
-  } else {
-    // Make sure it's usable and visually normal
-    $cb.prop('disabled', false);
-    $label
-      .attr('title', '')
-      .css({ opacity: 1, filter: '' });
-  }
-}
+        if (hasBasePlusOne) {
+          $cb.prop('checked', false).prop('disabled', true);
+          $label
+            .attr('title', 'This weapon already has +1 Accuracy from its base profile.')
+            .css({ opacity: 0.5, filter: 'grayscale(1)' });
+        } else {
+          $cb.prop('disabled', false);
+          $label
+            .attr('title', '')
+            .css({ opacity: 1, filter: '' });
+        }
+      }
 
       const updateForKind = (kind, state = null) => {
-  renderCustomize(kind);
-  renderAttrs(kind);
+        renderCustomize(kind);
+        renderAttrs(kind);
 
-  // When Playtest Damage Rules are enabled, completely disable the +4 Damage toggle
-  if (kind === "weapon") {
-    const $pd = html.find('#optPlusDamage');
-    const $pdLabel = $pd.closest('label');
+        // When Playtest Damage Rules are enabled, completely disable the +4 Damage toggle
+        if (kind === "weapon") {
+          const $pd = html.find('#optPlusDamage');
+          const $pdLabel = $pd.closest('label');
 
-    if (useVariantDamageRules()) {
-      $pd.prop('checked', false)
-         .prop('disabled', true);
-      $pdLabel
-        .attr(
-          'title',
-          'Playtest Damage Rules: damage scales with item cost instead of using the +4 Damage toggle.'
-        )
-        .css({ opacity: 0.5, filter: 'grayscale(1)' });   // NEW: grey out label
-    } else {
-      // Restore normal behavior when variant rules are off
-      $pd.prop('disabled', false);
-      $pdLabel
-        .attr('title', '')
-        .css({ opacity: 1, filter: '' });
-    }
-  }
+          if (useVariantDamageRules()) {
+            $pd.prop('checked', false)
+               .prop('disabled', true);
+            $pdLabel
+              .attr(
+                'title',
+                'Playtest Damage Rules: damage scales with item cost instead of using the +4 Damage toggle.'
+              )
+              .css({ opacity: 0.5, filter: 'grayscale(1)' });
+          } else {
+            $pd.prop('disabled', false);
+            $pdLabel
+              .attr('title', '')
+              .css({ opacity: 1, filter: '' });
+          }
+        }
 
-  if (state?.qualitiesCategory) {
-    $qualitiesSelect.val(state.qualitiesCategory);
-  }
+        if (state?.qualitiesCategory) {
+          $qualitiesSelect.val(state.qualitiesCategory);
+        }
 
-  populateTemplates(kind, state);
-  renderQualities(kind, state?.qualityIdx ?? null, state);
-  renderPreview(kind, null);
+        populateTemplates(kind, state);
+        renderQualities(kind, state?.qualityIdx ?? null, state);
+        renderPreview(kind, null);
 
-  if (kind === "weapon") {
-    updateHandToggle();
-    updatePlusOneToggle();    // NEW: enforce +1 Acc rule on initial weapon load
-  }
+        if (kind === "weapon") {
+          updateHandToggle();
+          updatePlusOneToggle();
+        }
 
-  relayout();
-  updateCost();
-  applyLockState();
-};
+        relayout();
+        updateCost();
+        applyLockState();
+      };
 
       const refreshPreviewFromUI = () => {
         const kind = html.find('input[name="itemType"]:checked').val();
@@ -2147,132 +1874,121 @@ $qualitiesList.html(items);
 
       // ------------- SOCKET-DRIVEN UI STATE -------------------
       const applyForgeState = (state) => {
-  if (!state) return;
-  suppressStateBroadcast = true;
-  try {
-    const kind = state.kind || "weapon";
+        if (!state) return;
+        suppressStateBroadcast = true;
+        try {
+          const kind = state.kind || "weapon";
 
-    // Set item type radio
-    html.find('input[name="itemType"]').prop('checked', false);
-    html.find(`input[name="itemType"][value="${kind}"]`).prop('checked', true);
+          // Set item type radio
+          html.find('input[name="itemType"]').prop('checked', false);
+          html.find(`input[name="itemType"][value="${kind}"]`).prop('checked', true);
 
-    // Ensure the category select matches first, so renderQualities uses it
-    if (state.qualitiesCategory) {
-      $qualitiesSelect.val(state.qualitiesCategory);
-    }
+          // Ensure the category select matches first, so renderQualities uses it
+          if (state.qualitiesCategory) {
+            $qualitiesSelect.val(state.qualitiesCategory);
+          }
 
-    // Adopt the GM's chosen iconPath (random or custom)
-    if (state.iconPath) {
-      html.data('iconPath', state.iconPath);
-      if (!game.user.isGM) {
-        // Players should never keep their own override
-        html.removeData('iconOverride');
-      }
-    }
+          if (state.iconPath) {
+            html.data('iconPath', state.iconPath);
+            if (!game.user.isGM) {
+              html.removeData('iconOverride');
+            }
+          }
 
-    // Build customize/attrs/templates/qualities with the given state
-    updateForKind(kind, state);
+          updateForKind(kind, state);
 
-    // Weapon / cost toggles
-html.find('#optPlusOne').prop('checked', !!state.plusOne);
+          html.find('#optPlusOne').prop('checked', !!state.plusOne);
 
-// Only honor plusDamage when NOT using variant rules
-if (!useVariantDamageRules()) {
-  html.find('#optPlusDamage').prop('checked', !!state.plusDamage);
-}
+          if (!useVariantDamageRules()) {
+            html.find('#optPlusDamage').prop('checked', !!state.plusDamage);
+          }
 
-html.find('#optToggleHand').prop('checked', !!state.toggleHand);
-html.find('#optElement').val(state.element || 'physical');
-html.find('#optAttrA').val(state.attrA || 'MIG');
-html.find('#optAttrB').val(state.attrB || 'MIG');
-html.find('#optFee').prop('checked', !!state.fee);
+          html.find('#optToggleHand').prop('checked', !!state.toggleHand);
+          html.find('#optElement').val(state.element || 'physical');
+          html.find('#optAttrA').val(state.attrA || 'MIG');
+          html.find('#optAttrB').val(state.attrB || 'MIG');
+          html.find('#optFee').prop('checked', !!state.fee);
 
-    if (kind === "weapon") {
-      updatePlusOneToggle();  // re-enforce base-accuracy rule after applying state
-    }
-    if (typeof state.customEffect === "string") {
-      html.data('customEffect', state.customEffect); // Custom quality persistence
-    }
-    if (typeof state.customCost !== "undefined") {
-      html.data('customCost', toInt(state.customCost));
-    }
+          if (kind === "weapon") {
+            updatePlusOneToggle();
+          }
+          if (typeof state.customEffect === "string") {
+            html.data('customEffect', state.customEffect);
+          }
+          if (typeof state.customCost !== "undefined") {
+            html.data('customCost', toInt(state.customCost));
+          }
 
-    // Re-render preview & cost (this will *not* rebroadcast because of the flag)
-    refreshPreviewFromUI();
+          refreshPreviewFromUI();
 
-    // Ensure the preview icon exactly matches the GM's choice
-    if (state.iconPath) {
-      html.data('iconPath', state.iconPath);
-      try {
-        $preview.find('#if-preview-icon').attr('src', state.iconPath);
-      } catch (e) {
-        console.warn("[Item Forger] Failed to apply synced iconPath:", e);
-      }
-    }
+          if (state.iconPath) {
+            html.data('iconPath', state.iconPath);
+            try {
+              $preview.find('#if-preview-icon').attr('src', state.iconPath);
+            } catch (e) {
+              console.warn("[Item Forger] Failed to apply synced iconPath:", e);
+            }
+          }
 
-    // recompute materials origin requirement locally
-    renderMaterials();
+          renderMaterials();
 
-    // NEW: if this client is the host GM, rebroadcast MaterialsReplace
-    if (game.user.isGM && game.user.id === _hostId) {
-      game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-        materials: _materials,
-        originReq: _requiredOriginKey
-      });
-    }
-  } finally {
-    suppressStateBroadcast = false;
-  }
-};
+          if (game.user.isGM && game.user.id === _hostId) {
+            game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+              materials: _materials,
+              originReq: _requiredOriginKey
+            });
+          }
+        } finally {
+          suppressStateBroadcast = false;
+        }
+      };
 
-      // Expose for the socket handler in ensureIFSocket
       dlg._applyForgeStateFromSocket = (state) => {
-        // Only full dialogs care; minis never set this property
         applyForgeState(state);
       };
-      
+
       $dlg.off('.ifPrev');
-$dlg.on('change.ifPrev',
-  '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
-  (ev) => {
-    if (lockControlsForPlayer) {
-      ev.preventDefault();
-      ev.stopImmediatePropagation?.();
-      return;
-    }
-    refreshPreviewFromUI();
-  }
-);
+      $dlg.on('change.ifPrev',
+        '#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee',
+        (ev) => {
+          if (lockControlsForPlayer) {
+            ev.preventDefault();
+            ev.stopImmediatePropagation?.();
+            return;
+          }
+          refreshPreviewFromUI();
+        }
+      );
 
       $qualitiesSelect.on("change", () => {
-  if (lockControlsForPlayer) return;
+        if (lockControlsForPlayer) return;
 
-  const kind = html.find('input[name="itemType"]:checked').val();
-  renderQualities(kind);
-  renderPreview(
-    kind,
-    html.find('#templateList [data-selected="1"]').first(),
-    { rerollIcon: false }
-  );
-  renderMaterials();
-  updateCost();
+        const kind = html.find('input[name="itemType"]:checked').val();
+        renderQualities(kind);
+        renderPreview(
+          kind,
+          html.find('#templateList [data-selected="1"]').first(),
+          { rerollIcon: false }
+        );
+        renderMaterials();
+        updateCost();
 
-  if (game.user.isGM && game.user.id === _hostId) {
-    game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-      materials: _materials,
-      originReq: _requiredOriginKey
-    });
-  }
-  broadcastForgeState();
-});
+        if (game.user.isGM && game.user.id === _hostId) {
+          game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+            materials: _materials,
+            originReq: _requiredOriginKey
+          });
+        }
+        broadcastForgeState();
+      });
 
-      // Clickable preview image
+      // Clickable preview image (icon picker)
       html.off('click.ifIconPick');
-html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
-  if (!game.user.isGM) return; 
+      html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
+        if (!game.user.isGM) return;
 
-  ev.preventDefault();
-  ev.stopPropagation();
+        ev.preventDefault();
+        ev.stopPropagation();
         console.debug('[Item Forger] preview icon clicked');
 
         const kind = html.find('input[name="itemType"]:checked').val();
@@ -2305,15 +2021,15 @@ html.on('click.ifIconPick', '#if-preview-icon', async (ev) => {
       });
 
       html.on("change", 'input[name="itemType"]', (ev) => {
-  if (lockControlsForPlayer) {
-    ev.preventDefault();
-    return;
-  }
-  const kind = ev.currentTarget.value;
-  html.removeData('iconOverride');
-  updateForKind(kind);
-  broadcastForgeState();
-});
+        if (lockControlsForPlayer) {
+          ev.preventDefault();
+          return;
+        }
+        const kind = ev.currentTarget.value;
+        html.removeData('iconOverride');
+        updateForKind(kind);
+        broadcastForgeState();
+      });
 
       updateForKind("weapon");
       renderMaterials();
@@ -2358,7 +2074,6 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
 
     // Hidden: players should not see any Item Forge UI at all
     if (mode === "hidden") {
-      // No alert, just silently ignore the request
       return;
     }
 
