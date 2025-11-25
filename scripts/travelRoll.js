@@ -7,6 +7,10 @@ let currentDialog = null;
 const TRAVEL_CHECK_TEMPLATE  = "modules/lookfar/templates/travel-check.hbs";
 const TRAVEL_RESULT_TEMPLATE = "modules/lookfar/templates/travel-result.hbs";
 
+// -----------------------------------------------------------------------------
+// Utility functions
+// -----------------------------------------------------------------------------
+
 // Function to set default "Discovery" rolltable options. Will update for multiple table settings.
 function getRollTableChoices() {
   const choices = { default: game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") }; // Add "Default" option
@@ -26,6 +30,10 @@ function generateUniqueList(list, minCount, maxCount) {
   return shuffled.slice(0, count);
 }
 
+// -----------------------------------------------------------------------------
+// Socket handling
+// -----------------------------------------------------------------------------
+
 Hooks.once("ready", () => {
   game.socket.on("module.lookfar", (data) => {
     if (data?.type === "showResult") {
@@ -39,7 +47,8 @@ Hooks.once("ready", () => {
         data.resultHtml,
         data.selectedDifficulty,
         data.groupLevel,
-        data.dangerSeverity
+        data.dangerSeverity,
+        data.keywords
       );
     } else if (data?.type === "closeDialog") {
       if (currentDialog) {
@@ -49,7 +58,10 @@ Hooks.once("ready", () => {
   });
 });
 
-// Define TravelRolls
+// -----------------------------------------------------------------------------
+// Travel Rolls definition
+// -----------------------------------------------------------------------------
+
 class TravelRolls {
   static travelChecks = {
     Minimal: "d6",
@@ -60,7 +72,10 @@ class TravelRolls {
   };
 }
 
-// Defines the travel check dialog
+// -----------------------------------------------------------------------------
+// Travel Check Dialog
+// -----------------------------------------------------------------------------
+
 async function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
 
@@ -168,6 +183,10 @@ Hooks.on("lookfarShowTravelCheckDialog", () => {
   showTravelCheckDialog();
 });
 
+// -----------------------------------------------------------------------------
+// Roll handling
+// -----------------------------------------------------------------------------
+
 function shouldMakeDiscovery(rollResult, treasureHunterLevel) {
   return rollResult <= 1 + treasureHunterLevel;
 }
@@ -215,6 +234,7 @@ async function handleRoll(selectedDifficulty, html) {
   const groupLevel = html.find("#groupLevel").val();
 
   let resultHtml = "";
+  let keywords = null; // keyword data object or null
   const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
   const isDiscovery = shouldMakeDiscovery(roll.total, treasureHunterLevel);
   let dangerSeverity = "";
@@ -226,21 +246,25 @@ async function handleRoll(selectedDifficulty, html) {
     const resultTypeKey = `LOOKFAR.Dialogs.Result.Danger${dangerSeverity}`;
     const resultType = game.i18n.localize(resultTypeKey);
 
-    const resultTable = await generateDanger(effectiveDifficulty, groupLevel, dangerSeverity);
+    const dangerResult = await generateDanger(effectiveDifficulty, groupLevel, dangerSeverity);
+    keywords = dangerResult.keywords;
+
     resultHtml = `
       <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
         ${resultType}
       </div>
-      ${resultTable}
+      ${dangerResult.html}
     `;
   } else if (isDiscovery) {
     const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");
-    const resultTable = await generateDiscovery();
+    const discoveryResult = await generateDiscovery();
+    keywords = discoveryResult.keywords;
+
     resultHtml = `
       <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
         ${resultType}
       </div>
-      ${resultTable}
+      ${discoveryResult.html}
     `;
   } else {
     resultHtml = `
@@ -257,6 +281,7 @@ async function handleRoll(selectedDifficulty, html) {
     selectedDifficulty: effectiveDifficulty,
     groupLevel,
     dangerSeverity,
+    keywords,
   });
 
   const visibility = game.settings.get("lookfar", "resultVisibility");
@@ -264,15 +289,23 @@ async function handleRoll(selectedDifficulty, html) {
 
   // Show dialog locally only if it's public, or this user is a GM
   if (visibility === "public" || isGM) {
-    showRerollDialog(resultHtml, effectiveDifficulty, groupLevel, dangerSeverity);
+    showRerollDialog(resultHtml, effectiveDifficulty, groupLevel, dangerSeverity, keywords);
   }
 }
 
-// ----- Reroll / Result Dialog -----
+// -----------------------------------------------------------------------------
+// Reroll / Result Dialog
+// -----------------------------------------------------------------------------
 
-async function showRerollDialog(resultHtml, selectedDifficulty, groupLevel, dangerSeverity) {
-  const dangerKeyPrefix = game.i18n.localize("LOOKFAR.Dialogs.Result.Danger");
-  const isDanger = resultHtml.includes(dangerKeyPrefix);
+async function showRerollDialog(
+  resultHtml,
+  selectedDifficulty,
+  groupLevel,
+  dangerSeverity,
+  keywords
+) {
+  // Danger vs discovery/no-incident is determined by whether we have a severity
+  const isDanger = !!dangerSeverity;
 
   // Close the existing dialog if it's open
   if (currentDialog) {
@@ -286,7 +319,7 @@ async function showRerollDialog(resultHtml, selectedDifficulty, groupLevel, dang
         keep: {
           icon: '<i class="fas fa-check"></i>',
           callback: () => {
-            // Post just the body of the result to chat (no prompt)
+            // Post just the body of the result to chat (no prompt, no keywords table)
             ChatMessage.create({
               content: `<div style="text-align: center;">${resultHtml}</div>`,
               speaker: {
@@ -309,28 +342,35 @@ async function showRerollDialog(resultHtml, selectedDifficulty, groupLevel, dang
           icon: '<i class="fas fa-redo"></i>',
           callback: async () => {
             let newResultHtml;
+            let newKeywords = null;
+
             if (isDanger) {
               const severityKey = `LOOKFAR.Dialogs.Result.Danger${dangerSeverity}`;
               const resultType = game.i18n.localize(severityKey);
-              const resultTable = await generateDanger(
+              const dangerResult = await generateDanger(
                 selectedDifficulty,
                 groupLevel,
                 dangerSeverity
               );
+
+              newKeywords = dangerResult.keywords;
+
               newResultHtml = `
                 <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
                   ${resultType}
                 </div>
-                ${resultTable}
+                ${dangerResult.html}
               `;
             } else {
               const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");
-              const resultTable = await generateDiscovery();
+              const discoveryResult = await generateDiscovery();
+              newKeywords = discoveryResult.keywords;
+
               newResultHtml = `
                 <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
                   ${resultType}
                 </div>
-                ${resultTable}
+                ${discoveryResult.html}
               `;
             }
 
@@ -341,13 +381,15 @@ async function showRerollDialog(resultHtml, selectedDifficulty, groupLevel, dang
               selectedDifficulty,
               groupLevel,
               dangerSeverity,
+              keywords: newKeywords,
             });
 
             await showRerollDialog(
               newResultHtml,
               selectedDifficulty,
               groupLevel,
-              dangerSeverity
+              dangerSeverity,
+              newKeywords
             );
           },
         },
@@ -361,6 +403,7 @@ async function showRerollDialog(resultHtml, selectedDifficulty, groupLevel, dang
   const content = await renderTemplate(TRAVEL_RESULT_TEMPLATE, {
     resultHtml,
     promptText: game.i18n.localize(promptKey),
+    keywords, // may be null or { traitKeywords, terrainKeywords }
   });
 
   currentDialog = new Dialog({
@@ -379,12 +422,52 @@ async function showRerollDialog(resultHtml, selectedDifficulty, groupLevel, dang
   currentDialog.render(true);
 }
 
-// ----- Threat / Discovery Generation -----
+// -----------------------------------------------------------------------------
+// Threat / Discovery Generation
+// -----------------------------------------------------------------------------
+
+/**
+ * Build the keyword data object used by the travel-result.hbs template.
+ * Returns either:
+ *   null
+ * or:
+ *   {
+ *     traitKeywords: "Abandoned, Ancient, ...",
+ *     terrainKeywords: "Forest, Swamp, ..."
+ *   }
+ */
+function generateKeywordsData() {
+  if (!game.settings.get("lookfar", "enableKeywords")) return null;
+
+  // These are arrays of leaf words now, e.g. ["Abandoned", "Ancient", ...]
+  const traitKeys = dataLoader.keywordData?.traits || [];
+  const terrainKeys = dataLoader.keywordData?.terrain || [];
+
+  // Pick 3–4 unique leaf words from each list
+  const selectedTraits = generateUniqueList(traitKeys, 3, 4);
+  const selectedTerrain = generateUniqueList(terrainKeys, 3, 4);
+
+  // Localize using our leaf-word i18n scheme
+  const localizedTraits = selectedTraits.map((key) =>
+    game.i18n.localize(`LOOKFAR.Keywords.Traits.${key}`)
+  );
+  const localizedTerrain = selectedTerrain.map((key) =>
+    game.i18n.localize(`LOOKFAR.Keywords.Terrain.${key}`)
+  );
+
+  return {
+    traitKeywords: localizedTraits.join(", "),
+    terrainKeywords: localizedTerrain.join(", "),
+  };
+}
 
 async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
     console.error("Threats data is not fully loaded.");
-    return game.i18n.localize("LOOKFAR.Errors.DataUnavailable");
+    return {
+      html: game.i18n.localize("LOOKFAR.Errors.DataUnavailable"),
+      keywords: null,
+    };
   }
 
   const threatType = randomThreatType();
@@ -454,28 +537,35 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
         break;
       default:
         console.error("Unknown threat type:", threatType);
-        return game.i18n.localize("LOOKFAR.Errors.ThreatUnknown");
+        return {
+          html: game.i18n.localize("LOOKFAR.Errors.ThreatUnknown"),
+          keywords: null,
+        };
     }
   }
 
-  // Return formatted table for danger results and source.
-  return `
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-          ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Threat")}
-        </th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
-      </tr>
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-          ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")}
-        </th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
-      </tr>
-    </table>
-    ${generateKeywords()}
-  `;
+  const keywords = generateKeywordsData();
+
+  // Return HTML + keyword data (keyword table is rendered in HBS)
+  return {
+    html: `
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
+            ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Threat")}
+          </th>
+          <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
+        </tr>
+        <tr>
+          <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
+            ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")}
+          </th>
+          <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+        </tr>
+      </table>
+    `,
+    keywords,
+  };
 }
 
 function handleDamage(threatsData, groupLevel, dangerSeverity) {
@@ -495,7 +585,8 @@ function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
   const statusEffectsListHeavy = threatsData.statusEffects["Heavy"];
 
   if (dangerSeverity === "Massive") {
-    // 50% chance to pull either a Minor status effect with Heavy damage or a Heavy status effect with Minor damage
+    // 50% chance to pull either a Minor status effect with Heavy damage
+    // or a Heavy status effect with Minor damage
     const useMinorEffect = Math.random() < 0.5;
 
     if (useMinorEffect) {
@@ -512,6 +603,10 @@ function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
     return game.i18n.localize(getRandomElement(statusEffectsList));
   }
 }
+
+// -----------------------------------------------------------------------------
+// Random helpers
+// -----------------------------------------------------------------------------
 
 function randomSeverity(difficulty) {
   // Use regex to extract the number from the die string (e.g., 'd6' -> 6)
@@ -550,46 +645,9 @@ function getRandomElement(arrayOrObject) {
   return isObject ? arrayOrObject[randomKey] : randomKey;
 }
 
-// If keywords are enabled, this function generates Keywords
-function generateKeywords() {
-  if (!game.settings.get("lookfar", "enableKeywords")) return "";
-
-  // These are arrays of leaf words now, e.g. ["Abandoned", "Ancient", ...]
-  const traitKeys = dataLoader.keywordData?.traits || [];
-  const terrainKeys = dataLoader.keywordData?.terrain || [];
-
-  // Pick 3–4 unique leaf words from each list
-  const selectedTraits = generateUniqueList(traitKeys, 3, 4);
-  const selectedTerrain = generateUniqueList(terrainKeys, 3, 4);
-
-  // Localize using our leaf-word i18n scheme
-  const localizedTraits = selectedTraits.map((key) =>
-    game.i18n.localize(`LOOKFAR.Keywords.Traits.${key}`)
-  );
-  const localizedTerrain = selectedTerrain.map((key) =>
-    game.i18n.localize(`LOOKFAR.Keywords.Terrain.${key}`)
-  );
-
-  const traitKeywords = localizedTraits.join(", ");
-  const terrainKeywords = localizedTerrain.join(", ");
-
-  return `
-    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-      <tr>
-        <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">
-          ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Traits")}
-        </th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
-      </tr>
-      <tr>
-        <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">
-          ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Terrain")}
-        </th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
-      </tr>
-    </table>
-  `;
-}
+// -----------------------------------------------------------------------------
+// Discovery Generation
+// -----------------------------------------------------------------------------
 
 async function generateDiscovery() {
   console.log("Generating Discovery...");
@@ -643,22 +701,26 @@ async function generateDiscovery() {
     }
   }
 
-  // Return final formatted result
-  return `
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-          ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Effect")}
-        </th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
-      </tr>
-      <tr>
-        <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-          ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")}
-        </th>
-        <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
-      </tr>
-    </table>
-    ${generateKeywords()}
-  `;
+  const keywords = generateKeywordsData();
+
+  // Return HTML + keyword data (keyword table is rendered in HBS)
+  return {
+    html: `
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
+            ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Effect")}
+          </th>
+          <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
+        </tr>
+        <tr>
+          <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
+            ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Source")}
+          </th>
+          <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
+        </tr>
+      </table>
+    `,
+    keywords,
+  };
 }
