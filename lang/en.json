@@ -2012,6 +2012,115 @@
 
 
 
+        "__SECTION__ItemForge": "=== Item Forge ===",
+"ItemForge": {
+  "ChooseItem": {
+    "Legend": "Choose Item"
+  },
+
+  "ItemType": {
+    "Weapon": "Weapon",
+    "Armor": "Armor",
+    "Shield": "Shield",
+    "Accessory": "Accessory"
+  },
+
+  "TemplateList": {
+    "Aria": "Template list",
+    "Loading": "Loading…"
+  },
+
+  "Attributes": {
+    "Legend": "Attributes",
+    "AttrA": {
+      "Label": "Attr A:"
+    },
+    "AttrB": {
+      "Label": "Attr B:"
+    }
+  },
+
+  "Preview": {
+    "Legend": "Preview",
+    "Placeholder": "CONTENT"
+  },
+
+  "Customize": {
+    "Legend": "Customize",
+
+    "PlusOneAccuracy": "+1 Accuracy",
+    "PlusFourDamage": "+4 Damage",
+
+    "NoOptions": "No Options",
+
+    "Element": {
+      "Label": "Type:",
+      "Physical": "Physical",
+      "Fire": "Fire",
+      "Ice": "Ice",
+      "Earth": "Earth",
+      "Air": "Air",
+      "Bolt": "Bolt",
+      "Dark": "Dark",
+      "Light": "Light",
+      "Poison": "Poison"
+    }
+  },
+
+  "Qualities": {
+    "Legend": "Qualities",
+
+    "Category": {
+      "None": "None",
+      "Basic": "Basic",
+      "Custom": "Custom",
+      "Ardent": "Ardent",
+      "Aerial": "Aerial",
+      "Thunderous": "Thunderous",
+      "Paradox": "Paradox",
+      "Terrestrial": "Terrestrial",
+      "Glacial": "Glacial",
+      "Spiritual": "Spiritual",
+      "Corrupted": "Corrupted",
+      "Aquatic": "Aquatic",
+      "Mechanical": "Mechanical"
+    },
+
+    "List": {
+      "Aria": "Qualities list"
+    },
+
+    "Custom": {
+      "Effect": {
+        "Title": "Type your custom effect text"
+      },
+      "Cost": {
+        "Label": "Cost:",
+        "Title": "Enter a non-negative integer"
+      },
+      "Apply": "Apply"
+    }
+  },
+
+  "Cost": {
+    "Legend": "Cost",
+    "NoFee": "No Fee"
+  },
+
+  "Materials": {
+    "Legend": "Materials",
+    "Drop": {
+      "Aria": "Materials drop zone"
+    },
+    "Hint": "Drag & drop Item documents here (max 5)"
+  },
+
+  "PreviewCard": {
+    "MutedText": "Unavailable"
+  }
+},
+
+
 
 
        "__SECTION__Dangers": "=== Dangers ===",
@@ -2111,6 +2220,7 @@
         }
     }
 }
+
 
 
 
