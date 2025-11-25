@@ -3,6 +3,10 @@ import { cacheManager } from "./cacheManager.js";
 
 let _treasureGenDialog = null;
 
+// Template paths
+const TREASURE_ROLL_TEMPLATE   = "modules/lookfar/templates/treasure-roll.hbs";
+const TREASURE_RESULT_TEMPLATE = "modules/lookfar/templates/treasure-result.hbs";
+
 // Random Generation Utility
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -17,72 +21,6 @@ function getItemCost(sys) {
          0;
 }
 
-// ---- Localization helpers for keyword-based names ----
-function capitalizeKey(str) {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function localizeOrFallback(key, fallback) {
-  const localized = game?.i18n?.localize?.(key) ?? key;
-  // If nothing was found, fall back to the raw string
-  return (localized === key ? (fallback ?? key) : localized);
-}
-
-/**
- * Build a localized Material name using:
- *   LOOKFAR.Keywords.Patterns.Material
- *   LOOKFAR.Keywords.Detail.{DetailCategory}.{DetailWord}
- *   LOOKFAR.Keywords.Origin.Material.{OriginCategory}.{OriginWord}
- *   LOOKFAR.Keywords.Nature.Material.{NatureCategory}.{NatureWord}
- */
-function buildMaterialName({ detailCategory, detailWord, originCategory, originWord, natureCategory, natureWord }) {
-  const pattern = localizeOrFallback(
-    "LOOKFAR.Keywords.Patterns.Material",
-    "{detail} {origin} {nature}"
-  );
-
-  const detailKey = `LOOKFAR.Keywords.Detail.${capitalizeKey(detailCategory)}.${detailWord}`;
-  const originKey = `LOOKFAR.Keywords.Origin.Material.${originCategory}.${originWord}`;
-  const natureKey = `LOOKFAR.Keywords.Nature.Material.${natureCategory}.${natureWord}`;
-
-  const detailLabel = localizeOrFallback(detailKey, detailWord);
-  const originLabel = localizeOrFallback(originKey, originWord);
-  const natureLabel = localizeOrFallback(natureKey, natureWord);
-
-  return pattern
-    .replace("{detail}", detailLabel)
-    .replace("{origin}", originLabel)
-    .replace("{nature}", natureLabel);
-}
-
-/**
- * Build a localized Ingredient name using:
- *   LOOKFAR.Keywords.Patterns.Ingredient
- *   LOOKFAR.Keywords.Taste.{TasteCategory}.{TasteWord}
- *   LOOKFAR.Keywords.Origin.Ingredient.{OriginCategory}.{OriginWord}
- *   LOOKFAR.Keywords.Nature.Ingredient.{NatureCategory}.{NatureWord}
- */
-function buildIngredientName({ tasteCategory, tasteWord, originCategory, originWord, natureCategory, natureWord }) {
-  const pattern = localizeOrFallback(
-    "LOOKFAR.Keywords.Patterns.Ingredient",
-    "{taste} {origin} {nature}"
-  );
-
-  const tasteKey  = `LOOKFAR.Keywords.Taste.${capitalizeKey(tasteCategory)}.${tasteWord}`;
-  const originKey = `LOOKFAR.Keywords.Origin.Ingredient.${originCategory}.${originWord}`;
-  const natureKey = `LOOKFAR.Keywords.Nature.Ingredient.${natureCategory}.${natureWord}`;
-
-  const tasteLabel  = localizeOrFallback(tasteKey,  tasteWord);
-  const originLabel = localizeOrFallback(originKey, originWord);
-  const natureLabel = localizeOrFallback(natureKey, natureWord);
-
-  return pattern
-    .replace("{taste}",  tasteLabel)
-    .replace("{origin}", originLabel)
-    .replace("{nature}", natureLabel);
-}
-
 // Material Generation
 function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywordsMaterial, natureKeywordsMaterial) {
   const localNature = (nature === "Random" || !natureKeywordsMaterial[nature])
@@ -95,25 +33,11 @@ function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeyw
 
   if (!natureKeywordsMaterial[localNature] || budget < 50) return null;
 
-  // detailKeywords: e.g. { agility: [...], powerful: [...], ... }
-  const detailCategory = getRandom(Object.keys(detailKeywords));          // e.g. "agility"
-  const detailWord     = getRandom(detailKeywords[detailCategory]);      // e.g. "Layered"
-
-  // originKeywordsMaterial: { Aerial: ["Light","Hollow",...], ... }
-  const originWord = getRandom(originKeywordsMaterial[localOrigin]);     // e.g. "Avian"
-
-  // natureKeywordsMaterial: { Anthropod: ["Carapace",...], ... }
-  const natureWord = getRandom(natureKeywordsMaterial[localNature]);     // e.g. "Horn"
-
-  // Localized, pattern-based name (Material pattern)
-  const name = buildMaterialName({
-    detailCategory,
-    detailWord,
-    originCategory: localOrigin,
-    originWord,
-    natureCategory: localNature,
-    natureWord
-  });
+  const detail = getRandom(Object.keys(detailKeywords));
+  const detailWord = getRandom(detailKeywords[detail]);
+  const originWord = getRandom(originKeywordsMaterial[localOrigin]);
+  const natureWord = getRandom(natureKeywordsMaterial[localNature]);
+  const name = `${detailWord} ${originWord} ${natureWord}`;
 
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
@@ -122,7 +46,7 @@ function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeyw
   return {
     name,
     value,
-    detail: detailCategory,
+    detail,
     nature: localNature,
     origin: localOrigin
   };
@@ -140,34 +64,21 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
 
   if (!natureKeywordsIngredient[localNature] || budget < 10) return null;
 
-  // tasteKeywords: e.g. { bitter: [...], sweet: [...], ... }
-  const tasteCategory = getRandom(Object.keys(tasteKeywords));          // e.g. "sweet"
-  const tasteWord     = getRandom(tasteKeywords[tasteCategory]);        // e.g. "Sugary"
+  const taste = getRandom(Object.keys(tasteKeywords));
+  const tasteWord = getRandom(tasteKeywords[taste]);
+  const originWord = getRandom(originKeywordsIngredient[localOrigin]);
+  const natureWord = getRandom(natureKeywordsIngredient[localNature]);
+  const name = `${tasteWord} ${originWord} ${natureWord}`;
 
-  // originKeywordsIngredient: { Aerial: ["Fluffy",...], ... }
-  const originWord = getRandom(originKeywordsIngredient[localOrigin]);  // e.g. "Fluffy"
-
-  // natureKeywordsIngredient: { Anthropod: ["Meat",...], ... }
-  const natureWord = getRandom(natureKeywordsIngredient[localNature]);  // e.g. "Meat"
-
-  const name = buildIngredientName({
-    tasteCategory,
-    tasteWord,
-    originCategory: localOrigin,
-    originWord,
-    natureCategory: localNature,
-    natureWord
-  });
-
-  const quantity  = Math.floor(Math.random() * 3) + 1;
-  const unitValue = (tasteCategory === "Distinct") ? 20 : 10;
-  const total     = unitValue * quantity;
+  const quantity = Math.floor(Math.random() * 3) + 1;
+  const unitValue = (taste === "Distinct") ? 20 : 10;
+  const total = unitValue * quantity;
   if (total > budget) return null;
 
   return {
     name,
     value: total,
-    taste: tasteCategory,
+    taste,
     quantity,
     nature: localNature,
     origin: localOrigin
@@ -212,14 +123,14 @@ function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamage
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
-  return { 
-	name, 
-	value, 
-	quality, 
-	element: appliedElement, 
-	hasPlusOne, 
-	isMaster, 
-	origin: localOrigin
+  return {
+    name,
+    value,
+    quality,
+    element: appliedElement,
+    hasPlusOne,
+    isMaster,
+    origin: localOrigin
   };
 }
 
@@ -250,11 +161,11 @@ function rollArmor(armorList, armorQualities, origin, cap) {
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
-  return { 
-	name, 
-	value, 
-	quality, 
-	origin: localOrigin
+  return {
+    name,
+    value,
+    quality,
+    origin: localOrigin
   };
 }
 
@@ -285,11 +196,11 @@ function rollShield(shieldList, shieldQualities, origin, cap) {
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
-  return { 
-	name, 
-	value, 
-	quality, 
-	origin: localOrigin
+  return {
+    name,
+    value,
+    quality,
+    origin: localOrigin
   };
 }
 
@@ -320,11 +231,11 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
   nameParts.push(base.name);
   const name = nameParts.join(" ");
 
-  return { 
-	name, 
-	value, 
-	quality, 
-	origin: localOrigin
+  return {
+    name,
+    value,
+    quality,
+    origin: localOrigin
   };
 }
 
@@ -353,7 +264,7 @@ function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = 
   return {
     isCurrency: true,
     name,
-    value: amount, // NOTE: this is what the loop subtracts from remainingBudget
+    value: amount,
     img,
     currencyName
   };
@@ -420,7 +331,6 @@ async function rollCustom() {
 
 // Stash Creation
 async function createStash(items, cacheFolder, currencyTotal = 0) {
-
   // Identify ingredient items
   const isIngredientItem = (it) => {
     const ft = foundry.utils.getProperty(it, "system.featureType")
@@ -513,22 +423,22 @@ async function renderTreasureResultDialog(items, budget, config) {
     let type = null;
     let itemData;
 
-  if (data.fromTable && data.uuid) {
-    const src = await fromUuid(data.uuid);
-    if (!src || src.documentName !== "Item") return null;
+    if (data.fromTable && data.uuid) {
+      const src = await fromUuid(data.uuid);
+      if (!src || src.documentName !== "Item") return null;
 
-    const existing = game.items.find(i =>
-      i.folder?.id === cacheFolder.id &&
-      i.name === src.name &&
-      getItemCost(i.system) === getItemCost(src.system)
-    );
-    if (existing) return existing;
+      const existing = game.items.find(i =>
+        i.folder?.id === cacheFolder.id &&
+        i.name === src.name &&
+        getItemCost(i.system) === getItemCost(src.system)
+      );
+      if (existing) return existing;
 
-    const toCreate = foundry.utils.duplicate(src.toObject());
-    delete toCreate._id;
-    toCreate.folder = cacheFolder.id;
-    return await Item.create(toCreate);
-  }	  
+      const toCreate = foundry.utils.duplicate(src.toObject());
+      delete toCreate._id;
+      toCreate.folder = cacheFolder.id;
+      return await Item.create(toCreate);
+    }
 
     if ("taste" in data) {
       type = "classFeature";
@@ -548,10 +458,10 @@ async function renderTreasureResultDialog(items, budget, config) {
           source: "LOOKFAR"
         }
       };
-	} else if ("detail" in data) {
+    } else if ("detail" in data) {
       type = "treasure";
       const img = "modules/lookfar/assets/misc/material.png";
-      
+
       itemData = {
         name: data.name,
         type: "treasure",
@@ -567,63 +477,64 @@ async function renderTreasureResultDialog(items, budget, config) {
         }
       };
     } else if (dataLoader.weaponsData.weaponList.some(w => data.name.endsWith(w.name))) {
-  type = "weapon";
-  const baseWeapon = dataLoader.weaponsData.weaponList.find(w => data.name.endsWith(w.name));
-  const allQualities = [
-    ...(dataLoader.weaponsData.weaponQualities.basic || []),
-    ...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
-  ];
-  const qualityObj = allQualities.find(q => q.name === data.quality);
-  const img = dataLoader.getRandomIconFor("weapon", baseWeapon) || "icons/svg/sword.svg";
+      type = "weapon";
+      const baseWeapon = dataLoader.weaponsData.weaponList.find(w => data.name.endsWith(w.name));
+      const allQualities = [
+        ...(dataLoader.weaponsData.weaponQualities.basic || []),
+        ...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
+      ];
+      const qualityObj = allQualities.find(q => q.name === data.quality);
+      const img = dataLoader.getRandomIconFor("weapon", baseWeapon) || "icons/svg/sword.svg";
 
-  // Handle variant damage
-  const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
-  const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
+      // Handle variant damage
+      const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
+      const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
-  // Handle Masterwork prefix
-  const prefix = (data.isMaster && !variantEnabled)
-    ? `A masterwork ${baseWeapon?.category || "unknown"} weapon`
-    : `A ${baseWeapon?.category || "unknown"} weapon`
+      // Handle Masterwork prefix
+      const prefix = (data.isMaster && !variantEnabled)
+        ? `A masterwork ${baseWeapon?.category || "unknown"} weapon`
+        : `A ${baseWeapon?.category || "unknown"} weapon`;
 
-  // Handle +1 accuracy variants
-  const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
-  const plusOneBonus = (data.hasPlusOne && baseAcc !== 1) ? 1 : 0;	
+      // Handle +1 accuracy variants
+      const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
+      const plusOneBonus = (data.hasPlusOne && baseAcc !== 1) ? 1 : 0;
 
-  itemData = {
-    name: data.name,
-    type,
-    img,
-    folder: cacheFolder.id,
-    system: {
-      category: { value: baseWeapon?.category || "" },
-      hands: { value: baseWeapon?.hand || "" },
-      type: { value: baseWeapon?.type || "" },
-      attributes: {
-        primary: { value: baseWeapon?.attrA || "" },
-        secondary: { value: baseWeapon?.attrB || "" }
-      },
-      accuracy: { value: (baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0) },
-      defense: baseWeapon?.defense || "",
-      damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
-      damage: { value: (baseWeapon?.damage ?? 0) + (variantEnabled ? variantBonus : (data.isMaster ? 4 : 0)) },
-      isMartial: { value: baseWeapon?.isMartial ?? false },
-      quality: { value: qualityObj?.description || "No quality" },
-      cost: { value: data.value },
-      source: { value: "LOOKFAR" },
-      summary: {
-        value: `${prefix} that ${qualityObj?.description || "has no special properties."}` }
-    }
-  };
-} else if (dataLoader.armorData.armorList.some(a => data.name.endsWith(a.name))) {
+      itemData = {
+        name: data.name,
+        type,
+        img,
+        folder: cacheFolder.id,
+        system: {
+          category: { value: baseWeapon?.category || "" },
+          hands: { value: baseWeapon?.hand || "" },
+          type: { value: baseWeapon?.type || "" },
+          attributes: {
+            primary: { value: baseWeapon?.attrA || "" },
+            secondary: { value: baseWeapon?.attrB || "" }
+          },
+          accuracy: { value: (baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0) },
+          defense: baseWeapon?.defense || "",
+          damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
+          damage: { value: (baseWeapon?.damage ?? 0) + (variantEnabled ? variantBonus : (data.isMaster ? 4 : 0)) },
+          isMartial: { value: baseWeapon?.isMartial ?? false },
+          quality: { value: qualityObj?.description || "No quality" },
+          cost: { value: data.value },
+          source: { value: "LOOKFAR" },
+          summary: {
+            value: `${prefix} that ${qualityObj?.description || "has no special properties."}`
+          }
+        }
+      };
+    } else if (dataLoader.armorData.armorList.some(a => data.name.endsWith(a.name))) {
       type = "armor";
       const baseArmor = dataLoader.armorData.armorList.find(a => data.name.endsWith(a.name));
       const allQualities = [
-  		...(dataLoader.armorData.armorQualities.basic || []),
-  		...(dataLoader.armorData.armorQualities[data.origin] || [])
+        ...(dataLoader.armorData.armorQualities.basic || []),
+        ...(dataLoader.armorData.armorQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const img = dataLoader.getRandomIconFor("armor", baseArmor) || "icons/svg/statue.svg";
-      
+
       itemData = {
         name: data.name,
         type,
@@ -640,16 +551,16 @@ async function renderTreasureResultDialog(items, budget, config) {
           summary: { value: `A set of ${baseArmor?.isMartial ? "martial" : "non-martial"} armor that ${qualityObj?.description || "has no special properties."}` }
         }
       };
-	} else if (dataLoader.shieldsData.shieldList.some(s => data.name.endsWith(s.name))) {
-	  type = "shield";
+    } else if (dataLoader.shieldsData.shieldList.some(s => data.name.endsWith(s.name))) {
+      type = "shield";
       const baseShield = dataLoader.shieldsData.shieldList.find(s => data.name.endsWith(s.name));
       const allQualities = [
-    	...(dataLoader.shieldsData.shieldQualities.basic || []),
-    	...(dataLoader.shieldsData.shieldQualities[data.origin] || [])
-  	  ];
+        ...(dataLoader.shieldsData.shieldQualities.basic || []),
+        ...(dataLoader.shieldsData.shieldQualities[data.origin] || [])
+      ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const img = dataLoader.getRandomIconFor("shield", baseShield) || "icons/svg/shield.svg";
- 
+
       itemData = {
         name: data.name,
         type,
@@ -664,14 +575,14 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: { value: `A ${baseShield?.isMartial ? "martial" : "non-martial"} shield that ${qualityObj?.description || "has no special properties."}` }
-    	}
+        }
       };
     } else if (dataLoader.accessoriesData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
       type = "accessory";
       const baseAccessory = dataLoader.accessoriesData.accessoryList.find(acc => data.name.endsWith(acc.name));
       const allQualities = [
-  		...(dataLoader.accessoriesData.accessoryQualities.basic || []),
-  		...(dataLoader.accessoriesData.accessoryQualities[data.origin] || [])
+        ...(dataLoader.accessoriesData.accessoryQualities.basic || []),
+        ...(dataLoader.accessoriesData.accessoryQualities[data.origin] || [])
       ];
       const qualityObj = allQualities.find(q => q.name === data.quality);
       const img = dataLoader.getRandomIconFor("accessory", baseAccessory) || "icons/svg/stoned.svg";
@@ -696,11 +607,11 @@ async function renderTreasureResultDialog(items, budget, config) {
     if (!type || !itemData) return null;
 
     const cached = game.items.find(i =>
-  	  i.name === itemData.name &&
-  	  i.type === itemData.type &&
-  	  i.folder?.id === cacheFolder.id &&
-  	  getItemCost(i.system) === getItemCost(itemData.system)
-	);
+      i.name === itemData.name &&
+      i.type === itemData.type &&
+      i.folder?.id === cacheFolder.id &&
+      getItemCost(i.system) === getItemCost(itemData.system)
+    );
 
     if (cached) return cached;
 
@@ -709,482 +620,361 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   const finalItems = tempItems.filter(Boolean);
 
- // Build compact, one-line item cards
-const itemCards = finalItems.map(item => {
-  const cost = getItemCost(item.system);
+  // Build compact, one-line item cards
+  const itemCards = finalItems.map(item => {
+    const cost = getItemCost(item.system);
 
-  // Detect ingredient...again? Will fix later
-  const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
+    const isIngredient = item.type === "classFeature" && item.system.featureType === "projectfu.ingredient";
 
-  // Correct quantity lookup
-  const quantity = isIngredient
-    ? (item.system?.data?.quantity ?? 1)
-    : (item.system?.quantity?.value ?? 1);
+    const quantity = isIngredient
+      ? (item.system?.data?.quantity ?? 1)
+      : (item.system?.quantity?.value ?? 1);
 
-  const quantitySuffix = isIngredient && quantity > 1 ? ` x ${quantity}` : "";
+    const quantitySuffix = isIngredient && quantity > 1 ? ` x ${quantity}` : "";
 
-  const desc =
-    item.system?.summary?.value ??
-    item.system?.summary ??
-    item.system?.data?.summary?.value ??
-    item.system?.data?.summary ??
-    "";
+    const desc =
+      item.system?.summary?.value ??
+      item.system?.summary ??
+      item.system?.data?.summary?.value ??
+      item.system?.data?.summary ??
+      "";
 
-  return `<div style="text-align:center;margin-bottom:0.75em">
-            <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
-            <a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br>
-            <small>${desc}</small><br>
-            <small>Value: ${cost} z</small>
-          </div>`;
-});
-
-// Build & style currency tiles
-const currencyCards = currencyLines.map(c =>
-  `<div style="text-align:center;margin-bottom:0.75em">
-     <img src="${c.img || 'icons/svg/coins.svg'}" width="32" height="32" style="display:block;margin:0 auto 6px">
-     <strong>${c.name}</strong>
-   </div>`
-);
-
-// Merge items & currency, then layout
-const allCards = [...itemCards, ...currencyCards];
-
-let htmlContent;
-if (allCards.length > 5) {
-  const left  = allCards.slice(0, 5).join("");
-  const right = allCards.slice(5).join("");
-  htmlContent = `
-    <div class="lf-results" style="display:flex; gap:1rem; align-items:flex-start; min-width:0; margin-bottom:0;">
-      <div style="flex:1 1 0; min-width:0;">${left}</div>
-      <div style="flex:1 1 0; min-width:0;">${right}</div>
-    </div>
-  `;
-} else {
-  htmlContent = `<div class="lf-results" style="display:block; padding-bottom:6px;">${allCards.join("")}</div>`;
-}
-
-const needsWide = allCards.length > 5; // Set max item cards before column expand
-const enrichedHtml = await TextEditor.enrichHTML(htmlContent, { async: true });
-
-const dialog = new Dialog({
-  title: "Treasure Results",
-  content: enrichedHtml,
-  buttons: {
-    keep: {
-      label: "Keep",
-      callback: async () => {
-        // Move items out of cache
-        for (const item of finalItems) {
-          if (item?.folder?.id === cacheFolder.id) {
-            await item.update({ folder: null });
-          }
-        }
-        await ChatMessage.create({
-          content: enrichedHtml,
-          speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
-        });
-      }
-    },
-    stash: {
-      label: "Stash",
-      callback: async () => {
-        const currencyTotal = (currencyLines || []).reduce((sum, c) => sum + (Number(c?.value) || 0), 0);
-        await createStash(finalItems, cacheFolder, currencyTotal);
-      }
-    },
-    reroll: {
-      label: "Reroll",
-      callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
-    }
-  }
-});
-
-dialog.render(true);
-
-// Hooks & Wiring
-Hooks.once("renderDialog", (_app, html) => {
-  const $dlg = html.closest(".dialog");
-
-  if (needsWide) {
-    $dlg.css({ width: "500px", "max-width": "500px" });
-  }
-
-  const $wc   = $dlg.find(".window-content");
-  const $btns = $wc.find(".dialog-buttons");
-
-  if ($btns.length && !config?.ignoreValues) {
-    const $bar = $(`
-      <div class="lf-budget"
-           style="margin:8px 0; border-top:1px solid var(--color-border-light, #8882); padding-top:6px;">
-        <strong>Remaining Budget:</strong> ${budget}
-      </div>
-    `);
-    $bar.insertBefore($btns);
-  }
-  $wc.css({
-    "max-height": "none",
-    "overflow": "visible",
-    "overflow-y": "visible"
+    return `<div style="text-align:center;margin-bottom:0.75em">
+              <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
+              <a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br>
+              <small>${desc}</small><br>
+              <small>Value: ${cost} z</small>
+            </div>`;
   });
 
-  if (typeof _app?.setPosition === "function") {
-    _app.setPosition({ height: "auto" });
-    setTimeout(() => _app.setPosition({ height: "auto" }), 0);
+  // Build & style currency tiles
+  const currencyCards = currencyLines.map(c =>
+    `<div style="text-align:center;margin-bottom:0.75em">
+       <img src="${c.img || 'icons/svg/coins.svg'}" width="32" height="32" style="display:block;margin:0 auto 6px">
+       <strong>${c.name}</strong>
+     </div>`
+  );
+
+  // Merge items & currency, then layout
+  const allCards = [...itemCards, ...currencyCards];
+
+  let innerHtml;
+  if (allCards.length > 5) {
+    const left  = allCards.slice(0, 5).join("");
+    const right = allCards.slice(5).join("");
+    innerHtml = `
+      <div class="lf-results" style="display:flex; gap:1rem; align-items:flex-start; min-width:0; margin-bottom:0;">
+        <div style="flex:1 1 0; min-width:0;">${left}</div>
+        <div style="flex:1 1 0; min-width:0;">${right}</div>
+      </div>
+    `;
+  } else {
+    innerHtml = `<div class="lf-results" style="display:block; padding-bottom:6px;">${allCards.join("")}</div>`;
   }
 
-  const links = html.find("a.content-link");
-  if (links.length) {
-    links.on("click", async function (event) {
-      event.preventDefault();
-      const uuid = $(this).data("uuid");
-      if (!uuid) return;
-      const doc = await fromUuid(uuid);
-      if (doc?.sheet) doc.sheet.render(true);
+  const needsWide = allCards.length > 5;
+  const enrichedHtml = await TextEditor.enrichHTML(innerHtml, { async: true });
+
+  const templateData = {
+    resultsHtml: enrichedHtml,
+    showBudget: !config?.ignoreValues,
+    budgetDisplay: config?.ignoreValues ? "Ignored" : budget
+  };
+
+  const content = await renderTemplate(TREASURE_RESULT_TEMPLATE, templateData);
+
+  const dialog = new Dialog({
+    title: "Treasure Results",
+    content,
+    buttons: {
+      keep: {
+        label: "Keep",
+        callback: async () => {
+          // Move items out of cache
+          for (const item of finalItems) {
+            if (item?.folder?.id === cacheFolder.id) {
+              await item.update({ folder: null });
+            }
+          }
+          await ChatMessage.create({
+            content: enrichedHtml,
+            speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
+          });
+        }
+      },
+      stash: {
+        label: "Stash",
+        callback: async () => {
+          const currencyTotal = (currencyLines || []).reduce((sum, c) => sum + (Number(c?.value) || 0), 0);
+          await createStash(finalItems, cacheFolder, currencyTotal);
+        }
+      },
+      reroll: {
+        label: "Reroll",
+        callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
+      }
+    }
+  });
+
+  dialog.render(true);
+
+  // Styling & link behavior for the *result* dialog
+  Hooks.once("renderDialog", (app, html) => {
+    if (!html.find || !html.find("#lookfar-treasure-result").length) return;
+
+    const $dlg = html.closest(".dialog");
+    if (needsWide) {
+      $dlg.css({ width: "500px", "max-width": "500px" });
+    }
+
+    const $wc = $dlg.find(".window-content");
+    $wc.css({
+      "max-height": "none",
+      "overflow": "visible",
+      "overflow-y": "visible"
     });
-  }
-});
-} 
 
+    if (typeof app?.setPosition === "function") {
+      app.setPosition({ height: "auto" });
+      setTimeout(() => app.setPosition({ height: "auto" }), 0);
+    }
+
+    const links = html.find("a.content-link");
+    if (links.length) {
+      links.on("click", async function (event) {
+        event.preventDefault();
+        const uuid = $(this).data("uuid");
+        if (!uuid) return;
+        const doc = await fromUuid(uuid);
+        if (doc?.sheet) doc.sheet.render(true);
+      });
+    }
+  });
+}
+
+// Hooks & Wiring
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
-  (async () => {
+    (async () => {
 
-	// --- Singleton guard for the Generator dialog
-    if (!rerollConfig) {
+      // --- Singleton guard for the Generator dialog
+      if (!rerollConfig) {
         if (_treasureGenDialog && _treasureGenDialog.rendered) {
           _treasureGenDialog.bringToTop();
           return;
         }
       }
-	  
-    // Keywords 
-    const { origin: originKeywords, nature: natureKeywords, detail: detailKeywords, taste: tasteKeywords } = dataLoader.keywordData;
 
-    // Equipment & Qualities
-    const { weaponList, weaponQualities } = dataLoader.weaponsData; 
-    const { armorList, armorQualities } = dataLoader.armorData;
-    const { shieldList, shieldQualities } = dataLoader.shieldsData;
-    const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
+      // Keywords
+      const { origin: originKeywords, nature: natureKeywords, detail: detailKeywords, taste: tasteKeywords } = dataLoader.keywordData;
 
-    // Weapon Elements
-    const elementKeywords = dataLoader.keywordData.element || {};
-    const weaponElements = Object.entries(elementKeywords)
-      .flatMap(([damageType, names]) => names.map(name => ({ name, damageType })));
+      // Equipment & Qualities
+      const { weaponList, weaponQualities } = dataLoader.weaponsData;
+      const { armorList, armorQualities } = dataLoader.armorData;
+      const { shieldList, shieldQualities } = dataLoader.shieldsData;
+      const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
 
-    if (rerollConfig) {
-      const {
-        budget, 
-		maxVal, 
-		origin, 
-		nature,
-		itemCount = 1,  
-        includeWeapons, 
-		includeArmor, 
-		includeShields,
-        includeAccessories, 
-		includeIngredients, 
-		includeMaterials,
-		includeCurrency,  
-        includeCustom,
-		ignoreValues = false  
-      } = rerollConfig;
+      // Weapon Elements
+      const elementKeywords = dataLoader.keywordData.element || {};
+      const weaponElements = Object.entries(elementKeywords)
+        .flatMap(([damageType, names]) => names.map(name => ({ name, damageType })));
 
-      let remainingBudget = ignoreValues ? Number.MAX_SAFE_INTEGER : budget;
-      const effectiveMaxVal = ignoreValues ? Number.MAX_SAFE_INTEGER : maxVal;
-      let items = [];
-      let ingredientCount = 0;
-      let failedAttempts = 0;
-      const maxAttempts = 50; // infinite loop protection. Increase if needed.
-
-      while ((ignoreValues || remainingBudget > 0) && items.length < itemCount && failedAttempts < maxAttempts) {
-        let itemTypes = [];
-        if (includeWeapons) itemTypes.push("Weapon");
-        if (includeArmor) itemTypes.push("Armor");
-        if (includeShields) itemTypes.push("Shield");
-        if (includeAccessories) itemTypes.push("Accessory");
-        if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
-        if (includeMaterials) itemTypes.push("Material");
-		if (includeCurrency) itemTypes.push("Currency");
-        if (includeCustom) itemTypes.push("Custom");
-		
-
-        if (itemTypes.length === 0) break;
-
-        const type = getRandom(itemTypes);
-        let item = null;
-        const cap = Math.min(remainingBudget, effectiveMaxVal);
-
-        switch (type) {
-          case "Weapon":     item = rollWeapon(weaponList, weaponQualities, weaponElements, origin, game.settings.get("lookfar", "useVariantDamageRules")); break;
-          case "Armor":      item = rollArmor(armorList, armorQualities, origin, cap); break;
-          case "Shield":     item = rollShield(shieldList, shieldQualities, origin, cap); break;
-          case "Accessory":  item = rollAccessory(accessoryList, accessoryQualities, origin, cap); break;	
-          case "Material":   item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords.material, natureKeywords.material); break;
-          case "Ingredient": item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient); ingredientCount++; break;
-		  case "Currency":   item = rollCurrency(remainingBudget, maxVal, { roundTo: 10 }); break; // tidy amounts
-          case "Custom":     item = await rollCustom(); break;
-        }
-
-        if (!item || item.value > remainingBudget || item.value > effectiveMaxVal) {
-          failedAttempts++;
-          continue;
-        }
-
-        items.push(item);
-        remainingBudget -= item.value;
-      }
-
-      if (items.length === 0) {
-        ui.notifications.warn("No loot generated.");
-        return;
-      }
-		
-      const displayBudget = ignoreValues ? "Ignored" : remainingBudget;
-      renderTreasureResultDialog(items, remainingBudget, rerollConfig);
-      return;
-    }
-	  
-    // Main Dialog Form
-    const genDialog = new Dialog({
-      title: "Treasure Generator",
-      content: `
-<form style="display:flex; width:100%; flex-wrap:nowrap; gap:0.25rem; box-sizing:border-box;">
-
-  <!-- Left Half of Dialog/Column 1 -->
-  <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="treasureBudget" style="flex:0 0 35%; max-width:35%; padding-right:0.5em; box-sizing:border-box;">Budget:</label>
-      <input type="number" id="treasureBudget" value="1" min="1" style="flex:1 1 65%; min-width:0; max-width:65%; box-sizing:border-box;" />
-    </div>
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="highestPCLevel" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Level:</label>
-      <select id="highestPCLevel" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
-        <option value="500">5+</option>
-        <option value="1000">10+</option>
-        <option value="1500">20+</option>
-        <option value="2000">30+</option>
-        <option value="999999">40+</option>
-      </select>
-    </div>
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="origin" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Origin:</label>
-      <select id="origin" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
-        <option value="Random" selected>Random</option>
-        <option value="Aerial">Aerial</option>
-        <option value="Thunderous">Thunderous</option>
-        <option value="Paradox">Paradox</option>
-        <option value="Terrestrial">Terrestrial</option>
-        <option value="Ardent">Ardent</option>
-        <option value="Glacial">Glacial</option>
-        <option value="Spiritual">Spiritual</option>
-        <option value="Corrupted">Corrupted</option>
-        <option value="Aquatic">Aquatic</option>
-        <option value="Mechanical">Mechanical</option>
-      </select>
-    </div>
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="nature" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Nature:</label>
-      <select id="nature" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
-        <option value="Random" selected>Random</option>
-        <option value="Anthropod">Anthropod</option>
-        <option value="Bird">Bird</option>
-        <option value="Fish">Fish</option>
-        <option value="Mammal">Mammal</option>
-        <option value="Mollusk">Mollusk</option>
-        <option value="Reptile">Reptile</option>
-        <option value="Fungus">Fungus</option>
-        <option value="Incorporeal">Incorporeal</option>
-        <option value="Liquid">Liquid</option>
-        <option value="Artificial">Artificial</option>
-        <option value="Mineral">Mineral</option>
-      </select>
-    </div>
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="itemCount" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">Items:</label>
-      <div style="display:flex; align-items:center; gap:0.25rem; flex:1 1 65%; min-width:0;">
-        <button type="button" id="subCount" style="height:2em; width:2em;">−</button>
-        <input type="number" id="itemCount" value="1" min="1" max="10" readonly style="flex:1 1 auto; box-sizing:border-box; text-align:center; min-width:0;" />
-        <button type="button" id="addCount" style="height:2em; width:2em;">+</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Right half of Dialog/Column 2 & 3 -->
-  <div id="lootOptions" style="flex:1 1 60%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
-    <!-- Merged header -->
-    <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.75em; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
-      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
-        <input type="checkbox" id="ignoreValues" />
-        <small>Ignore budget/level</small>
-      </label>
-      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
-        <input type="checkbox" id="selectAllLoot" />
-        <small>Select all</small>
-      </label>
-    </div>
-
-    <!-- Two inner columns that share the right half equally -->
-    <div style="display:flex; min-width:0;">
-      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeWeapons" />
-          <span>Weapons</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeArmor" />
-          <span>Armor</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeAccessories" />
-          <span>Accessories</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeShields" />
-          <span>Shields</span>
-        </label>
-      </div>
-
-      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeMaterials" />
-          <span>Materials</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeIngredients" />
-          <span>Ingredients</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeCurrency" />
-          <span>Currency</span>
-        </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
-          <input type="checkbox" id="includeCustom" />
-          <span>Custom</span>
-        </label>
-      </div>
-    </div>
-  </div>
-</form>
-      `,
-       buttons: {
-    ok: {
-      label: "Roll Loot",
-      callback: (html) => {
-        const budget = parseInt(html.find("#treasureBudget").val());
-        const maxVal = parseInt(html.find("#highestPCLevel").val());
-        const includeWeapons = html.find("#includeWeapons").is(":checked");
-        const includeArmor = html.find("#includeArmor").is(":checked");
-        const includeShields = html.find("#includeShields").is(":checked");
-        const includeAccessories = html.find("#includeAccessories").is(":checked");
-        const includeIngredients = html.find("#includeIngredients").is(":checked");
-        const includeMaterials = html.find("#includeMaterials").is(":checked");
-		const includeCurrency = html.find("#includeCurrency").is(":checked");
-        const includeCustom = html.find("#includeCustom").is(":checked");
-
-		const ignoreValues = html.find("#ignoreValues").is(":checked");  
-
-        const selectedOrigin = html.find("#origin").val();
-        const selectedNature = html.find("#nature").val();
-
-		const itemCount = parseInt(html.find("#itemCount").val(), 10) || 1;
-
-        Hooks.call("lookfarShowTreasureRollDialog", {
+      if (rerollConfig) {
+        const {
           budget,
           maxVal,
-          origin: selectedOrigin,
-          nature: selectedNature,
-		  itemCount,
+          origin,
+          nature,
+          itemCount = 1,
           includeWeapons,
           includeArmor,
           includeShields,
           includeAccessories,
           includeIngredients,
           includeMaterials,
-		  includeCurrency,	
+          includeCurrency,
           includeCustom,
-		  ignoreValues	
-        });
+          ignoreValues = false
+        } = rerollConfig;
+
+        let remainingBudget = ignoreValues ? Number.MAX_SAFE_INTEGER : budget;
+        const effectiveMaxVal = ignoreValues ? Number.MAX_SAFE_INTEGER : maxVal;
+        let items = [];
+        let ingredientCount = 0;
+        let failedAttempts = 0;
+        const maxAttempts = 50; // infinite loop protection
+
+        while ((ignoreValues || remainingBudget > 0) && items.length < itemCount && failedAttempts < maxAttempts) {
+          let itemTypes = [];
+          if (includeWeapons) itemTypes.push("Weapon");
+          if (includeArmor) itemTypes.push("Armor");
+          if (includeShields) itemTypes.push("Shield");
+          if (includeAccessories) itemTypes.push("Accessory");
+          if (includeIngredients && ingredientCount < 3) itemTypes.push("Ingredient");
+          if (includeMaterials) itemTypes.push("Material");
+          if (includeCurrency) itemTypes.push("Currency");
+          if (includeCustom) itemTypes.push("Custom");
+
+          if (itemTypes.length === 0) break;
+
+          const type = getRandom(itemTypes);
+          let item = null;
+          const cap = Math.min(remainingBudget, effectiveMaxVal);
+
+          switch (type) {
+            case "Weapon":     item = rollWeapon(weaponList, weaponQualities, weaponElements, origin, game.settings.get("lookfar", "useVariantDamageRules")); break;
+            case "Armor":      item = rollArmor(armorList, armorQualities, origin, cap); break;
+            case "Shield":     item = rollShield(shieldList, shieldQualities, origin, cap); break;
+            case "Accessory":  item = rollAccessory(accessoryList, accessoryQualities, origin, cap); break;
+            case "Material":   item = rollMaterial(nature, origin, maxVal, remainingBudget, detailKeywords, originKeywords.material, natureKeywords.material); break;
+            case "Ingredient": item = rollIngredient(nature, origin, remainingBudget, tasteKeywords, natureKeywords.ingredient, originKeywords.ingredient); ingredientCount++; break;
+            case "Currency":   item = rollCurrency(remainingBudget, maxVal, { roundTo: 10 }); break;
+            case "Custom":     item = await rollCustom(); break;
+          }
+
+          if (!item || (!ignoreValues && (item.value > remainingBudget || item.value > effectiveMaxVal))) {
+            failedAttempts++;
+            continue;
+          }
+
+          items.push(item);
+          if (!ignoreValues) {
+            remainingBudget -= item.value;
+          }
+        }
+
+        if (items.length === 0) {
+          ui.notifications.warn("No loot generated.");
+          return;
+        }
+
+        renderTreasureResultDialog(items, remainingBudget, rerollConfig);
+        return;
       }
-    }
-  },
-  close: () => {
-    _treasureGenDialog = null;
-  }
-});
 
-_treasureGenDialog = genDialog;
+      // --- Main Dialog Form via template ---
+      const content = await renderTemplate(TREASURE_ROLL_TEMPLATE, {});
+      const genDialog = new Dialog({
+        title: "Treasure Generator",
+        content,
+        buttons: {
+          ok: {
+            label: "Roll Loot",
+            callback: (html) => {
+              const budget = parseInt(html.find("#treasureBudget").val());
+              const maxVal = parseInt(html.find("#highestPCLevel").val());
+              const includeWeapons = html.find("#includeWeapons").is(":checked");
+              const includeArmor = html.find("#includeArmor").is(":checked");
+              const includeShields = html.find("#includeShields").is(":checked");
+              const includeAccessories = html.find("#includeAccessories").is(":checked");
+              const includeIngredients = html.find("#includeIngredients").is(":checked");
+              const includeMaterials = html.find("#includeMaterials").is(":checked");
+              const includeCurrency = html.find("#includeCurrency").is(":checked");
+              const includeCustom = html.find("#includeCustom").is(":checked");
+              const ignoreValues = html.find("#ignoreValues").is(":checked");
 
-Hooks.once("renderDialog", (app, html) => {
-  if (!html.find || !html.find("#itemCount").length) return;
+              const selectedOrigin = html.find("#origin").val();
+              const selectedNature = html.find("#nature").val();
+              const itemCount = parseInt(html.find("#itemCount").val(), 10) || 1;
 
-  // Item count controls
-  const $count = html.find("#itemCount");
-  const min = Number($count.attr("min")) || 1;
-  const max = Number($count.attr("max")) || 10;
+              Hooks.call("lookfarShowTreasureRollDialog", {
+                budget,
+                maxVal,
+                origin: selectedOrigin,
+                nature: selectedNature,
+                itemCount,
+                includeWeapons,
+                includeArmor,
+                includeShields,
+                includeAccessories,
+                includeIngredients,
+                includeMaterials,
+                includeCurrency,
+                includeCustom,
+                ignoreValues
+              });
+            }
+          }
+        },
+        close: () => {
+          _treasureGenDialog = null;
+        }
+      });
 
-  const clampSet = (val) => {
-    const n = parseInt(val, 10);
-    const safe = Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
-    $count.val(safe);
-  };
+      _treasureGenDialog = genDialog;
 
-  html.find("#addCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) + 1); });
-  html.find("#subCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) - 1); });
+      // Hook to wire up item count, select-all, and ignoreValues fields for the *generator* dialog
+      Hooks.once("renderDialog", (app, html) => {
+        if (!html.find || !html.find("#lookfar-treasure-gen").length) return;
 
-  $count.on("wheel", (e) => e.preventDefault());
+        // Item count controls
+        const $count = html.find("#itemCount");
+        const min = Number($count.attr("min")) || 1;
+        const max = Number($count.attr("max")) || 10;
 
-  // Select All wiring
-  const $selectAll = html.find("#selectAllLoot");
-  if ($selectAll.length) {
+        const clampSet = (val) => {
+          const n = parseInt(val, 10);
+          const safe = Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
+          $count.val(safe);
+        };
 
-    const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreValues");
+        html.find("#addCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) + 1); });
+        html.find("#subCount").on("click", (e) => { e.preventDefault(); clampSet(Number($count.val()) - 1); });
 
-    $selectAll.on("change", (ev) => {
-      const checked = ev.currentTarget.checked;
-      $boxes.prop("checked", checked);
-      $selectAll.prop("indeterminate", false);
-    });
+        $count.on("wheel", (e) => e.preventDefault());
 
-    $boxes.on("change", () => {
-      const arr = $boxes.toArray();
-      const allChecked = arr.every(b => b.checked);
-      const anyChecked = arr.some(b => b.checked);
-      $selectAll
-        .prop("checked", allChecked)
-        .prop("indeterminate", anyChecked && !allChecked);
-    });
-  }
+        // Select All wiring
+        const $selectAll = html.find("#selectAllLoot");
+        if ($selectAll.length) {
 
-  // Grey-out logic for "Ignore budget/level"
-  const $ignore      = html.find("#ignoreValues");
-  const $budgetLabel = html.find('label[for="treasureBudget"]');
-  const $budgetField = html.find("#treasureBudget");
-  const $levelLabel  = html.find('label[for="highestPCLevel"]');
-  const $levelField  = html.find("#highestPCLevel");
+          const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreValues");
 
-  const setFieldState = ($el, isDisabled) => {
-  $el.prop("disabled", isDisabled);
-  $el.css("opacity", isDisabled ? 0.5 : "");
-  $el.css("border", isDisabled ? "1px solid var(--color-border, #777)" : "");
-  $el.css("outline", isDisabled ? "none" : "");
-  $el.css("box-shadow", "none");
-};
+          $selectAll.on("change", (ev) => {
+            const checked = ev.currentTarget.checked;
+            $boxes.prop("checked", checked);
+            $selectAll.prop("indeterminate", false);
+          });
 
-  const toggleDisabled = (isDisabled) => {
-  const labelOpacity = isDisabled ? 0.5 : 1.0;
-  $budgetLabel.css("opacity", labelOpacity);
-  $levelLabel.css("opacity", labelOpacity);
+          $boxes.on("change", () => {
+            const arr = $boxes.toArray();
+            const allChecked = arr.every(b => b.checked);
+            const anyChecked = arr.some(b => b.checked);
+            $selectAll
+              .prop("checked", allChecked)
+              .prop("indeterminate", anyChecked && !allChecked);
+          });
+        }
 
-  setFieldState($budgetField, isDisabled);
-  setFieldState($levelField,  isDisabled);
-};
+        // Grey-out logic for "Ignore budget/level"
+        const $ignore      = html.find("#ignoreValues");
+        const $budgetLabel = html.find('label[for="treasureBudget"]');
+        const $budgetField = html.find("#treasureBudget");
+        const $levelLabel  = html.find('label[for="highestPCLevel"]');
+        const $levelField  = html.find("#highestPCLevel");
 
-toggleDisabled($ignore.is(":checked"));
-$ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
-});
+        const setFieldState = ($el, isDisabled) => {
+          $el.prop("disabled", isDisabled);
+          $el.css("opacity", isDisabled ? 0.5 : "");
+          $el.css("border", isDisabled ? "1px solid var(--color-border, #777)" : "");
+          $el.css("outline", isDisabled ? "none" : "");
+          $el.css("box-shadow", "none");
+        };
 
-genDialog.render(true);
-  
-  })();
- });
+        const toggleDisabled = (isDisabled) => {
+          const labelOpacity = isDisabled ? 0.5 : 1.0;
+          $budgetLabel.css("opacity", labelOpacity);
+          $levelLabel.css("opacity", labelOpacity);
+
+          setFieldState($budgetField, isDisabled);
+          setFieldState($levelField,  isDisabled);
+        };
+
+        toggleDisabled($ignore.is(":checked"));
+        $ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
+      });
+
+      genDialog.render(true);
+
+    })();
+  });
 });
