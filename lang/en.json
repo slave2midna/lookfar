@@ -168,7 +168,11 @@
         "Keywords": {
             "Patterns": {
                 "Material": "{detail} {origin} {nature}",
-                "Ingredient": "{taste} {origin} {nature}"
+                "Ingredient": "{taste} {origin} {nature}",
+                "Weapon": "{quality} {element} {weapon}",
+                "Armor": "{quality} {armor}",
+                "Shield": "{quality} {shield}",
+                "Accessory": "{quality} {accessory}"
             },
             "Traits": {
                 "Abandoned": "Abandoned",
@@ -965,5 +969,6 @@
         }
     }
 }
+
 
 
