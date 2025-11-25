@@ -5,28 +5,28 @@
 
         
         "__SECTION__Buttons": "=== Buttons ===",
-"Button": {
-  "TravelCheck": {
-    "Name": "Travel Check",
-    "Title": "Make a Travel Check"
-  },
-  "TreasureRoll": {
-    "Name": "Treasure Roll",
-    "Title": "Generate Some Treasure"
-  },
-  "DungeonBuilder": {
-    "Name": "Dungeon Mapper",
-    "Title": "Map a Dungeon"
-  },
-  "ConflictBuilder": {
-    "Name": "Conflict Builder",
-    "Title": "Create a Conflict"
-  },
-  "ItemForger": {
-    "Name": "Item Forge",
-    "Title": "Forge and Item"
-  }
-},
+        "Button": {
+            "TravelCheck": {
+                "Name": "Travel Check",
+                "Title": "Make a Travel Check"
+            },
+            "TreasureRoll": {
+                "Name": "Treasure Roll",
+                "Title": "Generate Some Treasure"
+            },
+            "DungeonBuilder": {
+                "Name": "Dungeon Mapper",
+                "Title": "Map a Dungeon"
+            },
+            "ConflictBuilder": {
+                "Name": "Conflict Builder",
+                "Title": "Create a Conflict"
+            },
+            "ItemForger": {
+                "Name": "Item Forge",
+                "Title": "Forge and Item"
+            }
+        },
 
 
 
@@ -140,6 +140,10 @@
             "Heavy": "Heavy",
             "Massive": "Massive"
         },
+
+
+
+        
         "__SECTION__Chat": "=== Chat ===",
         "Chat": {
             "Alias": {
@@ -164,16 +168,21 @@
 
 
         
+        "__SECTION__NamePatterns": "=== Name Patterns ===",
+        "NamePatterns": {
+            "Material": "{detail} {origin} {nature}",
+            "Ingredient": "{taste} {origin} {nature}",
+            "Weapon": "{quality} {element} {base}",
+            "Armor": "{quality} {base}",
+            "Shield": "{quality} {base}",
+            "Accessory": "{quality} {base}"
+        },
+
+
+
+        
         "__SECTION__Keywords": "=== Keywords ===",
         "Keywords": {
-            "Patterns": {
-                "Material": "{detail} {origin} {nature}",
-                "Ingredient": "{taste} {origin} {nature}",
-                "Weapon": "{quality} {element} {weapon}",
-                "Armor": "{quality} {armor}",
-                "Shield": "{quality} {shield}",
-                "Accessory": "{quality} {accessory}"
-            },
             "Traits": {
                 "Abandoned": "Abandoned",
                 "Ancient": "Ancient",
@@ -876,6 +885,60 @@
 
 
         
+        "__SECTION__EQUIPMENT": "=== Equipment ===",
+        "Equipment": {
+            "Weapon": {
+                "staff": "Staff",
+                "tome": "Tome",
+                "crossbow": "Crossbow",
+                "bow": "Bow",
+                "knuckle": "Knuckle",
+                "dagger": "Dagger",
+                "pistol": "Pistol",
+                "rifle": "Rifle",
+                "flail": "Flail",
+                "hammer": "Hammer",
+                "warhammer": "Warhammer",
+                "handaxe": "Handaxe",
+                "waraxe": "Waraxe",
+                "light_spear": "Light Spear",
+                "heavy_spear": "Heavy Spear",
+                "sword": "Sword",
+                "claymore": "Claymore",
+                "katana": "Katana",
+                "rapier": "Rapier",
+                "shuriken": "Shuriken"
+            },
+            "Armor": {
+                "silk-shirt": "Shirt",
+                "travel-garb": "Garb",
+                "combat-tunic": "Tunic",
+                "sage-robe": "Robe",
+                "brigandine": "Brigandine",
+                "bronze-plate": "Hauberk",
+                "iron-plate": "Cuirass",
+                "steel-plate": "Plate"
+            },
+            "Shield": {
+                "bronze-shield": "Buckler",
+                "runic-shield": "Shield"
+            },
+            "Accessory": {
+                "amulet": "Amulet",
+                "belt": "Belt",
+                "cloak": "Cloak",
+                "charm": "Earring",
+                "hat": "Hat",
+                "helmet": "Helmet",
+                "hood": "Hood",
+                "mask": "Mask",
+                "ring": "Ring"
+            }
+        },
+
+
+
+        
         "__SECTION__Dangers": "=== Dangers ===",
         "Dangers": {
             "StatusEffects": {
@@ -969,7 +1032,3 @@
         }
     }
 }
-
-
-
-
