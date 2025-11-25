@@ -34,28 +34,20 @@ name: Create Module Files For GitHub Release
 
 env:
   # The URL used for the module's "Project URL" link on FoundryVTT's website.
-  project_url: "https://github.com/${{github.repository}}"
+  project_url: "https://github.com/${{ github.repository }}"
 
   # A URL that will always point to the latest manifest.
   # FoundryVTT uses this URL to check whether the current module version that
   # is installed is the latest version. This URL should NOT change,
   # otherwise FoundryVTT won't be able to perform this check.
-  latest_manifest_url: "https://github.com/${{github.repository}}/releases/latest/download/module.json"
+  latest_manifest_url: "https://github.com/${{ github.repository }}/releases/latest/download/module.json"
 
   # The URL to the module archive associated with the module release being
   # processed by this workflow.
-  release_module_url: "https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip"
+  release_module_url: "https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.zip"
 
 on:
   # Only run this workflow when a release is published.
-  # To modify this workflow when other events occur, see:
-  #   - https://docs.github.com/en/actions/using-workflows/triggering-a-workflow
-  #   - https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
-  #   - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
-  #
-  # Note that some steps may depend on context variables that are only
-  # available for release events, so if you add other events, you may need to
-  # alter other parts of this workflow.
   release:
     types: [published]
 
@@ -92,7 +84,7 @@ jobs:
         with:
           files: "module.json"
         env:
-          VERSION: ${{steps.get_version.outputs.version-without-v}}
+          VERSION: ${{ steps.get_version.outputs.version-without-v }}
           URL: ${{ env.project_url }}
           MANIFEST: ${{ env.latest_manifest_url }}
           DOWNLOAD: ${{ env.release_module_url }}
@@ -111,6 +103,7 @@ jobs:
             assets \
             scripts \
             styles \
+            templates \
             packs \
             language \
             lang
