@@ -619,9 +619,10 @@
   font-size: 10px;
 }
 
+/* Remove the old FA-style nudge for shape icons */
 #lookfar-dungeon-mapper .lf-dm-icon--shape {
   font-size: 14px;
-  transform: translateX(1px);
+  transform: none; /* was translateX(1px); */
 }
 
 /* Fix SVG alignment inside shape buttons */
@@ -633,9 +634,9 @@
   height: 100%;
 }
 
-/* Remove FA nudge that was pushing SVGs */
+/* Nudge SVG slightly left to visually center */
 #lookfar-dungeon-mapper .lf-dm-shape-icon svg {
-  transform: none !important;
+  transform: translateX(-2px) !important; /* tweak -1 / -2 / -3 if needed */
   margin: 0 auto;
 }
 
