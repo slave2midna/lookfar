@@ -1,3 +1,5 @@
+// dungeonMapper.js
+
 const CANVAS_WIDTH  = 360;
 const CANVAS_HEIGHT = 360;
 
@@ -318,32 +320,32 @@ class DungeonMapper {
     this.goalIndex = gIdx;
 
     // Build numeric labels based on shape size.
-// - Pentagon  (5 sides): [4]   -> S, 2, 3, 4, G(5)
-// - Hexagon   (6 sides): [4,5] -> S, 2, 3, 4, 5, G(6)
-// - Heptagon  (7 sides): [4,5,6]
-// - Octagon   (8 sides): [4,5,6,7]
-// We cap at 7 so if we ever add larger shapes, we don't spawn infinite labels.
-const numericLabels = [];
-const maxNumeric = Math.min(sides - 1, 7);
-for (let n = 4; n <= maxNumeric; n++) {
-  numericLabels.push(n);
-}
+    // - Pentagon  (5 sides): [4]   -> S, 2, 3, 4, G(5)
+    // - Hexagon   (6 sides): [4,5] -> S, 2, 3, 4, 5, G(6)
+    // - Heptagon  (7 sides): [4,5,6]
+    // - Octagon   (8 sides): [4,5,6,7]
+    // We cap at 7 so if we ever add larger shapes, we don't spawn infinite labels.
+    const numericLabels = [];
+    const maxNumeric = Math.min(sides - 1, 7);
+    for (let n = 4; n <= maxNumeric; n++) {
+      numericLabels.push(n);
+    }
 
-const middleNumbers = this._shuffle(numericLabels);
+    const middleNumbers = this._shuffle(numericLabels);
 
-// Assign labels
-pointsWithTypes[sIdx].number = "S";
-if (twoIdx   !== null && pointsWithTypes[twoIdx])   pointsWithTypes[twoIdx].number   = 2;
-if (threeIdx !== null && pointsWithTypes[threeIdx]) pointsWithTypes[threeIdx].number = 3;
-if (gIdx     !== null && pointsWithTypes[gIdx])     pointsWithTypes[gIdx].number     = "G";
+    // Assign labels
+    pointsWithTypes[sIdx].number = "S";
+    if (twoIdx   !== null && pointsWithTypes[twoIdx])   pointsWithTypes[twoIdx].number   = 2;
+    if (threeIdx !== null && pointsWithTypes[threeIdx]) pointsWithTypes[threeIdx].number = 3;
+    if (gIdx     !== null && pointsWithTypes[gIdx])     pointsWithTypes[gIdx].number     = "G";
 
-for (const idx of remainingAfter3) {
-  if (idx === gIdx) continue;
-  const n = middleNumbers.shift();
-  if (n !== undefined && pointsWithTypes[idx]) {
-    pointsWithTypes[idx].number = n;
-  }
-}
+    for (const idx of remainingAfter3) {
+      if (idx === gIdx) continue;
+      const n = middleNumbers.shift();
+      if (n !== undefined && pointsWithTypes[idx]) {
+        pointsWithTypes[idx].number = n;
+      }
+    }
     return pointsWithTypes;
   }
 
@@ -988,208 +990,9 @@ for (const idx of remainingAfter3) {
   }
 }
 
-// ----- Build dialog contents -----
-
-const dialogContent = `
-<div style="text-align:center;">
-
-  <div id="dungeon-builder-wrapper"
-       style="position:relative; display:block; width:100%; margin:0 auto;">
-    <canvas id="dungeon-builder-canvas"
-            width="${CANVAS_WIDTH}"
-            height="${CANVAS_HEIGHT}"
-            style="border:1px solid #666; display:block; margin:0 auto; width:100%; height:auto;">
-    </canvas>
-    <div id="dungeon-builder-icons"
-         style="position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:auto;"></div>
-  </div>
-
-  <div style="margin-top:8px; font-size:12px; width:100%; margin-left:auto; margin-right:auto; text-align:left;">
-
-    <div style="display:flex; gap:8px; margin-bottom:6px; width:100%;">
-      <!-- Paths -->
-      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Paths</legend>
-        <div style="line-height:1.4;">
-          <!-- Open paths -->
-          <div>
-            <input type="number"
-                   id="dungeon-builder-path-open-count"
-                   value="3"
-                   min="0"
-                   max="3"
-                   style="width:2em; text-align:center; margin-right:4px;">
-            <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; vertical-align:middle;"></span>
-            <span style="vertical-align:middle;">Open</span>
-          </div>
-          <!-- Closed paths -->
-          <div style="margin-top:2px;">
-            <input type="number"
-                   id="dungeon-builder-path-closed-count"
-                   value="2"
-                   min="0"
-                   max="3"
-                   style="width:2em; text-align:center; margin-right:4px;">
-            <span style="position:relative; display:inline-block; vertical-align:middle;">
-              <span style="display:inline-block; width:28px; border-top:1px solid #000; margin-right:4px; position:relative; vertical-align:middle;">
-                <span style="position:absolute; left:50%; top:-5px; height:10px; border-left:1px solid #000; transform:translateX(-50%);"></span>
-              </span>
-              <span style="vertical-align:middle;">Closed</span>
-            </span>
-          </div>
-          <!-- Secret paths -->
-          <div style="margin-top:2px;">
-            <input type="number"
-                   id="dungeon-builder-path-secret-count"
-                   value="1"
-                   min="0"
-                   max="3"
-                   style="width:2em; text-align:center; margin-right:4px;">
-            <span style="display:inline-block; width:28px; border-top:1px dashed #000; margin-right:4px; vertical-align:middle;"></span>
-            <span style="vertical-align:middle;">Secret</span>
-          </div>
-        </div>
-      </fieldset>
-
-      <!-- Points -->
-      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Points</legend>
-        <div style="line-height:1.4;">
-          <!-- Features -->
-          <div>
-            <input type="number"
-                   id="dungeon-builder-point-feature-count"
-                   value="3"
-                   min="0"
-                   max="3"
-                   style="width:2em; text-align:center; margin-right:4px;">
-            <i class="fa-sharp fa-solid fa-circle" style="font-size:12px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Feature</span>
-          </div>
-          <!-- Dangers -->
-          <div style="margin-top:2px;">
-            <input type="number"
-                   id="dungeon-builder-point-danger-count"
-                   value="2"
-                   min="0"
-                   max="3"
-                   style="width:2em; text-align:center; margin-right:4px;">
-            <i class="fa-sharp fa-solid fa-triangle" style="font-size:12px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Danger</span>
-          </div>
-          <!-- Treasures -->
-          <div style="margin-top:2px;">
-            <input type="number"
-                   id="dungeon-builder-point-treasure-count"
-                   value="1"
-                   min="0"
-                   max="3"
-                   style="width:2em; text-align:center; margin-right:4px;">
-            <i class="fa-sharp fa-solid fa-diamond" style="font-size:12px; vertical-align:middle;"></i>
-            <span style="vertical-align:middle;">&nbsp;Treasure</span>
-          </div>
-        </div>
-      </fieldset>
-
-      <!-- Seed -->
-      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Seed</legend>
-        <div style="line-height:1.4; text-align:center;">
-          <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
-            <div id="dungeon-builder-seed-current" style="font-weight:bold;">—</div>
-            <button type="button"
-                    id="dungeon-builder-seed-copy"
-                    style="width:20px; height:20px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-              <i class="fa-solid fa-copy" style="font-size:10px;"></i>
-            </button>
-          </div>
-          <div style="margin-top:4px;">
-            <input type="text"
-                   id="dungeon-builder-seed-input"
-                   placeholder="Enter seed"
-                   style="width:100%; box-sizing:border-box; font-size:11px;">
-          </div>
-        </div>
-      </fieldset>
-    </div> <!-- end flex row for Paths / Points / Seed -->
-
-    <!-- Generate + Shape row -->
-    <div style="display:flex; gap:8px; margin-top:4px; width:100%;">
-      <!-- Generate -->
-      <fieldset style="flex:2; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Generate</legend>
-        <div style="margin-top:2px; line-height:1.4; display:flex; justify-content:center; align-items:center; gap:6px;">
-          <button type="button"
-                  id="dungeon-builder-opt-keys"
-                  title="Keys"
-                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-key" style="font-size:14px;"></i>
-          </button>
-          <button type="button"
-                  id="dungeon-builder-opt-patrols"
-                  title="Patrols"
-                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-skull" style="font-size:14px;"></i>
-          </button>
-          <button type="button"
-                  id="dungeon-builder-opt-traps"
-                  title="Traps"
-                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-land-mine-on" style="font-size:14px;"></i>
-          </button>
-        </div>
-      </fieldset>
-
-      <!-- Shape -->
-      <fieldset style="flex:1; padding:6px 8px; border:1px solid #aaa; margin:0; width:100%;">
-        <legend style="font-weight:bold; padding:0 4px;">Shape</legend>
-        <div style="margin-top:2px; display:flex; justify-content:center; align-items:center; gap:6px;">
-          <button type="button"
-                  id="dungeon-builder-shape-pent"
-                  title="Pentagon"
-                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-pentagon" style="font-size:14px; transform:translateX(1px);"></i>
-          </button>
-          <button type="button"
-                  id="dungeon-builder-shape-hex"
-                  title="Hexagon"
-                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-hexagon" style="font-size:14px; transform:translateX(1px);"></i>
-          </button>
-          <button type="button"
-                  id="dungeon-builder-shape-sept"
-                  title="Heptagon"
-                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-Heptagon" style="font-size:14px; transform:translateX(1px);"></i>
-          </button>
-          <button type="button"
-                  id="dungeon-builder-shape-oct"
-                  title="Octagon"
-                  style="width:26px; height:26px; padding:0; border:1px solid #888; border-radius:3px; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-octagon" style="font-size:14px; transform:translateX(1px);"></i>
-          </button>
-        </div>
-      </fieldset>
-    </div>
-
-  <div style="margin-top:8px; width:100%; display:flex; gap:4px;">
-    <button type="button"
-            id="dungeon-builder-generate-btn"
-            style="flex:1; box-sizing:border-box;">
-      Generate
-    </button>
-    <button type="button"
-            id="dungeon-builder-save-btn"
-            style="flex:1; box-sizing:border-box;">
-      Save
-    </button>
-  </div>
-</div>
-`;
-
 // ----- Main dialog function (module-style, not macro) -----
 
-export function openDungeonMapper() {
+export async function openDungeonMapper() {
   if (!game.user.isGM) {
     ui.notifications?.warn?.("Dungeon Mapper is GM-only.");
     return;
@@ -1201,9 +1004,13 @@ export function openDungeonMapper() {
     return;
   }
 
+  // Render Handlebars template and wrap it with the root ID
+  const rawContent = await renderTemplate("modules/lookfar/templates/dungeon-mapper.hbs", {});
+  const content = `<div id="lookfar-dungeon-mapper">${rawContent}</div>`;
+
   const dlg = new Dialog({
     title: "Dungeon Mapper",
-    content: dialogContent,
+    content,
     buttons: {},
     render: function(html) {
       const app = this;
@@ -1701,10 +1508,8 @@ export function openDungeonMapper() {
 
 // Hook: wired by buttonManager.js via Hooks.call("lookfarShowDungeonMapperDialog")
 Hooks.on("lookfarShowDungeonMapperDialog", () => {
-  try {
-    openDungeonMapper();
-  } catch (err) {
+  openDungeonMapper().catch(err => {
     console.error("[Dungeon Mapper] failed to open:", err);
     ui.notifications?.error("Dungeon Mapper: failed to open (see console).");
-  }
+  });
 });
