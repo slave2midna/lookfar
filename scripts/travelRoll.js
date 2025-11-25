@@ -592,23 +592,37 @@ function getRandomElement(arrayOrObject) {
 function generateKeywords() {
   if (!game.settings.get("lookfar", "enableKeywords")) return "";
 
-  const traits = dataLoader.keywordData?.traits || [];
-  const terrain = dataLoader.keywordData?.terrain || [];
+  // These are arrays of leaf words now, e.g. ["Abandoned", "Ancient", ...]
+  const traitKeys   = dataLoader.keywordData?.traits   || [];
+  const terrainKeys = dataLoader.keywordData?.terrain || [];
 
-  const localizedTraits = generateUniqueList(traits, 3, 4).map(k => game.i18n.localize(k));
-  const localizedTerrain = generateUniqueList(terrain, 3, 4).map(k => game.i18n.localize(k));
+  // Pick 3–4 unique leaf words from each list
+  const selectedTraits   = generateUniqueList(traitKeys,   3, 4);
+  const selectedTerrain  = generateUniqueList(terrainKeys, 3, 4);
 
-  const traitKeywords = localizedTraits.join(", ");
+  // Localize using our leaf-word i18n scheme
+  const localizedTraits = selectedTraits.map(
+    key => game.i18n.localize(`LOOKFAR.Keywords.Traits.${key}`)
+  );
+  const localizedTerrain = selectedTerrain.map(
+    key => game.i18n.localize(`LOOKFAR.Keywords.Terrain.${key}`)
+  );
+
+  const traitKeywords   = localizedTraits.join(", ");
   const terrainKeywords = localizedTerrain.join(", ");
 
   return `
   <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
     <tr>
-      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Traits")}</th>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">
+        ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Traits")}
+      </th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${traitKeywords}</td>
     </tr>
     <tr>
-      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Terrain")}</th>
+      <th style="width: 50px; padding: 5px; border: 1px solid; white-space: nowrap; text-align: left;">
+        ${game.i18n.localize("LOOKFAR.Dialogs.TableHeaders.Terrain")}
+      </th>
       <td style="padding: 5px; border: 1px solid; text-align: left;">${terrainKeywords}</td>
     </tr>
   </table>
@@ -682,6 +696,7 @@ async function generateDiscovery() {
   ${generateKeywords()}
 `;
 }
+
 
 
 
