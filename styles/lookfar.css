@@ -624,6 +624,21 @@
   transform: translateX(1px);
 }
 
+/* Fix SVG alignment inside shape buttons */
+#lookfar-dungeon-mapper .lf-dm-shape-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Remove FA nudge that was pushing SVGs */
+#lookfar-dungeon-mapper .lf-dm-shape-icon svg {
+  transform: none !important;
+  margin: 0 auto;
+}
+
 /* Seed display row */
 #lookfar-dungeon-mapper .lf-dm-seed-display {
   display: flex;
