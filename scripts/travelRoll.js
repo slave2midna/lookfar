@@ -310,7 +310,8 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
           callback: async () => {
             let newResultMessage;
             if (isDanger) {
-              const resultType = `${dangerSeverity} Danger!`;
+              const severityKey = `LOOKFAR.Dialogs.Result.Danger${dangerSeverity}`;
+              const resultType = game.i18n.localize(severityKey);
               const resultTable = await generateDanger(
                 selectedDifficulty,
                 groupLevel,
@@ -659,4 +660,5 @@ async function generateDiscovery() {
     ${generateKeywords()}
   `;
 }
+
 
