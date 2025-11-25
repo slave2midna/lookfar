@@ -1,29 +1,29 @@
 {
   "effects": [
-    "LOOKFAR.Discoveries.Effects.Effect1",
-    "LOOKFAR.Discoveries.Effects.Effect2",
-    "LOOKFAR.Discoveries.Effects.Effect3",
-    "LOOKFAR.Discoveries.Effects.Effect4",
-    "LOOKFAR.Discoveries.Effects.Effect5",
-    "LOOKFAR.Discoveries.Effects.Effect6",
-    "LOOKFAR.Discoveries.Effects.Effect7",
-    "LOOKFAR.Discoveries.Effects.Effect8",
-    "LOOKFAR.Discoveries.Effects.Effect9",
-    "LOOKFAR.Discoveries.Effects.Effect10",
-    "LOOKFAR.Discoveries.Effects.Effect11"
+    "Effect1",
+    "Effect2",
+    "Effect3",
+    "Effect4",
+    "Effect5",
+    "Effect6",
+    "Effect7",
+    "Effect8",
+    "Effect9",
+    "Effect10",
+    "Effect11"
   ],
   "sources": [
-    "LOOKFAR.Discoveries.Sources.Source1",
-    "LOOKFAR.Discoveries.Sources.Source2",
-    "LOOKFAR.Discoveries.Sources.Source3",
-    "LOOKFAR.Discoveries.Sources.Source4",
-    "LOOKFAR.Discoveries.Sources.Source5",
-    "LOOKFAR.Discoveries.Sources.Source6",
-    "LOOKFAR.Discoveries.Sources.Source7",
-    "LOOKFAR.Discoveries.Sources.Source8",
-    "LOOKFAR.Discoveries.Sources.Source9",
-    "LOOKFAR.Discoveries.Sources.Source10",
-    "LOOKFAR.Discoveries.Sources.Source11",
-    "LOOKFAR.Discoveries.Sources.Source12"
+    "Source1",
+    "Source2",
+    "Source3",
+    "Source4",
+    "Source5",
+    "Source6",
+    "Source7",
+    "Source8",
+    "Source9",
+    "Source10",
+    "Source11",
+    "Source12"
   ]
 }
