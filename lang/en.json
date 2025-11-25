@@ -1,480 +1,919 @@
 {
-  "LOOKFAR": {
-
-
-    "__SECTION__Buttons": "=== Buttons ===",
-    "Button": {
-      "TravelCheck": {
-        "Name": "Travel Check",
-        "Title": "Make a Travel Check"
-      },
-      "TreasureRoll": {
-        "Name": "Treasure Roll",
-        "Title": "Generate Some Treasure"
-      }
-    },
-
-
-
-    "__SECTION__Settings": "=== Settings ===",
-"Settings": {
-  "ResultVisibility": {
-    "Name": "Result Visibility",
-    "Hint": "Choose whether results and chat outputs are public or GM only.",
-    "Choices": {
-      "Public": "Public",
-      "GMOnly": "GM Only"
-    }
-  },
-
-  "ItemForgeEditMode": {
-    "Name": "Item Forge Edit Mode",
-    "Hint": "Change how interacting with the Item Forger works for users.",
-    "Choices": {
-      "Public": "Public",
-      "GMOnly": "GM Only",
-      "Locked": "Locked",
-      "Hidden": "Hidden"
-    }
-  },
-
-  "EnableKeywords": {
-    "Name": "Enable Keywords",
-    "Hint": "Enable keywords when generating travel check results."
-  },
-
-  "UseVariantTravelRules": {
-    "Name": "Use Variant Travel Rules",
-    "Hint": "Placeholder setting: Toggles alternative travel mechanics (currently unused)."
-  },
-
-  "UseVariantDamageRules": {
-    "Name": "Use Playtest Damage Rules",
-    "Hint": "When generating new weapons, damage will be based on new playtest rules."
-  },
-
-  "DiscoveryEffectTable": {
-    "Name": "Discovery Effect Roll Table",
-    "Hint": "Select the Roll Table to use for generating discovery effects."
-  },
-
-  "DiscoverySourceTable": {
-    "Name": "Discovery Source Roll Table",
-    "Hint": "Select the Roll Table to use for generating discovery sources."
-  },
-
-  "DangerThreatTable": {
-    "Name": "Danger Threat Roll Table",
-    "Hint": "Select the Roll Table to use for generating danger threats."
-  },
-
-  "DangerSourceTable": {
-    "Name": "Danger Source Roll Table",
-    "Hint": "Select the Roll Table to use for generating danger sources."
-  },
-
-  "CustomTreasureRollTable": {
-    "Name": "Custom Treasure Roll Table",
-    "Hint": "Select the Roll Table to use for generating custom treasure."
-  },
-
-  "MonsterCompendium": {
-    "Name": "Monster Compendium",
-    "Hint": "Select the Actor compendium to use as the source for Conflict Builder."
-  },
-
-  "BattleSceneName": {
-    "Name": "Battle Scene",
-    "Hint": "Select the Scene to use for the Conflict Builder preview."
-  },
-
-  "DefaultRollTable": "Lookfar Defaults",
-
-  "NoActorCompendiums": "No Actor compendiums found",
-  "NoScenes": "No scenes found"
-},
-
-
-
-    "__SECTION__Dialogs": "=== Dialogs ===",
-"Dialogs": {
-  "TravelCheck": {
-    "Title": "Travel Check",
-    "ThreatLevel": "Threat Level",
-    "Wayfaring": "Wayfaring",
-    "PartyLevel": "Party Level:",
-    "TreasureHunting": "Treasure Hunting",
-    "WellTraveled": "Well-Traveled"
-  },
-  "TravelResult": {
-    "Title": "Travel Result",
-    "Prompt": "Do you want to keep this result or reroll?",
-    "Waiting": "Waiting for GM decision...",
-    "NoIncident": "The travel day passed without incident."
-  },
-  "Result": {
-    "Danger": "Danger!",
-    "DangerMinor": "Minor Danger!",
-    "DangerHeavy": "Heavy Danger!",
-    "DangerMassive": "Massive Danger!",
-    "Discovery": "Discovery!"
-  },
-  "TableHeaders": {
-    "Threat": "Threat",
-    "Source": "Source",
-    "Effect": "Effect",
-    "Traits": "Traits",
-    "Terrain": "Terrain"
-  }
-},
-
-
-
-    "__SECTION__Severity": "=== Severity ===",
-    "Severity": {
-      "Minor": "Minor",
-      "Heavy": "Heavy",
-      "Massive": "Massive"
-    },
-
-
-
-    "__SECTION__Chat": "=== Chat ===",
-    "Chat": {
-      "Alias": {
-        "Roll": "Travel Roll",
-        "Result": "Travel Result"
-      }
-    },
-
-
-
-    "__SECTION__Errors": "=== Errors ===",
-    "Errors": {
-      "DataUnavailable": "Error: Data not available.",
-      "DamageMissing": "Error: Damage data not found.",
-      "ThreatUnknown": "Error: Unknown threat type.",
-      "NoDangerSource": "No danger source available.",
-      "NoDiscoveryEffect": "No discovery effect available.",
-      "NoDiscoverySource": "No discovery source available."
-    },
-
-
-
-    "__SECTION__Keywords": "=== Keywords ===",
-    "Keywords": {
-      "Traits": {
-        "Abandoned": "abandoned",
-        "Ancient": "ancient",
-        "Arcane": "arcane",
-        "Bewitched": "bewitched",
-        "Blighted": "blighted",
-        "Cavernous": "cavernous",
-        "Celestial": "celestial",
-        "Chimeric": "chimeric",
-        "Crumbling": "crumbling",
-        "Cryptic": "cryptic",
-        "Cursed": "cursed",
-        "Decayed": "decayed",
-        "Desolate": "desolate",
-        "Deserted": "deserted",
-        "Dilapidated": "dilapidated",
-        "Dimensional": "dimensional",
-        "Eldritch": "eldritch",
-        "Ephemeral": "ephemeral",
-        "Ethereal": "ethereal",
-        "Eternal": "eternal",
-        "Fabled": "fabled",
-        "Faded": "faded",
-        "Forbidden": "forbidden",
-        "Forging": "forging",
-        "Forgotten": "forgotten",
-        "Fractured": "fractured",
-        "Frozen": "frozen",
-        "Ghostly": "ghostly",
-        "Gloomy": "gloomy",
-        "Gossamer": "gossamer",
-        "Hallowed": "hallowed",
-        "Haunted": "haunted",
-        "Hidden": "hidden",
-        "Infernal": "infernal",
-        "Isolated": "isolated",
-        "Legendary": "legendary",
-        "Luminous": "luminous",
-        "Lurking": "lurking",
-        "Magical": "magical",
-        "Moonlit": "moonlit",
-        "Mysterious": "mysterious",
-        "Mystic": "mystic",
-        "Mystical": "mystical",
-        "Neglected": "neglected",
-        "Obsidian": "obsidian",
-        "Obscured": "obscured",
-        "Obscure": "obscure",
-        "Obscuring": "obscuring",
-        "Otherworldly": "otherworldly",
-        "Overgrown": "overgrown",
-        "Overlooked": "overlooked",
-        "Petrified": "petrified",
-        "Phantasmal": "phantasmal",
-        "Primeval": "primeval",
-        "Pristine": "pristine",
-        "Relic": "relic",
-        "Resplendent": "resplendent",
-        "Runed": "runed",
-        "Ruined": "ruined",
-        "Sacred": "sacred",
-        "Sanctified": "sanctified",
-        "Secret": "secret",
-        "Secluded": "secluded",
-        "Serene": "serene",
-        "Shaded": "shaded",
-        "Shadowed": "shadowed",
-        "Shattered": "shattered",
-        "Shimmering": "shimmering",
-        "Spectral": "spectral",
-        "Stygian": "stygian",
-        "Sunken": "sunken",
-        "Surreal": "surreal",
-        "Sylvan": "sylvan",
-        "Temporal": "temporal",
-        "TimeWorn": "time-worn",
-        "Twilight": "twilight",
-        "Uncharted": "uncharted",
-        "Unhallowed": "unhallowed",
-        "Unseen": "unseen",
-        "Unearthed": "unearthed",
-        "Verdant": "verdant",
-        "Veiled": "veiled",
-        "Venerable": "venerable",
-        "Vivid": "vivid",
-        "Weathered": "weathered",
-        "Withered": "withered",
-        "Wraithlike": "wraithlike"
-      },
-      "Terrain": {
-        "Alcove": "alcove",
-        "Altar": "altar",
-        "Aqueduct": "aqueduct",
-        "Archipelago": "archipelago",
-        "Arena": "arena",
-        "Archive": "archive",
-        "Bazaar": "bazaar",
-        "Barracks": "barracks",
-        "Battleground": "battleground",
-        "Butte": "butte",
-        "Cairn": "cairn",
-        "Campsite": "campsite",
-        "Catacombs": "catacombs",
-        "Causeway": "causeway",
-        "Cauldron": "cauldron",
-        "Cavern": "cavern",
-        "Castle": "castle",
-        "Chapel": "chapel",
-        "Chasm": "chasm",
-        "Citadel": "citadel",
-        "Cliff": "cliff",
-        "Conservatory": "conservatory",
-        "Corridor": "corridor",
-        "Crags": "crags",
-        "Crater": "crater",
-        "Crypt": "crypt",
-        "Den": "den",
-        "Dome": "dome",
-        "Dungeon": "dungeon",
-        "Eddy": "eddy",
-        "Embankment": "embankment",
-        "Estuary": "estuary",
-        "Expanse": "expanse",
-        "Fane": "fane",
-        "Fen": "fen",
-        "Fjord": "fjord",
-        "Forest": "forest",
-        "Fortress": "fortress",
-        "Fountain": "fountain",
-        "Foundry": "foundry",
-        "Garrison": "garrison",
-        "Garden": "garden",
-        "Glade": "glade",
-        "Grove": "grove",
-        "Grotto": "grotto",
-        "Harbor": "harbor",
-        "Haven": "haven",
-        "Henge": "henge",
-        "Isle": "isle",
-        "Jungle": "jungle",
-        "Keep": "keep",
-        "Knoll": "knoll",
-        "Labyrinth": "labyrinth",
-        "Library": "library",
-        "Lodge": "lodge",
-        "Manor": "manor",
-        "Mausoleum": "mausoleum",
-        "Meadow": "meadow",
-        "Menhir": "menhir",
-        "Mesa": "mesa",
-        "Mill": "mill",
-        "Mire": "mire",
-        "Monolith": "monolith",
-        "Moat": "moat",
-        "Nexus": "nexus",
-        "Observatory": "observatory",
-        "Oasis": "oasis",
-        "Obelisk": "obelisk",
-        "Outpost": "outpost",
-        "Orchard": "orchard",
-        "Parapet": "parapet",
-        "Pathway": "pathway",
-        "Pavilion": "pavilion",
-        "Pit": "pit",
-        "Plaza": "plaza",
-        "Portal": "portal",
-        "Promontory": "promontory",
-        "Quarry": "quarry",
-        "Quicksand": "quicksand",
-        "Ravine": "ravine",
-        "Reef": "reef",
-        "Ridge": "ridge",
-        "Rift": "rift",
-        "Ruination": "ruination",
-        "Ruins": "ruins",
-        "Sanctuary": "sanctuary",
-        "Sanctum": "sanctum",
-        "Seraglio": "seraglio",
-        "Shrine": "shrine",
-        "Shipwreck": "shipwreck",
-        "Shelter": "shelter",
-        "Spire": "spire",
-        "Spring": "spring",
-        "Steppe": "steppe",
-        "Stronghold": "stronghold",
-        "Summit": "summit",
-        "Tavern": "tavern",
-        "Temple": "temple",
-        "Throne": "throne",
-        "Tomb": "tomb",
-        "Tombstone": "tombstone",
-        "Tower": "tower",
-        "Trails": "trails",
-        "Trenches": "trenches",
-        "Tundra": "tundra",
-        "Undercroft": "undercroft",
-        "Valley": "valley",
-        "Vault": "vault",
-        "Village": "village",
-        "Vortex": "vortex",
-        "Waterfall": "waterfall",
-        "Wreckage": "wreckage",
-        "Xystus": "xystus",
-        "Yard": "yard",
-        "Zeppelin": "zeppelin",
-        "Ziggurat": "ziggurat"
-      }
-    },
-
-
-
-    "__SECTION__Dangers": "=== Dangers ===",
-    "Dangers": {
-      "StatusEffects": {
-        "Minor": {
-          "Dazed": "Suffer dazed",
-          "Shaken": "Suffer shaken",
-          "Slow": "Suffer slow",
-          "Weak": "Suffer weak"
+    "LOOKFAR": {
+        "__SECTION__Buttons": "=== Buttons ===",
+        "Button": {
+            "TravelCheck": {
+                "Name": "Travel Check",
+                "Title": "Make a Travel Check"
+            },
+            "TreasureRoll": {
+                "Name": "Treasure Roll",
+                "Title": "Generate Some Treasure"
+            }
         },
-        "Heavy": {
-          "Poison": "Suffer poison",
-          "Enrage": "Suffer enrage"
+        "__SECTION__Settings": "=== Settings ===",
+        "Settings": {
+            "ResultVisibility": {
+                "Name": "Result Visibility",
+                "Hint": "Choose whether results and chat outputs are public or GM only.",
+                "Choices": {
+                    "Public": "Public",
+                    "GMOnly": "GM Only"
+                }
+            },
+            "ItemForgeEditMode": {
+                "Name": "Item Forge Edit Mode",
+                "Hint": "Change how interacting with the Item Forger works for users.",
+                "Choices": {
+                    "Public": "Public",
+                    "GMOnly": "GM Only",
+                    "Locked": "Locked",
+                    "Hidden": "Hidden"
+                }
+            },
+            "EnableKeywords": {
+                "Name": "Enable Keywords",
+                "Hint": "Enable keywords when generating travel check results."
+            },
+            "UseVariantTravelRules": {
+                "Name": "Use Variant Travel Rules",
+                "Hint": "Placeholder setting: Toggles alternative travel mechanics (currently unused)."
+            },
+            "UseVariantDamageRules": {
+                "Name": "Use Playtest Damage Rules",
+                "Hint": "When generating new weapons, damage will be based on new playtest rules."
+            },
+            "DiscoveryEffectTable": {
+                "Name": "Discovery Effect Roll Table",
+                "Hint": "Select the Roll Table to use for generating discovery effects."
+            },
+            "DiscoverySourceTable": {
+                "Name": "Discovery Source Roll Table",
+                "Hint": "Select the Roll Table to use for generating discovery sources."
+            },
+            "DangerThreatTable": {
+                "Name": "Danger Threat Roll Table",
+                "Hint": "Select the Roll Table to use for generating danger threats."
+            },
+            "DangerSourceTable": {
+                "Name": "Danger Source Roll Table",
+                "Hint": "Select the Roll Table to use for generating danger sources."
+            },
+            "CustomTreasureRollTable": {
+                "Name": "Custom Treasure Roll Table",
+                "Hint": "Select the Roll Table to use for generating custom treasure."
+            },
+            "MonsterCompendium": {
+                "Name": "Monster Compendium",
+                "Hint": "Select the Actor compendium to use as the source for Conflict Builder."
+            },
+            "BattleSceneName": {
+                "Name": "Battle Scene",
+                "Hint": "Select the Scene to use for the Conflict Builder preview."
+            },
+            "DefaultRollTable": "Lookfar Defaults",
+            "NoActorCompendiums": "No Actor compendiums found",
+            "NoScenes": "No scenes found"
         },
-        "Massive": {
-          "Dazed": "Suffer dazed",
-          "Shaken": "Suffer shaken",
-          "Slow": "Suffer slow",
-          "Weak": "Suffer weak",
-          "Poisoned": "Suffer poisoned",
-          "Enraged": "Suffer enraged"
+        "__SECTION__Dialogs": "=== Dialogs ===",
+        "Dialogs": {
+            "TravelCheck": {
+                "Title": "Travel Check",
+                "ThreatLevel": "Threat Level",
+                "Wayfaring": "Wayfaring",
+                "PartyLevel": "Party Level:",
+                "TreasureHunting": "Treasure Hunting",
+                "WellTraveled": "Well-Traveled"
+            },
+            "TravelResult": {
+                "Title": "Travel Result",
+                "Prompt": "Do you want to keep this result or reroll?",
+                "Waiting": "Waiting for GM decision...",
+                "NoIncident": "The travel day passed without incident."
+            },
+            "Result": {
+                "Danger": "Danger!",
+                "DangerMinor": "Minor Danger!",
+                "DangerHeavy": "Heavy Danger!",
+                "DangerMassive": "Massive Danger!",
+                "Discovery": "Discovery!"
+            },
+            "TableHeaders": {
+                "Threat": "Threat",
+                "Source": "Source",
+                "Effect": "Effect",
+                "Traits": "Traits",
+                "Terrain": "Terrain"
+            }
+        },
+        "__SECTION__Severity": "=== Severity ===",
+        "Severity": {
+            "Minor": "Minor",
+            "Heavy": "Heavy",
+            "Massive": "Massive"
+        },
+        "__SECTION__Chat": "=== Chat ===",
+        "Chat": {
+            "Alias": {
+                "Roll": "Travel Roll",
+                "Result": "Travel Result"
+            }
+        },
+        "__SECTION__Errors": "=== Errors ===",
+        "Errors": {
+            "DataUnavailable": "Error: Data not available.",
+            "DamageMissing": "Error: Damage data not found.",
+            "ThreatUnknown": "Error: Unknown threat type.",
+            "NoDangerSource": "No danger source available.",
+            "NoDiscoveryEffect": "No discovery effect available.",
+            "NoDiscoverySource": "No discovery source available."
+        },
+        "__SECTION__Keywords": "=== Keywords ===",
+        "Keywords": {
+            "Traits": {
+                "Abandoned": "abandoned",
+                "Ancient": "ancient",
+                "Arcane": "arcane",
+                "Bewitched": "bewitched",
+                "Blighted": "blighted",
+                "Cavernous": "cavernous",
+                "Celestial": "celestial",
+                "Chimeric": "chimeric",
+                "Crumbling": "crumbling",
+                "Cryptic": "cryptic",
+                "Cursed": "cursed",
+                "Decayed": "decayed",
+                "Desolate": "desolate",
+                "Deserted": "deserted",
+                "Dilapidated": "dilapidated",
+                "Dimensional": "dimensional",
+                "Eldritch": "eldritch",
+                "Ephemeral": "ephemeral",
+                "Ethereal": "ethereal",
+                "Eternal": "eternal",
+                "Fabled": "fabled",
+                "Faded": "faded",
+                "Forbidden": "forbidden",
+                "Forging": "forging",
+                "Forgotten": "forgotten",
+                "Fractured": "fractured",
+                "Frozen": "frozen",
+                "Ghostly": "ghostly",
+                "Gloomy": "gloomy",
+                "Gossamer": "gossamer",
+                "Hallowed": "hallowed",
+                "Haunted": "haunted",
+                "Hidden": "hidden",
+                "Infernal": "infernal",
+                "Isolated": "isolated",
+                "Legendary": "legendary",
+                "Luminous": "luminous",
+                "Lurking": "lurking",
+                "Magical": "magical",
+                "Moonlit": "moonlit",
+                "Mysterious": "mysterious",
+                "Mystic": "mystic",
+                "Mystical": "mystical",
+                "Neglected": "neglected",
+                "Obsidian": "obsidian",
+                "Obscured": "obscured",
+                "Obscure": "obscure",
+                "Obscuring": "obscuring",
+                "Otherworldly": "otherworldly",
+                "Overgrown": "overgrown",
+                "Overlooked": "overlooked",
+                "Petrified": "petrified",
+                "Phantasmal": "phantasmal",
+                "Primeval": "primeval",
+                "Pristine": "pristine",
+                "Relic": "relic",
+                "Resplendent": "resplendent",
+                "Runed": "runed",
+                "Ruined": "ruined",
+                "Sacred": "sacred",
+                "Sanctified": "sanctified",
+                "Secret": "secret",
+                "Secluded": "secluded",
+                "Serene": "serene",
+                "Shaded": "shaded",
+                "Shadowed": "shadowed",
+                "Shattered": "shattered",
+                "Shimmering": "shimmering",
+                "Spectral": "spectral",
+                "Stygian": "stygian",
+                "Sunken": "sunken",
+                "Surreal": "surreal",
+                "Sylvan": "sylvan",
+                "Temporal": "temporal",
+                "TimeWorn": "time-worn",
+                "Twilight": "twilight",
+                "Uncharted": "uncharted",
+                "Unhallowed": "unhallowed",
+                "Unseen": "unseen",
+                "Unearthed": "unearthed",
+                "Verdant": "verdant",
+                "Veiled": "veiled",
+                "Venerable": "venerable",
+                "Vivid": "vivid",
+                "Weathered": "weathered",
+                "Withered": "withered",
+                "Wraithlike": "wraithlike"
+            },
+            "Terrain": {
+                "Alcove": "alcove",
+                "Altar": "altar",
+                "Aqueduct": "aqueduct",
+                "Archipelago": "archipelago",
+                "Arena": "arena",
+                "Archive": "archive",
+                "Bazaar": "bazaar",
+                "Barracks": "barracks",
+                "Battleground": "battleground",
+                "Butte": "butte",
+                "Cairn": "cairn",
+                "Campsite": "campsite",
+                "Catacombs": "catacombs",
+                "Causeway": "causeway",
+                "Cauldron": "cauldron",
+                "Cavern": "cavern",
+                "Castle": "castle",
+                "Chapel": "chapel",
+                "Chasm": "chasm",
+                "Citadel": "citadel",
+                "Cliff": "cliff",
+                "Conservatory": "conservatory",
+                "Corridor": "corridor",
+                "Crags": "crags",
+                "Crater": "crater",
+                "Crypt": "crypt",
+                "Den": "den",
+                "Dome": "dome",
+                "Dungeon": "dungeon",
+                "Eddy": "eddy",
+                "Embankment": "embankment",
+                "Estuary": "estuary",
+                "Expanse": "expanse",
+                "Fane": "fane",
+                "Fen": "fen",
+                "Fjord": "fjord",
+                "Forest": "forest",
+                "Fortress": "fortress",
+                "Fountain": "fountain",
+                "Foundry": "foundry",
+                "Garrison": "garrison",
+                "Garden": "garden",
+                "Glade": "glade",
+                "Grove": "grove",
+                "Grotto": "grotto",
+                "Harbor": "harbor",
+                "Haven": "haven",
+                "Henge": "henge",
+                "Isle": "isle",
+                "Jungle": "jungle",
+                "Keep": "keep",
+                "Knoll": "knoll",
+                "Labyrinth": "labyrinth",
+                "Library": "library",
+                "Lodge": "lodge",
+                "Manor": "manor",
+                "Mausoleum": "mausoleum",
+                "Meadow": "meadow",
+                "Menhir": "menhir",
+                "Mesa": "mesa",
+                "Mill": "mill",
+                "Mire": "mire",
+                "Monolith": "monolith",
+                "Moat": "moat",
+                "Nexus": "nexus",
+                "Observatory": "observatory",
+                "Oasis": "oasis",
+                "Obelisk": "obelisk",
+                "Outpost": "outpost",
+                "Orchard": "orchard",
+                "Parapet": "parapet",
+                "Pathway": "pathway",
+                "Pavilion": "pavilion",
+                "Pit": "pit",
+                "Plaza": "plaza",
+                "Portal": "portal",
+                "Promontory": "promontory",
+                "Quarry": "quarry",
+                "Quicksand": "quicksand",
+                "Ravine": "ravine",
+                "Reef": "reef",
+                "Ridge": "ridge",
+                "Rift": "rift",
+                "Ruination": "ruination",
+                "Ruins": "ruins",
+                "Sanctuary": "sanctuary",
+                "Sanctum": "sanctum",
+                "Seraglio": "seraglio",
+                "Shrine": "shrine",
+                "Shipwreck": "shipwreck",
+                "Shelter": "shelter",
+                "Spire": "spire",
+                "Spring": "spring",
+                "Steppe": "steppe",
+                "Stronghold": "stronghold",
+                "Summit": "summit",
+                "Tavern": "tavern",
+                "Temple": "temple",
+                "Throne": "throne",
+                "Tomb": "tomb",
+                "Tombstone": "tombstone",
+                "Tower": "tower",
+                "Trails": "trails",
+                "Trenches": "trenches",
+                "Tundra": "tundra",
+                "Undercroft": "undercroft",
+                "Valley": "valley",
+                "Vault": "vault",
+                "Village": "village",
+                "Vortex": "vortex",
+                "Waterfall": "waterfall",
+                "Wreckage": "wreckage",
+                "Xystus": "xystus",
+                "Yard": "yard",
+                "Zeppelin": "zeppelin",
+                "Ziggurat": "ziggurat"
+            },
+            "Nature": {
+                "Material": {
+                    "Anthropod": {
+                        "Carapace": "carapace",
+                        "Mandible": "mandible",
+                        "Pincer": "pincer",
+                        "Shell": "shell",
+                        "Stinger": "stinger"
+                    },
+                    "Bird": {
+                        "Feather": "feather",
+                        "Talon": "talon",
+                        "Beak": "beak",
+                        "Claw": "claw",
+                        "Bone": "bone"
+                    },
+                    "Fish": {
+                        "Fin": "fin",
+                        "Scale": "scale",
+                        "Gill": "gill",
+                        "Tooth": "tooth",
+                        "Bone": "bone"
+                    },
+                    "Mammal": {
+                        "Bone": "bone",
+                        "Fur": "fur",
+                        "Horn": "horn",
+                        "Hide": "hide",
+                        "Tusk": "tusk"
+                    },
+                    "Mollusk": {
+                        "Shell": "shell",
+                        "Pearl": "pearl",
+                        "Valve": "valve",
+                        "Mantle": "mantle",
+                        "Beak": "beak"
+                    },
+                    "Reptile": {
+                        "Claw": "claw",
+                        "Scale": "scale",
+                        "Tail": "tail",
+                        "Spine": "spine",
+                        "Fang": "fang"
+                    },
+                    "Fungus": {
+                        "Sporecase": "sporecase",
+                        "Cap": "cap",
+                        "Vein": "vein",
+                        "Stem": "stem",
+                        "Fiber": "fiber"
+                    },
+                    "Incorporeal": {
+                        "Wisp": "wisp",
+                        "Vapor": "vapor",
+                        "Ash": "ash",
+                        "Essence": "essence",
+                        "Soul": "soul"
+                    },
+                    "Liquid": {
+                        "Droplet": "droplet",
+                        "Globule": "globule",
+                        "Ichor": "ichor",
+                        "Resin": "resin",
+                        "Film": "film"
+                    },
+                    "Artificial": {
+                        "Alloy": "alloy",
+                        "Circuit": "circuit",
+                        "Frame": "frame",
+                        "Casing": "casing",
+                        "Component": "component"
+                    },
+                    "Mineral": {
+                        "Crystal": "crystal",
+                        "Shard": "shard",
+                        "Ore": "ore",
+                        "Fragment": "fragment",
+                        "Nodule": "nodule"
+                    },
+                    "Plant": {
+                        "Branch": "branch",
+                        "Vine": "vine",
+                        "Bark": "bark",
+                        "Thorn": "thorn",
+                        "Reed": "reed"
+                    }
+                },
+                "Ingredient": {
+                    "Anthropod": {
+                        "Meat": "meat",
+                        "Sac": "sac",
+                        "Egg": "egg",
+                        "Leg": "leg",
+                        "Juice": "juice"
+                    },
+                    "Bird": {
+                        "Egg": "egg",
+                        "Wing": "wing",
+                        "Meat": "meat",
+                        "Heart": "heart",
+                        "Blood": "blood"
+                    },
+                    "Fish": {
+                        "Meat": "meat",
+                        "Egg": "egg",
+                        "Oil": "oil",
+                        "Eye": "eye",
+                        "Bile": "bile"
+                    },
+                    "Mammal": {
+                        "Meat": "meat",
+                        "Fat": "fat",
+                        "Organ": "organ",
+                        "Milk": "milk",
+                        "Blood": "blood"
+                    },
+                    "Mollusk": {
+                        "Flesh": "flesh",
+                        "Ink": "ink",
+                        "Gland": "gland",
+                        "Slurry": "slurry",
+                        "Meat": "meat"
+                    },
+                    "Reptile": {
+                        "Meat": "meat",
+                        "Egg": "egg",
+                        "Venom": "venom",
+                        "Blood": "blood",
+                        "Liver": "liver"
+                    },
+                    "Fungus": {
+                        "Shroom": "shroom",
+                        "Spore": "spore",
+                        "Flesh": "flesh",
+                        "Pulp": "pulp",
+                        "Residue": "residue"
+                    },
+                    "Incorporeal": {
+                        "Mist": "mist",
+                        "Plasma": "plasma",
+                        "Breath": "breath",
+                        "Essence": "essence",
+                        "Residue": "residue"
+                    },
+                    "Liquid": {
+                        "Fluid": "fluid",
+                        "Reagent": "reagent",
+                        "Syrup": "syrup",
+                        "Slime": "slime",
+                        "Gel": "gel"
+                    },
+                    "Artificial": {
+                        "Gel": "gel",
+                        "Solution": "solution",
+                        "Compound": "compound",
+                        "Serum": "serum",
+                        "Extract": "extract"
+                    },
+                    "Mineral": {
+                        "Dust": "dust",
+                        "Grain": "grain",
+                        "Powder": "powder",
+                        "Salt": "salt",
+                        "Residue": "residue"
+                    },
+                    "Plant": {
+                        "Leaf": "leaf",
+                        "Seed": "seed",
+                        "Fruit": "fruit",
+                        "Sap": "sap",
+                        "Root": "root"
+                    }
+                }
+            },
+            "Origin": {
+                "Material": {
+                    "Aerial": {
+                        "Light": "light",
+                        "Hollow": "hollow",
+                        "Avian": "avian",
+                        "Fowl": "fowl",
+                        "Drift": "drift"
+                    },
+                    "Thunderous": {
+                        "Conductive": "conductive",
+                        "Magnetic": "magnetic",
+                        "Charged": "charged",
+                        "Ionic": "ionic",
+                        "Crackling": "crackling"
+                    },
+                    "Paradox": {
+                        "Fractured": "fractured",
+                        "Glitched": "glitched",
+                        "Timeless": "timeless",
+                        "Looped": "looped",
+                        "Entropic": "entropic"
+                    },
+                    "Terrestrial": {
+                        "Fossilized": "fossilized",
+                        "Quarried": "quarried",
+                        "Sedimentary": "sedimentary",
+                        "Iron": "iron",
+                        "Earthen": "earthen"
+                    },
+                    "Ardent": {
+                        "Blazing": "blazing",
+                        "Molten": "molten",
+                        "Smoldering": "smoldering",
+                        "Scorched": "scorched",
+                        "Embered": "embered"
+                    },
+                    "Glacial": {
+                        "Crystalline": "crystalline",
+                        "Frozen": "frozen",
+                        "Encased": "encased",
+                        "Glassy": "glassy",
+                        "Still": "still"
+                    },
+                    "Spiritual": {
+                        "Sanctified": "sanctified",
+                        "Echoing": "echoing",
+                        "Hallowed": "hallowed",
+                        "Woven": "woven",
+                        "Otherbound": "otherbound"
+                    },
+                    "Corrupted": {
+                        "Warped": "warped",
+                        "Blight": "blight",
+                        "Decayed": "decayed",
+                        "Toxic": "toxic",
+                        "Speckled": "speckled"
+                    },
+                    "Aquatic": {
+                        "Barnacled": "barnacled",
+                        "Soaked": "soaked",
+                        "Flooded": "flooded",
+                        "Tidal": "tidal",
+                        "Marshbound": "marshbound"
+                    },
+                    "Mechanical": {
+                        "Cogged": "cogged",
+                        "Bolted": "bolted",
+                        "Clockwork": "clockwork",
+                        "Forged": "forged",
+                        "Powered": "powered"
+                    }
+                },
+                "Ingredient": {
+                    "Aerial": {
+                        "Fluffy": "fluffy",
+                        "Airy": "airy",
+                        "Crisp": "crisp",
+                        "Wispy": "wispy",
+                        "Downy": "downy"
+                    },
+                    "Thunderous": {
+                        "Crackling": "crackling",
+                        "Zesty": "zesty",
+                        "Sparkling": "sparkling",
+                        "Sizzling": "sizzling",
+                        "Charged": "charged"
+                    },
+                    "Paradox": {
+                        "Flickering": "flickering",
+                        "Prismatic": "prismatic",
+                        "Twisted": "twisted",
+                        "Mishapen": "mishapen",
+                        "Glistening": "glistening"
+                    },
+                    "Terrestrial": {
+                        "Coarse": "coarse",
+                        "Earthen": "earthen",
+                        "Grainy": "grainy",
+                        "Brown": "brown",
+                        "Loamy": "loamy"
+                    },
+                    "Ardent": {
+                        "Roasted": "roasted",
+                        "Smoked": "smoked",
+                        "Charred": "charred",
+                        "Toasted": "toasted",
+                        "Glazed": "glazed"
+                    },
+                    "Glacial": {
+                        "Chilled": "chilled",
+                        "Crystalline": "crystalline",
+                        "Cold": "cold",
+                        "Smooth": "smooth",
+                        "Brittle": "brittle"
+                    },
+                    "Spiritual": {
+                        "Luminous": "luminous",
+                        "Silk": "silk",
+                        "Translucent": "translucent",
+                        "Hollow": "hollow",
+                        "Misted": "misted"
+                    },
+                    "Corrupted": {
+                        "Stained": "stained",
+                        "Wilted": "wilted",
+                        "Marbled": "marbled",
+                        "Fermented": "fermented",
+                        "Spoiled": "spoiled"
+                    },
+                    "Aquatic": {
+                        "Moist": "moist",
+                        "Scaley": "scaley",
+                        "Brined": "brined",
+                        "Puffy": "puffy",
+                        "Slick": "slick"
+                    },
+                    "Mechanical": {
+                        "Refined": "refined",
+                        "Pressed": "pressed",
+                        "Distilled": "distilled",
+                        "Tempered": "tempered",
+                        "Infused": "infused"
+                    }
+                }
+            },
+            "Detail": {
+                "Agility": {
+                    "Stretchy": "stretchy",
+                    "Pointy": "pointy",
+                    "Slender": "slender",
+                    "Slippery": "slippery",
+                    "Hooded": "hooded",
+                    "Moist": "moist",
+                    "Slimey": "slimey",
+                    "Springy": "springy",
+                    "Small": "small",
+                    "Responsive": "responsive"
+                },
+                "Powerful": {
+                    "Strong": "strong",
+                    "Big": "big",
+                    "Hefty": "hefty",
+                    "Prickly": "prickly",
+                    "Serrated": "serrated",
+                    "Blunt": "blunt",
+                    "Red": "red",
+                    "Huge": "huge",
+                    "Sharp": "sharp",
+                    "Clubbed": "clubbed"
+                },
+                "Protective": {
+                    "Sturdy": "sturdy",
+                    "Plated": "plated",
+                    "Blue": "blue",
+                    "Shielded": "shielded",
+                    "Hardened": "hardened",
+                    "Tough": "tough",
+                    "Thick": "thick",
+                    "Layered": "layered",
+                    "Bulbous": "bulbous",
+                    "Bloated": "bloated"
+                },
+                "Recovery": {
+                    "Curative": "curative",
+                    "Steady": "steady",
+                    "Healthy": "healthy",
+                    "Lush": "lush",
+                    "Hearty": "hearty",
+                    "Repaired": "repaired",
+                    "Stable": "stable",
+                    "Fresh": "fresh",
+                    "Green": "green",
+                    "Regenerating": "regenerating"
+                },
+                "Debilitating": {
+                    "Corrosive": "corrosive",
+                    "Drained": "drained",
+                    "Hexed": "hexed",
+                    "Mutated": "mutated",
+                    "Melting": "melting",
+                    "Withered": "withered",
+                    "Cursed": "cursed",
+                    "Freckled": "freckled",
+                    "Black": "black",
+                    "Infected": "infected"
+                },
+                "Support": {
+                    "Yellow": "yellow",
+                    "Spongey": "spongey",
+                    "Ribbed": "ribbed",
+                    "Squeaky": "squeaky",
+                    "Humming": "humming",
+                    "Resonating": "resonating",
+                    "Reflective": "reflective",
+                    "Porous": "porous",
+                    "Boosted": "boosted",
+                    "Sticky": "sticky"
+                }
+            },
+            "Taste": {
+                "Bitter": {
+                    "Astringent": "astringent",
+                    "Harsh": "harsh",
+                    "Tannic": "tannic",
+                    "Sharp": "sharp",
+                    "Acrid": "acrid",
+                    "Dry": "dry",
+                    "Medicinal": "medicinal",
+                    "Pungent": "pungent",
+                    "Bracing": "bracing",
+                    "Earthy": "earthy"
+                },
+                "Sour": {
+                    "Tart": "tart",
+                    "Tangy": "tangy",
+                    "Zesty": "zesty",
+                    "Citrusy": "citrusy",
+                    "Acidic": "acidic",
+                    "LipPuckering": "lip-puckering",
+                    "Vinegary": "vinegary",
+                    "Fermented": "fermented",
+                    "Lemon": "lemon",
+                    "Crisp": "crisp"
+                },
+                "Sweet": {
+                    "Sugary": "sugary",
+                    "Honeyed": "honeyed",
+                    "Syrupy": "syrupy",
+                    "CandyLike": "candy-like",
+                    "Nectarous": "nectarous",
+                    "Saccharine": "saccharine",
+                    "Luscious": "luscious",
+                    "Caramelized": "caramelized",
+                    "Fruity": "fruity",
+                    "Rich": "rich"
+                },
+                "Salty": {
+                    "Briny": "briny",
+                    "Savory": "savory",
+                    "Pickled": "pickled",
+                    "Cured": "cured",
+                    "Mineral": "mineral",
+                    "Zingy": "zingy",
+                    "Piquant": "piquant",
+                    "Aged": "aged",
+                    "Smoky": "smoky",
+                    "Oceanic": "oceanic"
+                },
+                "Umami": {
+                    "Meaty": "meaty",
+                    "Brothy": "brothy",
+                    "Rich": "rich",
+                    "Mushroomy": "mushroomy",
+                    "Hearty": "hearty",
+                    "Deep": "deep",
+                    "Robust": "robust",
+                    "SoyLike": "soy-like",
+                    "Mellow": "mellow",
+                    "FullBodied": "full-bodied"
+                }
+            },
+            "Element": {
+                "Fire": {
+                    "Flaming": "flaming",
+                    "Fire": "fire"
+                },
+                "Ice": {
+                    "Cold": "cold",
+                    "Ice": "ice"
+                },
+                "Earth": {
+                    "Stone": "stone",
+                    "Earth": "earth"
+                },
+                "Bolt": {
+                    "Electric": "electric",
+                    "Bolt": "bolt"
+                },
+                "Air": {
+                    "Energy": "energy",
+                    "Wind": "wind"
+                },
+                "Dark": {
+                    "Cursed": "cursed",
+                    "Dark": "dark"
+                },
+                "Light": {
+                    "Holy": "holy",
+                    "Light": "light"
+                },
+                "Poison": {
+                    "Toxic": "toxic",
+                    "Poison": "poison"
+                }
+            }
+        },
+        "__SECTION__Dangers": "=== Dangers ===",
+        "Dangers": {
+            "StatusEffects": {
+                "Minor": {
+                    "Dazed": "Suffer dazed",
+                    "Shaken": "Suffer shaken",
+                    "Slow": "Suffer slow",
+                    "Weak": "Suffer weak"
+                },
+                "Heavy": {
+                    "Poison": "Suffer poison",
+                    "Enrage": "Suffer enrage"
+                },
+                "Massive": {
+                    "Dazed": "Suffer dazed",
+                    "Shaken": "Suffer shaken",
+                    "Slow": "Suffer slow",
+                    "Weak": "Suffer weak",
+                    "Poisoned": "Suffer poisoned",
+                    "Enraged": "Suffer enraged"
+                }
+            },
+            "Combat": {
+                "Minor": "An easy combat encounter",
+                "Heavy": "A challenging combat encounter",
+                "Massive": "A deadly combat encounter"
+            },
+            "DangerClock": {
+                "Minor": "A 4-section danger clock begins ticking",
+                "Heavy": "A 6-section danger clock begins ticking",
+                "Massive": "An 8-section danger clock begins ticking"
+            },
+            "VillainPlanAdvance": {
+                "Minor": "The villain’s plan advances by 2 steps",
+                "Heavy": "The villain’s plan advances by 3 steps",
+                "Massive": "The villain’s plan advances by 4 steps"
+            },
+            "Sources": {
+                "Source1": "Altitude sickness, food poisoning, or general exhaustion slows the group.",
+                "Source2": "Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
+                "Source3": "Local or global political unrest causes interruptions or confrontations.",
+                "Source4": "A harsh natural event — storms, quakes, floods — brings delay and peril.",
+                "Source5": "You attract the attention of a rival, villain, or monster.",
+                "Source6": "Supernatural interference alters the path: portals, hauntings, omens.",
+                "Source7": "A mysterious NPC appears, altering or obstructing your path.",
+                "Source8": "An ancient or hidden mechanism is triggered unexpectedly.",
+                "Source9": "You trespass on sacred ground or violate a taboo unknowingly.",
+                "Source10": "The wilderness reveals a secret — but it comes at a price.",
+                "Source11": "Wildlife becomes territorial or aggressive, creating complications.",
+                "Source12": "A landmark has changed, misguiding your path.",
+                "Source13": "Resources deplete faster than expected, straining survival.",
+                "Source14": "Dreams or visions disrupt progress with cryptic warnings.",
+                "Source15": "A divine or arcane presence tests your worth or purity.",
+                "Source16": "A curse or magical interference subtly warps your environment.",
+                "Source17": "An ally reveals a secret that throws everything into question."
+            }
+        },
+        "__SECTION__Discoveries": "=== Discoveries ===",
+        "Discoveries": {
+            "Effects": {
+                "Effect1": "Each party member regains 1 IP.",
+                "Effect2": "Each party member regains 10 HP.",
+                "Effect3": "You discover a rare herb with healing properties.",
+                "Effect4": "You find a relic of cultural or historical importance.",
+                "Effect5": "You gain insight into a local custom or legend.",
+                "Effect6": "You learn a shortcut that will aid future travel.",
+                "Effect7": "A friendly creature aids your party temporarily.",
+                "Effect8": "You find ancient writing that hints at future events.",
+                "Effect9": "A clue to a larger mystery is uncovered.",
+                "Effect10": "The landscape inspires a sudden burst of creativity.",
+                "Effect11": "You forge a useful tool or item from salvaged parts."
+            },
+            "Sources": {
+                "Source1": "A beautiful scenery that remains almost untouched for centuries.",
+                "Source2": "Ruins of a village that tells the story of an old war.",
+                "Source3": "An altar with inscriptions from a forgotten civilization.",
+                "Source4": "A cave where an old campfire and supplies are found.",
+                "Source5": "A buried time capsule from another age.",
+                "Source6": "Tracks from an unknown species.",
+                "Source7": "A monolith covered in glowing runes.",
+                "Source8": "Bones of a massive creature never before seen.",
+                "Source9": "A place where the stars seem to align perfectly.",
+                "Source10": "An unusual weather phenomenon revealing hidden terrain.",
+                "Source11": "A melody carried on the wind, with no clear origin.",
+                "Source12": "A single tree growing out of stone, radiating magic."
+            }
         }
-      },
-      "Combat": {
-        "Minor": "An easy combat encounter",
-        "Heavy": "A challenging combat encounter",
-        "Massive": "A deadly combat encounter"
-      },
-      "DangerClock": {
-        "Minor": "A 4-section danger clock begins ticking",
-        "Heavy": "A 6-section danger clock begins ticking",
-        "Massive": "An 8-section danger clock begins ticking"
-      },
-      "VillainPlanAdvance": {
-        "Minor": "The villain’s plan advances by 2 steps",
-        "Heavy": "The villain’s plan advances by 3 steps",
-        "Massive": "The villain’s plan advances by 4 steps"
-      },
-      "Sources": {
-        "Source1": "Altitude sickness, food poisoning, or general exhaustion slows the group.",
-        "Source2": "Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
-        "Source3": "Local or global political unrest causes interruptions or confrontations.",
-        "Source4": "A harsh natural event — storms, quakes, floods — brings delay and peril.",
-        "Source5": "You attract the attention of a rival, villain, or monster.",
-        "Source6": "Supernatural interference alters the path: portals, hauntings, omens.",
-        "Source7": "A mysterious NPC appears, altering or obstructing your path.",
-        "Source8": "An ancient or hidden mechanism is triggered unexpectedly.",
-        "Source9": "You trespass on sacred ground or violate a taboo unknowingly.",
-        "Source10": "The wilderness reveals a secret — but it comes at a price.",
-        "Source11": "Wildlife becomes territorial or aggressive, creating complications.",
-        "Source12": "A landmark has changed, misguiding your path.",
-        "Source13": "Resources deplete faster than expected, straining survival.",
-        "Source14": "Dreams or visions disrupt progress with cryptic warnings.",
-        "Source15": "A divine or arcane presence tests your worth or purity.",
-        "Source16": "A curse or magical interference subtly warps your environment.",
-        "Source17": "An ally reveals a secret that throws everything into question."
-      }
-    },
-
-
-
-    "__SECTION__Discoveries": "=== Discoveries ===",
-    "Discoveries": {
-      "Effects": {
-        "Effect1": "Each party member regains 1 IP.",
-        "Effect2": "Each party member regains 10 HP.",
-        "Effect3": "You discover a rare herb with healing properties.",
-        "Effect4": "You find a relic of cultural or historical importance.",
-        "Effect5": "You gain insight into a local custom or legend.",
-        "Effect6": "You learn a shortcut that will aid future travel.",
-        "Effect7": "A friendly creature aids your party temporarily.",
-        "Effect8": "You find ancient writing that hints at future events.",
-        "Effect9": "A clue to a larger mystery is uncovered.",
-        "Effect10": "The landscape inspires a sudden burst of creativity.",
-        "Effect11": "You forge a useful tool or item from salvaged parts."
-      },
-      "Sources": {
-        "Source1": "A beautiful scenery that remains almost untouched for centuries.",
-        "Source2": "Ruins of a village that tells the story of an old war.",
-        "Source3": "An altar with inscriptions from a forgotten civilization.",
-        "Source4": "A cave where an old campfire and supplies are found.",
-        "Source5": "A buried time capsule from another age.",
-        "Source6": "Tracks from an unknown species.",
-        "Source7": "A monolith covered in glowing runes.",
-        "Source8": "Bones of a massive creature never before seen.",
-        "Source9": "A place where the stars seem to align perfectly.",
-        "Source10": "An unusual weather phenomenon revealing hidden terrain.",
-        "Source11": "A melody carried on the wind, with no clear origin.",
-        "Source12": "A single tree growing out of stone, radiating magic."
-      }
     }
-
-
-
-  }
 }
-
-
-
-
-
-
-
-
-
