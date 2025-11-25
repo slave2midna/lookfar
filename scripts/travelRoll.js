@@ -378,13 +378,6 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
   currentDialog.render(true);
 }
 
-function toReadableText(str) {
-  const words = str.split(/(?=[A-Z])/);
-  return words
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-}
-
 async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
     console.error("Threats data is not fully loaded.");
@@ -666,3 +659,4 @@ async function generateDiscovery() {
     ${generateKeywords()}
   `;
 }
+
