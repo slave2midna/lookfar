@@ -586,7 +586,10 @@ function handleDamage(threatsData, groupLevel, dangerSeverity) {
     );
     return game.i18n.localize("LOOKFAR.Errors.DamageMissing");
   }
-  return `${damageData[dangerSeverity]} damage`;
+
+  const amount = damageData[dangerSeverity];
+
+  return game.i18n.format("LOOKFAR.Dangers.Phrases.DamageOnly", { amount });
 }
 
 function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
@@ -598,26 +601,35 @@ function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
     const useMinorEffect = Math.random() < 0.5;
 
     if (useMinorEffect) {
-      const key = getRandomElement(minorKeys); // e.g. "Dazed"
-      const effect = game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.Minor.${key}`);
-      const heavyDamage = threatsData.Damage[groupLevel]["Heavy"];
-      return `${effect} and ${heavyDamage} damage`;
-    } else {
-      const key = getRandomElement(heavyKeys); // e.g. "Poison"
-      const effect = game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.Heavy.${key}`);
-      const minorDamage = threatsData.Damage[groupLevel]["Minor"];
-      return `${effect} and ${minorDamage} damage`;
-    }
-  } else {
-    const list = threatsData.statusEffects[dangerSeverity] || [];
-    if (!list.length) {
-      console.error(`No status effects for dangerSeverity: ${dangerSeverity}`);
-      return game.i18n.localize("LOOKFAR.Errors.ThreatUnknown");
-    }
+      const key = getRandomElement(minorKeys);
+      const status = game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.Minor.${key}`);
+      const amount = threatsData.Damage[groupLevel]["Heavy"];
 
-    const key = getRandomElement(list); // e.g. "Dazed", "Poison"
-    return game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.${dangerSeverity}.${key}`);
+      return game.i18n.format("LOOKFAR.Dangers.Phrases.StatusAndDamage", {
+        status,
+        amount
+      });
+    } else {
+      const key = getRandomElement(heavyKeys);
+      const status = game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.Heavy.${key}`);
+      const amount = threatsData.Damage[groupLevel]["Minor"];
+
+      return game.i18n.format("LOOKFAR.Dangers.Phrases.StatusAndDamage", {
+        status,
+        amount
+      });
+    }
   }
+
+  // Non-massive cases return ONLY the localized status
+  const list = threatsData.statusEffects[dangerSeverity] || [];
+  if (!list.length) {
+    console.error(`No status effects for dangerSeverity: ${dangerSeverity}`);
+    return game.i18n.localize("LOOKFAR.Errors.ThreatUnknown");
+  }
+
+  const key = getRandomElement(list);
+  return game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.${dangerSeverity}.${key}`);
 }
 
 // -----------------------------------------------------------------------------
@@ -744,3 +756,4 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
