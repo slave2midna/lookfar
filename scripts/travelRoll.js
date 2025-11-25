@@ -1,9 +1,10 @@
 import { dataLoader } from "./dataLoader.js";
 
 let _travelCheckDialog = null;
+let currentDialog = null;
 
 // Template paths (must match your module folder structure)
-const TRAVEL_CHECK_TEMPLATE = "modules/lookfar/templates/travel-check.hbs";
+const TRAVEL_CHECK_TEMPLATE  = "modules/lookfar/templates/travel-check.hbs";
 const TRAVEL_RESULT_TEMPLATE = "modules/lookfar/templates/travel-result.hbs";
 
 // Function to set default "Discovery" rolltable options. Will update for multiple table settings.
@@ -35,7 +36,7 @@ Hooks.once("ready", () => {
       if (visibility === "gmOnly" && !isGM) return;
 
       showRerollDialog(
-        data.resultMessage,
+        data.resultHtml,
         data.selectedDifficulty,
         data.groupLevel,
         data.dangerSeverity
@@ -213,7 +214,7 @@ async function handleRoll(selectedDifficulty, html) {
   // Determine the group level set by the GM
   const groupLevel = html.find("#groupLevel").val();
 
-  let resultMessage = "";
+  let resultHtml = "";
   const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
   const isDiscovery = shouldMakeDiscovery(roll.total, treasureHunterLevel);
   let dangerSeverity = "";
@@ -226,7 +227,7 @@ async function handleRoll(selectedDifficulty, html) {
     const resultType = game.i18n.localize(resultTypeKey);
 
     const resultTable = await generateDanger(effectiveDifficulty, groupLevel, dangerSeverity);
-    resultMessage = `
+    resultHtml = `
       <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
         ${resultType}
       </div>
@@ -235,14 +236,14 @@ async function handleRoll(selectedDifficulty, html) {
   } else if (isDiscovery) {
     const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");
     const resultTable = await generateDiscovery();
-    resultMessage = `
+    resultHtml = `
       <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
         ${resultType}
       </div>
       ${resultTable}
     `;
   } else {
-    resultMessage = `
+    resultHtml = `
       <div style="text-align: center; font-size: 1.2rem;">
         ${game.i18n.localize("LOOKFAR.Dialogs.TravelResult.NoIncident")}
       </div>
@@ -252,7 +253,7 @@ async function handleRoll(selectedDifficulty, html) {
   // Emit the result to all clients
   game.socket.emit("module.lookfar", {
     type: "showResult",
-    resultMessage,
+    resultHtml,
     selectedDifficulty: effectiveDifficulty,
     groupLevel,
     dangerSeverity,
@@ -263,17 +264,15 @@ async function handleRoll(selectedDifficulty, html) {
 
   // Show dialog locally only if it's public, or this user is a GM
   if (visibility === "public" || isGM) {
-    showRerollDialog(resultMessage, effectiveDifficulty, groupLevel, dangerSeverity);
+    showRerollDialog(resultHtml, effectiveDifficulty, groupLevel, dangerSeverity);
   }
 }
 
-// Keep a reference to the current dialog
-let currentDialog = null;
+// ----- Reroll / Result Dialog -----
 
-async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, dangerSeverity) {
-  const isDanger = initialResult.includes(
-    game.i18n.localize("LOOKFAR.Dialogs.Result.Danger")
-  );
+async function showRerollDialog(resultHtml, selectedDifficulty, groupLevel, dangerSeverity) {
+  const dangerKeyPrefix = game.i18n.localize("LOOKFAR.Dialogs.Result.Danger");
+  const isDanger = resultHtml.includes(dangerKeyPrefix);
 
   // Close the existing dialog if it's open
   if (currentDialog) {
@@ -287,8 +286,9 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
         keep: {
           icon: '<i class="fas fa-check"></i>',
           callback: () => {
+            // Post just the body of the result to chat (no prompt)
             ChatMessage.create({
-              content: `<div style="text-align: center;">${initialResult}</div>`,
+              content: `<div style="text-align: center;">${resultHtml}</div>`,
               speaker: {
                 alias: game.i18n.localize("LOOKFAR.Chat.Alias.Result"),
               },
@@ -308,7 +308,7 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
         reroll: {
           icon: '<i class="fas fa-redo"></i>',
           callback: async () => {
-            let newResultMessage;
+            let newResultHtml;
             if (isDanger) {
               const severityKey = `LOOKFAR.Dialogs.Result.Danger${dangerSeverity}`;
               const resultType = game.i18n.localize(severityKey);
@@ -317,7 +317,7 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
                 groupLevel,
                 dangerSeverity
               );
-              newResultMessage = `
+              newResultHtml = `
                 <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
                   ${resultType}
                 </div>
@@ -326,7 +326,7 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
             } else {
               const resultType = game.i18n.localize("LOOKFAR.Dialogs.Result.Discovery");
               const resultTable = await generateDiscovery();
-              newResultMessage = `
+              newResultHtml = `
                 <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
                   ${resultType}
                 </div>
@@ -337,14 +337,14 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
             // Emit the new result to all clients
             game.socket.emit("module.lookfar", {
               type: "showResult",
-              resultMessage: newResultMessage,
+              resultHtml: newResultHtml,
               selectedDifficulty,
               groupLevel,
               dangerSeverity,
             });
 
             await showRerollDialog(
-              newResultMessage,
+              newResultHtml,
               selectedDifficulty,
               groupLevel,
               dangerSeverity
@@ -359,7 +359,7 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
     : "LOOKFAR.Dialogs.TravelResult.Waiting";
 
   const content = await renderTemplate(TRAVEL_RESULT_TEMPLATE, {
-    resultHtml: initialResult,
+    resultHtml,
     promptText: game.i18n.localize(promptKey),
   });
 
@@ -378,6 +378,8 @@ async function showRerollDialog(initialResult, selectedDifficulty, groupLevel, d
 
   currentDialog.render(true);
 }
+
+// ----- Threat / Discovery Generation -----
 
 async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
   if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
@@ -660,5 +662,3 @@ async function generateDiscovery() {
     ${generateKeywords()}
   `;
 }
-
-
