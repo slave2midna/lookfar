@@ -11,6 +11,10 @@
                 "Title": "Generate Some Treasure"
             }
         },
+
+
+
+        
         "__SECTION__Settings": "=== Settings ===",
         "Settings": {
             "ResultVisibility": {
@@ -75,6 +79,10 @@
             "NoActorCompendiums": "No Actor compendiums found",
             "NoScenes": "No scenes found"
         },
+
+
+
+        
         "__SECTION__Dialogs": "=== Dialogs ===",
         "Dialogs": {
             "TravelCheck": {
@@ -106,6 +114,10 @@
                 "Terrain": "Terrain"
             }
         },
+
+
+
+        
         "__SECTION__Severity": "=== Severity ===",
         "Severity": {
             "Minor": "Minor",
@@ -119,6 +131,10 @@
                 "Result": "Travel Result"
             }
         },
+
+
+
+        
         "__SECTION__Errors": "=== Errors ===",
         "Errors": {
             "DataUnavailable": "Error: Data not available.",
@@ -128,712 +144,718 @@
             "NoDiscoveryEffect": "No discovery effect available.",
             "NoDiscoverySource": "No discovery source available."
         },
+
+
+
+        
         "__SECTION__Keywords": "=== Keywords ===",
-"Keywords": {
-  "Patterns": {
-    "Material": "{detail} {origin} {nature}",
-    "Ingredient": "{taste} {origin} {nature}"
-  },
-  "Traits": {
-    "Abandoned": "Abandoned",
-    "Ancient": "Ancient",
-    "Arcane": "Arcane",
-    "Bewitched": "Bewitched",
-    "Blighted": "Blighted",
-    "Cavernous": "Cavernous",
-    "Celestial": "Celestial",
-    "Chimeric": "Chimeric",
-    "Crumbling": "Crumbling",
-    "Cryptic": "Cryptic",
-    "Cursed": "Cursed",
-    "Decayed": "Decayed",
-    "Desolate": "Desolate",
-    "Deserted": "Deserted",
-    "Dilapidated": "Dilapidated",
-    "Dimensional": "Dimensional",
-    "Eldritch": "Eldritch",
-    "Ephemeral": "Ephemeral",
-    "Ethereal": "Ethereal",
-    "Eternal": "Eternal",
-    "Fabled": "Fabled",
-    "Faded": "Faded",
-    "Forbidden": "Forbidden",
-    "Forging": "Forging",
-    "Forgotten": "Forgotten",
-    "Fractured": "Fractured",
-    "Frozen": "Frozen",
-    "Ghostly": "Ghostly",
-    "Gloomy": "Gloomy",
-    "Gossamer": "Gossamer",
-    "Hallowed": "Hallowed",
-    "Haunted": "Haunted",
-    "Hidden": "Hidden",
-    "Infernal": "Infernal",
-    "Isolated": "Isolated",
-    "Legendary": "Legendary",
-    "Luminous": "Luminous",
-    "Lurking": "Lurking",
-    "Magical": "Magical",
-    "Moonlit": "Moonlit",
-    "Mysterious": "Mysterious",
-    "Mystic": "Mystic",
-    "Mystical": "Mystical",
-    "Neglected": "Neglected",
-    "Obsidian": "Obsidian",
-    "Obscured": "Obscured",
-    "Obscure": "Obscure",
-    "Obscuring": "Obscuring",
-    "Otherworldly": "Otherworldly",
-    "Overgrown": "Overgrown",
-    "Overlooked": "Overlooked",
-    "Petrified": "Petrified",
-    "Phantasmal": "Phantasmal",
-    "Primeval": "Primeval",
-    "Pristine": "Pristine",
-    "Relic": "Relic",
-    "Resplendent": "Resplendent",
-    "Runed": "Runed",
-    "Ruined": "Ruined",
-    "Sacred": "Sacred",
-    "Sanctified": "Sanctified",
-    "Secret": "Secret",
-    "Secluded": "Secluded",
-    "Serene": "Serene",
-    "Shaded": "Shaded",
-    "Shadowed": "Shadowed",
-    "Shattered": "Shattered",
-    "Shimmering": "Shimmering",
-    "Spectral": "Spectral",
-    "Stygian": "Stygian",
-    "Sunken": "Sunken",
-    "Surreal": "Surreal",
-    "Sylvan": "Sylvan",
-    "Temporal": "Temporal",
-    "TimeWorn": "Time-worn",
-    "Twilight": "Twilight",
-    "Uncharted": "Uncharted",
-    "Unhallowed": "Unhallowed",
-    "Unseen": "Unseen",
-    "Unearthed": "Unearthed",
-    "Verdant": "Verdant",
-    "Veiled": "Veiled",
-    "Venerable": "Venerable",
-    "Vivid": "Vivid",
-    "Weathered": "Weathered",
-    "Withered": "Withered",
-    "Wraithlike": "Wraithlike"
-  },
-  "Terrain": {
-    "Alcove": "Alcove",
-    "Altar": "Altar",
-    "Aqueduct": "Aqueduct",
-    "Archipelago": "Archipelago",
-    "Arena": "Arena",
-    "Archive": "Archive",
-    "Bazaar": "Bazaar",
-    "Barracks": "Barracks",
-    "Battleground": "Battleground",
-    "Butte": "Butte",
-    "Cairn": "Cairn",
-    "Campsite": "Campsite",
-    "Catacombs": "Catacombs",
-    "Causeway": "Causeway",
-    "Cauldron": "Cauldron",
-    "Cavern": "Cavern",
-    "Castle": "Castle",
-    "Chapel": "Chapel",
-    "Chasm": "Chasm",
-    "Citadel": "Citadel",
-    "Cliff": "Cliff",
-    "Conservatory": "Conservatory",
-    "Corridor": "Corridor",
-    "Crags": "Crags",
-    "Crater": "Crater",
-    "Crypt": "Crypt",
-    "Den": "Den",
-    "Dome": "Dome",
-    "Dungeon": "Dungeon",
-    "Eddy": "Eddy",
-    "Embankment": "Embankment",
-    "Estuary": "Estuary",
-    "Expanse": "Expanse",
-    "Fane": "Fane",
-    "Fen": "Fen",
-    "Fjord": "Fjord",
-    "Forest": "Forest",
-    "Fortress": "Fortress",
-    "Fountain": "Fountain",
-    "Foundry": "Foundry",
-    "Garrison": "Garrison",
-    "Garden": "Garden",
-    "Glade": "Glade",
-    "Grove": "Grove",
-    "Grotto": "Grotto",
-    "Harbor": "Harbor",
-    "Haven": "Haven",
-    "Henge": "Henge",
-    "Isle": "Isle",
-    "Jungle": "Jungle",
-    "Keep": "Keep",
-    "Knoll": "Knoll",
-    "Labyrinth": "Labyrinth",
-    "Library": "Library",
-    "Lodge": "Lodge",
-    "Manor": "Manor",
-    "Mausoleum": "Mausoleum",
-    "Meadow": "Meadow",
-    "Menhir": "Menhir",
-    "Mesa": "Mesa",
-    "Mill": "Mill",
-    "Mire": "Mire",
-    "Monolith": "Monolith",
-    "Moat": "Moat",
-    "Nexus": "Nexus",
-    "Observatory": "Observatory",
-    "Oasis": "Oasis",
-    "Obelisk": "Obelisk",
-    "Outpost": "Outpost",
-    "Orchard": "Orchard",
-    "Parapet": "Parapet",
-    "Pathway": "Pathway",
-    "Pavilion": "Pavilion",
-    "Pit": "Pit",
-    "Plaza": "Plaza",
-    "Portal": "Portal",
-    "Promontory": "Promontory",
-    "Quarry": "Quarry",
-    "Quicksand": "Quicksand",
-    "Ravine": "Ravine",
-    "Reef": "Reef",
-    "Ridge": "Ridge",
-    "Rift": "Rift",
-    "Ruination": "Ruination",
-    "Ruins": "Ruins",
-    "Sanctuary": "Sanctuary",
-    "Sanctum": "Sanctum",
-    "Seraglio": "Seraglio",
-    "Shrine": "Shrine",
-    "Shipwreck": "Shipwreck",
-    "Shelter": "Shelter",
-    "Spire": "Spire",
-    "Spring": "Spring",
-    "Steppe": "Steppe",
-    "Stronghold": "Stronghold",
-    "Summit": "Summit",
-    "Tavern": "Tavern",
-    "Temple": "Temple",
-    "Throne": "Throne",
-    "Tomb": "Tomb",
-    "Tombstone": "Tombstone",
-    "Tower": "Tower",
-    "Trails": "Trails",
-    "Trenches": "Trenches",
-    "Tundra": "Tundra",
-    "Undercroft": "Undercroft",
-    "Valley": "Valley",
-    "Vault": "Vault",
-    "Village": "Village",
-    "Vortex": "Vortex",
-    "Waterfall": "Waterfall",
-    "Wreckage": "Wreckage",
-    "Xystus": "Xystus",
-    "Yard": "Yard",
-    "Zeppelin": "Zeppelin",
-    "Ziggurat": "Ziggurat"
-  },
-  "Nature": {
-    "Material": {
-      "Anthropod": {
-        "Carapace": "Carapace",
-        "Mandible": "Mandible",
-        "Pincer": "Pincer",
-        "Shell": "Shell",
-        "Stinger": "Stinger"
-      },
-      "Bird": {
-        "Feather": "Feather",
-        "Talon": "Talon",
-        "Beak": "Beak",
-        "Claw": "Claw",
-        "Bone": "Bone"
-      },
-      "Fish": {
-        "Fin": "Fin",
-        "Scale": "Scale",
-        "Gill": "Gill",
-        "Tooth": "Tooth",
-        "Bone": "Bone"
-      },
-      "Mammal": {
-        "Bone": "Bone",
-        "Fur": "Fur",
-        "Horn": "Horn",
-        "Hide": "Hide",
-        "Tusk": "Tusk"
-      },
-      "Mollusk": {
-        "Shell": "Shell",
-        "Pearl": "Pearl",
-        "Valve": "Valve",
-        "Mantle": "Mantle",
-        "Beak": "Beak"
-      },
-      "Reptile": {
-        "Claw": "Claw",
-        "Scale": "Scale",
-        "Tail": "Tail",
-        "Spine": "Spine",
-        "Fang": "Fang"
-      },
-      "Fungus": {
-        "Sporecase": "Sporecase",
-        "Cap": "Cap",
-        "Vein": "Vein",
-        "Stem": "Stem",
-        "Fiber": "Fiber"
-      },
-      "Incorporeal": {
-        "Wisp": "Wisp",
-        "Vapor": "Vapor",
-        "Ash": "Ash",
-        "Essence": "Essence",
-        "Soul": "Soul"
-      },
-      "Liquid": {
-        "Droplet": "Droplet",
-        "Globule": "Globule",
-        "Ichor": "Ichor",
-        "Resin": "Resin",
-        "Film": "Film"
-      },
-      "Artificial": {
-        "Alloy": "Alloy",
-        "Circuit": "Circuit",
-        "Frame": "Frame",
-        "Casing": "Casing",
-        "Component": "Component"
-      },
-      "Mineral": {
-        "Crystal": "Crystal",
-        "Shard": "Shard",
-        "Ore": "Ore",
-        "Fragment": "Fragment",
-        "Nodule": "Nodule"
-      },
-      "Plant": {
-        "Branch": "Branch",
-        "Vine": "Vine",
-        "Bark": "Bark",
-        "Thorn": "Thorn",
-        "Reed": "Reed"
-      }
-    },
-    "Ingredient": {
-      "Anthropod": {
-        "Meat": "Meat",
-        "Sac": "Sac",
-        "Egg": "Egg",
-        "Leg": "Leg",
-        "Juice": "Juice"
-      },
-      "Bird": {
-        "Egg": "Egg",
-        "Wing": "Wing",
-        "Meat": "Meat",
-        "Heart": "Heart",
-        "Blood": "Blood"
-      },
-      "Fish": {
-        "Meat": "Meat",
-        "Egg": "Egg",
-        "Oil": "Oil",
-        "Eye": "Eye",
-        "Bile": "Bile"
-      },
-      "Mammal": {
-        "Meat": "Meat",
-        "Fat": "Fat",
-        "Organ": "Organ",
-        "Milk": "Milk",
-        "Blood": "Blood"
-      },
-      "Mollusk": {
-        "Flesh": "Flesh",
-        "Ink": "Ink",
-        "Gland": "Gland",
-        "Slurry": "Slurry",
-        "Meat": "Meat"
-      },
-      "Reptile": {
-        "Meat": "Meat",
-        "Egg": "Egg",
-        "Venom": "Venom",
-        "Blood": "Blood",
-        "Liver": "Liver"
-      },
-      "Fungus": {
-        "Shroom": "Shroom",
-        "Spore": "Spore",
-        "Flesh": "Flesh",
-        "Pulp": "Pulp",
-        "Residue": "Residue"
-      },
-      "Incorporeal": {
-        "Mist": "Mist",
-        "Plasma": "Plasma",
-        "Breath": "Breath",
-        "Essence": "Essence",
-        "Residue": "Residue"
-      },
-      "Liquid": {
-        "Fluid": "Fluid",
-        "Reagent": "Reagent",
-        "Syrup": "Syrup",
-        "Slime": "Slime",
-        "Gel": "Gel"
-      },
-      "Artificial": {
-        "Gel": "Gel",
-        "Solution": "Solution",
-        "Compound": "Compound",
-        "Serum": "Serum",
-        "Extract": "Extract"
-      },
-      "Mineral": {
-        "Dust": "Dust",
-        "Grain": "Grain",
-        "Powder": "Powder",
-        "Salt": "Salt",
-        "Residue": "Residue"
-      },
-      "Plant": {
-        "Leaf": "Leaf",
-        "Seed": "Seed",
-        "Fruit": "Fruit",
-        "Sap": "Sap",
-        "Root": "Root"
-      }
-    }
-  },
-  "Origin": {
-    "Material": {
-      "Aerial": {
-        "Light": "Light",
-        "Hollow": "Hollow",
-        "Avian": "Avian",
-        "Fowl": "Fowl",
-        "Drift": "Drift"
-      },
-      "Thunderous": {
-        "Conductive": "Conductive",
-        "Magnetic": "Magnetic",
-        "Charged": "Charged",
-        "Ionic": "Ionic",
-        "Crackling": "Crackling"
-      },
-      "Paradox": {
-        "Fractured": "Fractured",
-        "Glitched": "Glitched",
-        "Timeless": "Timeless",
-        "Looped": "Looped",
-        "Entropic": "Entropic"
-      },
-      "Terrestrial": {
-        "Fossilized": "Fossilized",
-        "Quarried": "Quarried",
-        "Sedimentary": "Sedimentary",
-        "Iron": "Iron",
-        "Earthen": "Earthen"
-      },
-      "Ardent": {
-        "Blazing": "Blazing",
-        "Molten": "Molten",
-        "Smoldering": "Smoldering",
-        "Scorched": "Scorched",
-        "Embered": "Embered"
-      },
-      "Glacial": {
-        "Crystalline": "Crystalline",
-        "Frozen": "Frozen",
-        "Encased": "Encased",
-        "Glassy": "Glassy",
-        "Still": "Still"
-      },
-      "Spiritual": {
-        "Sanctified": "Sanctified",
-        "Echoing": "Echoing",
-        "Hallowed": "Hallowed",
-        "Woven": "Woven",
-        "Otherbound": "Otherbound"
-      },
-      "Corrupted": {
-        "Warped": "Warped",
-        "Blight": "Blight",
-        "Decayed": "Decayed",
-        "Toxic": "Toxic",
-        "Speckled": "Speckled"
-      },
-      "Aquatic": {
-        "Barnacled": "Barnacled",
-        "Soaked": "Soaked",
-        "Flooded": "Flooded",
-        "Tidal": "Tidal",
-        "Marshbound": "Marshbound"
-      },
-      "Mechanical": {
-        "Cogged": "Cogged",
-        "Bolted": "Bolted",
-        "Clockwork": "Clockwork",
-        "Forged": "Forged",
-        "Powered": "Powered"
-      }
-    },
-    "Ingredient": {
-      "Aerial": {
-        "Fluffy": "Fluffy",
-        "Airy": "Airy",
-        "Crisp": "Crisp",
-        "Wispy": "Wispy",
-        "Downy": "Downy"
-      },
-      "Thunderous": {
-        "Crackling": "Crackling",
-        "Zesty": "Zesty",
-        "Sparkling": "Sparkling",
-        "Sizzling": "Sizzling",
-        "Charged": "Charged"
-      },
-      "Paradox": {
-        "Flickering": "Flickering",
-        "Prismatic": "Prismatic",
-        "Twisted": "Twisted",
-        "Mishapen": "Mishapen",
-        "Glistening": "Glistening"
-      },
-      "Terrestrial": {
-        "Coarse": "Coarse",
-        "Earthen": "Earthen",
-        "Grainy": "Grainy",
-        "Brown": "Brown",
-        "Loamy": "Loamy"
-      },
-      "Ardent": {
-        "Roasted": "Roasted",
-        "Smoked": "Smoked",
-        "Charred": "Charred",
-        "Toasted": "Toasted",
-        "Glazed": "Glazed"
-      },
-      "Glacial": {
-        "Chilled": "Chilled",
-        "Crystalline": "Crystalline",
-        "Cold": "Cold",
-        "Smooth": "Smooth",
-        "Brittle": "Brittle"
-      },
-      "Spiritual": {
-        "Luminous": "Luminous",
-        "Silk": "Silk",
-        "Translucent": "Translucent",
-        "Hollow": "Hollow",
-        "Misted": "Misted"
-      },
-      "Corrupted": {
-        "Stained": "Stained",
-        "Wilted": "Wilted",
-        "Marbled": "Marbled",
-        "Fermented": "Fermented",
-        "Spoiled": "Spoiled"
-      },
-      "Aquatic": {
-        "Moist": "Moist",
-        "Scaley": "Scaley",
-        "Brined": "Brined",
-        "Puffy": "Puffy",
-        "Slick": "Slick"
-      },
-      "Mechanical": {
-        "Refined": "Refined",
-        "Pressed": "Pressed",
-        "Distilled": "Distilled",
-        "Tempered": "Tempered",
-        "Infused": "Infused"
-      }
-    }
-  },
-  "Detail": {
-    "Agility": {
-      "Stretchy": "Stretchy",
-      "Pointy": "Pointy",
-      "Slender": "Slender",
-      "Slippery": "Slippery",
-      "Hooded": "Hooded",
-      "Moist": "Moist",
-      "Slimey": "Slimey",
-      "Springy": "Springy",
-      "Small": "Small",
-      "Responsive": "Responsive"
-    },
-    "Powerful": {
-      "Strong": "Strong",
-      "Big": "Big",
-      "Hefty": "Hefty",
-      "Prickly": "Prickly",
-      "Serrated": "Serrated",
-      "Blunt": "Blunt",
-      "Red": "Red",
-      "Huge": "Huge",
-      "Sharp": "Sharp",
-      "Clubbed": "Clubbed"
-    },
-    "Protective": {
-      "Sturdy": "Sturdy",
-      "Plated": "Plated",
-      "Blue": "Blue",
-      "Shielded": "Shielded",
-      "Hardened": "Hardened",
-      "Tough": "Tough",
-      "Thick": "Thick",
-      "Layered": "Layered",
-      "Bulbous": "Bulbous",
-      "Bloated": "Bloated"
-    },
-    "Recovery": {
-      "Curative": "Curative",
-      "Steady": "Steady",
-      "Healthy": "Healthy",
-      "Lush": "Lush",
-      "Hearty": "Hearty",
-      "Repaired": "Repaired",
-      "Stable": "Stable",
-      "Fresh": "Fresh",
-      "Green": "Green",
-      "Regenerating": "Regenerating"
-    },
-    "Debilitating": {
-      "Corrosive": "Corrosive",
-      "Drained": "Drained",
-      "Hexed": "Hexed",
-      "Mutated": "Mutated",
-      "Melting": "Melting",
-      "Withered": "Withered",
-      "Cursed": "Cursed",
-      "Freckled": "Freckled",
-      "Black": "Black",
-      "Infected": "Infected"
-    },
-    "Support": {
-      "Yellow": "Yellow",
-      "Spongey": "Spongey",
-      "Ribbed": "Ribbed",
-      "Squeaky": "Squeaky",
-      "Humming": "Humming",
-      "Resonating": "Resonating",
-      "Reflective": "Reflective",
-      "Porous": "Porous",
-      "Boosted": "Boosted",
-      "Sticky": "Sticky"
-    }
-  },
-  "Taste": {
-    "Bitter": {
-      "Astringent": "Astringent",
-      "Harsh": "Harsh",
-      "Tannic": "Tannic",
-      "Sharp": "Sharp",
-      "Acrid": "Acrid",
-      "Dry": "Dry",
-      "Medicinal": "Medicinal",
-      "Pungent": "Pungent",
-      "Bracing": "Bracing",
-      "Earthy": "Earthy"
-    },
-    "Sour": {
-      "Tart": "Tart",
-      "Tangy": "Tangy",
-      "Zesty": "Zesty",
-      "Citrusy": "Citrusy",
-      "Acidic": "Acidic",
-      "LipPuckering": "Lip-puckering",
-      "Vinegary": "Vinegary",
-      "Fermented": "Fermented",
-      "Lemon": "Lemon",
-      "Crisp": "Crisp"
-    },
-    "Sweet": {
-      "Sugary": "Sugary",
-      "Honeyed": "Honeyed",
-      "Syrupy": "Syrupy",
-      "CandyLike": "Candy-like",
-      "Nectarous": "Nectarous",
-      "Saccharine": "Saccharine",
-      "Luscious": "Luscious",
-      "Caramelized": "Caramelized",
-      "Fruity": "Fruity",
-      "Rich": "Rich"
-    },
-    "Salty": {
-      "Briny": "Briny",
-      "Savory": "Savory",
-      "Pickled": "Pickled",
-      "Cured": "Cured",
-      "Mineral": "Mineral",
-      "Zingy": "Zingy",
-      "Piquant": "Piquant",
-      "Aged": "Aged",
-      "Smoky": "Smoky",
-      "Oceanic": "Oceanic"
-    },
-    "Umami": {
-      "Meaty": "Meaty",
-      "Brothy": "Brothy",
-      "Rich": "Rich",
-      "Mushroomy": "Mushroomy",
-      "Hearty": "Hearty",
-      "Deep": "Deep",
-      "Robust": "Robust",
-      "SoyLike": "Soy-like",
-      "Mellow": "Mellow",
-      "FullBodied": "Full-bodied"
-    }
-  },
-  "Element": {
-    "Fire": {
-      "Flaming": "Flaming",
-      "Fire": "Fire"
-    },
-    "Ice": {
-      "Cold": "Cold",
-      "Ice": "Ice"
-    },
-    "Earth": {
-      "Stone": "Stone",
-      "Earth": "Earth"
-    },
-    "Bolt": {
-      "Electric": "Electric",
-      "Bolt": "Bolt"
-    },
-    "Air": {
-      "Energy": "Energy",
-      "Wind": "Wind"
-    },
-    "Dark": {
-      "Cursed": "Cursed",
-      "Dark": "Dark"
-    },
-    "Light": {
-      "Holy": "Holy",
-      "Light": "Light"
-    },
-    "Poison": {
-      "Toxic": "Toxic",
-      "Poison": "Poison"
-    }
-  }
-},
+        "Keywords": {
+            "Patterns": {
+                "Material": "{detail} {origin} {nature}",
+                "Ingredient": "{taste} {origin} {nature}"
+            },
+            "Traits": {
+                "Abandoned": "Abandoned",
+                "Ancient": "Ancient",
+                "Arcane": "Arcane",
+                "Bewitched": "Bewitched",
+                "Blighted": "Blighted",
+                "Cavernous": "Cavernous",
+                "Celestial": "Celestial",
+                "Chimeric": "Chimeric",
+                "Crumbling": "Crumbling",
+                "Cryptic": "Cryptic",
+                "Cursed": "Cursed",
+                "Decayed": "Decayed",
+                "Desolate": "Desolate",
+                "Deserted": "Deserted",
+                "Dilapidated": "Dilapidated",
+                "Dimensional": "Dimensional",
+                "Eldritch": "Eldritch",
+                "Ephemeral": "Ephemeral",
+                "Ethereal": "Ethereal",
+                "Eternal": "Eternal",
+                "Fabled": "Fabled",
+                "Faded": "Faded",
+                "Forbidden": "Forbidden",
+                "Forging": "Forging",
+                "Forgotten": "Forgotten",
+                "Fractured": "Fractured",
+                "Frozen": "Frozen",
+                "Ghostly": "Ghostly",
+                "Gloomy": "Gloomy",
+                "Gossamer": "Gossamer",
+                "Hallowed": "Hallowed",
+                "Haunted": "Haunted",
+                "Hidden": "Hidden",
+                "Infernal": "Infernal",
+                "Isolated": "Isolated",
+                "Legendary": "Legendary",
+                "Luminous": "Luminous",
+                "Lurking": "Lurking",
+                "Magical": "Magical",
+                "Moonlit": "Moonlit",
+                "Mysterious": "Mysterious",
+                "Mystic": "Mystic",
+                "Mystical": "Mystical",
+                "Neglected": "Neglected",
+                "Obsidian": "Obsidian",
+                "Obscured": "Obscured",
+                "Obscure": "Obscure",
+                "Obscuring": "Obscuring",
+                "Otherworldly": "Otherworldly",
+                "Overgrown": "Overgrown",
+                "Overlooked": "Overlooked",
+                "Petrified": "Petrified",
+                "Phantasmal": "Phantasmal",
+                "Primeval": "Primeval",
+                "Pristine": "Pristine",
+                "Relic": "Relic",
+                "Resplendent": "Resplendent",
+                "Runed": "Runed",
+                "Ruined": "Ruined",
+                "Sacred": "Sacred",
+                "Sanctified": "Sanctified",
+                "Secret": "Secret",
+                "Secluded": "Secluded",
+                "Serene": "Serene",
+                "Shaded": "Shaded",
+                "Shadowed": "Shadowed",
+                "Shattered": "Shattered",
+                "Shimmering": "Shimmering",
+                "Spectral": "Spectral",
+                "Stygian": "Stygian",
+                "Sunken": "Sunken",
+                "Surreal": "Surreal",
+                "Sylvan": "Sylvan",
+                "Temporal": "Temporal",
+                "TimeWorn": "Time-worn",
+                "Twilight": "Twilight",
+                "Uncharted": "Uncharted",
+                "Unhallowed": "Unhallowed",
+                "Unseen": "Unseen",
+                "Unearthed": "Unearthed",
+                "Verdant": "Verdant",
+                "Veiled": "Veiled",
+                "Venerable": "Venerable",
+                "Vivid": "Vivid",
+                "Weathered": "Weathered",
+                "Withered": "Withered",
+                "Wraithlike": "Wraithlike"
+            },
+            "Terrain": {
+                "Alcove": "Alcove",
+                "Altar": "Altar",
+                "Aqueduct": "Aqueduct",
+                "Archipelago": "Archipelago",
+                "Arena": "Arena",
+                "Archive": "Archive",
+                "Bazaar": "Bazaar",
+                "Barracks": "Barracks",
+                "Battleground": "Battleground",
+                "Butte": "Butte",
+                "Cairn": "Cairn",
+                "Campsite": "Campsite",
+                "Catacombs": "Catacombs",
+                "Causeway": "Causeway",
+                "Cauldron": "Cauldron",
+                "Cavern": "Cavern",
+                "Castle": "Castle",
+                "Chapel": "Chapel",
+                "Chasm": "Chasm",
+                "Citadel": "Citadel",
+                "Cliff": "Cliff",
+                "Conservatory": "Conservatory",
+                "Corridor": "Corridor",
+                "Crags": "Crags",
+                "Crater": "Crater",
+                "Crypt": "Crypt",
+                "Den": "Den",
+                "Dome": "Dome",
+                "Dungeon": "Dungeon",
+                "Eddy": "Eddy",
+                "Embankment": "Embankment",
+                "Estuary": "Estuary",
+                "Expanse": "Expanse",
+                "Fane": "Fane",
+                "Fen": "Fen",
+                "Fjord": "Fjord",
+                "Forest": "Forest",
+                "Fortress": "Fortress",
+                "Fountain": "Fountain",
+                "Foundry": "Foundry",
+                "Garrison": "Garrison",
+                "Garden": "Garden",
+                "Glade": "Glade",
+                "Grove": "Grove",
+                "Grotto": "Grotto",
+                "Harbor": "Harbor",
+                "Haven": "Haven",
+                "Henge": "Henge",
+                "Isle": "Isle",
+                "Jungle": "Jungle",
+                "Keep": "Keep",
+                "Knoll": "Knoll",
+                "Labyrinth": "Labyrinth",
+                "Library": "Library",
+                "Lodge": "Lodge",
+                "Manor": "Manor",
+                "Mausoleum": "Mausoleum",
+                "Meadow": "Meadow",
+                "Menhir": "Menhir",
+                "Mesa": "Mesa",
+                "Mill": "Mill",
+                "Mire": "Mire",
+                "Monolith": "Monolith",
+                "Moat": "Moat",
+                "Nexus": "Nexus",
+                "Observatory": "Observatory",
+                "Oasis": "Oasis",
+                "Obelisk": "Obelisk",
+                "Outpost": "Outpost",
+                "Orchard": "Orchard",
+                "Parapet": "Parapet",
+                "Pathway": "Pathway",
+                "Pavilion": "Pavilion",
+                "Pit": "Pit",
+                "Plaza": "Plaza",
+                "Portal": "Portal",
+                "Promontory": "Promontory",
+                "Quarry": "Quarry",
+                "Quicksand": "Quicksand",
+                "Ravine": "Ravine",
+                "Reef": "Reef",
+                "Ridge": "Ridge",
+                "Rift": "Rift",
+                "Ruination": "Ruination",
+                "Ruins": "Ruins",
+                "Sanctuary": "Sanctuary",
+                "Sanctum": "Sanctum",
+                "Seraglio": "Seraglio",
+                "Shrine": "Shrine",
+                "Shipwreck": "Shipwreck",
+                "Shelter": "Shelter",
+                "Spire": "Spire",
+                "Spring": "Spring",
+                "Steppe": "Steppe",
+                "Stronghold": "Stronghold",
+                "Summit": "Summit",
+                "Tavern": "Tavern",
+                "Temple": "Temple",
+                "Throne": "Throne",
+                "Tomb": "Tomb",
+                "Tombstone": "Tombstone",
+                "Tower": "Tower",
+                "Trails": "Trails",
+                "Trenches": "Trenches",
+                "Tundra": "Tundra",
+                "Undercroft": "Undercroft",
+                "Valley": "Valley",
+                "Vault": "Vault",
+                "Village": "Village",
+                "Vortex": "Vortex",
+                "Waterfall": "Waterfall",
+                "Wreckage": "Wreckage",
+                "Xystus": "Xystus",
+                "Yard": "Yard",
+                "Zeppelin": "Zeppelin",
+                "Ziggurat": "Ziggurat"
+            },
+            "Nature": {
+                "Material": {
+                    "Anthropod": {
+                        "Carapace": "Carapace",
+                        "Mandible": "Mandible",
+                        "Pincer": "Pincer",
+                        "Shell": "Shell",
+                        "Stinger": "Stinger"
+                    },
+                    "Bird": {
+                        "Feather": "Feather",
+                        "Talon": "Talon",
+                        "Beak": "Beak",
+                        "Claw": "Claw",
+                        "Bone": "Bone"
+                    },
+                    "Fish": {
+                        "Fin": "Fin",
+                        "Scale": "Scale",
+                        "Gill": "Gill",
+                        "Tooth": "Tooth",
+                        "Bone": "Bone"
+                    },
+                    "Mammal": {
+                        "Bone": "Bone",
+                        "Fur": "Fur",
+                        "Horn": "Horn",
+                        "Hide": "Hide",
+                        "Tusk": "Tusk"
+                    },
+                    "Mollusk": {
+                        "Shell": "Shell",
+                        "Pearl": "Pearl",
+                        "Valve": "Valve",
+                        "Mantle": "Mantle",
+                        "Beak": "Beak"
+                    },
+                    "Reptile": {
+                        "Claw": "Claw",
+                        "Scale": "Scale",
+                        "Tail": "Tail",
+                        "Spine": "Spine",
+                        "Fang": "Fang"
+                    },
+                    "Fungus": {
+                        "Sporecase": "Sporecase",
+                        "Cap": "Cap",
+                        "Vein": "Vein",
+                        "Stem": "Stem",
+                        "Fiber": "Fiber"
+                    },
+                    "Incorporeal": {
+                        "Wisp": "Wisp",
+                        "Vapor": "Vapor",
+                        "Ash": "Ash",
+                        "Essence": "Essence",
+                        "Soul": "Soul"
+                    },
+                    "Liquid": {
+                        "Droplet": "Droplet",
+                        "Globule": "Globule",
+                        "Ichor": "Ichor",
+                        "Resin": "Resin",
+                        "Film": "Film"
+                    },
+                    "Artificial": {
+                        "Alloy": "Alloy",
+                        "Circuit": "Circuit",
+                        "Frame": "Frame",
+                        "Casing": "Casing",
+                        "Component": "Component"
+                    },
+                    "Mineral": {
+                        "Crystal": "Crystal",
+                        "Shard": "Shard",
+                        "Ore": "Ore",
+                        "Fragment": "Fragment",
+                        "Nodule": "Nodule"
+                    },
+                    "Plant": {
+                        "Branch": "Branch",
+                        "Vine": "Vine",
+                        "Bark": "Bark",
+                        "Thorn": "Thorn",
+                        "Reed": "Reed"
+                    }
+                },
+                "Ingredient": {
+                    "Anthropod": {
+                        "Meat": "Meat",
+                        "Sac": "Sac",
+                        "Egg": "Egg",
+                        "Leg": "Leg",
+                        "Juice": "Juice"
+                    },
+                    "Bird": {
+                        "Egg": "Egg",
+                        "Wing": "Wing",
+                        "Meat": "Meat",
+                        "Heart": "Heart",
+                        "Blood": "Blood"
+                    },
+                    "Fish": {
+                        "Meat": "Meat",
+                        "Egg": "Egg",
+                        "Oil": "Oil",
+                        "Eye": "Eye",
+                        "Bile": "Bile"
+                    },
+                    "Mammal": {
+                        "Meat": "Meat",
+                        "Fat": "Fat",
+                        "Organ": "Organ",
+                        "Milk": "Milk",
+                        "Blood": "Blood"
+                    },
+                    "Mollusk": {
+                        "Flesh": "Flesh",
+                        "Ink": "Ink",
+                        "Gland": "Gland",
+                        "Slurry": "Slurry",
+                        "Meat": "Meat"
+                    },
+                    "Reptile": {
+                        "Meat": "Meat",
+                        "Egg": "Egg",
+                        "Venom": "Venom",
+                        "Blood": "Blood",
+                        "Liver": "Liver"
+                    },
+                    "Fungus": {
+                        "Shroom": "Shroom",
+                        "Spore": "Spore",
+                        "Flesh": "Flesh",
+                        "Pulp": "Pulp",
+                        "Residue": "Residue"
+                    },
+                    "Incorporeal": {
+                        "Mist": "Mist",
+                        "Plasma": "Plasma",
+                        "Breath": "Breath",
+                        "Essence": "Essence",
+                        "Residue": "Residue"
+                    },
+                    "Liquid": {
+                        "Fluid": "Fluid",
+                        "Reagent": "Reagent",
+                        "Syrup": "Syrup",
+                        "Slime": "Slime",
+                        "Gel": "Gel"
+                    },
+                    "Artificial": {
+                        "Gel": "Gel",
+                        "Solution": "Solution",
+                        "Compound": "Compound",
+                        "Serum": "Serum",
+                        "Extract": "Extract"
+                    },
+                    "Mineral": {
+                        "Dust": "Dust",
+                        "Grain": "Grain",
+                        "Powder": "Powder",
+                        "Salt": "Salt",
+                        "Residue": "Residue"
+                    },
+                    "Plant": {
+                        "Leaf": "Leaf",
+                        "Seed": "Seed",
+                        "Fruit": "Fruit",
+                        "Sap": "Sap",
+                        "Root": "Root"
+                    }
+                }
+            },
+            "Origin": {
+                "Material": {
+                    "Aerial": {
+                        "Light": "Light",
+                        "Hollow": "Hollow",
+                        "Avian": "Avian",
+                        "Fowl": "Fowl",
+                        "Drift": "Drift"
+                    },
+                    "Thunderous": {
+                        "Conductive": "Conductive",
+                        "Magnetic": "Magnetic",
+                        "Charged": "Charged",
+                        "Ionic": "Ionic",
+                        "Crackling": "Crackling"
+                    },
+                    "Paradox": {
+                        "Fractured": "Fractured",
+                        "Glitched": "Glitched",
+                        "Timeless": "Timeless",
+                        "Looped": "Looped",
+                        "Entropic": "Entropic"
+                    },
+                    "Terrestrial": {
+                        "Fossilized": "Fossilized",
+                        "Quarried": "Quarried",
+                        "Sedimentary": "Sedimentary",
+                        "Iron": "Iron",
+                        "Earthen": "Earthen"
+                    },
+                    "Ardent": {
+                        "Blazing": "Blazing",
+                        "Molten": "Molten",
+                        "Smoldering": "Smoldering",
+                        "Scorched": "Scorched",
+                        "Embered": "Embered"
+                    },
+                    "Glacial": {
+                        "Crystalline": "Crystalline",
+                        "Frozen": "Frozen",
+                        "Encased": "Encased",
+                        "Glassy": "Glassy",
+                        "Still": "Still"
+                    },
+                    "Spiritual": {
+                        "Sanctified": "Sanctified",
+                        "Echoing": "Echoing",
+                        "Hallowed": "Hallowed",
+                        "Woven": "Woven",
+                        "Otherbound": "Otherbound"
+                    },
+                    "Corrupted": {
+                        "Warped": "Warped",
+                        "Blight": "Blight",
+                        "Decayed": "Decayed",
+                        "Toxic": "Toxic",
+                        "Speckled": "Speckled"
+                    },
+                    "Aquatic": {
+                        "Barnacled": "Barnacled",
+                        "Soaked": "Soaked",
+                        "Flooded": "Flooded",
+                        "Tidal": "Tidal",
+                        "Marshbound": "Marshbound"
+                    },
+                    "Mechanical": {
+                        "Cogged": "Cogged",
+                        "Bolted": "Bolted",
+                        "Clockwork": "Clockwork",
+                        "Forged": "Forged",
+                        "Powered": "Powered"
+                    }
+                },
+                "Ingredient": {
+                    "Aerial": {
+                        "Fluffy": "Fluffy",
+                        "Airy": "Airy",
+                        "Crisp": "Crisp",
+                        "Wispy": "Wispy",
+                        "Downy": "Downy"
+                    },
+                    "Thunderous": {
+                        "Crackling": "Crackling",
+                        "Zesty": "Zesty",
+                        "Sparkling": "Sparkling",
+                        "Sizzling": "Sizzling",
+                        "Charged": "Charged"
+                    },
+                    "Paradox": {
+                        "Flickering": "Flickering",
+                        "Prismatic": "Prismatic",
+                        "Twisted": "Twisted",
+                        "Mishapen": "Mishapen",
+                        "Glistening": "Glistening"
+                    },
+                    "Terrestrial": {
+                        "Coarse": "Coarse",
+                        "Earthen": "Earthen",
+                        "Grainy": "Grainy",
+                        "Brown": "Brown",
+                        "Loamy": "Loamy"
+                    },
+                    "Ardent": {
+                        "Roasted": "Roasted",
+                        "Smoked": "Smoked",
+                        "Charred": "Charred",
+                        "Toasted": "Toasted",
+                        "Glazed": "Glazed"
+                    },
+                    "Glacial": {
+                        "Chilled": "Chilled",
+                        "Crystalline": "Crystalline",
+                        "Cold": "Cold",
+                        "Smooth": "Smooth",
+                        "Brittle": "Brittle"
+                    },
+                    "Spiritual": {
+                        "Luminous": "Luminous",
+                        "Silk": "Silk",
+                        "Translucent": "Translucent",
+                        "Hollow": "Hollow",
+                        "Misted": "Misted"
+                    },
+                    "Corrupted": {
+                        "Stained": "Stained",
+                        "Wilted": "Wilted",
+                        "Marbled": "Marbled",
+                        "Fermented": "Fermented",
+                        "Spoiled": "Spoiled"
+                    },
+                    "Aquatic": {
+                        "Moist": "Moist",
+                        "Scaley": "Scaley",
+                        "Brined": "Brined",
+                        "Puffy": "Puffy",
+                        "Slick": "Slick"
+                    },
+                    "Mechanical": {
+                        "Refined": "Refined",
+                        "Pressed": "Pressed",
+                        "Distilled": "Distilled",
+                        "Tempered": "Tempered",
+                        "Infused": "Infused"
+                    }
+                }
+            },
+            "Detail": {
+                "Agility": {
+                    "Stretchy": "Stretchy",
+                    "Pointy": "Pointy",
+                    "Slender": "Slender",
+                    "Slippery": "Slippery",
+                    "Hooded": "Hooded",
+                    "Moist": "Moist",
+                    "Slimey": "Slimey",
+                    "Springy": "Springy",
+                    "Small": "Small",
+                    "Responsive": "Responsive"
+                },
+                "Powerful": {
+                    "Strong": "Strong",
+                    "Big": "Big",
+                    "Hefty": "Hefty",
+                    "Prickly": "Prickly",
+                    "Serrated": "Serrated",
+                    "Blunt": "Blunt",
+                    "Red": "Red",
+                    "Huge": "Huge",
+                    "Sharp": "Sharp",
+                    "Clubbed": "Clubbed"
+                },
+                "Protective": {
+                    "Sturdy": "Sturdy",
+                    "Plated": "Plated",
+                    "Blue": "Blue",
+                    "Shielded": "Shielded",
+                    "Hardened": "Hardened",
+                    "Tough": "Tough",
+                    "Thick": "Thick",
+                    "Layered": "Layered",
+                    "Bulbous": "Bulbous",
+                    "Bloated": "Bloated"
+                },
+                "Recovery": {
+                    "Curative": "Curative",
+                    "Steady": "Steady",
+                    "Healthy": "Healthy",
+                    "Lush": "Lush",
+                    "Hearty": "Hearty",
+                    "Repaired": "Repaired",
+                    "Stable": "Stable",
+                    "Fresh": "Fresh",
+                    "Green": "Green",
+                    "Regenerating": "Regenerating"
+                },
+                "Debilitating": {
+                    "Corrosive": "Corrosive",
+                    "Drained": "Drained",
+                    "Hexed": "Hexed",
+                    "Mutated": "Mutated",
+                    "Melting": "Melting",
+                    "Withered": "Withered",
+                    "Cursed": "Cursed",
+                    "Freckled": "Freckled",
+                    "Black": "Black",
+                    "Infected": "Infected"
+                },
+                "Support": {
+                    "Yellow": "Yellow",
+                    "Spongey": "Spongey",
+                    "Ribbed": "Ribbed",
+                    "Squeaky": "Squeaky",
+                    "Humming": "Humming",
+                    "Resonating": "Resonating",
+                    "Reflective": "Reflective",
+                    "Porous": "Porous",
+                    "Boosted": "Boosted",
+                    "Sticky": "Sticky"
+                }
+            },
+            "Taste": {
+                "Bitter": {
+                    "Astringent": "Astringent",
+                    "Harsh": "Harsh",
+                    "Tannic": "Tannic",
+                    "Sharp": "Sharp",
+                    "Acrid": "Acrid",
+                    "Dry": "Dry",
+                    "Medicinal": "Medicinal",
+                    "Pungent": "Pungent",
+                    "Bracing": "Bracing",
+                    "Earthy": "Earthy"
+                },
+                "Sour": {
+                    "Tart": "Tart",
+                    "Tangy": "Tangy",
+                    "Zesty": "Zesty",
+                    "Citrusy": "Citrusy",
+                    "Acidic": "Acidic",
+                    "LipPuckering": "Lip-puckering",
+                    "Vinegary": "Vinegary",
+                    "Fermented": "Fermented",
+                    "Lemon": "Lemon",
+                    "Crisp": "Crisp"
+                },
+                "Sweet": {
+                    "Sugary": "Sugary",
+                    "Honeyed": "Honeyed",
+                    "Syrupy": "Syrupy",
+                    "CandyLike": "Candy-like",
+                    "Nectarous": "Nectarous",
+                    "Saccharine": "Saccharine",
+                    "Luscious": "Luscious",
+                    "Caramelized": "Caramelized",
+                    "Fruity": "Fruity",
+                    "Rich": "Rich"
+                },
+                "Salty": {
+                    "Briny": "Briny",
+                    "Savory": "Savory",
+                    "Pickled": "Pickled",
+                    "Cured": "Cured",
+                    "Mineral": "Mineral",
+                    "Zingy": "Zingy",
+                    "Piquant": "Piquant",
+                    "Aged": "Aged",
+                    "Smoky": "Smoky",
+                    "Oceanic": "Oceanic"
+                },
+                "Umami": {
+                    "Meaty": "Meaty",
+                    "Brothy": "Brothy",
+                    "Rich": "Rich",
+                    "Mushroomy": "Mushroomy",
+                    "Hearty": "Hearty",
+                    "Deep": "Deep",
+                    "Robust": "Robust",
+                    "SoyLike": "Soy-like",
+                    "Mellow": "Mellow",
+                    "FullBodied": "Full-bodied"
+                }
+            },
+            "Element": {
+                "Fire": {
+                    "Flaming": "Flaming",
+                    "Fire": "Fire"
+                },
+                "Ice": {
+                    "Cold": "Cold",
+                    "Ice": "Ice"
+                },
+                "Earth": {
+                    "Stone": "Stone",
+                    "Earth": "Earth"
+                },
+                "Bolt": {
+                    "Electric": "Electric",
+                    "Bolt": "Bolt"
+                },
+                "Air": {
+                    "Energy": "Energy",
+                    "Wind": "Wind"
+                },
+                "Dark": {
+                    "Cursed": "Cursed",
+                    "Dark": "Dark"
+                },
+                "Light": {
+                    "Holy": "Holy",
+                    "Light": "Light"
+                },
+                "Poison": {
+                    "Toxic": "Toxic",
+                    "Poison": "Poison"
+                }
+            }
+        },
 
 
+
+        
         "__SECTION__Dangers": "=== Dangers ===",
         "Dangers": {
             "StatusEffects": {
@@ -891,6 +913,10 @@
                 "Source17": "An ally reveals a secret that throws everything into question."
             }
         },
+
+
+
+        
         "__SECTION__Discoveries": "=== Discoveries ===",
         "Discoveries": {
             "Effects": {
@@ -923,5 +949,3 @@
         }
     }
 }
-
-
