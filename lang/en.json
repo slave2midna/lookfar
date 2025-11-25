@@ -1921,7 +1921,7 @@
 "Dangers": {
   "Phrases": {
     "DamageOnly": "{amount} damage",
-    "EffectAndDamage": "{effect} and {amount} damage"
+    "StatusAndDamage": "{status} and {amount} damage"
   },
   "StatusEffects": {
     "Minor": {
@@ -2014,6 +2014,7 @@
         }
     }
 }
+
 
 
 
