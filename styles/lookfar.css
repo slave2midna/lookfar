@@ -4,6 +4,7 @@
  *   1) Travel Check Dialog
  *   2) Travel Result Dialog
  *   3) Item Forger (main + mini)
+ *   4) Dungeon Mapper
  * ========================================================================== */
 
 
@@ -403,4 +404,217 @@
   opacity: 0.5 !important;
   filter: grayscale(1) !important;
   cursor: not-allowed !important;
+}
+
+
+/* ========================================================================== */
+/* 4) Lookfar – Dungeon Mapper                                                */
+/* ========================================================================== */
+
+#lookfar-dungeon-mapper {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+
+/* Root layout */
+#lookfar-dungeon-mapper .lf-dm-root {
+  text-align: center;
+}
+
+/* Canvas wrapper */
+#lookfar-dungeon-mapper .lf-dm-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Canvas element */
+#lookfar-dungeon-mapper .lf-dm-canvas {
+  border: 1px solid #666;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  height: auto;
+}
+
+/* Icon overlay */
+#lookfar-dungeon-mapper .lf-dm-icons {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+/* Control panel container */
+#lookfar-dungeon-mapper .lf-dm-panel {
+  margin-top: 8px;
+  font-size: 12px;
+  width: 100%;
+  margin-inline: auto;
+  text-align: left;
+}
+
+/* Generic flex rows */
+#lookfar-dungeon-mapper .lf-dm-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+#lookfar-dungeon-mapper .lf-dm-row--top {
+  margin-bottom: 6px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-row--middle {
+  margin-top: 4px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-row--buttons {
+  margin-top: 8px;
+  gap: 4px;
+}
+
+/* Fieldsets */
+#lookfar-dungeon-mapper .lf-dm-fieldset {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #aaa;
+  margin: 0;
+  border-radius: 4px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-legend {
+  font-weight: bold;
+  padding: 0 4px;
+  font-size: 0.95em;
+}
+
+/* Group content */
+#lookfar-dungeon-mapper .lf-dm-group {
+  line-height: 1.4;
+}
+
+#lookfar-dungeon-mapper .lf-dm-group--center {
+  text-align: center;
+}
+
+/* Numeric inputs */
+#lookfar-dungeon-mapper .lf-dm-input {
+  box-sizing: border-box;
+}
+
+#lookfar-dungeon-mapper .lf-dm-input--small {
+  width: 2em;
+  text-align: center;
+  margin-right: 4px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-input--seed {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 11px;
+}
+
+/* Path line examples */
+#lookfar-dungeon-mapper .lf-dm-line {
+  display: inline-block;
+  width: 28px;
+  vertical-align: middle;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line--open {
+  border-top: 1px solid #000;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line--secret {
+  border-top: 1px dashed #000;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line-wrapper--closed {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line--closed {
+  display: inline-block;
+  width: 28px;
+  border-top: 1px solid #000;
+  margin-right: 4px;
+  position: relative;
+  vertical-align: middle;
+}
+
+#lookfar-dungeon-mapper .lf-dm-line-block {
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  height: 10px;
+  border-left: 1px solid #000;
+  transform: translateX(-50%);
+}
+
+/* Labels next to line previews */
+#lookfar-dungeon-mapper .lf-dm-label {
+  vertical-align: middle;
+}
+
+/* Icon examples in Points */
+#lookfar-dungeon-mapper .lf-dm-point-icon {
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+/* Generate / Shape buttons */
+#lookfar-dungeon-mapper .lf-dm-button {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid #888;
+  border-radius: 3px;
+  background: #eee;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#lookfar-dungeon-mapper .lf-dm-button--icon {
+  width: 20px;
+  height: 20px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-button--primary,
+#lookfar-dungeon-mapper .lf-dm-button--secondary {
+  flex: 1;
+  box-sizing: border-box;
+}
+
+/* Icons */
+#lookfar-dungeon-mapper .lf-dm-icon {
+  font-size: 14px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-icon--tiny {
+  font-size: 10px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-icon--shape {
+  font-size: 14px;
+  transform: translateX(1px);
+}
+
+/* Seed display row */
+#lookfar-dungeon-mapper .lf-dm-seed-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-seed-current {
+  font-weight: bold;
 }
