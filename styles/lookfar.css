@@ -472,7 +472,7 @@
 /* Arrow (now 50% larger and spaced above the compass) */
 #lookfar-dungeon-mapper .lf-dm-compass-north {
   position: absolute;
-  top: -6px;                           /* push upward */
+  top: -3px;                           /* push upward */
   left: 50%;
   transform: translateX(-50%) rotate(-45deg);
   font-size: 16px;                     /* was 16px — now 50% larger */
