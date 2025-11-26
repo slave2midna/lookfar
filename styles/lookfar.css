@@ -669,6 +669,9 @@
   font-weight: bold;
 }
 
+#lookfar-dungeon-mapper .lf-dm-seed-input-wrap {
+  margin-top: 3px;
+}
 
 /* ========================================================================== */
 /* 5) Lookfar – Conflict Builder                                              */
