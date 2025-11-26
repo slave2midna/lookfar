@@ -1109,7 +1109,6 @@ export async function openDungeonMapper() {
       const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
       const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
       const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
-      const seedApplyBtn    = $html.find("#dungeon-builder-seed-apply")[0];
 
       // Numeric inputs for paths and points
       const pathOpenInput    = $html.find("#dungeon-builder-path-open-count")[0];
@@ -1399,56 +1398,6 @@ export async function openDungeonMapper() {
         };
       };
 
-      // Helper: apply a saved options object back into the UI
-      const applyOptionsFromState = (opts) => {
-        if (!opts) return;
-
-        // Determine shape from sides
-        let shapeKey = "hex";
-        if (typeof opts.sides === "number") {
-          for (const [key, cfg] of Object.entries(SHAPE_CONFIG)) {
-            if (cfg.sides === opts.sides) {
-              shapeKey = key;
-              break;
-            }
-          }
-        }
-
-        activeShape = shapeKey;
-        updateShapeButtons();
-
-        // Restore point counts
-        if (pointFeatureInput && opts.featureCount != null) {
-          pointFeatureInput.value = String(opts.featureCount);
-        }
-        if (pointDangerInput && opts.dangerCount != null) {
-          pointDangerInput.value = String(opts.dangerCount);
-        }
-        if (pointTreasureInput && opts.treasureCount != null) {
-          pointTreasureInput.value = String(opts.treasureCount);
-        }
-
-        // Restore path counts
-        if (pathOpenInput && opts.pathOpen != null) {
-          pathOpenInput.value = String(opts.pathOpen);
-        }
-        if (pathClosedInput && opts.pathClosed != null) {
-          pathClosedInput.value = String(opts.pathClosed);
-        }
-        if (pathSecretInput && opts.pathSecret != null) {
-          pathSecretInput.value = String(opts.pathSecret);
-        }
-
-        enforceGroupTotals(pointGroupInputs);
-        enforceGroupTotals(pathGroupInputs);
-
-        // Restore generate options (keys/patrols/traps)
-        genOptions.useKeys    = !!opts.useKeys;
-        genOptions.usePatrols = !!opts.usePatrols;
-        genOptions.useTraps   = !!opts.useTraps;
-        updateGenButtons();
-      };
-
       const $generateBtn = $html.find("#dungeon-builder-generate-btn");
       const $saveBtn     = $html.find("#dungeon-builder-save-btn");
 
@@ -1567,11 +1516,22 @@ export async function openDungeonMapper() {
       }
       // --- end draggable party trackers ---
 
-      // --- Generate button: always ignore seed input, roll new seed ---
       $generateBtn.on("click", () => {
         const options = getOptions();
 
-        const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+        let seed;
+        const raw = seedInputField?.value?.trim();
+        if (raw) {
+          const parsed = Number(raw);
+          if (Number.isFinite(parsed) && parsed >= 0) {
+            seed = parsed >>> 0;
+          } else {
+            ui.notifications?.warn?.("Invalid seed; using random instead.");
+            seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+          }
+        } else {
+          seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+        }
 
         redrawWith(options, seed);
         _lastDungeonState = { seed, options };
@@ -1579,62 +1539,11 @@ export async function openDungeonMapper() {
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
 
-        // Clear any typed seed; Generate does NOT use the input
-        if (seedInputField) seedInputField.value = "";
-
         // Reset trackers on every generate (without deleting them)
         if (typeof resetPartyTrackers === "function") {
           resetPartyTrackers();
         }
       });
-
-      // --- Apply button: use typed seed, restore config if it matches lastState ---
-      if (seedApplyBtn) {
-        seedApplyBtn.addEventListener("click", () => {
-          const raw = seedInputField?.value?.trim();
-          if (!raw) {
-            ui.notifications?.warn?.("Enter a seed value first.");
-            return;
-          }
-
-          const parsed = Number(raw);
-          if (!Number.isFinite(parsed) || parsed < 0) {
-            ui.notifications?.warn?.("Invalid seed value.");
-            if (seedInputField) seedInputField.value = "";
-            return;
-          }
-
-          const seed = parsed >>> 0;
-          let options;
-
-          // If this seed matches our remembered last state, restore its full config
-          if (
-            _lastDungeonState &&
-            typeof _lastDungeonState.seed === "number" &&
-            (_lastDungeonState.seed >>> 0) === seed &&
-            _lastDungeonState.options
-          ) {
-            applyOptionsFromState(_lastDungeonState.options);
-            options = _lastDungeonState.options;
-          } else {
-            // Otherwise, use whatever the UI currently says
-            options = getOptions();
-          }
-
-          redrawWith(options, seed);
-          _lastDungeonState = { seed, options };
-
-          const s = String(seed >>> 0);
-          if (seedCurrentSpan) seedCurrentSpan.textContent = s;
-
-          // Clear the input after applying, ready for a new seed
-          if (seedInputField) seedInputField.value = "";
-
-          if (typeof resetPartyTrackers === "function") {
-            resetPartyTrackers();
-          }
-        });
-      }
 
       $saveBtn.on("click", () => {
         // Placeholder for future integration (journal entry, note, etc.)
@@ -1643,13 +1552,10 @@ export async function openDungeonMapper() {
 
       // Initial draw: restore last state if present, otherwise roll fresh
       if (lastState && lastState.options && typeof lastState.seed === "number") {
-        // Restore the UI to match the last state, then redraw
-        applyOptionsFromState(lastState.options);
         redrawWith(lastState.options, lastState.seed);
 
         const s = String(lastState.seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
-        if (seedInputField) seedInputField.value = "";
       } else {
         const options = getOptions();
         const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
@@ -1658,7 +1564,6 @@ export async function openDungeonMapper() {
 
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
-        if (seedInputField) seedInputField.value = "";
       }
     },
     close: () => {
