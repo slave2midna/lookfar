@@ -83,6 +83,9 @@ function shuffle(arr) {
 let _lastDungeonState = null;
 let _builderAppId     = null;
 
+// Remember options per seed for this session
+const _dungeonSeedHistory = new Map();
+
 // ----- Core generator class -----
 class DungeonMapper {
   constructor(ctx, width, height, iconLayer, seed = null) {
@@ -1525,8 +1528,7 @@ export async function openDungeonMapper() {
       // --- end draggable party trackers ---
 
       $generateBtn.on("click", () => {
-        const options = getOptions();
-
+        // ---- 1) Parse / determine seed ----
         let seed;
         const raw = seedInputField?.value?.trim();
         if (raw) {
@@ -1541,9 +1543,52 @@ export async function openDungeonMapper() {
           seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
         }
 
-        redrawWith(options, seed);
-        _lastDungeonState = { seed, options };
+        // ---- 2) Decide which options to use ----
+        let options;
+        const cached = _dungeonSeedHistory.get(seed);
 
+        if (cached) {
+          // Use cached options for this seed
+          const opt = { ...cached };
+          options = opt;
+
+          // Restore shape selection
+          const restoredShapeKey = opt.shapeKey || shapeKeyForSides(opt.sides || 6);
+          activeShape = restoredShapeKey;
+          updateShapeButtons();
+
+          // Restore numeric inputs (points)
+          if (pointFeatureInput)  pointFeatureInput.value  = opt.featureCount  ?? 0;
+          if (pointDangerInput)   pointDangerInput.value   = opt.dangerCount   ?? 0;
+          if (pointTreasureInput) pointTreasureInput.value = opt.treasureCount ?? 0;
+
+          // Restore numeric inputs (paths)
+          if (pathOpenInput)   pathOpenInput.value   = opt.pathOpen   ?? 0;
+          if (pathClosedInput) pathClosedInput.value = opt.pathClosed ?? 0;
+          if (pathSecretInput) pathSecretInput.value = opt.pathSecret ?? 0;
+
+          // Re-enforce totals with the restored shape
+          enforceGroupTotals(pointGroupInputs);
+          enforceGroupTotals(pathGroupInputs);
+
+          // Restore toggles (keys / patrols / traps)
+          genOptions.useKeys    = !!opt.useKeys;
+          genOptions.usePatrols = !!opt.usePatrols;
+          genOptions.useTraps   = !!opt.useTraps;
+          updateGenButtons();
+        } else {
+          // No cached options for this seed: use current UI state
+          options = getOptions();
+        }
+
+        // ---- 3) Draw with chosen options + seed ----
+        redrawWith(options, seed);
+
+        // ---- 4) Update lastState and cache this seed's options ----
+        _lastDungeonState = { seed, options };
+        _dungeonSeedHistory.set(seed, { ...options });
+
+        // ---- 5) Update displayed seed text ----
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
 
