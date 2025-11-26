@@ -673,6 +673,13 @@
   margin-top: 3px;
 }
 
+/* Center the Apply button under the seed input */
+#lookfar-dungeon-mapper .lf-dm-seed-apply-wrap {
+  margin-top: 4px;
+  display: flex;
+  justify-content: center;
+}
+
 /* ========================================================================== */
 /* 5) Lookfar – Conflict Builder                                              */
 /* ========================================================================== */
