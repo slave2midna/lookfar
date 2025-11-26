@@ -1425,12 +1425,12 @@ export async function openDungeonMapper() {
       try {
         const trackerLayer = iconLayer;
         if (trackerLayer) {
-          const trackerDefs = [
-            { id: "db-tracker-red",    color: "red" },
-            { id: "db-tracker-blue",   color: "blue" },
-            { id: "db-tracker-green",  color: "green" },
-            { id: "db-tracker-purple", color: "purple" }
-          ];
+          // Build one tracker per active user, using their Player Color
+          const trackerDefs = game.users.map(u => ({
+            id: `db-tracker-user-${u.id}`,
+            color: u.color || "#ffffff",
+            label: u.name || "Player"
+          }));
 
           const iconSize = 18;
           const margin   = 6;
@@ -1477,6 +1477,12 @@ export async function openDungeonMapper() {
                 icon.style.cursor        = "grab";
                 icon.style.pointerEvents = "auto";
                 icon.style.zIndex        = "10";
+
+                // Tooltip / accessibility label (player name)
+                if (def.label) {
+                  icon.title = def.label;
+                  icon.setAttribute("aria-label", def.label);
+                }
 
                 icon.addEventListener("mousedown", (ev) => {
                   ev.preventDefault();
