@@ -1167,13 +1167,17 @@ export async function openDungeonMapper() {
         treasure: pointTreasureInput
       };
 
-      // Clamp to [0,3] and return numeric value
-      const clampField = (input) => {
+      // Clamp to [0, max] (usually = number of sides) and return numeric value
+      const clampField = (input, max) => {
         if (!input) return 0;
         let v = parseInt(input.value, 10);
         if (Number.isNaN(v)) v = 0;
         if (v < 0) v = 0;
-        if (v > 3) v = 3;
+
+        // Safety: if max is missing or invalid, treat it as 0+
+        if (!Number.isFinite(max) || max < 0) max = 0;
+
+        if (v > max) v = max;
         input.value = String(v);
         return v;
       };
@@ -1211,7 +1215,7 @@ export async function openDungeonMapper() {
 
         for (const key of allKeys) {
           const input = groupInputs[key];
-          const v = clampField(input);
+          const v = clampField(input, maxTotal);
           values[key] = v;
           total += v;
         }
@@ -1384,13 +1388,13 @@ export async function openDungeonMapper() {
         const sides = cfg.sides || 6;
 
         // Clamp first, then enforce totals just in case
-        const featureCount  = clampField(pointFeatureInput);
-        const dangerCount   = clampField(pointDangerInput);
-        const treasureCount = clampField(pointTreasureInput);
+        const featureCount  = clampField(pointFeatureInput,  sides);
+        const dangerCount   = clampField(pointDangerInput,   sides);
+        const treasureCount = clampField(pointTreasureInput, sides);
 
-        const pathOpen   = clampField(pathOpenInput);
-        const pathClosed = clampField(pathClosedInput);
-        const pathSecret = clampField(pathSecretInput);
+        const pathOpen   = clampField(pathOpenInput,   sides);
+        const pathClosed = clampField(pathClosedInput, sides);
+        const pathSecret = clampField(pathSecretInput, sides);
 
         enforceGroupTotals(pointGroupInputs);
         enforceGroupTotals(pathGroupInputs);
