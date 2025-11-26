@@ -3,19 +3,28 @@
 <div class="lf-dm-root">
 
   <div id="dungeon-builder-wrapper" class="lf-dm-wrapper">
-    <canvas
-      id="dungeon-builder-canvas"
-      width="360"
-      height="360"
-      class="lf-dm-canvas"
-    >
-    </canvas>
+  <canvas
+    id="dungeon-builder-canvas"
+    width="360"
+    height="360"
+    class="lf-dm-canvas"
+  >
+  </canvas>
 
-    <div
-      id="dungeon-builder-icons"
-      class="lf-dm-icons"
-    ></div>
+  <div
+    id="dungeon-builder-icons"
+    class="lf-dm-icons"
+  ></div>
+
+  {{!-- Static compass rose overlay (bottom-left) --}}
+  <div id="dungeon-builder-compass" class="lf-dm-compass">
+    <i class="fa-solid fa-compass lf-dm-compass-icon"></i>
+    <span class="lf-dm-compass-label lf-dm-compass-label--n">N</span>
+    <span class="lf-dm-compass-label lf-dm-compass-label--s">S</span>
+    <span class="lf-dm-compass-label lf-dm-compass-label--e">E</span>
+    <span class="lf-dm-compass-label lf-dm-compass-label--w">W</span>
   </div>
+</div>
 
   <div class="lf-dm-panel">
 
