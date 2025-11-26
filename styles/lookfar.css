@@ -449,6 +449,59 @@
   pointer-events: auto;
 }
 
+/* Compass container (bottom-left over the canvas) */
+#lookfar-dungeon-mapper .lf-dm-compass {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  width: 40px;
+  height: 40px;
+  pointer-events: none; /* avoids blocking clicks on the map */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+}
+
+/* The compass icon itself */
+#lookfar-dungeon-mapper .lf-dm-compass-icon {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+/* Direction labels around the icon */
+#lookfar-dungeon-mapper .lf-dm-compass-label {
+  position: absolute;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+#lookfar-dungeon-mapper .lf-dm-compass-label--n {
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#lookfar-dungeon-mapper .lf-dm-compass-label--s {
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#lookfar-dungeon-mapper .lf-dm-compass-label--e {
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#lookfar-dungeon-mapper .lf-dm-compass-label--w {
+  left: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 /* Control panel container */
 #lookfar-dungeon-mapper .lf-dm-panel {
   margin-top: 8px;
