@@ -1112,6 +1112,7 @@ export async function openDungeonMapper() {
       const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
       const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
       const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
+      const seedApplyBtn    = $html.find("#dungeon-builder-seed-apply")[0];
 
       // Numeric inputs for paths and points
       const pathOpenInput    = $html.find("#dungeon-builder-path-open-count")[0];
@@ -1528,75 +1529,108 @@ export async function openDungeonMapper() {
       // --- end draggable party trackers ---
 
       $generateBtn.on("click", () => {
-        // ---- 1) Parse / determine seed ----
-        let seed;
-        const raw = seedInputField?.value?.trim();
-        if (raw) {
-          const parsed = Number(raw);
-          if (Number.isFinite(parsed) && parsed >= 0) {
-            seed = parsed >>> 0;
-          } else {
-            ui.notifications?.warn?.("Invalid seed; using random instead.");
-            seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
-          }
-        } else {
-          seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
-        }
+        // Always generate a brand-new random seed
+        const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
 
-        // ---- 2) Decide which options to use ----
-        let options;
-        const cached = _dungeonSeedHistory.get(seed);
+        // Use the *current UI* options (buttons, counts, shape)
+        const options = getOptions();
 
-        if (cached) {
-          // Use cached options for this seed
-          const opt = { ...cached };
-          options = opt;
-
-          // Restore shape selection
-          const restoredShapeKey = opt.shapeKey || shapeKeyForSides(opt.sides || 6);
-          activeShape = restoredShapeKey;
-          updateShapeButtons();
-
-          // Restore numeric inputs (points)
-          if (pointFeatureInput)  pointFeatureInput.value  = opt.featureCount  ?? 0;
-          if (pointDangerInput)   pointDangerInput.value   = opt.dangerCount   ?? 0;
-          if (pointTreasureInput) pointTreasureInput.value = opt.treasureCount ?? 0;
-
-          // Restore numeric inputs (paths)
-          if (pathOpenInput)   pathOpenInput.value   = opt.pathOpen   ?? 0;
-          if (pathClosedInput) pathClosedInput.value = opt.pathClosed ?? 0;
-          if (pathSecretInput) pathSecretInput.value = opt.pathSecret ?? 0;
-
-          // Re-enforce totals with the restored shape
-          enforceGroupTotals(pointGroupInputs);
-          enforceGroupTotals(pathGroupInputs);
-
-          // Restore toggles (keys / patrols / traps)
-          genOptions.useKeys    = !!opt.useKeys;
-          genOptions.usePatrols = !!opt.usePatrols;
-          genOptions.useTraps   = !!opt.useTraps;
-          updateGenButtons();
-        } else {
-          // No cached options for this seed: use current UI state
-          options = getOptions();
-        }
-
-        // ---- 3) Draw with chosen options + seed ----
+        // Draw with these options + random seed
         redrawWith(options, seed);
 
-        // ---- 4) Update lastState and cache this seed's options ----
+        // Cache this seed's options so Apply can recall them later
         _lastDungeonState = { seed, options };
         _dungeonSeedHistory.set(seed, { ...options });
 
-        // ---- 5) Update displayed seed text ----
+        // Update visible seed
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+
+        // Clear the input field (Generate ignores it)
+        if (seedInputField) seedInputField.value = "";
 
         // Reset trackers on every generate (without deleting them)
         if (typeof resetPartyTrackers === "function") {
           resetPartyTrackers();
         }
       });
+
+      if (seedApplyBtn) {
+        seedApplyBtn.addEventListener("click", () => {
+          // Read & validate seed from input
+          const raw = seedInputField?.value?.trim();
+          if (!raw) {
+            ui.notifications?.warn?.("Enter a seed to apply.");
+            return;
+          }
+
+          const parsed = Number(raw);
+          if (!Number.isFinite(parsed) || parsed < 0) {
+            ui.notifications?.warn?.("Invalid seed entered.");
+            return;
+          }
+
+          const seed = parsed >>> 0;
+
+          // Decide which options to use for this seed
+          let options;
+          const cached = _dungeonSeedHistory.get(seed);
+
+          if (cached) {
+            // Use cached options for this seed
+            const opt = { ...cached };
+            options = opt;
+
+            // Restore shape selection
+            const restoredShapeKey = opt.shapeKey || shapeKeyForSides(opt.sides || 6);
+            activeShape = restoredShapeKey;
+            updateShapeButtons();
+
+            // Restore numeric inputs (points)
+            if (pointFeatureInput)  pointFeatureInput.value  = opt.featureCount  ?? 0;
+            if (pointDangerInput)   pointDangerInput.value   = opt.dangerCount   ?? 0;
+            if (pointTreasureInput) pointTreasureInput.value = opt.treasureCount ?? 0;
+
+            // Restore numeric inputs (paths)
+            if (pathOpenInput)   pathOpenInput.value   = opt.pathOpen   ?? 0;
+            if (pathClosedInput) pathClosedInput.value = opt.pathClosed ?? 0;
+            if (pathSecretInput) pathSecretInput.value = opt.pathSecret ?? 0;
+
+            // Re-enforce totals with the restored shape
+            enforceGroupTotals(pointGroupInputs);
+            enforceGroupTotals(pathGroupInputs);
+
+            // Restore toggles (keys / patrols / traps)
+            genOptions.useKeys    = !!opt.useKeys;
+            genOptions.usePatrols = !!opt.usePatrols;
+            genOptions.useTraps   = !!opt.useTraps;
+            updateGenButtons();
+          } else {
+            // No cached options for this seed: fall back to current UI state
+            options = getOptions();
+          }
+
+          // Draw with chosen options + this seed
+          redrawWith(options, seed);
+
+          // Update lastState and cache this seed's options
+          _lastDungeonState = { seed, options };
+          _dungeonSeedHistory.set(seed, { ...options });
+
+          // Update displayed seed
+          const s = String(seed >>> 0);
+          if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+
+          // Clear the input so a new seed can be entered
+          if (seedInputField) seedInputField.value = "";
+
+          // Reset trackers
+          if (typeof resetPartyTrackers === "function") {
+            resetPartyTrackers();
+          }
+        });
+      }
+
 
       $saveBtn.on("click", () => {
         // Placeholder for future integration (journal entry, note, etc.)
