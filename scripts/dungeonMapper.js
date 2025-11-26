@@ -1144,6 +1144,13 @@ export async function openDungeonMapper() {
         }
       };
 
+      const shapeKeyForSides = (sides) => {
+        for (const [key, cfg] of Object.entries(SHAPE_CONFIG)) {
+          if (cfg.sides === sides) return key;
+        }
+        return "hex";
+      };
+
       const pathGroupInputs = {
         open:   pathOpenInput,
         closed: pathClosedInput,
@@ -1394,7 +1401,8 @@ export async function openDungeonMapper() {
           treasureCount,
           pathOpen,
           pathClosed,
-          pathSecret
+          pathSecret,
+          shapeKey: activeShape
         };
       };
 
@@ -1552,7 +1560,35 @@ export async function openDungeonMapper() {
 
       // Initial draw: restore last state if present, otherwise roll fresh
       if (lastState && lastState.options && typeof lastState.seed === "number") {
-        redrawWith(lastState.options, lastState.seed);
+        const opt = lastState.options;
+
+        // --- Restore shape selection from stored seed ---
+        const restoredShapeKey = opt.shapeKey || shapeKeyForSides(opt.sides || 6);
+        activeShape = restoredShapeKey;
+        updateShapeButtons();
+
+        // --- Restore numeric inputs (points) from stored options tied to this seed ---
+        if (pointFeatureInput)  pointFeatureInput.value  = opt.featureCount  ?? 0;
+        if (pointDangerInput)   pointDangerInput.value   = opt.dangerCount   ?? 0;
+        if (pointTreasureInput) pointTreasureInput.value = opt.treasureCount ?? 0;
+
+        // --- Restore numeric inputs (paths) from stored options tied to this seed ---
+        if (pathOpenInput)   pathOpenInput.value   = opt.pathOpen   ?? 0;
+        if (pathClosedInput) pathClosedInput.value = opt.pathClosed ?? 0;
+        if (pathSecretInput) pathSecretInput.value = opt.pathSecret ?? 0;
+
+        // Re-enforce group totals after restoring values
+        enforceGroupTotals(pointGroupInputs);
+        enforceGroupTotals(pathGroupInputs);
+
+        // --- Restore toggle options (keys / patrols / traps) from this seed ---
+        genOptions.useKeys    = !!opt.useKeys;
+        genOptions.usePatrols = !!opt.usePatrols;
+        genOptions.useTraps   = !!opt.useTraps;
+        updateGenButtons();
+
+        // Finally, draw using the restored options + seed
+        redrawWith(opt, lastState.seed);
 
         const s = String(lastState.seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
