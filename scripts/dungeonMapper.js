@@ -1426,11 +1426,13 @@ export async function openDungeonMapper() {
         const trackerLayer = iconLayer;
         if (trackerLayer) {
           // Build one tracker per active user, using their Player Color
-          const trackerDefs = game.users.map(u => ({
-            id: `db-tracker-user-${u.id}`,
-            color: u.color || "#ffffff",
-            label: u.name || "Player"
-          }));
+          const trackerDefs = game.users
+            .filter(u => u.active)
+            .map(u => ({
+              id: `db-tracker-user-${u.id}`,
+              color: u.color || "#ffffff",
+              label: u.name || "Player"
+            }));
 
           const iconSize = 18;
           const margin   = 6;
