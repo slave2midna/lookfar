@@ -449,11 +449,6 @@
   pointer-events: auto;
 }
 
-/* Compass container (bottom-left over the canvas) */
-#lookfar-dungeon-mapper .lf-dm-wrapper {
-  position: relative;
-}
-
 #lookfar-dungeon-mapper .lf-dm-compass {
   position: absolute;
   left: 8px;
