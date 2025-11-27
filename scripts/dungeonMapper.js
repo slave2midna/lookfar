@@ -1643,10 +1643,75 @@ export async function openDungeonMapper() {
         });
       }
 
+      $saveBtn.on("click", async () => {
+        try {
+          // Use the LAST generated/drawn dungeon
+          const state = _lastDungeonState;
+          if (!state || typeof state.seed !== "number" || !state.options) {
+            ui.notifications?.warn?.("No dungeon result to save yet. Generate one first.");
+            return;
+          }
 
-      $saveBtn.on("click", () => {
-        // Placeholder for future integration (journal entry, note, etc.)
-        console.log("[Dungeon Mapper] Save clicked (not yet implemented).");
+          const seed     = state.seed >>> 0;
+          const options  = state.options;
+          const seedText = String(seed);
+
+          // 1) Capture the canvas as a PNG data URL
+          if (!canvas) {
+            ui.notifications?.error?.("Dungeon Mapper: canvas not found; cannot save.");
+            return;
+          }
+
+          const dataUrl = canvas.toDataURL("image/png");
+
+          // 2) Build simple HTML describing this dungeon
+          const safeSeed      = foundry.utils?.escapeHTML?.(seedText) ?? seedText;
+          const safeShape     = options.sides ?? 6;
+          const safeFeat      = options.featureCount   ?? 0;
+          const safeDanger    = options.dangerCount    ?? 0;
+          const safeTreasure  = options.treasureCount  ?? 0;
+          const safeOpen      = options.pathOpen       ?? 0;
+          const safeClosed    = options.pathClosed     ?? 0;
+          const safeSecret    = options.pathSecret     ?? 0;
+
+          const contentHtml = `
+            <h2>Dungeon Map</h2>
+            <p><strong>Seed:</strong> ${safeSeed}</p>
+            <p><strong>Shape:</strong> ${safeShape} sides</p>
+            <p>
+              <strong>Points:</strong>
+              Features ${safeFeat}, Dangers ${safeDanger}, Treasures ${safeTreasure}<br>
+              <strong>Paths:</strong>
+              Open ${safeOpen}, Closed ${safeClosed}, Secret ${safeSecret}
+            </p>
+            <p>
+              <img src="${dataUrl}"
+                   style="max-width:100%; height:auto; border:1px solid #666;" />
+            </p>
+          `;
+
+          // 3) Create a Journal Entry with a single HTML text page
+          const HTML_FORMAT = (CONST?.JOURNAL_ENTRY_PAGE_FORMATS?.HTML ?? 1);
+
+          const journalData = {
+            name: `Dungeon Map (Seed ${safeSeed})`,
+            pages: [{
+              name: "Dungeon Map",
+              type: "text",
+              text: {
+                format: HTML_FORMAT,
+                content: contentHtml
+              }
+            }]
+          };
+
+          const entry = await JournalEntry.create(journalData, { renderSheet: true });
+
+          ui.notifications?.info?.(`Dungeon saved to Journal: ${entry.name}`);
+        } catch (err) {
+          console.error("[Dungeon Mapper] Save failed:", err);
+          ui.notifications?.error?.("Dungeon Mapper: failed to save Journal entry (see console).");
+        }
       });
 
       // Initial draw: restore last state if present, otherwise roll fresh
