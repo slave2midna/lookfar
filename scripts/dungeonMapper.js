@@ -119,6 +119,12 @@ class DungeonMapper {
     this.exitIndex   = null;
     this.stairsIndex = null;
 
+    // Export-only state
+    this.exportMode         = false;
+    this._exportLetterIndex = 0;
+    this.exportEdgeLetters  = [];  // [{ letter, type, from, to }]
+    this.lastPoints         = null; // last drawn points snapshot
+
     // Seeded RNG
     this._initRNG(seed);
   }
@@ -138,6 +144,13 @@ class DungeonMapper {
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), (t | 61));
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+
+  _nextExportLetter() {
+    const baseCharCode = 97; // 'a'
+    const letter = String.fromCharCode(baseCharCode + (this._exportLetterIndex % 26));
+    this._exportLetterIndex++;
+    return letter;
   }
 
   _shuffle(arr) {
@@ -187,9 +200,16 @@ class DungeonMapper {
     treasureCount = 1,
     pathOpen      = 3,
     pathClosed    = 2,
-    pathSecret    = 1
+    pathSecret    = 1,
+    exportMode    = false  // NEW
   } = {}) {
     const ctx = this.ctx;
+
+    // Export flags
+    this.exportMode         = !!exportMode;
+    this._exportLetterIndex = 0;
+    this.exportEdgeLetters  = [];
+    this.lastPoints         = null;
 
     // Reset transforms
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -229,6 +249,9 @@ class DungeonMapper {
         treasure: treasureCount
       }
     );
+
+    // Remember for export/journal descriptions
+    this.lastPoints = pointsWithTypes;
 
     // Keys
     if (this.useKeys) {
@@ -883,15 +906,40 @@ class DungeonMapper {
         ctx.stroke();
       }
 
-      if (isPatrol) {
+      // Live UI: FA icons on top of the line
+      if (isPatrol && !this.exportMode) {
         this._placeFAIcon("fa-solid fa-skull", mx, my, 16, "black");
       }
 
-      if (isTrap) {
+      if (isTrap && !this.exportMode) {
         const offset = -24;
         const tx = mx + nx * offset;
         const ty = my + ny * offset;
         this._placeFAIcon("fa-solid fa-land-mine-on", tx, ty, 16, "black");
+      }
+
+      // Export-only: draw lowercase letters and remember mapping
+      if (this.exportMode && (isPatrol || isTrap)) {
+        const letter = this._nextExportLetter();
+
+        ctx.save();
+        ctx.font = "14px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "black";
+
+        const offsetLetter = -10;
+        const lx = mx + nx * offsetLetter;
+        const ly = my + ny * offsetLetter;
+        ctx.fillText(letter, lx, ly);
+        ctx.restore();
+
+        this.exportEdgeLetters.push({
+          letter,
+          type: isPatrol ? "patrol" : "trap",
+          from: i,
+          to:   j
+        });
       }
     }
 
@@ -942,7 +990,8 @@ class DungeonMapper {
       const isKeyNode    = this.useKeys && (idx === this.key1Index || idx === this.key2Index);
       const isLockedGoal = this.useKeys && (idx === this.goalIndex);
 
-      if (isLockedGoal) {
+      // Live UI: icons; exportMode: fall through and draw numbers instead
+      if (isLockedGoal && !this.exportMode) {
         this._placeFAIcon(
           "fa-solid fa-lock",
           x,
@@ -953,7 +1002,7 @@ class DungeonMapper {
         return;
       }
 
-      if (isKeyNode) {
+      if (isKeyNode && !this.exportMode) {
         let keyOffsetX = 0;
         let keyOffsetY = 0;
 
@@ -1656,15 +1705,44 @@ export async function openDungeonMapper() {
           const options  = state.options;
           const seedText = String(seed);
 
-          // 1) Capture the canvas as a PNG data URL
+          // We need the DOM canvas only for sizing
           if (!canvas) {
             ui.notifications?.error?.("Dungeon Mapper: canvas not found; cannot save.");
             return;
           }
 
-          const dataUrl = canvas.toDataURL("image/png");
+          // Build an offscreen canvas for export mode so we can
+          // draw numeric labels + patrol/trap letters without
+          // disturbing the live view.
+          const exportCanvas = document.createElement("canvas");
+          exportCanvas.width  = canvas.width;
+          exportCanvas.height = canvas.height;
+          const exportCtx = exportCanvas.getContext("2d");
 
-          // 2) Build simple HTML describing this dungeon
+          // Fresh mapper for export, same seed and options
+          const exportMapper = new DungeonMapper(
+            exportCtx,
+            exportCanvas.width,
+            exportCanvas.height,
+            null,    // no HTML icon overlay
+            seed
+          );
+
+          // Draw in exportMode so keys/locks get numbers and
+          // patrols/traps get letter annotations.
+          exportMapper.draw({
+            ...options,
+            exportMode: true
+          });
+
+          // Capture image from export canvas
+          const dataUrl = exportCanvas.toDataURL("image/png");
+
+          // Pull out last points + edge annotations for the journal text
+          const pts = exportMapper.lastPoints || [];
+          const edgeLetters = exportMapper.exportEdgeLetters || [];
+
+          // 2) Build HTML describing this dungeon
           const safeSeed      = foundry.utils?.escapeHTML?.(seedText) ?? seedText;
           const safeShape     = options.sides ?? 6;
           const safeFeat      = options.featureCount   ?? 0;
@@ -1673,6 +1751,53 @@ export async function openDungeonMapper() {
           const safeOpen      = options.pathOpen       ?? 0;
           const safeClosed    = options.pathClosed     ?? 0;
           const safeSecret    = options.pathSecret     ?? 0;
+
+          // Compute how many keys exist in this map (0,1,2)
+          const keyCount =
+            (exportMapper.key1Index != null ? 1 : 0) +
+            (exportMapper.key2Index != null ? 1 : 0);
+
+          // Build per-point info (only non-blank, labeled points)
+          let pointsHtml = "";
+          pts.forEach((p, idx) => {
+            if (p.type === "blank") return;
+            if (p.number === null || p.number === undefined) return;
+
+            const label = String(p.number);
+            const isKeyNode =
+              exportMapper.useKeys &&
+              (idx === exportMapper.key1Index || idx === exportMapper.key2Index);
+            const isLockedGoal =
+              exportMapper.useKeys && (idx === exportMapper.goalIndex);
+
+            const notes = [];
+            if (isKeyNode) {
+              notes.push("Has key");
+            }
+            if (isLockedGoal && keyCount > 0) {
+              notes.push(
+                `Needs ${keyCount} key${keyCount > 1 ? "s" : ""}`
+              );
+            }
+
+            const noteText = notes.length ? ` – ${notes.join("; ")}` : "";
+
+            pointsHtml += `
+              <h3>Point ${label}</h3>
+              <p>Type: ${p.type}${noteText}</p>
+            `;
+          });
+
+          // Build patrol/trap letter mapping
+          let edgesHtml = "";
+          if (edgeLetters.length) {
+            edgesHtml += `<h2>Path Annotations</h2><ul>`;
+            for (const e of edgeLetters) {
+              const kindLabel = (e.type === "patrol") ? "Patrol route" : "Trap";
+              edgesHtml += `<li>${e.letter} = ${kindLabel}</li>`;
+            }
+            edgesHtml += `</ul>`;
+          }
 
           const contentHtml = `
             <h2>Dungeon Map</h2>
@@ -1688,6 +1813,9 @@ export async function openDungeonMapper() {
               <img src="${dataUrl}"
                    style="max-width:100%; height:auto; border:1px solid #666;" />
             </p>
+            <h2>Points</h2>
+            ${pointsHtml || "<p>No labeled points.</p>"}
+            ${edgesHtml}
           `;
 
           // 3) Create a Journal Entry with a single HTML text page
