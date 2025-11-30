@@ -3,19 +3,26 @@
 <div class="lf-dm-root">
 
   <div id="dungeon-builder-wrapper" class="lf-dm-wrapper">
-    <canvas
-      id="dungeon-builder-canvas"
-      width="360"
-      height="360"
-      class="lf-dm-canvas"
-    >
-    </canvas>
+  <canvas
+    id="dungeon-builder-canvas"
+    width="360"
+    height="360"
+    class="lf-dm-canvas"
+  >
+  </canvas>
 
-    <div
-      id="dungeon-builder-icons"
-      class="lf-dm-icons"
-    ></div>
+  <div
+    id="dungeon-builder-icons"
+    class="lf-dm-icons"
+  ></div>
+
+  {{!-- Compass Overlay (bottom-left) --}}
+  <div class="lf-dm-compass">
+    <i class="fa-solid fa-compass lf-dm-compass-icon"></i>
+    <i class="fa-solid fa-location-arrow lf-dm-compass-north"></i>
+    <span class="lf-dm-compass-n">N</span>
   </div>
+</div>
 
   <div class="lf-dm-panel">
 
@@ -34,7 +41,7 @@
               id="dungeon-builder-path-open-count"
               value="3"
               min="0"
-              max="3"
+              max="8"
               class="lf-dm-input lf-dm-input--small"
             >
             <span class="lf-dm-line lf-dm-line--open"></span>
@@ -129,31 +136,40 @@
         <legend class="lf-dm-legend">Seed</legend>
         <div class="lf-dm-group lf-dm-group--seed">
 
-          <div class="lf-dm-seed-display">
-            <div
-              id="dungeon-builder-seed-current"
-              class="lf-dm-seed-current"
-            >—</div>
+  <div class="lf-dm-seed-display">
+    <div id="dungeon-builder-seed-current" class="lf-dm-seed-current">—</div>
 
-            <button
-              type="button"
-              id="dungeon-builder-seed-copy"
-              class="lf-dm-button lf-dm-button--icon"
-              title="Copy seed"
-            >
-              <i class="fa-solid fa-copy lf-dm-icon lf-dm-icon--tiny"></i>
-            </button>
-          </div>
+    <button
+      type="button"
+      id="dungeon-builder-seed-copy"
+      class="lf-dm-button lf-dm-button--icon"
+      title="Copy seed"
+    >
+      <i class="fa-solid fa-copy lf-dm-icon lf-dm-icon--tiny"></i>
+    </button>
+  </div>
 
-          <div class="lf-dm-seed-input-wrap">
-            <input
-              type="text"
-              id="dungeon-builder-seed-input"
-              placeholder="Enter seed"
-              class="lf-dm-input lf-dm-input--seed"
-            >
-          </div>
-        </div>
+  <div class="lf-dm-seed-input-wrap">
+    <input
+      type="text"
+      id="dungeon-builder-seed-input"
+      placeholder="Enter seed"
+      class="lf-dm-input lf-dm-input--seed"
+    >
+  </div>
+
+  <!-- New Apply Button -->
+  <div class="lf-dm-seed-apply-wrap">
+    <button
+      type="button"
+      id="dungeon-builder-seed-apply"
+      class="lf-dm-button lf-dm-button--secondary"
+    >
+      Apply
+    </button>
+  </div>
+
+</div>
       </fieldset>
 
     </div>{{!-- /.lf-dm-row--top --}}
@@ -205,7 +221,10 @@
             class="lf-dm-button lf-dm-button--toggle"
             title="Pentagon"
           >
-            <i class="fa-solid fa-pentagon lf-dm-icon lf-dm-icon--shape"></i>
+            <span
+              class="lf-dm-icon lf-dm-icon--shape lf-dm-shape-icon"
+              data-shape="pentagon"
+            ></span>
           </button>
 
           <button
@@ -214,7 +233,10 @@
             class="lf-dm-button lf-dm-button--toggle"
             title="Hexagon"
           >
-            <i class="fa-solid fa-hexagon lf-dm-icon lf-dm-icon--shape"></i>
+            <span
+              class="lf-dm-icon lf-dm-icon--shape lf-dm-shape-icon"
+              data-shape="hexagon"
+            ></span>
           </button>
 
           <button
@@ -223,7 +245,10 @@
             class="lf-dm-button lf-dm-button--toggle"
             title="Heptagon"
           >
-            <i class="fa-solid fa-heptagon lf-dm-icon lf-dm-icon--shape"></i>
+            <span
+              class="lf-dm-icon lf-dm-icon--shape lf-dm-shape-icon"
+              data-shape="heptagon"
+            ></span>
           </button>
 
           <button
@@ -232,7 +257,10 @@
             class="lf-dm-button lf-dm-button--toggle"
             title="Octagon"
           >
-            <i class="fa-solid fa-octagon lf-dm-icon lf-dm-icon--shape"></i>
+            <span
+              class="lf-dm-icon lf-dm-icon--shape lf-dm-shape-icon"
+              data-shape="octagon"
+            ></span>
           </button>
         </div>
       </fieldset>

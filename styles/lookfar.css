@@ -449,6 +449,47 @@
   pointer-events: auto;
 }
 
+#lookfar-dungeon-mapper .lf-dm-compass {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+}
+
+#lookfar-dungeon-mapper .lf-dm-compass-icon {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+/* Arrow (now 50% larger and spaced above the compass) */
+#lookfar-dungeon-mapper .lf-dm-compass-north {
+  position: absolute;
+  top: -3px;                           /* push upward */
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+  font-size: 16px;                     /* was 16px — now 50% larger */
+  opacity: 0.95;
+}
+
+/* North label (50% larger and spaced above the arrow) */
+#lookfar-dungeon-mapper .lf-dm-compass-n {
+  position: absolute;
+  top: -20px;                          /* push further upward */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 15px;                     /* was 10px — now 50% larger */
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
 /* Control panel container */
 #lookfar-dungeon-mapper .lf-dm-panel {
   margin-top: 8px;
@@ -485,6 +526,18 @@
   border: 1px solid #aaa;
   margin: 0;
   border-radius: 4px;
+}
+
+/* Middle row sizing:
+ * - Shape = shrink-wrap to its 4 buttons
+ * - Generate = takes the remaining space
+ */
+#lookfar-dungeon-mapper .lf-dm-fieldset--shape {
+  flex: 0 0 auto;
+}
+
+#lookfar-dungeon-mapper .lf-dm-fieldset--generate {
+  flex: 1 1 auto;
 }
 
 #lookfar-dungeon-mapper .lf-dm-legend {
@@ -594,6 +647,22 @@
   box-sizing: border-box;
 }
 
+/* Generate / Shape option rows */
+#lookfar-dungeon-mapper .lf-dm-generate-options,
+#lookfar-dungeon-mapper .lf-dm-shape-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+#lookfar-dungeon-mapper .lf-dm-generate-options .lf-dm-button,
+#lookfar-dungeon-mapper .lf-dm-shape-options .lf-dm-button {
+  flex: 0 0 auto;
+}
+
 /* Icons */
 #lookfar-dungeon-mapper .lf-dm-icon {
   font-size: 14px;
@@ -603,9 +672,30 @@
   font-size: 10px;
 }
 
+/* No X-nudge on shape icons */
 #lookfar-dungeon-mapper .lf-dm-icon--shape {
   font-size: 14px;
-  transform: translateX(1px);
+  transform: none;
+}
+
+/* Slight horizontal shift for FA icons under Generate */
+#lookfar-dungeon-mapper .lf-dm-generate-options .lf-dm-icon {
+  transform: translateX(2px); /* try 1px, 2px, or even 0.5px */
+}
+
+/* Fix SVG alignment inside shape buttons */
+#lookfar-dungeon-mapper .lf-dm-shape-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Center SVG exactly */
+#lookfar-dungeon-mapper .lf-dm-shape-icon svg {
+  transform: none !important;
+  margin: 0 auto;
 }
 
 /* Seed display row */
@@ -620,6 +710,16 @@
   font-weight: bold;
 }
 
+#lookfar-dungeon-mapper .lf-dm-seed-input-wrap {
+  margin-top: 3px;
+}
+
+/* Center the Apply button under the seed input */
+#lookfar-dungeon-mapper .lf-dm-seed-apply-wrap {
+  margin-top: 4px;
+  display: flex;
+  justify-content: center;
+}
 
 /* ========================================================================== */
 /* 5) Lookfar – Conflict Builder                                              */

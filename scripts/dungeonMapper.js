@@ -3,6 +3,72 @@
 const CANVAS_WIDTH  = 360;
 const CANVAS_HEIGHT = 360;
 
+// ===== SVG Helpers =====
+function createSVG(size = 24) {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("xmlns", svgNS);
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("width", size);
+  svg.setAttribute("height", size);
+  svg.setAttribute("aria-hidden", "true");
+  return svg;
+}
+
+function createPolygon(points) {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const poly = document.createElementNS(svgNS, "polygon");
+  poly.setAttribute("points", points);
+  poly.setAttribute("fill", "none");
+  poly.setAttribute("stroke", "currentColor");
+  poly.setAttribute("stroke-width", "2");
+  poly.setAttribute("stroke-linejoin", "round");
+  return poly;
+}
+
+function iconPentagon(size = 24) {
+  const svg = createSVG(size);
+  svg.appendChild(createPolygon("12 3 20 9.5 16.5 20 7.5 20 4 9.5"));
+  return svg;
+}
+
+function iconHexagon(size = 24) {
+  const svg = createSVG(size);
+  svg.appendChild(createPolygon("12 3 19 8 19 16 12 21 5 16 5 8"));
+  return svg;
+}
+
+function iconHeptagon(size = 24) {
+  const svg = createSVG(size);
+  svg.appendChild(createPolygon("12 3 18.5 7 20.5 14 16 20 8 20 3.5 14 5.5 7"));
+  return svg;
+}
+
+function iconOctagon(size = 24) {
+  const svg = createSVG(size);
+  svg.appendChild(createPolygon("9 3 15 3 21 9 21 15 15 21 9 21 3 15 3 9"));
+  return svg;
+}
+
+// Small helper to inject SVG icons into the shape buttons
+function injectShapeIcons(html) {
+  const shapes = {
+    pentagon: iconPentagon,
+    hexagon: iconHexagon,
+    heptagon: iconHeptagon,
+    octagon: iconOctagon
+  };
+
+  html.find(".lf-dm-shape-icon").each(function () {
+    const shape = this.dataset.shape;
+    const makeIcon = shapes[shape];
+    if (!makeIcon) return;
+    const svg = makeIcon(20);
+    // Replace any existing contents (e.g. old <i> tags)
+    this.replaceChildren(svg);
+  });
+}
+
 // Simple array shuffle (legacy helper)
 function shuffle(arr) {
   const a = arr.slice();
@@ -16,6 +82,9 @@ function shuffle(arr) {
 // Module-level state: remember last generated dungeon this session
 let _lastDungeonState = null;
 let _builderAppId     = null;
+
+// Remember options per seed for this session
+const _dungeonSeedHistory = new Map();
 
 // ----- Core generator class -----
 class DungeonMapper {
@@ -50,6 +119,12 @@ class DungeonMapper {
     this.exitIndex   = null;
     this.stairsIndex = null;
 
+    // Export-only state
+    this.exportMode         = false;
+    this._exportLetterIndex = 0;
+    this.exportEdgeLetters  = [];  // [{ letter, type, from, to }]
+    this.lastPoints         = null; // last drawn points snapshot
+
     // Seeded RNG
     this._initRNG(seed);
   }
@@ -69,6 +144,13 @@ class DungeonMapper {
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), (t | 61));
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+
+  _nextExportLetter() {
+    const baseCharCode = 97; // 'a'
+    const letter = String.fromCharCode(baseCharCode + (this._exportLetterIndex % 26));
+    this._exportLetterIndex++;
+    return letter;
   }
 
   _shuffle(arr) {
@@ -118,9 +200,16 @@ class DungeonMapper {
     treasureCount = 1,
     pathOpen      = 3,
     pathClosed    = 2,
-    pathSecret    = 1
+    pathSecret    = 1,
+    exportMode    = false  // NEW
   } = {}) {
     const ctx = this.ctx;
+
+    // Export flags
+    this.exportMode         = !!exportMode;
+    this._exportLetterIndex = 0;
+    this.exportEdgeLetters  = [];
+    this.lastPoints         = null;
 
     // Reset transforms
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -160,6 +249,9 @@ class DungeonMapper {
         treasure: treasureCount
       }
     );
+
+    // Remember for export/journal descriptions
+    this.lastPoints = pointsWithTypes;
 
     // Keys
     if (this.useKeys) {
@@ -814,15 +906,43 @@ class DungeonMapper {
         ctx.stroke();
       }
 
-      if (isPatrol) {
+      // Live UI: FA icons on top of the line
+      if (isPatrol && !this.exportMode) {
         this._placeFAIcon("fa-solid fa-skull", mx, my, 16, "black");
       }
 
-      if (isTrap) {
+      if (isTrap && !this.exportMode) {
         const offset = -24;
         const tx = mx + nx * offset;
         const ty = my + ny * offset;
         this._placeFAIcon("fa-solid fa-land-mine-on", tx, ty, 16, "black");
+      }
+
+      // Export-only: draw lowercase letters and remember mapping
+      if (this.exportMode && (isPatrol || isTrap)) {
+        const letter = this._nextExportLetter();
+
+        ctx.save();
+        ctx.font = "14px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "black";
+
+        // Patrol letters a bit off the line; trap letters a bit farther
+        const baseOffsetLetter = -10;
+        const offsetLetter = isTrap ? baseOffsetLetter - 6 : baseOffsetLetter;
+
+        const lx = mx + nx * offsetLetter;
+        const ly = my + ny * offsetLetter;
+        ctx.fillText(letter, lx, ly);
+        ctx.restore();
+
+        this.exportEdgeLetters.push({
+          letter,
+          type: isPatrol ? "patrol" : "trap",
+          from: i,
+          to:   j
+        });
       }
     }
 
@@ -873,7 +993,8 @@ class DungeonMapper {
       const isKeyNode    = this.useKeys && (idx === this.key1Index || idx === this.key2Index);
       const isLockedGoal = this.useKeys && (idx === this.goalIndex);
 
-      if (isLockedGoal) {
+      // Live UI: icons; exportMode: fall through and draw numbers instead
+      if (isLockedGoal && !this.exportMode) {
         this._placeFAIcon(
           "fa-solid fa-lock",
           x,
@@ -884,7 +1005,7 @@ class DungeonMapper {
         return;
       }
 
-      if (isKeyNode) {
+      if (isKeyNode && !this.exportMode) {
         let keyOffsetX = 0;
         let keyOffsetY = 0;
 
@@ -1018,6 +1139,10 @@ export async function openDungeonMapper() {
       _builderAppId = generatorAppId;
 
       const $html = html;
+
+      // Inject custom SVG icons into the shape buttons
+      injectShapeIcons($html);
+
       const canvas = $html.find("#dungeon-builder-canvas")[0];
       const ctx    = canvas.getContext("2d");
       const iconLayer = $html.find("#dungeon-builder-icons")[0];
@@ -1039,6 +1164,7 @@ export async function openDungeonMapper() {
       const seedCurrentSpan = $html.find("#dungeon-builder-seed-current")[0];
       const seedInputField  = $html.find("#dungeon-builder-seed-input")[0];
       const seedCopyBtn     = $html.find("#dungeon-builder-seed-copy")[0];
+      const seedApplyBtn    = $html.find("#dungeon-builder-seed-apply")[0];
 
       // Numeric inputs for paths and points
       const pathOpenInput    = $html.find("#dungeon-builder-path-open-count")[0];
@@ -1054,24 +1180,30 @@ export async function openDungeonMapper() {
         pent: {
           sides: 5,
           points: { feature: 3, danger: 1, treasure: 1 },
-          paths:  { open: 2, closed: 1, secret: 1 }
+          paths:  { open: 3, closed: 1, secret: 1 }
         },
         hex: {
           sides: 6,
           points: { feature: 3, danger: 2, treasure: 1 },
           paths:  { open: 3, closed: 2, secret: 1 }
         },
-        // Key name remains "sept" for wiring; UI label says Heptagon
         sept: {
           sides: 7,
           points: { feature: 3, danger: 2, treasure: 2 },
-          paths:  { open: 2, closed: 3, secret: 2 }
+          paths:  { open: 3, closed: 2, secret: 2 }
         },
         oct: {
           sides: 8,
           points: { feature: 3, danger: 3, treasure: 2 },
           paths:  { open: 3, closed: 3, secret: 2 }
         }
+      };
+
+      const shapeKeyForSides = (sides) => {
+        for (const [key, cfg] of Object.entries(SHAPE_CONFIG)) {
+          if (cfg.sides === sides) return key;
+        }
+        return "hex";
       };
 
       const pathGroupInputs = {
@@ -1086,13 +1218,17 @@ export async function openDungeonMapper() {
         treasure: pointTreasureInput
       };
 
-      // Clamp to [0,3] and return numeric value
-      const clampField = (input) => {
+      // Clamp to [0, max] (usually = number of sides) and return numeric value
+      const clampField = (input, max) => {
         if (!input) return 0;
         let v = parseInt(input.value, 10);
         if (Number.isNaN(v)) v = 0;
         if (v < 0) v = 0;
-        if (v > 3) v = 3;
+
+        // Safety: if max is missing or invalid, treat it as 0+
+        if (!Number.isFinite(max) || max < 0) max = 0;
+
+        if (v > max) v = max;
         input.value = String(v);
         return v;
       };
@@ -1118,7 +1254,7 @@ export async function openDungeonMapper() {
         if (pathSecretInput) pathSecretInput.value = cfg.paths.secret;
       };
 
-      // Enforce per-group total <= sides, adjusting other fields if needed
+      // Enforce per-group total == sides, adjusting other fields if needed
       const enforceGroupTotals = (groupInputs, changedKey = null) => {
         const cfg = getShapeConfig();
         const maxTotal = cfg.sides;
@@ -1127,39 +1263,82 @@ export async function openDungeonMapper() {
         let total = 0;
 
         const allKeys = Object.keys(groupInputs).filter(k => groupInputs[k]);
+        if (!allKeys.length) return;
 
+        // If there's only one input in this group, it must equal sides
+        if (allKeys.length === 1) {
+          const onlyKey = allKeys[0];
+          const input = groupInputs[onlyKey];
+          if (input) {
+            values[onlyKey] = maxTotal;
+            input.value = String(maxTotal);
+          }
+          return;
+        }
+
+        // Initial clamp per field (0..maxTotal)
         for (const key of allKeys) {
           const input = groupInputs[key];
-          const v = clampField(input);
+          const v = clampField(input, maxTotal);
           values[key] = v;
           total += v;
         }
 
-        if (total <= maxTotal) return;
+        // Build priority order: others first, then the changed field last (if any)
+        const makePriority = () => {
+          if (changedKey && allKeys.includes(changedKey)) {
+            const others = allKeys.filter(k => k !== changedKey);
+            return [...others, changedKey];
+          }
+          return allKeys.slice();
+        };
 
-        let overflow = total - maxTotal;
+        // 1) If total is too high, reduce until it matches sides
+        if (total > maxTotal) {
+          let overflow = total - maxTotal;
+          const priority = makePriority();
 
-        // Priority: all other fields first, then the changed field last (if provided)
-        let priority = allKeys;
-        if (changedKey && allKeys.includes(changedKey)) {
-          priority = allKeys.filter(k => k !== changedKey);
-          priority.push(changedKey);
+          while (overflow > 0) {
+            let adjustedThisPass = false;
+
+            for (const key of priority) {
+              if (overflow <= 0) break;
+              if (values[key] > 0) {
+                values[key]--;
+                overflow--;
+                adjustedThisPass = true;
+                if (overflow <= 0) break;
+              }
+            }
+
+            if (!adjustedThisPass) break; // nothing left to reduce
+          }
         }
 
-        while (overflow > 0) {
-          let adjustedThisPass = false;
+        // Recompute total after reductions
+        total = allKeys.reduce((sum, k) => sum + (values[k] ?? 0), 0);
 
-          for (const key of priority) {
-            if (overflow <= 0) break;
-            if (values[key] > 0) {
-              values[key]--;
-              overflow--;
-              adjustedThisPass = true;
-              if (overflow <= 0) break;
+        // 2) If total is too low, distribute the deficit across fields
+        if (total < maxTotal) {
+          let deficit = maxTotal - total;
+          const priority = makePriority();
+
+          while (deficit > 0) {
+            let adjustedThisPass = false;
+
+            for (const key of priority) {
+              if (deficit <= 0) break;
+              const current = values[key] ?? 0;
+              if (current < maxTotal) {
+                values[key] = current + 1;
+                deficit--;
+                adjustedThisPass = true;
+                if (deficit <= 0) break;
+              }
             }
-          }
 
-          if (!adjustedThisPass) break; // can't reduce any further
+            if (!adjustedThisPass) break; // all fields saturated
+          }
         }
 
         // Push adjusted values back into inputs
@@ -1303,13 +1482,13 @@ export async function openDungeonMapper() {
         const sides = cfg.sides || 6;
 
         // Clamp first, then enforce totals just in case
-        const featureCount  = clampField(pointFeatureInput);
-        const dangerCount   = clampField(pointDangerInput);
-        const treasureCount = clampField(pointTreasureInput);
+        const featureCount  = clampField(pointFeatureInput,  sides);
+        const dangerCount   = clampField(pointDangerInput,   sides);
+        const treasureCount = clampField(pointTreasureInput, sides);
 
-        const pathOpen   = clampField(pathOpenInput);
-        const pathClosed = clampField(pathClosedInput);
-        const pathSecret = clampField(pathSecretInput);
+        const pathOpen   = clampField(pathOpenInput,   sides);
+        const pathClosed = clampField(pathClosedInput, sides);
+        const pathSecret = clampField(pathSecretInput, sides);
 
         enforceGroupTotals(pointGroupInputs);
         enforceGroupTotals(pathGroupInputs);
@@ -1324,7 +1503,8 @@ export async function openDungeonMapper() {
           treasureCount,
           pathOpen,
           pathClosed,
-          pathSecret
+          pathSecret,
+          shapeKey: activeShape
         };
       };
 
@@ -1343,12 +1523,14 @@ export async function openDungeonMapper() {
       try {
         const trackerLayer = iconLayer;
         if (trackerLayer) {
-          const trackerDefs = [
-            { id: "db-tracker-red",    color: "red" },
-            { id: "db-tracker-blue",   color: "blue" },
-            { id: "db-tracker-green",  color: "green" },
-            { id: "db-tracker-purple", color: "purple" }
-          ];
+          // Build one tracker per active user, using their Player Color
+          const trackerDefs = game.users
+            .filter(u => u.active)
+            .map(u => ({
+              id: `db-tracker-user-${u.id}`,
+              color: u.color || "#ffffff",
+              label: u.name || "Player"
+            }));
 
           const iconSize = 18;
           const margin   = 6;
@@ -1395,6 +1577,12 @@ export async function openDungeonMapper() {
                 icon.style.cursor        = "grab";
                 icon.style.pointerEvents = "auto";
                 icon.style.zIndex        = "10";
+
+                // Tooltip / accessibility label (player name)
+                if (def.label) {
+                  icon.title = def.label;
+                  icon.setAttribute("aria-label", def.label);
+                }
 
                 icon.addEventListener("mousedown", (ev) => {
                   ev.preventDefault();
@@ -1447,27 +1635,25 @@ export async function openDungeonMapper() {
       // --- end draggable party trackers ---
 
       $generateBtn.on("click", () => {
+        // Always generate a brand-new random seed
+        const seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+
+        // Use the *current UI* options (buttons, counts, shape)
         const options = getOptions();
 
-        let seed;
-        const raw = seedInputField?.value?.trim();
-        if (raw) {
-          const parsed = Number(raw);
-          if (Number.isFinite(parsed) && parsed >= 0) {
-            seed = parsed >>> 0;
-          } else {
-            ui.notifications?.warn?.("Invalid seed; using random instead.");
-            seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
-          }
-        } else {
-          seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
-        }
-
+        // Draw with these options + random seed
         redrawWith(options, seed);
-        _lastDungeonState = { seed, options };
 
+        // Cache this seed's options so Apply can recall them later
+        _lastDungeonState = { seed, options };
+        _dungeonSeedHistory.set(seed, { ...options });
+
+        // Update visible seed
         const s = String(seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+
+        // Clear the input field (Generate ignores it)
+        if (seedInputField) seedInputField.value = "";
 
         // Reset trackers on every generate (without deleting them)
         if (typeof resetPartyTrackers === "function") {
@@ -1475,14 +1661,281 @@ export async function openDungeonMapper() {
         }
       });
 
-      $saveBtn.on("click", () => {
-        // Placeholder for future integration (journal entry, note, etc.)
-        console.log("[Dungeon Mapper] Save clicked (not yet implemented).");
+      if (seedApplyBtn) {
+        seedApplyBtn.addEventListener("click", () => {
+          // Read & validate seed from input
+          const raw = seedInputField?.value?.trim();
+          if (!raw) {
+            ui.notifications?.warn?.("Enter a seed to apply.");
+            return;
+          }
+
+          const parsed = Number(raw);
+          if (!Number.isFinite(parsed) || parsed < 0) {
+            ui.notifications?.warn?.("Invalid seed entered.");
+            return;
+          }
+
+          const seed = parsed >>> 0;
+
+          // Decide which options to use for this seed
+          let options;
+          const cached = _dungeonSeedHistory.get(seed);
+
+          if (cached) {
+            // Use cached options for this seed
+            const opt = { ...cached };
+            options = opt;
+
+            // Restore shape selection
+            const restoredShapeKey = opt.shapeKey || shapeKeyForSides(opt.sides || 6);
+            activeShape = restoredShapeKey;
+            updateShapeButtons();
+
+            // Restore numeric inputs (points)
+            if (pointFeatureInput)  pointFeatureInput.value  = opt.featureCount  ?? 0;
+            if (pointDangerInput)   pointDangerInput.value   = opt.dangerCount   ?? 0;
+            if (pointTreasureInput) pointTreasureInput.value = opt.treasureCount ?? 0;
+
+            // Restore numeric inputs (paths)
+            if (pathOpenInput)   pathOpenInput.value   = opt.pathOpen   ?? 0;
+            if (pathClosedInput) pathClosedInput.value = opt.pathClosed ?? 0;
+            if (pathSecretInput) pathSecretInput.value = opt.pathSecret ?? 0;
+
+            // Re-enforce totals with the restored shape
+            enforceGroupTotals(pointGroupInputs);
+            enforceGroupTotals(pathGroupInputs);
+
+            // Restore toggles (keys / patrols / traps)
+            genOptions.useKeys    = !!opt.useKeys;
+            genOptions.usePatrols = !!opt.usePatrols;
+            genOptions.useTraps   = !!opt.useTraps;
+            updateGenButtons();
+          } else {
+            // No cached options for this seed: fall back to current UI state
+            options = getOptions();
+          }
+
+          // Draw with chosen options + this seed
+          redrawWith(options, seed);
+
+          // Update lastState and cache this seed's options
+          _lastDungeonState = { seed, options };
+          _dungeonSeedHistory.set(seed, { ...options });
+
+          // Update displayed seed
+          const s = String(seed >>> 0);
+          if (seedCurrentSpan) seedCurrentSpan.textContent = s;
+
+          // Clear the input so a new seed can be entered
+          if (seedInputField) seedInputField.value = "";
+
+          // Reset trackers
+          if (typeof resetPartyTrackers === "function") {
+            resetPartyTrackers();
+          }
+        });
+      }
+
+      $saveBtn.on("click", async () => {
+        try {
+          // Use the LAST generated/drawn dungeon
+          const state = _lastDungeonState;
+          if (!state || typeof state.seed !== "number" || !state.options) {
+            ui.notifications?.warn?.("No dungeon result to save yet. Generate one first.");
+            return;
+          }
+
+          const seed     = state.seed >>> 0;
+          const options  = state.options;
+          const seedText = String(seed);
+
+          // We need the DOM canvas only for sizing
+          if (!canvas) {
+            ui.notifications?.error?.("Dungeon Mapper: canvas not found; cannot save.");
+            return;
+          }
+
+          // Build an offscreen canvas for export mode so we can
+          // draw numeric labels + patrol/trap letters without
+          // disturbing the live view.
+          const exportCanvas = document.createElement("canvas");
+          exportCanvas.width  = canvas.width;
+          exportCanvas.height = canvas.height;
+          const exportCtx = exportCanvas.getContext("2d");
+
+          // Fresh mapper for export, same seed and options
+          const exportMapper = new DungeonMapper(
+            exportCtx,
+            exportCanvas.width,
+            exportCanvas.height,
+            null,    // no HTML icon overlay
+            seed
+          );
+
+          // Draw in exportMode so keys/locks get numbers and
+          // patrols/traps get letter annotations.
+          exportMapper.draw({
+            ...options,
+            exportMode: true
+          });
+
+          // Capture image from export canvas
+          const dataUrl = exportCanvas.toDataURL("image/png");
+
+          // Pull out last points + edge annotations for the journal text
+          const pts = exportMapper.lastPoints || [];
+          const edgeLetters = exportMapper.exportEdgeLetters || [];
+
+          // 2) Build HTML describing this dungeon
+          const safeSeed      = foundry.utils?.escapeHTML?.(seedText) ?? seedText;
+          const safeShape     = options.sides ?? 6;
+          const safeFeat      = options.featureCount   ?? 0;
+          const safeDanger    = options.dangerCount    ?? 0;
+          const safeTreasure  = options.treasureCount  ?? 0;
+          const safeOpen      = options.pathOpen       ?? 0;
+          const safeClosed    = options.pathClosed     ?? 0;
+          const safeSecret    = options.pathSecret     ?? 0;
+
+          // Compute how many keys exist in this map (0,1,2)
+          const keyCount =
+            (exportMapper.key1Index != null ? 1 : 0) +
+            (exportMapper.key2Index != null ? 1 : 0);
+
+          // Build per-point info (only non-blank, labeled points)
+          let pointsHtml = "";
+
+          const labelOrder = (n) => {
+            if (n === "S") return Number.NEGATIVE_INFINITY;
+            if (n === "G") return Number.POSITIVE_INFINITY;
+            const num = Number(n);
+            return Number.isFinite(num) ? num : 0;
+          };
+
+          const pointEntries = pts
+            .map((p, idx) => ({ p, idx }))
+            .filter(({ p }) =>
+              p.type !== "blank" &&
+              p.number !== null &&
+              p.number !== undefined
+            )
+            .sort((a, b) => labelOrder(a.p.number) - labelOrder(b.p.number));
+
+          for (const { p, idx } of pointEntries) {
+            const label = String(p.number);
+            const isKeyNode =
+              exportMapper.useKeys &&
+              (idx === exportMapper.key1Index || idx === exportMapper.key2Index);
+            const isLockedGoal =
+              exportMapper.useKeys && (idx === exportMapper.goalIndex);
+
+            const notes = [];
+            if (isKeyNode) {
+              notes.push("Has key");
+            }
+            if (isLockedGoal && keyCount > 0) {
+              notes.push(
+                `Needs ${keyCount} key${keyCount > 1 ? "s" : ""}`
+              );
+            }
+
+            const noteText = notes.length ? ` – ${notes.join("; ")}` : "";
+
+            pointsHtml += `
+              <h3>Point ${label}</h3>
+              <p>Type: ${p.type}${noteText}</p>
+            `;
+          }
+
+          // Build patrol/trap letter mapping
+          let edgesHtml = "";
+          if (edgeLetters.length) {
+            edgesHtml += `<p><strong>Path annotations:</strong></p><ul>`;
+            for (const e of edgeLetters) {
+              const kindLabel = (e.type === "patrol") ? "Patrol" : "Trap";
+              edgesHtml += `<li>${e.letter} = ${kindLabel}</li>`;
+            }
+            edgesHtml += `</ul>`;
+          }
+
+          const contentHtml = `
+            <p><strong>Seed:</strong> ${safeSeed}</p>
+            <p><strong>Shape:</strong> ${safeShape} sides</p>
+            <p>
+              <strong>Points:</strong>
+              Features ${safeFeat}, Dangers ${safeDanger}, Treasures ${safeTreasure}<br>
+              <strong>Paths:</strong>
+              Open ${safeOpen}, Closed ${safeClosed}, Secret ${safeSecret}
+            </p>
+            <p style="text-align:center;">
+              <img src="${dataUrl}"
+                   style="
+                     display:inline-block;
+                     max-width:100%;
+                     height:auto;
+                     border:1px solid #666;
+                     background:#dbd9ce;
+                   " />
+            </p>
+            ${edgesHtml}
+            ${pointsHtml || "<p>No labeled points.</p>"}
+          `;
+
+          // 3) Create a Journal Entry with a single HTML text page
+          const HTML_FORMAT = (CONST?.JOURNAL_ENTRY_PAGE_FORMATS?.HTML ?? 1);
+
+          const journalData = {
+            name: `Dungeon Map (Seed ${safeSeed})`,
+            pages: [{
+              name: "Dungeon Map",
+              type: "text",
+              text: {
+                format: HTML_FORMAT,
+                content: contentHtml
+              }
+            }]
+          };
+
+          const entry = await JournalEntry.create(journalData, { renderSheet: true });
+
+          ui.notifications?.info?.(`Dungeon saved to Journal: ${entry.name}`);
+        } catch (err) {
+          console.error("[Dungeon Mapper] Save failed:", err);
+          ui.notifications?.error?.("Dungeon Mapper: failed to save Journal entry (see console).");
+        }
       });
 
       // Initial draw: restore last state if present, otherwise roll fresh
       if (lastState && lastState.options && typeof lastState.seed === "number") {
-        redrawWith(lastState.options, lastState.seed);
+        const opt = lastState.options;
+
+        // --- Restore shape selection from stored seed ---
+        const restoredShapeKey = opt.shapeKey || shapeKeyForSides(opt.sides || 6);
+        activeShape = restoredShapeKey;
+        updateShapeButtons();
+
+        // --- Restore numeric inputs (points) from stored options tied to this seed ---
+        if (pointFeatureInput)  pointFeatureInput.value  = opt.featureCount  ?? 0;
+        if (pointDangerInput)   pointDangerInput.value   = opt.dangerCount   ?? 0;
+        if (pointTreasureInput) pointTreasureInput.value = opt.treasureCount ?? 0;
+
+        // --- Restore numeric inputs (paths) from stored options tied to this seed ---
+        if (pathOpenInput)   pathOpenInput.value   = opt.pathOpen   ?? 0;
+        if (pathClosedInput) pathClosedInput.value = opt.pathClosed ?? 0;
+        if (pathSecretInput) pathSecretInput.value = opt.pathSecret ?? 0;
+
+        // Re-enforce group totals after restoring values
+        enforceGroupTotals(pointGroupInputs);
+        enforceGroupTotals(pathGroupInputs);
+
+        // --- Restore toggle options (keys / patrols / traps) from this seed ---
+        genOptions.useKeys    = !!opt.useKeys;
+        genOptions.usePatrols = !!opt.usePatrols;
+        genOptions.useTraps   = !!opt.useTraps;
+        updateGenButtons();
+
+        // Finally, draw using the restored options + seed
+        redrawWith(opt, lastState.seed);
 
         const s = String(lastState.seed >>> 0);
         if (seedCurrentSpan) seedCurrentSpan.textContent = s;
