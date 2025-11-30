@@ -1180,18 +1180,17 @@ export async function openDungeonMapper() {
         pent: {
           sides: 5,
           points: { feature: 3, danger: 1, treasure: 1 },
-          paths:  { open: 2, closed: 1, secret: 1 }
+          paths:  { open: 3, closed: 1, secret: 1 }
         },
         hex: {
           sides: 6,
           points: { feature: 3, danger: 2, treasure: 1 },
           paths:  { open: 3, closed: 2, secret: 1 }
         },
-        // Key name remains "sept" for wiring; UI label says Heptagon
         sept: {
           sides: 7,
           points: { feature: 3, danger: 2, treasure: 2 },
-          paths:  { open: 2, closed: 3, secret: 2 }
+          paths:  { open: 3, closed: 2, secret: 2 }
         },
         oct: {
           sides: 8,
@@ -1255,7 +1254,7 @@ export async function openDungeonMapper() {
         if (pathSecretInput) pathSecretInput.value = cfg.paths.secret;
       };
 
-      // Enforce per-group total <= sides, adjusting other fields if needed
+      // Enforce per-group total == sides, adjusting other fields if needed
       const enforceGroupTotals = (groupInputs, changedKey = null) => {
         const cfg = getShapeConfig();
         const maxTotal = cfg.sides;
@@ -1264,7 +1263,20 @@ export async function openDungeonMapper() {
         let total = 0;
 
         const allKeys = Object.keys(groupInputs).filter(k => groupInputs[k]);
+        if (!allKeys.length) return;
 
+        // If there's only one input in this group, it must equal sides
+        if (allKeys.length === 1) {
+          const onlyKey = allKeys[0];
+          const input = groupInputs[onlyKey];
+          if (input) {
+            values[onlyKey] = maxTotal;
+            input.value = String(maxTotal);
+          }
+          return;
+        }
+
+        // Initial clamp per field (0..maxTotal)
         for (const key of allKeys) {
           const input = groupInputs[key];
           const v = clampField(input, maxTotal);
@@ -1272,31 +1284,61 @@ export async function openDungeonMapper() {
           total += v;
         }
 
-        if (total <= maxTotal) return;
+        // Build priority order: others first, then the changed field last (if any)
+        const makePriority = () => {
+          if (changedKey && allKeys.includes(changedKey)) {
+            const others = allKeys.filter(k => k !== changedKey);
+            return [...others, changedKey];
+          }
+          return allKeys.slice();
+        };
 
-        let overflow = total - maxTotal;
+        // 1) If total is too high, reduce until it matches sides
+        if (total > maxTotal) {
+          let overflow = total - maxTotal;
+          const priority = makePriority();
 
-        // Priority: all other fields first, then the changed field last (if provided)
-        let priority = allKeys;
-        if (changedKey && allKeys.includes(changedKey)) {
-          priority = allKeys.filter(k => k !== changedKey);
-          priority.push(changedKey);
+          while (overflow > 0) {
+            let adjustedThisPass = false;
+
+            for (const key of priority) {
+              if (overflow <= 0) break;
+              if (values[key] > 0) {
+                values[key]--;
+                overflow--;
+                adjustedThisPass = true;
+                if (overflow <= 0) break;
+              }
+            }
+
+            if (!adjustedThisPass) break; // nothing left to reduce
+          }
         }
 
-        while (overflow > 0) {
-          let adjustedThisPass = false;
+        // Recompute total after reductions
+        total = allKeys.reduce((sum, k) => sum + (values[k] ?? 0), 0);
 
-          for (const key of priority) {
-            if (overflow <= 0) break;
-            if (values[key] > 0) {
-              values[key]--;
-              overflow--;
-              adjustedThisPass = true;
-              if (overflow <= 0) break;
+        // 2) If total is too low, distribute the deficit across fields
+        if (total < maxTotal) {
+          let deficit = maxTotal - total;
+          const priority = makePriority();
+
+          while (deficit > 0) {
+            let adjustedThisPass = false;
+
+            for (const key of priority) {
+              if (deficit <= 0) break;
+              const current = values[key] ?? 0;
+              if (current < maxTotal) {
+                values[key] = current + 1;
+                deficit--;
+                adjustedThisPass = true;
+                if (deficit <= 0) break;
+              }
             }
-          }
 
-          if (!adjustedThisPass) break; // can't reduce any further
+            if (!adjustedThisPass) break; // all fields saturated
+          }
         }
 
         // Push adjusted values back into inputs
