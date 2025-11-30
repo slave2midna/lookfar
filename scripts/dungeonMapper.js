@@ -928,7 +928,10 @@ class DungeonMapper {
         ctx.textBaseline = "middle";
         ctx.fillStyle = "black";
 
-        const offsetLetter = -10;
+        // Patrol letters a bit off the line; trap letters a bit farther
+        const baseOffsetLetter = -10;
+        const offsetLetter = isTrap ? baseOffsetLetter - 6 : baseOffsetLetter;
+
         const lx = mx + nx * offsetLetter;
         const ly = my + ny * offsetLetter;
         ctx.fillText(letter, lx, ly);
@@ -1807,14 +1810,13 @@ export async function openDungeonMapper() {
           if (edgeLetters.length) {
             edgesHtml += `<p><strong>Path annotations:</strong></p><ul>`;
             for (const e of edgeLetters) {
-              const kindLabel = (e.type === "patrol") ? "Patrol route" : "Trap";
+              const kindLabel = (e.type === "patrol") ? "Patrol" : "Trap";
               edgesHtml += `<li>${e.letter} = ${kindLabel}</li>`;
             }
             edgesHtml += `</ul>`;
           }
 
           const contentHtml = `
-            <h2>Dungeon Map</h2>
             <p><strong>Seed:</strong> ${safeSeed}</p>
             <p><strong>Shape:</strong> ${safeShape} sides</p>
             <p>
