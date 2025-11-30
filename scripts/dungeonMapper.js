@@ -1759,10 +1759,24 @@ export async function openDungeonMapper() {
 
           // Build per-point info (only non-blank, labeled points)
           let pointsHtml = "";
-          pts.forEach((p, idx) => {
-            if (p.type === "blank") return;
-            if (p.number === null || p.number === undefined) return;
 
+          const labelOrder = (n) => {
+            if (n === "S") return Number.NEGATIVE_INFINITY;
+            if (n === "G") return Number.POSITIVE_INFINITY;
+            const num = Number(n);
+            return Number.isFinite(num) ? num : 0;
+          };
+
+          const pointEntries = pts
+            .map((p, idx) => ({ p, idx }))
+            .filter(({ p }) =>
+              p.type !== "blank" &&
+              p.number !== null &&
+              p.number !== undefined
+            )
+            .sort((a, b) => labelOrder(a.p.number) - labelOrder(b.p.number));
+
+          for (const { p, idx } of pointEntries) {
             const label = String(p.number);
             const isKeyNode =
               exportMapper.useKeys &&
@@ -1786,12 +1800,12 @@ export async function openDungeonMapper() {
               <h3>Point ${label}</h3>
               <p>Type: ${p.type}${noteText}</p>
             `;
-          });
+          }
 
           // Build patrol/trap letter mapping
           let edgesHtml = "";
           if (edgeLetters.length) {
-            edgesHtml += `<h2>Path Annotations</h2><ul>`;
+            edgesHtml += `<p><strong>Path annotations:</strong></p><ul>`;
             for (const e of edgeLetters) {
               const kindLabel = (e.type === "patrol") ? "Patrol route" : "Trap";
               edgesHtml += `<li>${e.letter} = ${kindLabel}</li>`;
@@ -1809,13 +1823,18 @@ export async function openDungeonMapper() {
               <strong>Paths:</strong>
               Open ${safeOpen}, Closed ${safeClosed}, Secret ${safeSecret}
             </p>
-            <p>
+            <p style="text-align:center;">
               <img src="${dataUrl}"
-                   style="max-width:100%; height:auto; border:1px solid #666;" />
+                   style="
+                     display:inline-block;
+                     max-width:100%;
+                     height:auto;
+                     border:1px solid #666;
+                     background:#dbd9ce;
+                   " />
             </p>
-            <h2>Points</h2>
-            ${pointsHtml || "<p>No labeled points.</p>"}
             ${edgesHtml}
+            ${pointsHtml || "<p>No labeled points.</p>"}
           `;
 
           // 3) Create a Journal Entry with a single HTML text page
