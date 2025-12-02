@@ -1,13 +1,8 @@
-// ============================================================================
-// Lookfar GM: Conflict Builder (Foundry v13+)
-// Cleaned version – all UI now powered by conflict-builder.hbs + lookfar.css
-// ============================================================================
+// conflictBuilder.js
 
 import { cacheManager } from "./cacheManager.js";
 
-// ---------------------------------------------------------------------------
-// CONFIG
-// ---------------------------------------------------------------------------
+// Playlist manager - Temp
 const LOOKFAR_CONFLICT_BUILDER_CONFIG = {
   playlistNames: ["Normal Battle", "Decisive Battle", "Final Battle"]
 };
@@ -18,9 +13,7 @@ const lfEsc = (s) => {
   catch { return String(s); }
 };
 
-// ---------------------------------------------------------------------------
-// MONKEY PATCH – Suppress Foundry’s thumbnail progress bar
-// ---------------------------------------------------------------------------
+// Supress Foundry progress bar texture
 (function patchLookfarTextureLoader() {
   try {
     const TL = globalThis.TextureLoader ?? CONFIG.Canvas?.textureLoader;
@@ -52,15 +45,11 @@ const lfEsc = (s) => {
   }
 })();
 
-// ---------------------------------------------------------------------------
-// MAIN DIALOG
-// ---------------------------------------------------------------------------
+//Main Dialog
 async function openConflictBuilderDialog() {
   const { playlistNames } = LOOKFAR_CONFLICT_BUILDER_CONFIG;
 
-  // -------------------------------------------------------------
-  // Battle Scene Resolution
-  // -------------------------------------------------------------
+  // Resolve Battle Scene
   const sceneSettingId = game.settings.get("lookfar", "battleSceneName") || "";
   let previewScene = game.scenes?.get(sceneSettingId) || canvas.scene;
 
@@ -69,9 +58,7 @@ async function openConflictBuilderDialog() {
     return;
   }
 
-  // -------------------------------------------------------------
-  // Thumbnail Sizing
-  // -------------------------------------------------------------
+  // Thumbnail sizing
   const dims = previewScene.dimensions ?? canvas?.dimensions;
   const sceneW = dims?.sceneWidth ?? 1920;
   const sceneH = dims?.sceneHeight ?? 1080;
@@ -93,9 +80,7 @@ async function openConflictBuilderDialog() {
     previewW = Math.round(MAX_H * sceneAspect);
   }
 
-  // -------------------------------------------------------------
   // Generate Scene Thumbnail
-  // -------------------------------------------------------------
   let sceneThumb = "";
   try {
     globalThis._lookfarSuppressTextureProgress = true;
@@ -108,9 +93,7 @@ async function openConflictBuilderDialog() {
     globalThis._lookfarSuppressTextureProgress = false;
   }
 
-  // -------------------------------------------------------------
-  // Monster Compendium
-  // -------------------------------------------------------------
+  // Load Monster Compendium
   const compKey = game.settings.get("lookfar", "monsterCompendium") || "";
   const pack = game.packs?.get(compKey);
 
@@ -133,9 +116,7 @@ async function openConflictBuilderDialog() {
     return;
   }
 
-  // -------------------------------------------------------------
-  // Folder Filter Support
-  // -------------------------------------------------------------
+  // Filter compendium
   const folderMap = new Map();
   let folders = [];
 
@@ -148,16 +129,12 @@ async function openConflictBuilderDialog() {
     }
   }
 
-  // -------------------------------------------------------------
-  // Playlist Options
-  // -------------------------------------------------------------
+  // Playlist Options - Temp
   const playlistData = game.playlists
     .filter(pl => playlistNames.includes(pl.name))
     .map(pl => ({ id: pl.id, name: pl.name }));
 
-  // -------------------------------------------------------------
   // NPC Cache
-  // -------------------------------------------------------------
   const ActorCls = CONFIG.Actor?.documentClass ?? Actor;
   const npcCache = await cacheManager.getOrCreateNpcCacheFolder().catch(() => null);
 
@@ -186,9 +163,7 @@ async function openConflictBuilderDialog() {
     return ActorCls.create(data);
   }
 
-  // -------------------------------------------------------------
-  // RENDER HBS TEMPLATE
-  // -------------------------------------------------------------
+  // Render .hbs template
   const template = await renderTemplate(
     "modules/lookfar/templates/conflict-builder.hbs",
     {
@@ -218,9 +193,7 @@ async function openConflictBuilderDialog() {
   new Dialog(dialogData, { id: "conflictBuilderDialog", width: 400, height: "auto" }).render(true);
 }
 
-// ============================================================================
-// UI SETUP LOGIC (moved out of inline style)
-// ============================================================================
+// UI setup logic
 function setupConflictBuilderUI(html, actorEntries, pack, folderMap) {
   const $html = html instanceof HTMLElement ? $(html) : html;
 
@@ -534,7 +507,13 @@ async function summonCreatures(html, previewScene, ensureWorldActor, folderMap, 
       actorCache.set(actorId, actor);
     }
 
+    // Clone prototype token from the resolved actor
     const proto = actor.prototypeToken.toObject();
+    proto.actorId = actor.id;
+
+    // Strip any embedded actor snapshot
+    delete proto.actor;
+    delete proto.actorData;
 
     const tokenPxW = (proto.width ?? 1) * dims.size;
     const tokenPxH = (proto.height ?? 1) * dims.size;
