@@ -1975,26 +1975,14 @@
                "DamageOnly":"{amount} damage",
                "StatusAndDamage":"{status} and {amount} damage"
             },
-            "StatusEffects":{
-               "Minor":{
-                  "Dazed":"Suffer dazed",
-                  "Shaken":"Suffer shaken",
-                  "Slow":"Suffer slow",
-                  "Weak":"Suffer weak"
-               },
-               "Heavy":{
-                  "Poisoned":"Suffer poison",
-                  "Enraged":"Suffer enrage"
-               },
-               "Massive":{
-                  "Dazed":"Suffer dazed",
-                  "Shaken":"Suffer shaken",
-                  "Slow":"Suffer slow",
-                  "Weak":"Suffer weak",
-                  "Poisoned":"Suffer poisoned",
-                  "Enraged":"Suffer enraged"
-               }
-            },
+            "StatusEffects": {
+              "Dazed": "Party becomes dazed",
+              "Shaken": "Party becomes shaken",
+              "Slow": "Party becomes slow",
+              "Weak": "Party becomes weak",
+              "Poisoned": "Party becomes poisoned",
+              "Enraged": "Party becomes enraged"
+           },
             "Combat":{
                "Minor":"An easy combat encounter",
                "Heavy":"A challenging combat encounter",
@@ -2254,4 +2242,5 @@
       }
    }
 }
+
 
