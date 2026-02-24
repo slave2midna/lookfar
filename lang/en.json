@@ -1970,7 +1970,8 @@
             "NoDiscoveryEffect":"No discovery effect available.",
             "NoDiscoverySource":"No discovery source available."
          },
-         "Dangers":{
+         "Dangers": {
+            "Damage": "{amount} damage",
             "StatusEffects": {
               "Dazed": "Party becomes dazed",
               "Shaken": "Party becomes shaken",
@@ -2238,3 +2239,4 @@
       }
    }
 }
+
