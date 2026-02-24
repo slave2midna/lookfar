@@ -599,7 +599,7 @@ function handleDamage(threatsData, groupLevel, dangerSeverity) {
 
   const amount = damageData[dangerSeverity];
 
-  return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Phrases.DamageOnly", { amount });
+  return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Damage", { amount });
 }
 
 function handleStatusEffect(dangerSeverity) {
@@ -743,6 +743,7 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
 
 
 
