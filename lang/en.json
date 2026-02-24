@@ -1983,8 +1983,8 @@
                   "Weak":"Suffer weak"
                },
                "Heavy":{
-                  "Poison":"Suffer poison",
-                  "Enrage":"Suffer enrage"
+                  "Poisoned":"Suffer poison",
+                  "Enraged":"Suffer enrage"
                },
                "Massive":{
                   "Dazed":"Suffer dazed",
@@ -2254,3 +2254,4 @@
       }
    }
 }
+
