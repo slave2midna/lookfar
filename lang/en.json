@@ -1971,10 +1971,6 @@
             "NoDiscoverySource":"No discovery source available."
          },
          "Dangers":{
-            "Phrases":{
-               "DamageOnly":"{amount} damage",
-               "StatusAndDamage":"{status} and {amount} damage"
-            },
             "StatusEffects": {
               "Dazed": "Party becomes dazed",
               "Shaken": "Party becomes shaken",
@@ -2242,5 +2238,3 @@
       }
    }
 }
-
-
