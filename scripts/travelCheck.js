@@ -64,11 +64,11 @@ Hooks.once("ready", () => {
 
 class TravelRolls {
   static travelChecks = {
-    Minimal: "d6",
-    Low: "d8",
-    Medium: "d10",
-    High: "d12",
-    "Very High": "d20",
+    "LOOKFAR.TravelCheck.Difficulty.Minimal": "d6",
+    "LOOKFAR.TravelCheck.Difficulty.Low": "d8",
+    "LOOKFAR.TravelCheck.Difficulty.Medium": "d10",
+    "LOOKFAR.TravelCheck.Difficulty.High": "d12",
+    "LOOKFAR.TravelCheck.Difficulty.VeryHigh": "d20",
   };
 }
 
@@ -80,8 +80,8 @@ async function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
 
   // Build context for Handlebars template from existing TravelRolls map
-  const travelChecks = Object.entries(TravelRolls.travelChecks).map(([label, die]) => ({
-    label,
+  const travelChecks = Object.entries(TravelRolls.travelChecks).map(([labelKey, die]) => ({
+    labelKey,
     die,
   }));
 
@@ -756,3 +756,4 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
