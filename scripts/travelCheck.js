@@ -472,7 +472,7 @@ function generateKeywordsData() {
 }
 
 async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
-  if (!dataLoader.threatsData || !dataLoader.threatsData.statusEffects) {
+  if (!dataLoader.threatsData) {
     console.error("Threats data is not fully loaded.");
     return {
       html: game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable"),
@@ -743,6 +743,7 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
 
 
 
