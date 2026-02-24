@@ -48,7 +48,8 @@ Hooks.once("ready", () => {
         data.selectedDifficulty,
         data.groupLevel,
         data.dangerSeverity,
-        data.keywords
+        data.keywords,
+        data.outcomeType
       );
     } else if (data?.type === "closeDialog") {
       if (currentDialog) {
@@ -238,9 +239,11 @@ async function handleRoll(selectedDifficulty, html) {
   const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
   const isDiscovery = shouldMakeDiscovery(roll.total, treasureHunterLevel);
   let dangerSeverity = "";
+  let outcomeType = "none";
 
   if (roll.total >= 6) {
-    dangerSeverity = await randomSeverity(effectiveDifficulty);
+    outcomeType = "danger";
+    dangerSeverity = randomSeverity(effectiveDifficulty);
 
     // Build a single localized key: LOOKFAR.TravelCheck.Dialogs.Result.DangerMinor / Heavy / Massive
     const resultTypeKey = `LOOKFAR.TravelCheck.Dialogs.Result.Danger${dangerSeverity}`;
@@ -256,6 +259,7 @@ async function handleRoll(selectedDifficulty, html) {
       ${dangerResult.html}
     `;
   } else if (isDiscovery) {
+    outcomeType = "discovery";
     const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.Result.Discovery");
     const discoveryResult = await generateDiscovery();
     keywords = discoveryResult.keywords;
@@ -267,6 +271,7 @@ async function handleRoll(selectedDifficulty, html) {
       ${discoveryResult.html}
     `;
   } else {
+    outcomeType = "none";
     resultHtml = `
       <div style="text-align: center; font-size: 1.2rem;">
         ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.NoIncident")}
@@ -282,6 +287,7 @@ async function handleRoll(selectedDifficulty, html) {
     groupLevel,
     dangerSeverity,
     keywords,
+    outcomeType,
   });
 
   const visibility = game.settings.get("lookfar", "resultVisibility");
@@ -289,7 +295,7 @@ async function handleRoll(selectedDifficulty, html) {
 
   // Show dialog locally only if it's public, or this user is a GM
   if (visibility === "public" || isGM) {
-    showRerollDialog(resultHtml, effectiveDifficulty, groupLevel, dangerSeverity, keywords);
+    showRerollDialog(resultHtml, effectiveDifficulty, groupLevel, dangerSeverity, keywords, outcomeType);
   }
 }
 
@@ -302,10 +308,11 @@ async function showRerollDialog(
   selectedDifficulty,
   groupLevel,
   dangerSeverity,
-  keywords
+  keywords,
+  outcomeType
 ) {
-  // Danger vs discovery/no-incident is determined by whether we have a severity
-  const isDanger = !!dangerSeverity;
+  const isDanger = outcomeType === "danger";
+  const isDiscovery = outcomeType === "discovery";
 
   // Close the existing dialog if it's open
   if (currentDialog) {
@@ -341,6 +348,7 @@ async function showRerollDialog(
         reroll: {
           icon: '<i class="fas fa-redo"></i>',
           callback: async () => {
+            if (outcomeType === "none") return;
             let newResultHtml;
             let newKeywords = null;
 
@@ -382,6 +390,7 @@ async function showRerollDialog(
               groupLevel,
               dangerSeverity,
               keywords: newKeywords,
+              outcomeType,
             });
 
             await showRerollDialog(
@@ -389,7 +398,8 @@ async function showRerollDialog(
               selectedDifficulty,
               groupLevel,
               dangerSeverity,
-              newKeywords
+              newKeywords,
+              outcomeType
             );
           },
         },
@@ -495,7 +505,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
     if (dataLoader.sourceData && Array.isArray(dataLoader.sourceData)) {
       const randomSourceIndex = Math.floor(Math.random() * dataLoader.sourceData.length);
       const sourceId = dataLoader.sourceData[randomSourceIndex]; // e.g. "Source3"
-      const i18nKey = `LOOKFAR.Dangers.Sources.${sourceId}`;
+      const i18nKey = `LOOKFAR.TravelCheck.Dangers.Sources.${sourceId}`;
       sourceText = game.i18n.localize(i18nKey);
     } else {
       console.error("No source data available in dangers.json.");
@@ -527,20 +537,20 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
         result += handleStatusEffect(dataLoader.threatsData, dangerSeverity, groupLevel);
         break;
       case "Combat": {
-        // LOOKFAR.Dangers.Combat.Minor/Heavy/Massive
-        const key = `LOOKFAR.Dangers.Combat.${dangerSeverity}`;
+        // LOOKFAR.TravelCheck.Dangers.Combat.Minor/Heavy/Massive
+        const key = `LOOKFAR.TravelCheck.Dangers.Combat.${dangerSeverity}`;
         result += game.i18n.localize(key);
         break;
       }
       case "dangerClock": {
-        // LOOKFAR.Dangers.DangerClock.Minor/Heavy/Massive
-        const key = `LOOKFAR.Dangers.DangerClock.${dangerSeverity}`;
+        // LOOKFAR.TravelCheck.Dangers.DangerClock.Minor/Heavy/Massive
+        const key = `LOOKFAR.TravelCheck.Dangers.DangerClock.${dangerSeverity}`;
         result += game.i18n.localize(key);
         break;
       }
       case "villainPlanAdvance": {
-        // LOOKFAR.Dangers.VillainPlanAdvance.Minor/Heavy/Massive
-        const key = `LOOKFAR.Dangers.VillainPlanAdvance.${dangerSeverity}`;
+        // LOOKFAR.TravelCheck.Dangers.VillainPlanAdvance.Minor/Heavy/Massive
+        const key = `LOOKFAR.TravelCheck.Dangers.VillainPlanAdvance.${dangerSeverity}`;
         result += game.i18n.localize(key);
         break;
       }
@@ -589,7 +599,7 @@ function handleDamage(threatsData, groupLevel, dangerSeverity) {
 
   const amount = damageData[dangerSeverity];
 
-  return game.i18n.format("LOOKFAR.Dangers.Phrases.DamageOnly", { amount });
+  return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Phrases.DamageOnly", { amount });
 }
 
 function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
@@ -602,19 +612,19 @@ function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
 
     if (useMinorEffect) {
       const key = getRandomElement(minorKeys);
-      const status = game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.Minor.${key}`);
+      const status = game.i18n.localize(`LOOKFAR.TravelCheck.Dangers.StatusEffects.Minor.${key}`);
       const amount = threatsData.Damage[groupLevel]["Heavy"];
 
-      return game.i18n.format("LOOKFAR.Dangers.Phrases.StatusAndDamage", {
+      return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Phrases.StatusAndDamage", {
         status,
         amount
       });
     } else {
       const key = getRandomElement(heavyKeys);
-      const status = game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.Heavy.${key}`);
+      const status = game.i18n.localize(`LOOKFAR.TravelCheck.Dangers.StatusEffects.Heavy.${key}`);
       const amount = threatsData.Damage[groupLevel]["Minor"];
 
-      return game.i18n.format("LOOKFAR.Dangers.Phrases.StatusAndDamage", {
+      return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Phrases.StatusAndDamage", {
         status,
         amount
       });
@@ -629,7 +639,7 @@ function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
   }
 
   const key = getRandomElement(list);
-  return game.i18n.localize(`LOOKFAR.Dangers.StatusEffects.${dangerSeverity}.${key}`);
+  return game.i18n.localize(`LOOKFAR.TravelCheck.Dangers.StatusEffects.${dangerSeverity}.${key}`);
 }
 
 // -----------------------------------------------------------------------------
@@ -704,7 +714,7 @@ async function generateDiscovery() {
     if (dataLoader.discoveryData?.effects && Array.isArray(dataLoader.discoveryData.effects)) {
       const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
       const effectId = dataLoader.discoveryData.effects[randomIndex]; // e.g. "Effect3"
-      effectText = game.i18n.localize(`LOOKFAR.Discoveries.Effects.${effectId}`);
+      effectText = game.i18n.localize(`LOOKFAR.TravelCheck.Discoveries.Effects.${effectId}`);
     } else {
       console.error("No effects data available in discovery.json.");
     }
@@ -727,7 +737,7 @@ async function generateDiscovery() {
     if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
       const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
       const sourceId = dataLoader.discoveryData.sources[randomIndex]; // e.g. "Source5"
-      sourceText = game.i18n.localize(`LOOKFAR.Discoveries.Sources.${sourceId}`);
+      sourceText = game.i18n.localize(`LOOKFAR.TravelCheck.Discoveries.Sources.${sourceId}`);
     } else {
       console.error("No source data available in discovery.json.");
     }
@@ -756,4 +766,5 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
 
