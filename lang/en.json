@@ -1971,14 +1971,14 @@
             "NoDiscoverySource":"No discovery source available."
          },
          "Dangers": {
-            "Damage": "{amount} damage",
+            "Damage": "The party takes {amount} damage",
             "StatusEffects": {
-              "Dazed": "Party becomes dazed",
-              "Shaken": "Party becomes shaken",
-              "Slow": "Party becomes slow",
-              "Weak": "Party becomes weak",
-              "Poisoned": "Party becomes poisoned",
-              "Enraged": "Party becomes enraged"
+              "Dazed": "The party becomes dazed",
+              "Shaken": "The party becomes shaken",
+              "Slow": "The party becomes slow",
+              "Weak": "The party becomes weak",
+              "Poisoned": "The party becomes poisoned",
+              "Enraged": "The party becomes enraged"
            },
             "Combat":{
                "Minor":"An easy combat encounter",
@@ -1986,9 +1986,9 @@
                "Massive":"A deadly combat encounter"
             },
             "DangerClock":{
-               "Minor":"A 4-section danger clock begins ticking",
-               "Heavy":"A 6-section danger clock begins ticking",
-               "Massive":"An 8-section danger clock begins ticking"
+               "Minor":"Create a 4-section danger clock",
+               "Heavy":"Create a 6-section danager clock",
+               "Massive":"Create an 8-section danger clock"
             },
             "VillainPlanAdvance":{
                "Minor":"The villain’s plan advances by 2 steps",
@@ -2239,4 +2239,5 @@
       }
    }
 }
+
 
