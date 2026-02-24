@@ -534,7 +534,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
         result += handleDamage(dataLoader.threatsData, groupLevel, dangerSeverity);
         break;
       case "statusEffect":
-        result += handleStatusEffect(dataLoader.threatsData, dangerSeverity, groupLevel);
+        result += handleStatusEffect(dangerSeverity);
         break;
       case "Combat": {
         // LOOKFAR.TravelCheck.Dangers.Combat.Minor/Heavy/Massive
@@ -602,44 +602,21 @@ function handleDamage(threatsData, groupLevel, dangerSeverity) {
   return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Phrases.DamageOnly", { amount });
 }
 
-function handleStatusEffect(threatsData, dangerSeverity, groupLevel) {
-  const minorKeys = threatsData.statusEffects["Minor"] || [];
-  const heavyKeys = threatsData.statusEffects["Heavy"] || [];
+function handleStatusEffect(dangerSeverity) {
+  const poolsBySeverity = {
+    Minor: ["Dazed", "Shaken", "Slow", "Weak"],
+    Heavy: ["Dazed", "Shaken", "Slow", "Weak", "Poisoned", "Enraged"],
+    Massive: ["Poisoned", "Enraged"],
+  };
 
-  if (dangerSeverity === "Massive") {
-    // 50% chance: Minor effect + Heavy damage OR Heavy effect + Minor damage
-    const useMinorEffect = Math.random() < 0.5;
-
-    if (useMinorEffect) {
-      const key = getRandomElement(minorKeys);
-      const status = game.i18n.localize(`LOOKFAR.TravelCheck.Dangers.StatusEffects.Minor.${key}`);
-      const amount = threatsData.Damage[groupLevel]["Heavy"];
-
-      return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Phrases.StatusAndDamage", {
-        status,
-        amount
-      });
-    } else {
-      const key = getRandomElement(heavyKeys);
-      const status = game.i18n.localize(`LOOKFAR.TravelCheck.Dangers.StatusEffects.Heavy.${key}`);
-      const amount = threatsData.Damage[groupLevel]["Minor"];
-
-      return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Phrases.StatusAndDamage", {
-        status,
-        amount
-      });
-    }
-  }
-
-  // Non-massive cases return ONLY the localized status
-  const list = threatsData.statusEffects[dangerSeverity] || [];
-  if (!list.length) {
-    console.error(`No status effects for dangerSeverity: ${dangerSeverity}`);
+  const pool = poolsBySeverity[dangerSeverity] || [];
+  if (!pool.length) {
+    console.error(`No status effects pool for dangerSeverity: ${dangerSeverity}`);
     return game.i18n.localize("LOOKFAR.TravelCheck.Errors.ThreatUnknown");
   }
 
-  const key = getRandomElement(list);
-  return game.i18n.localize(`LOOKFAR.TravelCheck.Dangers.StatusEffects.${dangerSeverity}.${key}`);
+  const key = getRandomElement(pool);
+  return game.i18n.localize(`LOOKFAR.TravelCheck.Dangers.StatusEffects.${key}`);
 }
 
 // -----------------------------------------------------------------------------
@@ -766,5 +743,6 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
 
 
