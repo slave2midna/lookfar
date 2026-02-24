@@ -1972,6 +1972,13 @@
       "TreasureHunting": "Treasure Hunting",
       "WellTraveled": "Well-Traveled"
     },
+    "Difficulty": {
+      "Minimal": "Minimal",
+      "Low": "Low",
+      "Medium": "Medium",
+      "High": "High",
+      "VeryHigh": "Very High"
+    },
     "TravelResult": {
       "Title": "Travel Result",
       "Prompt": "Do you want to keep this result or reroll?",
@@ -2334,6 +2341,7 @@
         }
     }
 }
+
 
 
 
