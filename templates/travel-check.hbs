@@ -12,9 +12,11 @@
           {{!--
             Expecting context:
             travelChecks = [
-              { label: "Minimal", die: "d6" },
-              { label: "Low",     die: "d8" },
-              ...
+              { labelKey: "LOOKFAR.TravelCheck.Difficulty.Minimal",  die: "d6"  },
+              { labelKey: "LOOKFAR.TravelCheck.Difficulty.Low",      die: "d8"  },
+              { labelKey: "LOOKFAR.TravelCheck.Difficulty.Medium",   die: "d10" },
+              { labelKey: "LOOKFAR.TravelCheck.Difficulty.High",     die: "d12" },
+              { labelKey: "LOOKFAR.TravelCheck.Difficulty.VeryHigh", die: "d20" }
             ]
           --}}
           {{#each travelChecks}}
@@ -27,7 +29,7 @@
                     value="{{die}}"
                     {{#if @first}}checked{{/if}}
                   >
-                  {{label}}
+                  {{localize labelKey}}
                   (
                     <span class="dice-display" data-original="{{die}}">
                       {{die}}
