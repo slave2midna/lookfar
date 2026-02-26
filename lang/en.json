@@ -1987,7 +1987,7 @@
             },
             "DangerClock":{
                "Minor":"Create a 4-section danger clock",
-               "Heavy":"Create a 6-section danager clock",
+               "Heavy":"Create a 6-section danger clock",
                "Massive":"Create an 8-section danger clock"
             },
             "VillainPlanAdvance":{
@@ -2239,5 +2239,6 @@
       }
    }
 }
+
 
 
