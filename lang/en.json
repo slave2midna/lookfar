@@ -1914,6 +1914,31 @@
          "Stash": {
            "DefaultName": "New Stash #{num}"
          },
+         "Tokens": {
+           "Random": "Random",
+           "None": "None",
+           "Master": "Master",
+           "PlusOne": "+1",
+           "Unknown": "unknown",
+           "NoQuality": "No quality",
+           "NoSpecialProperties": "has no special properties."
+         },
+         "Labels": {
+           "Martial": "martial",
+           "NonMartial": "non-martial"
+         },
+         "Summaries": {
+           "Ingredient": "An ingredient that tastes {taste}.",
+           "Material": "{nature} material of {originLower} origins. It can be used to craft {detail} items.",
+           "Weapon": "{prefix} that {qualityText}",
+           "Armor": "A set of {martialType} armor that {qualityText}",
+           "Shield": "A {martialType} shield that {qualityText}",
+           "Accessory": "An accessory that {qualityText}"
+         },
+         "WeaponPrefix": {
+           "Base": "A {category} weapon",
+           "Masterwork": "A masterwork {category} weapon"
+         },
          "Chat": {
            "Alias": "Treasure Result",
            "CreatedStash": "Created {count} item(s) in {stashLink}.",
@@ -2250,6 +2275,7 @@
       }
    }
 }
+
 
 
 
