@@ -449,7 +449,6 @@ async function showRerollDialog(
 function generateKeywordsData() {
   if (!game.settings.get("lookfar", "enableKeywords")) return null;
 
-  // These are already localized word arrays from data/keywords/<lang>.json
   const traitWords = Array.isArray(dataLoader.keywordData?.traits) ? dataLoader.keywordData.traits : [];
   const terrainWords = Array.isArray(dataLoader.keywordData?.terrain) ? dataLoader.keywordData.terrain : [];
 
@@ -735,9 +734,3 @@ async function generateDiscovery() {
     keywords,
   };
 }
-
-
-
-
-
-
