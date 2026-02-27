@@ -41,13 +41,42 @@ export const dataLoader = {
       console.error("[Lookfar] Failed to load discoveries.json:", err);
     }
 
-    // --- keywords (traits, terrain, origin, nature, taste & element keywords) ---
+    // --- keywords (localized word-banks) ---
+    // Expected paths:
+    //   /modules/lookfar/data/keywords/<lang>.json       e.g. en.json, pt-BR.json
+    // Fallback chain:
+    //   <lang>.json -> <base>.json -> en.json
     try {
-      const r = await fetch("/modules/lookfar/data/keywords.json");
-      this.keywordData = await r.json();
+      const lang = game?.i18n?.lang || "en";
+      const base = String(lang).split("-")[0];
+      const candidates = [
+        `/modules/lookfar/data/keywords/${lang}.json`,
+        `/modules/lookfar/data/keywords/${base}.json`,
+        `/modules/lookfar/data/keywords/en.json`
+      ];
+
+      let keywords = null;
+      let loadedFrom = null;
+
+      for (const url of candidates) {
+        try {
+          const r = await fetch(url, { cache: "no-store" });
+          if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+          keywords = await r.json();
+          loadedFrom = url;
+          break;
+        } catch (_) {
+        }
+      }
+
+      if (!keywords) throw new Error(`No keyword files found for lang=${lang}`);
+
+      this.keywordData = keywords;
+      console.log(`[Lookfar] Keyword Data (${lang}) loaded from:`, loadedFrom);
       console.log("[Lookfar] Keyword Data:", this.keywordData);
     } catch (err) {
-      console.error("[Lookfar] Failed to load keywords.json:", err);
+      console.error("[Lookfar] Failed to load localized keywords:", err);
+      this.keywordData = {};
     }
 
     // --- equipment (weapon/armor/shield/accessory lists) ---
