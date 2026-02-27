@@ -2,7 +2,6 @@
    "weaponList":[
       {
          "id":"staff",
-         "name":"Staff",
          "value":100,
          "category":"arcane",
          "hand":"two-handed",
@@ -17,7 +16,6 @@
       },
       {
          "id":"tome",
-         "name":"Tome",
          "value":100,
          "category":"arcane",
          "hand":"two-handed",
@@ -32,7 +30,6 @@
       },
       {
          "id":"crossbow",
-         "name":"Crossbow",
          "value":150,
          "category":"bow",
          "hand":"two-handed",
@@ -46,8 +43,7 @@
          "isMartial":false
       },
       {
-         "id":"bow",
-         "name":"Bow",
+         "id":"shortbow",
          "value":200,
          "category":"bow",
          "hand":"two-handed",
@@ -61,8 +57,7 @@
          "isMartial":false
       },
       {
-         "id":"knuckle",
-         "name":"Knuckle",
+         "id":"iron-knuckle",
          "value":150,
          "category":"brawling",
          "hand":"one-handed",
@@ -76,8 +71,7 @@
          "isMartial":false
       },
       {
-         "id":"dagger",
-         "name":"Dagger",
+         "id":"steel-dagger",
          "value":150,
          "category":"dagger",
          "hand":"one-handed",
@@ -92,7 +86,6 @@
       },
       {
          "id":"pistol",
-         "name":"Pistol",
          "value":250,
          "category":"firearm",
          "hand":"one-handed",
@@ -106,23 +99,7 @@
          "isMartial":true
       },
       {
-         "id":"rifle",
-         "name":"Rifle",
-         "value":250,
-         "category":"firearm",
-         "hand":"two-handed",
-         "type":"ranged",
-         "attrA":"dex",
-         "attrB":"ins",
-         "accuracy":0,
-         "defense":"def",
-         "element":"physical",
-         "damage":12,
-         "isMartial":true
-      },
-      {
-         "id":"flail",
-         "name":"Flail",
+         "id":"chain-whip",
          "value":150,
          "category":"flail",
          "hand":"two-handed",
@@ -136,8 +113,7 @@
          "isMartial":false
       },
       {
-         "id":"hammer",
-         "name":"Hammer",
+         "id":"iron-hammer",
          "value":200,
          "category":"heavy",
          "hand":"one-handed",
@@ -151,23 +127,7 @@
          "isMartial":false
       },
       {
-         "id":"warhammer",
-         "name":"Warhammer",
-         "value":200,
-         "category":"heavy",
-         "hand":"two-handed",
-         "type":"melee",
-         "attrA":"mig",
-         "attrB":"mig",
-         "accuracy":0,
-         "defense":"def",
-         "element":"physical",
-         "damage":10,
-         "isMartial":true
-      },
-      {
-         "id":"handaxe",
-         "name":"Handaxe",
+         "id":"broadaxe",
          "value":250,
          "category":"heavy",
          "hand":"one-handed",
@@ -182,7 +142,6 @@
       },
       {
          "id":"waraxe",
-         "name":"Waraxe",
          "value":250,
          "category":"heavy",
          "hand":"two-handed",
@@ -196,8 +155,7 @@
          "isMartial":true
       },
       {
-         "id":"light_spear",
-         "name":"Light Spear",
+         "id":"light-spear",
          "value":200,
          "category":"spear",
          "hand":"one-handed",
@@ -211,8 +169,7 @@
          "isMartial":true
       },
       {
-         "id":"heavy_spear",
-         "name":"Heavy Spear",
+         "id":"heavy-spear",
          "value":200,
          "category":"spear",
          "hand":"two-handed",
@@ -226,8 +183,7 @@
          "isMartial":true
       },
       {
-         "id":"sword",
-         "name":"Sword",
+         "id":"bronze-sword",
          "value":200,
          "category":"sword",
          "hand":"one-handed",
@@ -241,8 +197,7 @@
          "isMartial":true
       },
       {
-         "id":"claymore",
-         "name":"Claymore",
+         "id":"greatsword",
          "value":200,
          "category":"sword",
          "hand":"two-handed",
@@ -369,7 +324,7 @@
          "isMartial":true
       },
       {
-         "id":"iron-plate",
+         "id":"runic-plate",
          "name":"Curiass",
          "value":250,
          "defAttr":"",
@@ -414,63 +369,54 @@
    "accessoryList":[
       {
          "id":"amulet",
-         "name":"Amulet",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
          "id":"belt",
-         "name":"Belt",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
          "id":"cloak",
-         "name":"Cloak",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
          "id":"charm",
-         "name":"Earring",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
          "id":"hat",
-         "name":"Hat",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
          "id":"helmet",
-         "name":"Helmet",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
          "id":"hood",
-         "name":"Hood",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
          "id":"mask",
-         "name":"Mask",
          "def":0,
          "mdef":0,
          "init":0
       },
       {
          "id":"ring",
-         "name":"Ring",
          "def":0,
          "mdef":0,
          "init":0
