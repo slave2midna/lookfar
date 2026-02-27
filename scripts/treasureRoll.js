@@ -355,7 +355,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
       if (!Number.isNaN(n) && n >= nextNum) nextNum = n + 1;
     }
   }
-  const stashName = `New Stash #${nextNum}`;
+  const stashName = game.i18n.format("LOOKFAR.TreasureRoll.Stash.DefaultName", { num: nextNum });
 
   const stash = await CONFIG.Actor.documentClass.create({
     name: stashName,
@@ -398,19 +398,32 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
   }
 
   // Build chat message
-  const depositNote = currencyTotal > 0
-    ? `<br>Deposited <strong>${currencyTotal}</strong> ${(game.settings.get("projectfu","optionRenameCurrency") || "Zenit")} into the stash.`
-    : "";
+  const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || "Zenit";
+  const stashLink = `<a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>`;
 
-  const skippedNote = skippedIngredients.length > 0
-    ? `<br><em>Skipped ${skippedIngredients.length} ingredient${skippedIngredients.length > 1 ? "s" : ""}; cannot be stashed.</em>`
-    : "";
-
-  await ChatMessage.create({
-    content: `Created ${embedded.length} item(s) in <a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>.${depositNote}${skippedNote}`,
-    speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
+  let content = game.i18n.format("LOOKFAR.TreasureRoll.Chat.CreatedStash", {
+    count: embedded.length,
+    stashLink
   });
 
+  if (currencyTotal > 0) {
+    content += "<br>" + game.i18n.format("LOOKFAR.TreasureRoll.Chat.Deposited", {
+      amount: currencyTotal,
+      currency: currencyName
+    });
+  }
+
+  if (skippedIngredients.length > 0) {
+    content += "<br><em>" + game.i18n.format("LOOKFAR.TreasureRoll.Chat.SkippedIngredients", {
+      count: skippedIngredients.length
+    }) + "</em>";
+  }
+
+  await ChatMessage.create({
+    content,
+    speaker: ChatMessage.getSpeaker({ alias: game.i18n.localize("LOOKFAR.TreasureRoll.Chat.Alias") })
+  });
+  
   // Open the stash
   stash.sheet?.render(true);
 
@@ -648,7 +661,7 @@ async function renderTreasureResultDialog(items, budget, config) {
               <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
               <a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br>
               <small>${desc}</small><br>
-              <small>Value: ${cost} z</small>
+              <small>${game.i18n.localize("LOOKFAR.TreasureRoll.Result.ValueLabel")}: ${cost} ${(game.settings.get("projectfu","optionRenameCurrency") || "Zenit")}</small>
             </div>`;
   });
 
@@ -683,7 +696,9 @@ async function renderTreasureResultDialog(items, budget, config) {
   const templateData = {
     resultsHtml: enrichedHtml,
     showBudget: !config?.ignoreValues,
-    budgetDisplay: config?.ignoreValues ? "Ignored" : budget
+    budgetDisplay: config?.ignoreValues
+      ? game.i18n.localize("LOOKFAR.TreasureRoll.Result.Budget.Ignored")
+      : budget
   };
 
   const content = await renderTemplate(TREASURE_RESULT_TEMPLATE, templateData);
