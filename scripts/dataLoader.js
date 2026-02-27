@@ -92,7 +92,6 @@ export const dataLoader = {
       if (!bundle) throw new Error(`No i18n bundle files found for lang=${lang}`);
 
       this.i18nData = bundle || {};
-      this.keywordData = bundle?.keywords || {};
       this.localizedEquipment = bundle?.equipment || {};
       this.localizedQualities = bundle?.qualities || {};
 
@@ -103,7 +102,6 @@ export const dataLoader = {
     } catch (err) {
       console.error("[Lookfar] Failed to load i18n bundle:", err);
       this.i18nData = {};
-      this.keywordData = {};
       this.localizedEquipment = {};
       this.localizedQualities = {};
     }
