@@ -7,6 +7,43 @@ let _treasureGenDialog = null;
 const TREASURE_ROLL_TEMPLATE   = "modules/lookfar/templates/treasure-roll.hbs";
 const TREASURE_RESULT_TEMPLATE = "modules/lookfar/templates/treasure-result.hbs";
 
+// ------------------------------
+// i18n dataset helpers
+// ------------------------------
+function lfBundle() {
+  return dataLoader?.i18nData || {};
+}
+
+function lfEquipName(kind, id) {
+  // kind: weapon|armor|shield|accessory
+  return lfBundle()?.equipment?.[kind]?.[id] ?? id;
+}
+
+function lfQualityEntry(group, id) {
+  // group: basic|aerial|thunderous|...
+  return lfBundle()?.qualities?.[group]?.[id] ?? null;
+}
+
+function lfQualityNameFor(kind, group, id) {
+  // kind: weapon|armor|shield|accessory
+  const entry = lfQualityEntry(group, id);
+  if (!entry) return id;
+
+  const key =
+    kind === "weapon"    ? "Weapon" :
+    kind === "armor"     ? "Armor" :
+    kind === "shield"    ? "Shield" :
+    kind === "accessory" ? "Accessory" :
+    null;
+
+  return (key && entry[key]) ? entry[key] : id;
+}
+
+function lfQualityDesc(group, id) {
+  const entry = lfQualityEntry(group, id);
+  return entry?.Description ?? "";
+}
+
 // Random Generation Utility
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -92,8 +129,7 @@ function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamage
     ? getRandom(originKeys)
     : origin;
 
-  let base, quality = "None", hasPlusOne = false, appliedElement = null, isMaster = false;
-  let nameParts = [];
+  let base, qualityId = null, hasPlusOne = false, appliedElement = null, isMaster = false;
   let value = 0;
 
   const baseQualities = weaponQualities.basic || [];
@@ -102,31 +138,31 @@ function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamage
 
   do {
     base = getRandom(weapons);
-    nameParts = [];
     value = base.value;
 
     const baseAcc = Number(base?.accuracy ?? base?.acc ?? 0) || 0;
-    const canPlusOne = baseAcc !== 1; // accuracy 1 weapons can’t be +1
+    const canPlusOne = baseAcc !== 1;
 
     hasPlusOne = canPlusOne && (Math.random() < 0.5);
     appliedElement = Math.random() < 0.5 ? getRandom(elements) : null;
     isMaster = useVariantDamageRules ? false : (Math.random() < 0.5);
+
     const q = Math.random() < 0.5 ? getRandom(availableQualities) : null;
-    quality = q?.name ?? "None";
+    qualityId = q?.id ?? null;
 
-    if (hasPlusOne) { nameParts.push("+1"); value += 100; }
-    if (quality !== "None") { nameParts.push(quality); value += q.value; }
-    if (appliedElement) { nameParts.push(appliedElement.name); value += 100; }
-    if (isMaster && !useVariantDamageRules) { nameParts.push("Master"); value += 200; }
+    if (hasPlusOne) value += 100;
+    if (qualityId) value += (q.value ?? q.cost ?? 0);
+    if (appliedElement) value += 100;
+    if (isMaster && !useVariantDamageRules) value += 200;
 
-  } while (!hasPlusOne && quality === "None" && !appliedElement && !(isMaster && !useVariantDamageRules));
-  nameParts.push(base.name);
-  const name = nameParts.join(" ");
+  } while (!hasPlusOne && !qualityId && !appliedElement && !(isMaster && !useVariantDamageRules));
 
   return {
-    name,
+    kind: "weapon",
+    baseId: base.id,
     value,
-    quality,
+    qualityId,
+    qualityGroup: localOrigin,
     element: appliedElement,
     hasPlusOne,
     isMaster,
@@ -142,29 +178,27 @@ function rollArmor(armorList, armorQualities, origin, cap) {
     : origin;
 
   const base = getRandom(armorList);
-  let nameParts = [];
   let value = base.value ?? 0;
-  let quality = "None";
 
-  const qualityPool = [
+  const pool = [
     ...(armorQualities.basic || []),
     ...(armorQualities[localOrigin] || [])
   ];
 
-  const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
+  const affordable = pool.filter(q => (value + (q.value ?? q.cost ?? 0)) <= cap);
   if (!affordable.length) return null;
-  const q = getRandom(affordable);
-  quality = q.name;
-  nameParts.push(quality);
-  value += q.value ?? 0;
 
-  nameParts.push(base.name);
-  const name = nameParts.join(" ");
+  const q = getRandom(affordable);
+  const qualityId = q.id;
+
+  value += (q.value ?? q.cost ?? 0);
 
   return {
-    name,
+    kind: "armor",
+    baseId: base.id,
     value,
-    quality,
+    qualityId,
+    qualityGroup: localOrigin,
     origin: localOrigin
   };
 }
@@ -177,29 +211,27 @@ function rollShield(shieldList, shieldQualities, origin, cap) {
     : origin;
 
   const base = getRandom(shieldList);
-  let nameParts = [];
   let value = base.value ?? 0;
-  let quality = "None";
 
-  const qualityPool = [
+  const pool = [
     ...(shieldQualities.basic || []),
     ...(shieldQualities[localOrigin] || [])
   ];
 
-  const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
+  const affordable = pool.filter(q => (value + (q.value ?? q.cost ?? 0)) <= cap);
   if (!affordable.length) return null;
-  const q = getRandom(affordable);
-  quality = q.name;
-  nameParts.push(quality);
-  value += q.value ?? 0;
 
-  nameParts.push(base.name);
-  const name = nameParts.join(" ");
+  const q = getRandom(affordable);
+  const qualityId = q.id;
+
+  value += (q.value ?? q.cost ?? 0);
 
   return {
-    name,
+    kind: "shield",
+    baseId: base.id,
     value,
-    quality,
+    qualityId,
+    qualityGroup: localOrigin,
     origin: localOrigin
   };
 }
@@ -212,29 +244,27 @@ function rollAccessory(accessories, accessoryQualities, origin, cap) {
     : origin;
 
   const base = getRandom(accessories);
-  let nameParts = [];
   let value = base.value ?? 0;
-  let quality = "None";
 
-  const qualityPool = [
+  const pool = [
     ...(accessoryQualities.basic || []),
     ...(accessoryQualities[localOrigin] || [])
   ];
 
-  const affordable = qualityPool.filter(q => (value + (q.value ?? 0)) <= cap);
+  const affordable = pool.filter(q => (value + (q.value ?? q.cost ?? 0)) <= cap);
   if (!affordable.length) return null;
-  const q = getRandom(affordable);
-  quality = q.name;
-  nameParts.push(quality);
-  value += q.value ?? 0;
 
-  nameParts.push(base.name);
-  const name = nameParts.join(" ");
+  const q = getRandom(affordable);
+  const qualityId = q.id;
+
+  value += (q.value ?? q.cost ?? 0);
 
   return {
-    name,
+    kind: "accessory",
+    baseId: base.id,
     value,
-    quality,
+    qualityId,
+    qualityGroup: localOrigin,
     origin: localOrigin
   };
 }
@@ -494,132 +524,156 @@ async function renderTreasureResultDialog(items, budget, config) {
           summary: { value: `${data.nature} material of ${data.origin.toLowerCase()} origins. It can be used to craft ${data.detail} items.` }
         }
       };
-    } else if (dataLoader.weaponsData.weaponList.some(w => data.name.endsWith(w.name))) {
-      type = "weapon";
-      const baseWeapon = dataLoader.weaponsData.weaponList.find(w => data.name.endsWith(w.name));
-      const allQualities = [
-        ...(dataLoader.weaponsData.weaponQualities.basic || []),
-        ...(dataLoader.weaponsData.weaponQualities[data.origin] || [])
-      ];
-      const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = dataLoader.getRandomIconFor("weapon", baseWeapon) || "icons/svg/sword.svg";
+    } else if (data?.kind === "weapon") {
+  type = "weapon";
 
-      // Handle variant damage
-      const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
-      const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
+  const baseWeapon = dataLoader.weaponsData.weaponList.find(w => w.id === data.baseId);
+  if (!baseWeapon) return null;
 
-      // Handle Masterwork prefix
-      const prefix = (data.isMaster && !variantEnabled)
-        ? `A masterwork ${baseWeapon?.category || "unknown"} weapon`
-        : `A ${baseWeapon?.category || "unknown"} weapon`;
+  const group = data.qualityGroup || "basic";
+  const qualityName = data.qualityId ? lfQualityNameFor("weapon", group, data.qualityId) : null;
+  const qualityDesc = data.qualityId ? lfQualityDesc(group, data.qualityId) : "";
 
-      // Handle +1 accuracy variants
-      const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
-      const plusOneBonus = (data.hasPlusOne && baseAcc !== 1) ? 1 : 0;
+  const baseName = lfEquipName("weapon", baseWeapon.id);
+  const img = dataLoader.getRandomIconFor("weapon", baseWeapon) || "icons/svg/sword.svg";
 
-      itemData = {
-        name: data.name,
-        type,
-        img,
-        folder: cacheFolder.id,
-        system: {
-          category: { value: baseWeapon?.category || "" },
-          hands: { value: baseWeapon?.hand || "" },
-          type: { value: baseWeapon?.type || "" },
-          attributes: {
-            primary: { value: baseWeapon?.attrA || "" },
-            secondary: { value: baseWeapon?.attrB || "" }
-          },
-          accuracy: { value: (baseWeapon?.accuracy ?? 0) + (data.hasPlusOne ? 1 : 0) },
-          defense: baseWeapon?.defense || "",
-          damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
-          damage: { value: (baseWeapon?.damage ?? 0) + (variantEnabled ? variantBonus : (data.isMaster ? 4 : 0)) },
-          isMartial: { value: baseWeapon?.isMartial ?? false },
-          quality: { value: qualityObj?.description || "No quality" },
-          cost: { value: data.value },
-          source: { value: "LOOKFAR" },
-          summary: {
-            value: `${prefix} that ${qualityObj?.description || "has no special properties."}`
-          }
-        }
-      };
-    } else if (dataLoader.armorData.armorList.some(a => data.name.endsWith(a.name))) {
-      type = "armor";
-      const baseArmor = dataLoader.armorData.armorList.find(a => data.name.endsWith(a.name));
-      const allQualities = [
-        ...(dataLoader.armorData.armorQualities.basic || []),
-        ...(dataLoader.armorData.armorQualities[data.origin] || [])
-      ];
-      const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = dataLoader.getRandomIconFor("armor", baseArmor) || "icons/svg/statue.svg";
+  // Handle variant damage
+  const variantEnabled = game.settings.get("lookfar", "useVariantDamageRules");
+  const variantBonus   = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
-      itemData = {
-        name: data.name,
-        type,
-        img,
-        folder: cacheFolder.id,
-        system: {
-          def: { attribute: baseArmor?.defAttr || "dex", value: baseArmor?.def ?? 0 },
-          mdef: { attribute: baseArmor?.mdefAttr || "ins", value: baseArmor?.mdef ?? 0 },
-          init: { value: baseArmor?.init ?? 0 },
-          isMartial: { value: baseArmor?.isMartial ?? false },
-          quality: { value: qualityObj?.description || "No quality" },
-          cost: { value: data.value },
-          source: { value: "LOOKFAR" },
-          summary: { value: `A set of ${baseArmor?.isMartial ? "martial" : "non-martial"} armor that ${qualityObj?.description || "has no special properties."}` }
-        }
-      };
-    } else if (dataLoader.shieldsData.shieldList.some(s => data.name.endsWith(s.name))) {
-      type = "shield";
-      const baseShield = dataLoader.shieldsData.shieldList.find(s => data.name.endsWith(s.name));
-      const allQualities = [
-        ...(dataLoader.shieldsData.shieldQualities.basic || []),
-        ...(dataLoader.shieldsData.shieldQualities[data.origin] || [])
-      ];
-      const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = dataLoader.getRandomIconFor("shield", baseShield) || "icons/svg/shield.svg";
+  // Handle Masterwork prefix
+  const prefix = (data.isMaster && !variantEnabled)
+    ? `A masterwork ${baseWeapon?.category || "unknown"} weapon`
+    : `A ${baseWeapon?.category || "unknown"} weapon`;
 
-      itemData = {
-        name: data.name,
-        type,
-        img,
-        folder: cacheFolder.id,
-        system: {
-          def:  { attribute: baseShield?.defAttr  || "dex", value: baseShield?.def  ?? 0 },
-          mdef: { attribute: baseShield?.mdefAttr || "ins", value: baseShield?.mdef ?? 0 },
-          init: { value: baseShield?.init ?? 0 },
-          isMartial: { value: baseShield?.isMartial ?? false },
-          quality: { value: qualityObj?.description || "No quality" },
-          cost: { value: data.value },
-          source: { value: "LOOKFAR" },
-          summary: { value: `A ${baseShield?.isMartial ? "martial" : "non-martial"} shield that ${qualityObj?.description || "has no special properties."}` }
-        }
-      };
-    } else if (dataLoader.accessoriesData.accessoryList.some(acc => data.name.endsWith(acc.name))) {
-      type = "accessory";
-      const baseAccessory = dataLoader.accessoriesData.accessoryList.find(acc => data.name.endsWith(acc.name));
-      const allQualities = [
-        ...(dataLoader.accessoriesData.accessoryQualities.basic || []),
-        ...(dataLoader.accessoriesData.accessoryQualities[data.origin] || [])
-      ];
-      const qualityObj = allQualities.find(q => q.name === data.quality);
-      const img = dataLoader.getRandomIconFor("accessory", baseAccessory) || "icons/svg/stoned.svg";
+  // Handle +1 accuracy variants
+  const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
 
-      itemData = {
-        name: data.name,
-        type,
-        img,
-        folder: cacheFolder.id,
-        system: {
-          def: { value: baseAccessory?.def ?? 0 },
-          mdef: { value: baseAccessory?.mdef ?? 0 },
-          init: { value: baseAccessory?.init ?? 0 },
-          quality: { value: qualityObj?.description || "No quality" },
-          cost: { value: data.value },
-          source: { value: "LOOKFAR" },
-          summary: { value: `An accessory that ${qualityObj?.description || "has no special properties."}` }
-        }
-      };
+  // Build localized display name
+  const parts = [];
+  if (data.hasPlusOne && baseAcc !== 1) parts.push("+1");
+  if (qualityName) parts.push(qualityName);
+  if (data.element?.name) parts.push(data.element.name);
+  if (data.isMaster && !variantEnabled) parts.push("Master");
+  parts.push(baseName);
+  const displayName = parts.join(" ");
+
+  itemData = {
+    name: displayName,
+    type,
+    img,
+    folder: cacheFolder.id,
+    system: {
+      category: { value: baseWeapon?.category || "" },
+      hands: { value: baseWeapon?.hand || "" },
+      type: { value: baseWeapon?.type || "" },
+      attributes: {
+        primary: { value: baseWeapon?.attrA || "" },
+        secondary: { value: baseWeapon?.attrB || "" }
+      },
+      accuracy: { value: (baseWeapon?.accuracy ?? 0) + ((data.hasPlusOne && baseAcc !== 1) ? 1 : 0) },
+      defense: baseWeapon?.defense || "",
+      damageType: { value: data.element?.damageType || baseWeapon?.element || "physical" },
+      damage: { value: (baseWeapon?.damage ?? 0) + (variantEnabled ? variantBonus : (data.isMaster ? 4 : 0)) },
+      isMartial: { value: baseWeapon?.isMartial ?? false },
+      quality: { value: qualityDesc || "No quality" },
+      cost: { value: data.value },
+      source: { value: "LOOKFAR" },
+      summary: { value: `${prefix} that ${qualityDesc || "has no special properties."}` }
+    }
+  };
+    } else if (data?.kind === "armor") {
+  type = "armor";
+
+  const baseArmor = dataLoader.armorData.armorList.find(a => a.id === data.baseId);
+  if (!baseArmor) return null;
+
+  const group = data.qualityGroup || "basic";
+  const qualityName = data.qualityId ? lfQualityNameFor("armor", group, data.qualityId) : null;
+  const qualityDesc = data.qualityId ? lfQualityDesc(group, data.qualityId) : "";
+
+  const baseName = lfEquipName("armor", baseArmor.id);
+  const img = dataLoader.getRandomIconFor("armor", baseArmor) || "icons/svg/statue.svg";
+
+  const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+
+  itemData = {
+    name: displayName,
+    type,
+    img,
+    folder: cacheFolder.id,
+    system: {
+      def: { attribute: baseArmor?.defAttr || "dex", value: baseArmor?.def ?? 0 },
+      mdef: { attribute: baseArmor?.mdefAttr || "ins", value: baseArmor?.mdef ?? 0 },
+      init: { value: baseArmor?.init ?? 0 },
+      isMartial: { value: baseArmor?.isMartial ?? false },
+      quality: { value: qualityDesc || "No quality" },
+      cost: { value: data.value },
+      source: { value: "LOOKFAR" },
+      summary: { value: `A set of ${baseArmor?.isMartial ? "martial" : "non-martial"} armor that ${qualityDesc || "has no special properties."}` }
+    }
+  };
+    } else if (data?.kind === "shield") {
+  type = "shield";
+
+  const baseShield = dataLoader.shieldsData.shieldList.find(s => s.id === data.baseId);
+  if (!baseShield) return null;
+
+  const group = data.qualityGroup || "basic";
+  const qualityName = data.qualityId ? lfQualityNameFor("shield", group, data.qualityId) : null;
+  const qualityDesc = data.qualityId ? lfQualityDesc(group, data.qualityId) : "";
+
+  const baseName = lfEquipName("shield", baseShield.id);
+  const img = dataLoader.getRandomIconFor("shield", baseShield) || "icons/svg/shield.svg";
+
+  const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+
+  itemData = {
+    name: displayName,
+    type,
+    img,
+    folder: cacheFolder.id,
+    system: {
+      def:  { attribute: baseShield?.defAttr  || "dex", value: baseShield?.def  ?? 0 },
+      mdef: { attribute: baseShield?.mdefAttr || "ins", value: baseShield?.mdef ?? 0 },
+      init: { value: baseShield?.init ?? 0 },
+      isMartial: { value: baseShield?.isMartial ?? false },
+      quality: { value: qualityDesc || "No quality" },
+      cost: { value: data.value },
+      source: { value: "LOOKFAR" },
+      summary: { value: `A ${baseShield?.isMartial ? "martial" : "non-martial"} shield that ${qualityDesc || "has no special properties."}` }
+    }
+  };
+    } else if (data?.kind === "accessory") {
+  type = "accessory";
+
+  const baseAccessory = dataLoader.accessoriesData.accessoryList.find(a => a.id === data.baseId);
+  if (!baseAccessory) return null;
+
+  const group = data.qualityGroup || "basic";
+  const qualityName = data.qualityId ? lfQualityNameFor("accessory", group, data.qualityId) : null;
+  const qualityDesc = data.qualityId ? lfQualityDesc(group, data.qualityId) : "";
+
+  const baseName = lfEquipName("accessory", baseAccessory.id);
+  const img = dataLoader.getRandomIconFor("accessory", baseAccessory) || "icons/svg/stoned.svg";
+
+  const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+
+  itemData = {
+    name: displayName,
+    type,
+    img,
+    folder: cacheFolder.id,
+    system: {
+      def: { value: baseAccessory?.def ?? 0 },
+      mdef: { value: baseAccessory?.mdef ?? 0 },
+      init: { value: baseAccessory?.init ?? 0 },
+      quality: { value: qualityDesc || "No quality" },
+      cost: { value: data.value },
+      source: { value: "LOOKFAR" },
+      summary: { value: `An accessory that ${qualityDesc || "has no special properties."}` }
+    }
+  };
     }
 
     if (!type || !itemData) return null;
