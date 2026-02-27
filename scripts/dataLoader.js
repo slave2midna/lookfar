@@ -9,7 +9,6 @@ export const dataLoader = {
   // Localized dataset bundle loaded from /data/i18n/<lang>.json
   // Contains: { version, keywords, equipment, qualities }
   i18nData: {},
-  keywordData: {},
 
   // Split-out localized helpers (optional convenience)
   localizedEquipment: {},
