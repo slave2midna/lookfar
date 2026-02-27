@@ -1,0 +1,699 @@
+{
+  "traits": [
+    "Abandoned",
+    "Ancient",
+    "Arcane",
+    "Bewitched",
+    "Blighted",
+    "Cavernous",
+    "Celestial",
+    "Chimeric",
+    "Crumbling",
+    "Cryptic",
+    "Cursed",
+    "Decayed",
+    "Desolate",
+    "Deserted",
+    "Dilapidated",
+    "Dimensional",
+    "Eldritch",
+    "Ephemeral",
+    "Ethereal",
+    "Eternal",
+    "Fabled",
+    "Faded",
+    "Forbidden",
+    "Forging",
+    "Forgotten",
+    "Fractured",
+    "Frozen",
+    "Ghostly",
+    "Gloomy",
+    "Gossamer",
+    "Hallowed",
+    "Haunted",
+    "Hidden",
+    "Infernal",
+    "Isolated",
+    "Legendary",
+    "Luminous",
+    "Lurking",
+    "Magical",
+    "Moonlit",
+    "Mysterious",
+    "Mystic",
+    "Mystical",
+    "Neglected",
+    "Obsidian",
+    "Obscured",
+    "Obscure",
+    "Obscuring",
+    "Otherworldly",
+    "Overgrown",
+    "Overlooked",
+    "Petrified",
+    "Phantasmal",
+    "Primeval",
+    "Pristine",
+    "Relic",
+    "Resplendent",
+    "Runed",
+    "Ruined",
+    "Sacred",
+    "Sanctified",
+    "Secret",
+    "Secluded",
+    "Serene",
+    "Shaded",
+    "Shadowed",
+    "Shattered",
+    "Shimmering",
+    "Spectral",
+    "Stygian",
+    "Sunken",
+    "Surreal",
+    "Sylvan",
+    "Temporal",
+    "TimeWorn",
+    "Twilight",
+    "Uncharted",
+    "Unhallowed",
+    "Unseen",
+    "Unearthed",
+    "Verdant",
+    "Veiled",
+    "Venerable",
+    "Vivid",
+    "Weathered",
+    "Withered",
+    "Wraithlike"
+  ],
+  "terrain": [
+    "Alcove",
+    "Altar",
+    "Aqueduct",
+    "Archipelago",
+    "Arena",
+    "Archive",
+    "Bazaar",
+    "Barracks",
+    "Battleground",
+    "Butte",
+    "Cairn",
+    "Campsite",
+    "Catacombs",
+    "Causeway",
+    "Cauldron",
+    "Cavern",
+    "Castle",
+    "Chapel",
+    "Chasm",
+    "Citadel",
+    "Cliff",
+    "Conservatory",
+    "Corridor",
+    "Crags",
+    "Crater",
+    "Crypt",
+    "Den",
+    "Dome",
+    "Dungeon",
+    "Eddy",
+    "Embankment",
+    "Estuary",
+    "Expanse",
+    "Fane",
+    "Fen",
+    "Fjord",
+    "Forest",
+    "Fortress",
+    "Fountain",
+    "Foundry",
+    "Garrison",
+    "Garden",
+    "Glade",
+    "Grove",
+    "Grotto",
+    "Harbor",
+    "Haven",
+    "Henge",
+    "Isle",
+    "Jungle",
+    "Keep",
+    "Knoll",
+    "Labyrinth",
+    "Library",
+    "Lodge",
+    "Manor",
+    "Mausoleum",
+    "Meadow",
+    "Menhir",
+    "Mesa",
+    "Mill",
+    "Mire",
+    "Monolith",
+    "Moat",
+    "Nexus",
+    "Observatory",
+    "Oasis",
+    "Obelisk",
+    "Outpost",
+    "Orchard",
+    "Parapet",
+    "Pathway",
+    "Pavilion",
+    "Pit",
+    "Plaza",
+    "Portal",
+    "Promontory",
+    "Quarry",
+    "Quicksand",
+    "Ravine",
+    "Reef",
+    "Ridge",
+    "Rift",
+    "Ruination",
+    "Ruins",
+    "Sanctuary",
+    "Sanctum",
+    "Seraglio",
+    "Shrine",
+    "Shipwreck",
+    "Shelter",
+    "Spire",
+    "Spring",
+    "Steppe",
+    "Stronghold",
+    "Summit",
+    "Tavern",
+    "Temple",
+    "Throne",
+    "Tomb",
+    "Tombstone",
+    "Tower",
+    "Trails",
+    "Trenches",
+    "Tundra",
+    "Undercroft",
+    "Valley",
+    "Vault",
+    "Village",
+    "Vortex",
+    "Waterfall",
+    "Wreckage",
+    "Xystus",
+    "Yard",
+    "Zeppelin",
+    "Ziggurat"
+  ],
+  "nature": {
+    "material": {
+      "Anthropod": [
+        "Carapace",
+        "Mandible",
+        "Pincer",
+        "Shell",
+        "Stinger"
+      ],
+      "Bird": [
+        "Feather",
+        "Talon",
+        "Beak",
+        "Claw",
+        "Bone"
+      ],
+      "Fish": [
+        "Fin",
+        "Scale",
+        "Gill",
+        "Tooth",
+        "Bone"
+      ],
+      "Mammal": [
+        "Bone",
+        "Fur",
+        "Horn",
+        "Hide",
+        "Tusk"
+      ],
+      "Mollusk": [
+        "Shell",
+        "Pearl",
+        "Valve",
+        "Mantle",
+        "Beak"
+      ],
+      "Reptile": [
+        "Claw",
+        "Scale",
+        "Tail",
+        "Spine",
+        "Fang"
+      ],
+      "Fungus": [
+        "Sporecase",
+        "Cap",
+        "Vein",
+        "Stem",
+        "Fiber"
+      ],
+      "Incorporeal": [
+        "Wisp",
+        "Vapor",
+        "Ash",
+        "Essence",
+        "Soul"
+      ],
+      "Liquid": [
+        "Droplet",
+        "Globule",
+        "Ichor",
+        "Resin",
+        "Film"
+      ],
+      "Artificial": [
+        "Alloy",
+        "Circuit",
+        "Frame",
+        "Casing",
+        "Component"
+      ],
+      "Mineral": [
+        "Crystal",
+        "Shard",
+        "Ore",
+        "Fragment",
+        "Nodule"
+      ],
+      "Plant": [
+        "Branch",
+        "Vine",
+        "Bark",
+        "Thorn",
+        "Reed"
+      ]
+    },
+    "ingredient": {
+      "Anthropod": [
+        "Meat",
+        "Sac",
+        "Egg",
+        "Leg",
+        "Juice"
+      ],
+      "Bird": [
+        "Egg",
+        "Wing",
+        "Meat",
+        "Heart",
+        "Blood"
+      ],
+      "Fish": [
+        "Meat",
+        "Egg",
+        "Oil",
+        "Eye",
+        "Bile"
+      ],
+      "Mammal": [
+        "Meat",
+        "Fat",
+        "Organ",
+        "Milk",
+        "Blood"
+      ],
+      "Mollusk": [
+        "Flesh",
+        "Ink",
+        "Gland",
+        "Slurry",
+        "Meat"
+      ],
+      "Reptile": [
+        "Meat",
+        "Egg",
+        "Venom",
+        "Blood",
+        "Liver"
+      ],
+      "Fungus": [
+        "Shroom",
+        "Spore",
+        "Flesh",
+        "Pulp",
+        "Residue"
+      ],
+      "Incorporeal": [
+        "Mist",
+        "Plasma",
+        "Breath",
+        "Essence",
+        "Residue"
+      ],
+      "Liquid": [
+        "Fluid",
+        "Reagent",
+        "Syrup",
+        "Slime",
+        "Gel"
+      ],
+      "Artificial": [
+        "Gel",
+        "Solution",
+        "Compound",
+        "Serum",
+        "Extract"
+      ],
+      "Mineral": [
+        "Dust",
+        "Grain",
+        "Powder",
+        "Salt",
+        "Residue"
+      ],
+      "Plant": [
+        "Leaf",
+        "Seed",
+        "Fruit",
+        "Sap",
+        "Root"
+      ]
+    }
+  },
+  "origin": {
+    "material": {
+      "Aerial": [
+        "Light",
+        "Hollow",
+        "Avian",
+        "Fowl",
+        "Drift"
+      ],
+      "Thunderous": [
+        "Conductive",
+        "Magnetic",
+        "Charged",
+        "Ionic",
+        "Crackling"
+      ],
+      "Paradox": [
+        "Fractured",
+        "Glitched",
+        "Timeless",
+        "Looped",
+        "Entropic"
+      ],
+      "Terrestrial": [
+        "Fossilized",
+        "Quarried",
+        "Sedimentary",
+        "Iron",
+        "Earthen"
+      ],
+      "Ardent": [
+        "Blazing",
+        "Molten",
+        "Smoldering",
+        "Scorched",
+        "Embered"
+      ],
+      "Glacial": [
+        "Crystalline",
+        "Frozen",
+        "Encased",
+        "Glassy",
+        "Still"
+      ],
+      "Spiritual": [
+        "Sanctified",
+        "Echoing",
+        "Hallowed",
+        "Woven",
+        "Otherbound"
+      ],
+      "Corrupted": [
+        "Warped",
+        "Blight",
+        "Decayed",
+        "Toxic",
+        "Speckled"
+      ],
+      "Aquatic": [
+        "Barnacled",
+        "Soaked",
+        "Flooded",
+        "Tidal",
+        "Marshbound"
+      ],
+      "Mechanical": [
+        "Cogged",
+        "Bolted",
+        "Clockwork",
+        "Forged",
+        "Powered"
+      ]
+    },
+    "ingredient": {
+      "Aerial": [
+        "Fluffy",
+        "Airy",
+        "Crisp",
+        "Wispy",
+        "Downy"
+      ],
+      "Thunderous": [
+        "Crackling",
+        "Zesty",
+        "Sparkling",
+        "Sizzling",
+        "Charged"
+      ],
+      "Paradox": [
+        "Flickering",
+        "Prismatic",
+        "Twisted",
+        "Mishapen",
+        "Glistening"
+      ],
+      "Terrestrial": [
+        "Coarse",
+        "Earthen",
+        "Grainy",
+        "Brown",
+        "Loamy"
+      ],
+      "Ardent": [
+        "Roasted",
+        "Smoked",
+        "Charred",
+        "Toasted",
+        "Glazed"
+      ],
+      "Glacial": [
+        "Chilled",
+        "Crystalline",
+        "Cold",
+        "Smooth",
+        "Brittle"
+      ],
+      "Spiritual": [
+        "Luminous",
+        "Silk",
+        "Translucent",
+        "Hollow",
+        "Misted"
+      ],
+      "Corrupted": [
+        "Stained",
+        "Wilted",
+        "Marbled",
+        "Fermented",
+        "Spoiled"
+      ],
+      "Aquatic": [
+        "Moist",
+        "Scaley",
+        "Brined",
+        "Puffy",
+        "Slick"
+      ],
+      "Mechanical": [
+        "Refined",
+        "Pressed",
+        "Distilled",
+        "Tempered",
+        "Infused"
+      ]
+    }
+  },
+  "detail": {
+    "agility": [
+      "Stretchy",
+      "Pointy",
+      "Slender",
+      "Slippery",
+      "Hooded",
+      "Moist",
+      "Slimey",
+      "Springy",
+      "Small",
+      "Responsive"
+    ],
+    "powerful": [
+      "Strong",
+      "Big",
+      "Hefty",
+      "Prickly",
+      "Serrated",
+      "Blunt",
+      "Red",
+      "Huge",
+      "Sharp",
+      "Clubbed"
+    ],
+    "protective": [
+      "Sturdy",
+      "Plated",
+      "Blue",
+      "Shielded",
+      "Hardened",
+      "Tough",
+      "Thick",
+      "Layered",
+      "Bulbous",
+      "Bloated"
+    ],
+    "recovery": [
+      "Curative",
+      "Steady",
+      "Healthy",
+      "Lush",
+      "Hearty",
+      "Repaired",
+      "Stable",
+      "Fresh",
+      "Green",
+      "Regenerating"
+    ],
+    "debilitating": [
+      "Corrosive",
+      "Drained",
+      "Hexed",
+      "Mutated",
+      "Melting",
+      "Withered",
+      "Cursed",
+      "Freckled",
+      "Black",
+      "Infected"
+    ],
+    "support": [
+      "Yellow",
+      "Spongey",
+      "Ribbed",
+      "Squeaky",
+      "Humming",
+      "Resonating",
+      "Reflective",
+      "Porous",
+      "Boosted",
+      "Sticky"
+    ]
+  },
+  "taste": {
+    "bitter": [
+      "Astringent",
+      "Harsh",
+      "Tannic",
+      "Sharp",
+      "Acrid",
+      "Dry",
+      "Medicinal",
+      "Pungent",
+      "Bracing",
+      "Earthy"
+    ],
+    "sour": [
+      "Tart",
+      "Tangy",
+      "Zesty",
+      "Citrusy",
+      "Acidic",
+      "LipPuckering",
+      "Vinegary",
+      "Fermented",
+      "Lemon",
+      "Crisp"
+    ],
+    "sweet": [
+      "Sugary",
+      "Honeyed",
+      "Syrupy",
+      "CandyLike",
+      "Nectarous",
+      "Saccharine",
+      "Luscious",
+      "Caramelized",
+      "Fruity",
+      "Rich"
+    ],
+    "salty": [
+      "Briny",
+      "Savory",
+      "Pickled",
+      "Cured",
+      "Mineral",
+      "Zingy",
+      "Piquant",
+      "Aged",
+      "Smoky",
+      "Oceanic"
+    ],
+    "umami": [
+      "Meaty",
+      "Brothy",
+      "Rich",
+      "Mushroomy",
+      "Hearty",
+      "Deep",
+      "Robust",
+      "SoyLike",
+      "Mellow",
+      "FullBodied"
+    ]
+  },
+  "element": {
+    "fire": [
+      "Flaming",
+      "Fire"
+    ],
+    "ice": [
+      "Cold",
+      "Ice"
+    ],
+    "earth": [
+      "Stone",
+      "Earth"
+    ],
+    "bolt": [
+      "Electric",
+      "Bolt"
+    ],
+    "air": [
+      "Energy",
+      "Wind"
+    ],
+    "dark": [
+      "Cursed",
+      "Dark"
+    ],
+    "light": [
+      "Holy",
+      "Light"
+    ],
+    "poison": [
+      "Toxic",
+      "Poison"
+    ]
+  }
+}
