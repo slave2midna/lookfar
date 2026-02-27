@@ -71,7 +71,7 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
   const name = `${tasteWord} ${originWord} ${natureWord}`;
 
   const quantity = Math.floor(Math.random() * 3) + 1;
-  const unitValue = (taste === "Distinct") ? 20 : 10;
+  const unitValue = 10;
   const total = unitValue * quantity;
   if (total > budget) return null;
 
