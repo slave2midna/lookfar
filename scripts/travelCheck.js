@@ -449,25 +449,17 @@ async function showRerollDialog(
 function generateKeywordsData() {
   if (!game.settings.get("lookfar", "enableKeywords")) return null;
 
-  // These are arrays of leaf words now, e.g. ["Abandoned", "Ancient", ...]
-  const traitKeys = dataLoader.keywordData?.traits || [];
-  const terrainKeys = dataLoader.keywordData?.terrain || [];
+  // These are already localized word arrays from data/keywords/<lang>.json
+  const traitWords = Array.isArray(dataLoader.keywordData?.traits) ? dataLoader.keywordData.traits : [];
+  const terrainWords = Array.isArray(dataLoader.keywordData?.terrain) ? dataLoader.keywordData.terrain : [];
 
-  // Pick 3–4 unique leaf words from each list
-  const selectedTraits = generateUniqueList(traitKeys, 3, 4);
-  const selectedTerrain = generateUniqueList(terrainKeys, 3, 4);
-
-  // Localize using our leaf-word i18n scheme
-  const localizedTraits = selectedTraits.map((key) =>
-    game.i18n.localize(`LOOKFAR.Keywords.Traits.${key}`)
-  );
-  const localizedTerrain = selectedTerrain.map((key) =>
-    game.i18n.localize(`LOOKFAR.Keywords.Terrain.${key}`)
-  );
+  // Copy before shuffle because generateUniqueList uses sort() which mutates arrays
+  const selectedTraits = generateUniqueList([...traitWords], 3, 4);
+  const selectedTerrain = generateUniqueList([...terrainWords], 3, 4);
 
   return {
-    traitKeywords: localizedTraits.join(", "),
-    terrainKeywords: localizedTerrain.join(", "),
+    traitKeywords: selectedTraits.join(", "),
+    terrainKeywords: selectedTerrain.join(", "),
   };
 }
 
@@ -743,6 +735,7 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
 
 
 
