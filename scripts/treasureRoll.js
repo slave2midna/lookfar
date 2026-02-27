@@ -839,8 +839,13 @@ Hooks.once("ready", () => {
         }
       }
 
-      // Keywords
-      const { origin: originKeywords, nature: natureKeywords, detail: detailKeywords, taste: tasteKeywords } = dataLoader.keywordData;
+      const keywords = dataLoader?.i18nData?.keywords || {};
+const {
+  origin: originKeywords,
+  nature: natureKeywords,
+  detail: detailKeywords,
+  taste: tasteKeywords
+} = keywords;
 
       // Equipment & Qualities
       const { weaponList, weaponQualities } = dataLoader.weaponsData;
@@ -849,9 +854,9 @@ Hooks.once("ready", () => {
       const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
 
       // Weapon Elements
-      const elementKeywords = lfKeywords().element || {};
+const elementKeywords = keywords.element || {};
 const weaponElements = Object.entries(elementKeywords)
-  .flatMap(([damageType, names]) => (names || []).map(name => ({ name, damageType })));
+  .flatMap(([damageType, names]) => names.map(name => ({ name, damageType })));
 
       if (rerollConfig) {
         const {
