@@ -449,8 +449,9 @@ async function showRerollDialog(
 function generateKeywordsData() {
   if (!game.settings.get("lookfar", "enableKeywords")) return null;
 
-  const traitWords = Array.isArray(dataLoader.keywordData?.traits) ? dataLoader.keywordData.traits : [];
-  const terrainWords = Array.isArray(dataLoader.keywordData?.terrain) ? dataLoader.keywordData.terrain : [];
+  const kw = dataLoader?.i18nData?.keywords || {};
+const traitWords = Array.isArray(kw?.traits) ? kw.traits : [];
+const terrainWords = Array.isArray(kw?.terrain) ? kw.terrain : [];
 
   // Copy before shuffle because generateUniqueList uses sort() which mutates arrays
   const selectedTraits = generateUniqueList([...traitWords], 3, 4);
@@ -734,3 +735,4 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
