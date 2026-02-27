@@ -849,9 +849,9 @@ Hooks.once("ready", () => {
       const { accessoryList, accessoryQualities } = dataLoader.accessoriesData;
 
       // Weapon Elements
-      const elementKeywords = dataLoader.keywordData.element || {};
-      const weaponElements = Object.entries(elementKeywords)
-        .flatMap(([damageType, names]) => names.map(name => ({ name, damageType })));
+      const elementKeywords = lfKeywords().element || {};
+const weaponElements = Object.entries(elementKeywords)
+  .flatMap(([damageType, names]) => (names || []).map(name => ({ name, damageType })));
 
       if (rerollConfig) {
         const {
