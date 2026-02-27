@@ -20,28 +20,38 @@ function lfEquipName(kind, id) {
 }
 
 function lfQualityEntry(group, id) {
-    // group: basic|aerial|thunderous|...
-    return lfBundle()?.qualities?.[group]?.[id] ?? null;
+  // First try the provided group
+  const direct = lfBundle()?.qualities?.[group]?.[id];
+  if (direct) return { group, entry: direct };
+
+  // Fallback: search every group for this id
+  const all = lfBundle()?.qualities || {};
+  for (const [g, entries] of Object.entries(all)) {
+    if (entries?.[id]) return { group: g, entry: entries[id] };
+  }
+
+  return null;
 }
 
 function lfQualityNameFor(kind, group, id) {
-    // kind: weapon|armor|shield|accessory
-    const entry = lfQualityEntry(group, id);
-    if (!entry) return id;
+  const hit = lfQualityEntry(group, id);
+  if (!hit?.entry) return id;
 
-    const key =
-        kind === "weapon" ? "Weapon" :
-        kind === "armor" ? "Armor" :
-        kind === "shield" ? "Shield" :
-        kind === "accessory" ? "Accessory" :
-        null;
+  const key =
+    kind === "weapon" ? "Weapon" :
+    kind === "armor" ? "Armor" :
+    kind === "shield" ? "Shield" :
+    kind === "accessory" ? "Accessory" :
+    null;
 
-    return (key && entry[key]) ? entry[key] : id;
+  const name = key ? hit.entry[key] : null;
+  return (typeof name === "string" && name.trim()) ? name.trim() : id;
 }
 
 function lfQualityDesc(group, id) {
-    const entry = lfQualityEntry(group, id);
-    return entry?.Description ?? "";
+  const hit = lfQualityEntry(group, id);
+  const desc = hit?.entry?.Description;
+  return (typeof desc === "string" && desc.trim()) ? desc.trim() : "";
 }
 
 // Random Generation Utility
