@@ -718,7 +718,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           }
           await ChatMessage.create({
             content: enrichedHtml,
-            speaker: ChatMessage.getSpeaker({ alias: "Treasure Result" })
+            speaker: ChatMessage.getSpeaker({ alias: game.i18n.localize("LOOKFAR.TreasureRoll.Chat.Alias") })
           });
         }
       },
