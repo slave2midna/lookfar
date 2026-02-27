@@ -1906,9 +1906,20 @@
          },
          "Result":{
             "Budget":{
-               "Remaining":"Remaining Budget"
-            }
+               "Remaining":"Remaining Budget",
+               "Ignored": "Ignored"
+            },
+            "ValueLabel": "Value"
          },
+         "Stash": {
+           "DefaultName": "New Stash #{num}"
+         },
+         "Chat": {
+           "Alias": "Treasure Result",
+           "CreatedStash": "Created {count} item(s) in {stashLink}.",
+           "Deposited": "Deposited {amount} {currency} into the stash.",
+           "SkippedIngredients": "Skipped {count} ingredient(s); cannot be stashed."
+         }
          "Errors":{
             "CustomTreasureTableMissing":"No Custom Treasure Roll Table selected in settings.",
             "CustomTreasureTableNotFound":"Selected Custom Treasure Roll Table not found.",
@@ -2239,6 +2250,7 @@
       }
    }
 }
+
 
 
 
