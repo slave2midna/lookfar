@@ -540,7 +540,9 @@ async function renderTreasureResultDialog(items, budget, config) {
                     },
                     featureType: "projectfu.ingredient",
                     summary: {
-                        value: `An ingredient that tastes ${data.taste}.`
+                      value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Ingredient", {
+                        taste: data.taste
+                      })
                     },
                     source: "LOOKFAR"
                 }
@@ -571,7 +573,11 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: "LOOKFAR"
                     },
                     summary: {
-                        value: `${data.nature} material of ${data.origin.toLowerCase()} origins. It can be used to craft ${data.detail} items.`
+                      value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Material", {
+                        nature: data.nature,
+                        originLower: String(data.origin || "").toLowerCase(),
+                        detail: data.detail
+                      })
                     }
                 }
             };
@@ -614,6 +620,7 @@ async function renderTreasureResultDialog(items, budget, config) {
             if (data.isMaster && !variantEnabled) parts.push(game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.Master"));
             parts.push(baseName);
             const displayName = parts.join(" ");
+            const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.NoSpecialProperties");
 
             itemData = {
                 name: displayName,
@@ -661,7 +668,10 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: "LOOKFAR"
                     },
                     summary: {
-                        value: `${prefix} that ${qualityDesc || "has no special properties."}`
+                      value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Weapon", {
+                        prefix,
+                        qualityText
+                      })
                     }
                 }
             };
@@ -679,6 +689,11 @@ async function renderTreasureResultDialog(items, budget, config) {
             const img = dataLoader.getRandomIconFor("armor", baseArmor) || "icons/svg/statue.svg";
 
             const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+            const martialType = baseArmor?.isMartial
+              ? game.i18n.localize("LOOKFAR.TreasureRoll.Labels.Martial")
+              : game.i18n.localize("LOOKFAR.TreasureRoll.Labels.NonMartial");
+
+            const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.NoSpecialProperties");
 
             itemData = {
                 name: displayName,
@@ -710,7 +725,10 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: "LOOKFAR"
                     },
                     summary: {
-                        value: `A set of ${baseArmor?.isMartial ? "martial" : "non-martial"} armor that ${qualityDesc || "has no special properties."}`
+                      value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Armor", {
+                        martialType,
+                        qualityText
+                      })
                     }
                 }
             };
@@ -728,6 +746,11 @@ async function renderTreasureResultDialog(items, budget, config) {
             const img = dataLoader.getRandomIconFor("shield", baseShield) || "icons/svg/shield.svg";
 
             const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+            const martialType = baseShield?.isMartial
+              ? game.i18n.localize("LOOKFAR.TreasureRoll.Labels.Martial")
+              : game.i18n.localize("LOOKFAR.TreasureRoll.Labels.NonMartial");
+
+            const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.NoSpecialProperties");
 
             itemData = {
                 name: displayName,
@@ -759,7 +782,10 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: "LOOKFAR"
                     },
                     summary: {
-                        value: `A ${baseShield?.isMartial ? "martial" : "non-martial"} shield that ${qualityDesc || "has no special properties."}`
+                      value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Shield", {
+                        martialType,
+                        qualityText
+                      })
                     }
                 }
             };
@@ -777,6 +803,7 @@ async function renderTreasureResultDialog(items, budget, config) {
             const img = dataLoader.getRandomIconFor("accessory", baseAccessory) || "icons/svg/stoned.svg";
 
             const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+            const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.NoSpecialProperties");
 
             itemData = {
                 name: displayName,
@@ -803,7 +830,9 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: "LOOKFAR"
                     },
                     summary: {
-                        value: `An accessory that ${qualityDesc || "has no special properties."}`
+                      value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Accessory", {
+                        qualityText
+                      })
                     }
                 }
             };
