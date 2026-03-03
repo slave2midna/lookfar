@@ -17,42 +17,6 @@
         "Massive": 80
       }
     },
-    "statusEffects": {
-      "Minor": [
-        "Dazed",
-        "Shaken",
-        "Slow",
-        "Weak"
-      ],
-      "Heavy": [
-        "Poison",
-        "Enrage"
-      ],
-      "Massive": [
-        "Dazed",
-        "Shaken",
-        "Slow",
-        "Weak",
-        "Poisoned",
-        "Enraged"
-      ]
-    },
-    "Combat": {
-      "Minor": "Minor",
-      "Heavy": "Heavy",
-      "Massive": "Massive"
-    },
-    "dangerClock": {
-      "Minor": "Minor",
-      "Heavy": "Heavy",
-      "Massive": "Massive"
-    },
-    "villainPlanAdvance": {
-      "Minor": "Minor",
-      "Heavy": "Heavy",
-      "Massive": "Massive"
-    }
-  },
   "sources": [
     "Source1",
     "Source2",
