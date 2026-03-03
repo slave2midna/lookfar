@@ -25,7 +25,7 @@
     },
 
 
-     
+    
     "__SECTION__Settings": "=== Settings ===",
     "Settings": {
       "ResultVisibility": {
@@ -92,7 +92,7 @@
     },
 
 
-     
+    
     "__SECTION__TravelCheck": "=== Travel Check ===",
     "TravelCheck": {
       "Difficulty": {
@@ -222,7 +222,7 @@
     },
 
 
-     
+    
     "__SECTION__TreasureRoll": "=== Treasure Roll ===",
     "TreasureRoll": {
       "NamePatterns": {
@@ -349,7 +349,7 @@
     },
 
 
-     
+    
     "__SECTION__ItemForge": "=== Item Forge ===",
     "ItemForge": {
       "Dialog": {
