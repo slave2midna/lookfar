@@ -1,542 +1,543 @@
 {
-   "LOOKFAR":{
-      "__SECTION__Buttons":"=== Buttons ===",
-      "Button":{
-         "TravelCheck":{
-            "Name":"Travel Check",
-            "Title":"Make a Travel Check"
-         },
-         "TreasureRoll":{
-            "Name":"Treasure Roll",
-            "Title":"Generate Some Treasure"
-         },
-         "DungeonBuilder":{
-            "Name":"Dungeon Mapper",
-            "Title":"Map a Dungeon"
-         },
-         "ConflictBuilder":{
-            "Name":"Conflict Builder",
-            "Title":"Create a Conflict"
-         },
-         "ItemForger":{
-            "Name":"Item Forge",
-            "Title":"Forge and Item"
-         }
+  "LOOKFAR": {
+    "__SECTION__Buttons": "=== Buttons ===",
+    "Button": {
+      "TravelCheck": {
+        "Name": "Travel Check",
+        "Title": "Make a Travel Check"
       },
-
-
-      
-      "__SECTION__Settings":"=== Settings ===",
-      "Settings":{
-         "ResultVisibility":{
-            "Name":"Result Visibility",
-            "Hint":"Choose whether results and chat outputs are public or GM only.",
-            "Choices":{
-               "Public":"Public",
-               "GMOnly":"GM Only"
-            }
-         },
-         "ItemForgeEditMode":{
-            "Name":"Item Forge Edit Mode",
-            "Hint":"Change how interacting with the Item Forger works for users.",
-            "Choices":{
-               "Public":"Public",
-               "GMOnly":"GM Only",
-               "Locked":"Locked",
-               "Hidden":"Hidden"
-            }
-         },
-         "EnableKeywords":{
-            "Name":"Enable Keywords",
-            "Hint":"Enable keywords when generating travel check results."
-         },
-         "UseVariantTravelRules":{
-            "Name":"Use Variant Travel Rules",
-            "Hint":"Placeholder setting: Toggles alternative travel mechanics (currently unused)."
-         },
-         "UseVariantDamageRules":{
-            "Name":"Use Playtest Damage Rules",
-            "Hint":"When generating new weapons, damage will be based on new playtest rules."
-         },
-         "DiscoveryEffectTable":{
-            "Name":"Discovery Effect Roll Table",
-            "Hint":"Select the Roll Table to use for generating discovery effects."
-         },
-         "DiscoverySourceTable":{
-            "Name":"Discovery Source Roll Table",
-            "Hint":"Select the Roll Table to use for generating discovery sources."
-         },
-         "DangerThreatTable":{
-            "Name":"Danger Threat Roll Table",
-            "Hint":"Select the Roll Table to use for generating danger threats."
-         },
-         "DangerSourceTable":{
-            "Name":"Danger Source Roll Table",
-            "Hint":"Select the Roll Table to use for generating danger sources."
-         },
-         "CustomTreasureRollTable":{
-            "Name":"Custom Treasure Roll Table",
-            "Hint":"Select the Roll Table to use for generating custom treasure."
-         },
-         "MonsterCompendium":{
-            "Name":"Monster Compendium",
-            "Hint":"Select the Actor compendium to use as the source for Conflict Builder."
-         },
-         "BattleSceneName":{
-            "Name":"Battle Scene",
-            "Hint":"Select the Scene to use for the Conflict Builder preview."
-         },
-         "DefaultRollTable":"Lookfar Defaults",
-         "NoActorCompendiums":"No Actor compendiums found",
-         "NoScenes":"No scenes found"
+      "TreasureRoll": {
+        "Name": "Treasure Roll",
+        "Title": "Generate Some Treasure"
       },
-
-
-      
-      "__SECTION__TreasureRoll":"=== Treasure Roll ===",
-"TreasureRoll":{
-  "NamePatterns":{
-    "Material":"{detail} {origin} {nature}",
-    "Ingredient":"{taste} {origin} {nature}",
-    "Weapon":"{quality} {element} {base}",
-    "Armor":"{quality} {base}",
-    "Shield":"{quality} {base}",
-    "Accessory":"{quality} {base}"
-  },
-  "Dialogs":{
-  "Generator":{
-    "Title":"Treasure Generator",
-    "Buttons":{
-      "RollLoot":"Roll Loot"
-    }
-  },
-  "Result":{
-    "Title":"Treasure Results",
-    "Buttons":{
-      "Keep":"Keep",
-      "Stash":"Stash",
-      "Reroll":"Reroll"
-    }
-  }
-},
-  "Fields":{
-    "Budget":"Budget",
-    "Level":"Level",
-    "Origin":"Origin",
-    "Nature":"Nature",
-    "Items":"Items"
-  },
-  "Origin":{
-    "Random":"Random",
-    "Aerial":"Aerial",
-    "Thunderous":"Thunderous",
-    "Paradox":"Paradox",
-    "Terrestrial":"Terrestrial",
-    "Ardent":"Ardent",
-    "Glacial":"Glacial",
-    "Spiritual":"Spiritual",
-    "Corrupted":"Corrupted",
-    "Aquatic":"Aquatic",
-    "Mechanical":"Mechanical"
-  },
-  "Nature":{
-    "Random":"Random",
-    "Anthropod":"Anthropod",
-    "Bird":"Bird",
-    "Fish":"Fish",
-    "Mammal":"Mammal",
-    "Mollusk":"Mollusk",
-    "Reptile":"Reptile",
-    "Fungus":"Fungus",
-    "Incorporeal":"Incorporeal",
-    "Liquid":"Liquid",
-    "Artificial":"Artificial",
-    "Mineral":"Mineral"
-  },
-  "Options":{
-    "IgnoreValues":"Ignore budget/level",
-    "SelectAll":"Select all"
-  },
-  "Types":{
-    "Weapons":"Weapons",
-    "Armor":"Armor",
-    "Accessories":"Accessories",
-    "Shields":"Shields",
-    "Materials":"Materials",
-    "Ingredients":"Ingredients",
-    "Currency":"Currency",
-    "Custom":"Custom"
-  },
-  "Result":{
-    "Budget":{
-      "Remaining":"Remaining Budget",
-      "Ignored":"Ignored"
-    },
-    "ValueLabel":"Value"
-  },
-  "Stash":{
-    "DefaultName":"New Stash #{num}",
-    "NamePrefix":"New Stash #"
-  },
-  "Tokens":{
-    "Random":"Random",
-    "None":"None",
-    "Master":"Master",
-    "PlusOne":"+1",
-    "Unknown":"unknown",
-    "NoQuality":"No quality",
-    "NoSpecialProperties":"has no special properties.",
-    "CurrencyFallback":"Zenit"
-  },
-  "Labels":{
-    "Martial":"martial",
-    "NonMartial":"non-martial"
-  },
-  "Summaries":{
-    "Ingredient":"An ingredient that tastes {taste}.",
-    "Material":"{nature} material of {originLower} origins. It can be used to craft {detail} items.",
-    "Weapon":"{prefix} that {qualityText}",
-    "Armor":"A set of {martialType} armor that {qualityText}",
-    "Shield":"A {martialType} shield that {qualityText}",
-    "Accessory":"An accessory that {qualityText}"
-  },
-  "WeaponPrefix":{
-    "Base":"A {category} weapon",
-    "Masterwork":"A masterwork {category} weapon"
-  },
-  "Chat":{
-    "Alias":"Treasure Result",
-    "CreatedStash":"Created {count} item(s) in {stashLink}.",
-    "Deposited":"Deposited {amount} {currency} into the stash.",
-    "SkippedIngredients":"Skipped {count} ingredient(s); cannot be stashed."
-  },
-  "Errors":{
-    "CustomTreasureTableMissing":"No Custom Treasure Roll Table selected in settings.",
-    "CustomTreasureTableNotFound":"Selected Custom Treasure Roll Table not found.",
-    "SkippedIngredientsWarning":"Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
-    "NoLootGenerated":"No loot generated."
-  }
-},
-
-       
-      "__SECTION__TravelCheck":"=== Travel Check ===",
-      "TravelCheck":{
-         "Difficulty":{
-            "Minimal":"Minimal",
-            "Low":"Low",
-            "Medium":"Medium",
-            "High":"High",
-            "VeryHigh":"Very High"
-         },
-         "Dialogs":{
-            "TravelCheck":{
-               "Title":"Travel Check",
-               "ThreatLevel":"Threat Level",
-               "Wayfaring":"Wayfaring",
-               "PartyLevel":"Party Level:",
-               "TreasureHunting":"Treasure Hunting",
-               "WellTraveled":"Well-Traveled"
-            },
-            "TravelResult":{
-               "Title":"Travel Result",
-               "Prompt":"Do you want to keep this result or reroll?",
-               "Waiting":"Waiting for GM decision...",
-               "NoIncident":"The travel day passed without incident."
-            },
-            "Result":{
-               "DangerMinor":"Minor Danger!",
-               "DangerHeavy":"Heavy Danger!",
-               "DangerMassive":"Massive Danger!",
-               "Discovery":"Discovery!"
-            },
-            "TableHeaders":{
-               "Threat":"Threat",
-               "Source":"Source",
-               "Effect":"Effect",
-               "Traits":"Traits",
-               "Terrain":"Terrain"
-            }
-         },
-         "Chat":{
-            "Alias":{
-               "Roll":"Travel Roll",
-               "Result":"Travel Result"
-            }
-         },
-         "Errors":{
-            "DataUnavailable":"Error: Data not available.",
-            "DamageMissing":"Error: Damage data not found.",
-            "ThreatUnknown":"Error: Unknown threat type.",
-            "NoDangerSource":"No danger source available.",
-            "NoDiscoveryEffect":"No discovery effect available.",
-            "NoDiscoverySource":"No discovery source available."
-         },
-         "Dangers": {
-            "Damage": "The party takes {amount} damage",
-            "StatusEffects": {
-              "Dazed": "The party becomes dazed",
-              "Shaken": "The party becomes shaken",
-              "Slow": "The party becomes slow",
-              "Weak": "The party becomes weak",
-              "Poisoned": "The party becomes poisoned",
-              "Enraged": "The party becomes enraged"
-           },
-            "Combat":{
-               "Minor":"An easy combat encounter",
-               "Heavy":"A challenging combat encounter",
-               "Massive":"A deadly combat encounter"
-            },
-            "DangerClock":{
-               "Minor":"Create a 4-section danger clock",
-               "Heavy":"Create a 6-section danger clock",
-               "Massive":"Create an 8-section danger clock"
-            },
-            "VillainPlanAdvance":{
-               "Minor":"The villain’s plan advances by 2 steps",
-               "Heavy":"The villain’s plan advances by 3 steps",
-               "Massive":"The villain’s plan advances by 4 steps"
-            },
-            "Sources":{
-               "Source1":"Altitude sickness, food poisoning, or general exhaustion slows the group.",
-               "Source2":"Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
-               "Source3":"Local or global political unrest causes interruptions or confrontations.",
-               "Source4":"A harsh natural event — storms, quakes, floods — brings delay and peril.",
-               "Source5":"You attract the attention of a rival, villain, or monster.",
-               "Source6":"Supernatural interference alters the path: portals, hauntings, omens.",
-               "Source7":"A mysterious NPC appears, altering or obstructing your path.",
-               "Source8":"An ancient or hidden mechanism is triggered unexpectedly.",
-               "Source9":"You trespass on sacred ground or violate a taboo unknowingly.",
-               "Source10":"The wilderness reveals a secret — but it comes at a price.",
-               "Source11":"Wildlife becomes territorial or aggressive, creating complications.",
-               "Source12":"A landmark has changed, misguiding your path.",
-               "Source13":"Resources deplete faster than expected, straining survival.",
-               "Source14":"Dreams or visions disrupt progress with cryptic warnings.",
-               "Source15":"A divine or arcane presence tests your worth or purity.",
-               "Source16":"A curse or magical interference subtly warps your environment.",
-               "Source17":"An ally reveals a secret that throws everything into question."
-            }
-         },
-         "Discoveries":{
-            "Effects":{
-               "Effect1":"Each party member regains 1 IP.",
-               "Effect2":"Each party member regains 10 HP.",
-               "Effect3":"You discover a rare herb with healing properties.",
-               "Effect4":"You find a relic of cultural or historical importance.",
-               "Effect5":"You gain insight into a local custom or legend.",
-               "Effect6":"You learn a shortcut that will aid future travel.",
-               "Effect7":"A friendly creature aids your party temporarily.",
-               "Effect8":"You find ancient writing that hints at future events.",
-               "Effect9":"A clue to a larger mystery is uncovered.",
-               "Effect10":"The landscape inspires a sudden burst of creativity.",
-               "Effect11":"You forge a useful tool or item from salvaged parts."
-            },
-            "Sources":{
-               "Source1":"A beautiful scenery that remains almost untouched for centuries.",
-               "Source2":"Ruins of a village that tells the story of an old war.",
-               "Source3":"An altar with inscriptions from a forgotten civilization.",
-               "Source4":"A cave where an old campfire and supplies are found.",
-               "Source5":"A buried time capsule from another age.",
-               "Source6":"Tracks from an unknown species.",
-               "Source7":"A monolith covered in glowing runes.",
-               "Source8":"Bones of a massive creature never before seen.",
-               "Source9":"A place where the stars seem to align perfectly.",
-               "Source10":"An unusual weather phenomenon revealing hidden terrain.",
-               "Source11":"A melody carried on the wind, with no clear origin.",
-               "Source12":"A single tree growing out of stone, radiating magic."
-            }
-         }
+      "DungeonBuilder": {
+        "Name": "Dungeon Mapper",
+        "Title": "Map a Dungeon"
       },
-
-
-       
-      "__SECTION__ItemForge":"=== Item Forge ===",
-      "ItemForge":{
-         "Dialog":{
-            "Title":"Item Forger",
-            "MiniTitle":"Item Forger: Materials",
-            "Button":{
-               "Forge":"Forge Item"
-            },
-            "Errors":{
-               "ChooseType":"Please choose an item type.",
-               "ChooseTemplate":"Please choose a template.",
-               "ForgeFailed":"Forge failed: {error}",
-               "OpenFailed":"Failed to open Item Forger dialog."
-            }
-         },
-         "Notifications":{
-            "Forged":"Forged: {name}"
-         },
-         "Errors":{
-            "NoTemplateSelected":"No template selected.",
-            "GenericForgeFailed":"The forge could not complete.",
-            "CouldNotReadDrop":"Could not read dropped data.",
-            "FilePickerOpen":"Could not open the file picker."
-         },
-         "ChooseItem":{
-            "Legend":"Choose Item"
-         },
-         "ItemType":{
-            "Weapon":"Weapon",
-            "Armor":"Armor",
-            "Shield":"Shield",
-            "Accessory":"Accessory"
-         },
-         "TemplateList":{
-            "Aria":"Template list",
-            "Loading":"Loading...",
-            "Empty":"No templates available."
-         },
-         "Attributes":{
-            "Legend":"Attributes",
-            "AttrA":{
-               "Label":"Attr A:"
-            },
-            "AttrB":{
-               "Label":"Attr B:"
-            }
-         },
-         "Preview":{
-            "Legend":"Preview",
-            "Placeholder":"CONTENT",
-            "Handed":{
-               "One":"One-Handed",
-               "Two":"Two-Handed",
-               "Unknown":"Handed"
-            },
-            "Stats":{
-               "Def":"DEF",
-               "MDef":"M.DEF",
-               "Init":"INIT",
-               "HR":"HR"
-            },
-            "Muted":{
-               "OtherKind":"Preview for another item type.",
-               "SelectWeaponTemplate":"Select a weapon template to preview."
-            },
-            "Error":{
-               "Generic":"Unable to render preview."
-            }
-         },
-         "Customize":{
-            "Legend":"Customize",
-            "PlusOneAccuracy":"+1 Accuracy",
-            "PlusFourDamage":"+4 Damage",
-            "NoOptions":"No Options",
-            "HandToggle":{
-               "MakeOneHanded":"Make One-Handed",
-               "MakeTwoHanded":"Make Two-Handed"
-            },
-            "Tooltip":{
-               "HandToggleRestricted":"This weapon cannot change its handedness.",
-               "GMOnly":"Only the GM can change this option.",
-               "PlusOneAlready":"This weapon already has at least +1 Accuracy.",
-               "VariantDamageInfo":"Damage scales from the item's value. This option is disabled."
-            },
-            "Element":{
-               "Label":"Type:",
-               "Physical":"Physical",
-               "Fire":"Fire",
-               "Ice":"Ice",
-               "Earth":"Earth",
-               "Air":"Air",
-               "Bolt":"Bolt",
-               "Dark":"Dark",
-               "Light":"Light",
-               "Poison":"Poison"
-            }
-         },
-         "Qualities":{
-            "Legend":"Qualities",
-            "NoneText":"No quality.",
-            "NoData":"No quality data found.",
-            "NoneAvailable":"No qualities available for this item type.",
-            "Category":{
-               "None":"None",
-               "Basic":"Basic",
-               "Custom":"Custom",
-               "Ardent":"Ardent",
-               "Aerial":"Aerial",
-               "Thunderous":"Thunderous",
-               "Paradox":"Paradox",
-               "Terrestrial":"Terrestrial",
-               "Glacial":"Glacial",
-               "Spiritual":"Spiritual",
-               "Corrupted":"Corrupted",
-               "Aquatic":"Aquatic",
-               "Mechanical":"Mechanical"
-            },
-            "List":{
-               "Aria":"Qualities list"
-            },
-            "Custom":{
-               "Effect":{
-                  "Title":"Type your custom effect text"
-               },
-               "Cost":{
-                  "Label":"Cost:",
-                  "Title":"Enter a non-negative integer"
-               },
-               "Apply":"Apply"
-            }
-         },
-         "Cost":{
-            "Legend":"Cost",
-            "NoFee":"No Fee"
-         },
-         "Materials":{
-            "Legend":"Materials",
-            "Drop":{
-               "Aria":"Materials drop zone"
-            },
-            "Hint":"Drag & drop Item documents here (max 5).",
-            "RequireOriginHint":"At least one material with origin \"{origin}\" is required.",
-            "Tooltip":{
-               "OriginLabel":"Origin",
-               "CostLabel":"Cost",
-               "Remove":"Click to remove this material",
-               "RequestRemove":"Click to request removing this material"
-            },
-            "Errors":{
-               "OnlyItems":"Only Item documents can be used as materials.",
-               "OnlyTreasure":"Only Treasure-type items can be used as materials.",
-               "MaxMaterials":"You cannot use more than 5 materials.",
-               "NoMoreItem":"You cannot use this material any more times.",
-               "NotEnoughQuantity":"Not enough copies of {name}. Need {need}, have {have}."
-            }
-         },
-         "Create":{
-            "NamePattern":{
-               "Weapon":"{base} (Forged)",
-               "Armor":"{base} (Forged)",
-               "Shield":"{base} (Forged)",
-               "Accessory":"{base} (Forged)"
-            },
-            "Summary":{
-               "Weapon":"A forged weapon of the {category} type.",
-               "Armor":"Forged armor ({martialType}).",
-               "Shield":"A forged shield ({martialType}).",
-               "Accessory":"A forged accessory based on {base}."
-            }
-         },
-         "Fallback":{
-            "WeaponName":"Weapon",
-            "ArmorName":"Armor",
-            "ShieldName":"Shield",
-            "AccessoryName":"Accessory",
-            "WeaponCategory":"weapon"
-         },
-         "Armor":{
-            "Martial":"Martial armor",
-            "NonMartial":"Non-martial armor"
-         },
-         "Shield":{
-            "Martial":"Martial shield",
-            "NonMartial":"Non-martial shield"
-         },
-         "PreviewCard":{
-            "MutedText":"Unavailable"
-         }
+      "ConflictBuilder": {
+        "Name": "Conflict Builder",
+        "Title": "Create a Conflict"
+      },
+      "ItemForger": {
+        "Name": "Item Forge",
+        "Title": "Forge and Item"
       }
-   }
+    },
+
+
+     
+    "__SECTION__Settings": "=== Settings ===",
+    "Settings": {
+      "ResultVisibility": {
+        "Name": "Result Visibility",
+        "Hint": "Choose whether results and chat outputs are public or GM only.",
+        "Choices": {
+          "Public": "Public",
+          "GMOnly": "GM Only"
+        }
+      },
+      "ItemForgeEditMode": {
+        "Name": "Item Forge Edit Mode",
+        "Hint": "Change how interacting with the Item Forger works for users.",
+        "Choices": {
+          "Public": "Public",
+          "GMOnly": "GM Only",
+          "Locked": "Locked",
+          "Hidden": "Hidden"
+        }
+      },
+      "EnableKeywords": {
+        "Name": "Enable Keywords",
+        "Hint": "Enable keywords when generating travel check results."
+      },
+      "UseVariantTravelRules": {
+        "Name": "Use Variant Travel Rules",
+        "Hint": "Placeholder setting: Toggles alternative travel mechanics (currently unused)."
+      },
+      "UseVariantDamageRules": {
+        "Name": "Use Playtest Damage Rules",
+        "Hint": "When generating new weapons, damage will be based on new playtest rules."
+      },
+      "DiscoveryEffectTable": {
+        "Name": "Discovery Effect Roll Table",
+        "Hint": "Select the Roll Table to use for generating discovery effects."
+      },
+      "DiscoverySourceTable": {
+        "Name": "Discovery Source Roll Table",
+        "Hint": "Select the Roll Table to use for generating discovery sources."
+      },
+      "DangerThreatTable": {
+        "Name": "Danger Threat Roll Table",
+        "Hint": "Select the Roll Table to use for generating danger threats."
+      },
+      "DangerSourceTable": {
+        "Name": "Danger Source Roll Table",
+        "Hint": "Select the Roll Table to use for generating danger sources."
+      },
+      "CustomTreasureRollTable": {
+        "Name": "Custom Treasure Roll Table",
+        "Hint": "Select the Roll Table to use for generating custom treasure."
+      },
+      "MonsterCompendium": {
+        "Name": "Monster Compendium",
+        "Hint": "Select the Actor compendium to use as the source for Conflict Builder."
+      },
+      "BattleSceneName": {
+        "Name": "Battle Scene",
+        "Hint": "Select the Scene to use for the Conflict Builder preview."
+      },
+      "DefaultRollTable": "Lookfar Defaults",
+      "NoActorCompendiums": "No Actor compendiums found",
+      "NoScenes": "No scenes found"
+    },
+
+
+     
+    "__SECTION__TravelCheck": "=== Travel Check ===",
+    "TravelCheck": {
+      "Difficulty": {
+        "Minimal": "Minimal",
+        "Low": "Low",
+        "Medium": "Medium",
+        "High": "High",
+        "VeryHigh": "Very High"
+      },
+      "Dialogs": {
+        "TravelCheck": {
+          "Title": "Travel Check",
+          "ThreatLevel": "Threat Level",
+          "Wayfaring": "Wayfaring",
+          "PartyLevel": "Party Level:",
+          "TreasureHunting": "Treasure Hunting",
+          "WellTraveled": "Well-Traveled"
+        },
+        "TravelResult": {
+          "Title": "Travel Result",
+          "Prompt": "Do you want to keep this result or reroll?",
+          "Waiting": "Waiting for GM decision...",
+          "NoIncident": "The travel day passed without incident."
+        },
+        "Result": {
+          "DangerMinor": "Minor Danger!",
+          "DangerHeavy": "Heavy Danger!",
+          "DangerMassive": "Massive Danger!",
+          "Discovery": "Discovery!"
+        },
+        "TableHeaders": {
+          "Threat": "Threat",
+          "Source": "Source",
+          "Effect": "Effect",
+          "Traits": "Traits",
+          "Terrain": "Terrain"
+        }
+      },
+      "Chat": {
+        "Alias": {
+          "Roll": "Travel Roll",
+          "Result": "Travel Result"
+        }
+      },
+      "Errors": {
+        "DataUnavailable": "Error: Data not available.",
+        "DamageMissing": "Error: Damage data not found.",
+        "ThreatUnknown": "Error: Unknown threat type.",
+        "NoDangerSource": "No danger source available.",
+        "NoDiscoveryEffect": "No discovery effect available.",
+        "NoDiscoverySource": "No discovery source available."
+      },
+      "Dangers": {
+        "Damage": "The party takes {amount} damage",
+        "StatusEffects": {
+          "Dazed": "The party becomes dazed",
+          "Shaken": "The party becomes shaken",
+          "Slow": "The party becomes slow",
+          "Weak": "The party becomes weak",
+          "Poisoned": "The party becomes poisoned",
+          "Enraged": "The party becomes enraged"
+        },
+        "Combat": {
+          "Minor": "An easy combat encounter",
+          "Heavy": "A challenging combat encounter",
+          "Massive": "A deadly combat encounter"
+        },
+        "DangerClock": {
+          "Minor": "Create a 4-section danger clock",
+          "Heavy": "Create a 6-section danger clock",
+          "Massive": "Create an 8-section danger clock"
+        },
+        "VillainPlanAdvance": {
+          "Minor": "The villain’s plan advances by 2 steps",
+          "Heavy": "The villain’s plan advances by 3 steps",
+          "Massive": "The villain’s plan advances by 4 steps"
+        },
+        "Sources": {
+          "Source1": "Altitude sickness, food poisoning, or general exhaustion slows the group.",
+          "Source2": "Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
+          "Source3": "Local or global political unrest causes interruptions or confrontations.",
+          "Source4": "A harsh natural event — storms, quakes, floods — brings delay and peril.",
+          "Source5": "You attract the attention of a rival, villain, or monster.",
+          "Source6": "Supernatural interference alters the path: portals, hauntings, omens.",
+          "Source7": "A mysterious NPC appears, altering or obstructing your path.",
+          "Source8": "An ancient or hidden mechanism is triggered unexpectedly.",
+          "Source9": "You trespass on sacred ground or violate a taboo unknowingly.",
+          "Source10": "The wilderness reveals a secret — but it comes at a price.",
+          "Source11": "Wildlife becomes territorial or aggressive, creating complications.",
+          "Source12": "A landmark has changed, misguiding your path.",
+          "Source13": "Resources deplete faster than expected, straining survival.",
+          "Source14": "Dreams or visions disrupt progress with cryptic warnings.",
+          "Source15": "A divine or arcane presence tests your worth or purity.",
+          "Source16": "A curse or magical interference subtly warps your environment.",
+          "Source17": "An ally reveals a secret that throws everything into question."
+        }
+      },
+      "Discoveries": {
+        "Effects": {
+          "Effect1": "Each party member regains 1 IP.",
+          "Effect2": "Each party member regains 10 HP.",
+          "Effect3": "You discover a rare herb with healing properties.",
+          "Effect4": "You find a relic of cultural or historical importance.",
+          "Effect5": "You gain insight into a local custom or legend.",
+          "Effect6": "You learn a shortcut that will aid future travel.",
+          "Effect7": "A friendly creature aids your party temporarily.",
+          "Effect8": "You find ancient writing that hints at future events.",
+          "Effect9": "A clue to a larger mystery is uncovered.",
+          "Effect10": "The landscape inspires a sudden burst of creativity.",
+          "Effect11": "You forge a useful tool or item from salvaged parts."
+        },
+        "Sources": {
+          "Source1": "A beautiful scenery that remains almost untouched for centuries.",
+          "Source2": "Ruins of a village that tells the story of an old war.",
+          "Source3": "An altar with inscriptions from a forgotten civilization.",
+          "Source4": "A cave where an old campfire and supplies are found.",
+          "Source5": "A buried time capsule from another age.",
+          "Source6": "Tracks from an unknown species.",
+          "Source7": "A monolith covered in glowing runes.",
+          "Source8": "Bones of a massive creature never before seen.",
+          "Source9": "A place where the stars seem to align perfectly.",
+          "Source10": "An unusual weather phenomenon revealing hidden terrain.",
+          "Source11": "A melody carried on the wind, with no clear origin.",
+          "Source12": "A single tree growing out of stone, radiating magic."
+        }
+      }
+    },
+
+
+     
+    "__SECTION__TreasureRoll": "=== Treasure Roll ===",
+    "TreasureRoll": {
+      "NamePatterns": {
+        "Material": "{detail} {origin} {nature}",
+        "Ingredient": "{taste} {origin} {nature}",
+        "Weapon": "{quality} {element} {base}",
+        "Armor": "{quality} {base}",
+        "Shield": "{quality} {base}",
+        "Accessory": "{quality} {base}"
+      },
+      "Dialogs": {
+        "Generator": {
+          "Title": "Treasure Generator",
+          "Buttons": {
+            "RollLoot": "Roll Loot"
+          }
+        },
+        "Result": {
+          "Title": "Treasure Results",
+          "Buttons": {
+            "Keep": "Keep",
+            "Stash": "Stash",
+            "Reroll": "Reroll"
+          }
+        }
+      },
+      "Fields": {
+        "Budget": "Budget",
+        "Level": "Level",
+        "Origin": "Origin",
+        "Nature": "Nature",
+        "Items": "Items"
+      },
+      "Origin": {
+        "Random": "Random",
+        "Aerial": "Aerial",
+        "Thunderous": "Thunderous",
+        "Paradox": "Paradox",
+        "Terrestrial": "Terrestrial",
+        "Ardent": "Ardent",
+        "Glacial": "Glacial",
+        "Spiritual": "Spiritual",
+        "Corrupted": "Corrupted",
+        "Aquatic": "Aquatic",
+        "Mechanical": "Mechanical"
+      },
+      "Nature": {
+        "Random": "Random",
+        "Anthropod": "Anthropod",
+        "Bird": "Bird",
+        "Fish": "Fish",
+        "Mammal": "Mammal",
+        "Mollusk": "Mollusk",
+        "Reptile": "Reptile",
+        "Fungus": "Fungus",
+        "Incorporeal": "Incorporeal",
+        "Liquid": "Liquid",
+        "Artificial": "Artificial",
+        "Mineral": "Mineral"
+      },
+      "Options": {
+        "IgnoreValues": "Ignore budget/level",
+        "SelectAll": "Select all"
+      },
+      "Types": {
+        "Weapons": "Weapons",
+        "Armor": "Armor",
+        "Accessories": "Accessories",
+        "Shields": "Shields",
+        "Materials": "Materials",
+        "Ingredients": "Ingredients",
+        "Currency": "Currency",
+        "Custom": "Custom"
+      },
+      "Result": {
+        "Budget": {
+          "Remaining": "Remaining Budget",
+          "Ignored": "Ignored"
+        },
+        "ValueLabel": "Value"
+      },
+      "Stash": {
+        "DefaultName": "New Stash #{num}",
+        "NamePrefix": "New Stash #"
+      },
+      "Tokens": {
+        "Random": "Random",
+        "None": "None",
+        "Master": "Master",
+        "PlusOne": "+1",
+        "Unknown": "unknown",
+        "NoQuality": "No quality",
+        "NoSpecialProperties": "has no special properties.",
+        "CurrencyFallback": "Zenit"
+      },
+      "Labels": {
+        "Martial": "martial",
+        "NonMartial": "non-martial"
+      },
+      "Summaries": {
+        "Ingredient": "An ingredient that tastes {taste}.",
+        "Material": "{nature} material of {originLower} origins. It can be used to craft {detail} items.",
+        "Weapon": "{prefix} that {qualityText}",
+        "Armor": "A set of {martialType} armor that {qualityText}",
+        "Shield": "A {martialType} shield that {qualityText}",
+        "Accessory": "An accessory that {qualityText}"
+      },
+      "WeaponPrefix": {
+        "Base": "A {category} weapon",
+        "Masterwork": "A masterwork {category} weapon"
+      },
+      "Chat": {
+        "Alias": "Treasure Result",
+        "CreatedStash": "Created {count} item(s) in {stashLink}.",
+        "Deposited": "Deposited {amount} {currency} into the stash.",
+        "SkippedIngredients": "Skipped {count} ingredient(s); cannot be stashed."
+      },
+      "Errors": {
+        "CustomTreasureTableMissing": "No Custom Treasure Roll Table selected in settings.",
+        "CustomTreasureTableNotFound": "Selected Custom Treasure Roll Table not found.",
+        "SkippedIngredientsWarning": "Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
+        "NoLootGenerated": "No loot generated."
+      }
+    },
+
+
+     
+    "__SECTION__ItemForge": "=== Item Forge ===",
+    "ItemForge": {
+      "Dialog": {
+        "Title": "Item Forger",
+        "MiniTitle": "Item Forger: Materials",
+        "Button": {
+          "Forge": "Forge Item"
+        },
+        "Errors": {
+          "ChooseType": "Please choose an item type.",
+          "ChooseTemplate": "Please choose a template.",
+          "ForgeFailed": "Forge failed: {error}",
+          "OpenFailed": "Failed to open Item Forger dialog."
+        }
+      },
+      "Notifications": {
+        "Forged": "Forged: {name}"
+      },
+      "Errors": {
+        "NoTemplateSelected": "No template selected.",
+        "GenericForgeFailed": "The forge could not complete.",
+        "CouldNotReadDrop": "Could not read dropped data.",
+        "FilePickerOpen": "Could not open the file picker."
+      },
+      "ChooseItem": {
+        "Legend": "Choose Item"
+      },
+      "ItemType": {
+        "Weapon": "Weapon",
+        "Armor": "Armor",
+        "Shield": "Shield",
+        "Accessory": "Accessory"
+      },
+      "TemplateList": {
+        "Aria": "Template list",
+        "Loading": "Loading...",
+        "Empty": "No templates available."
+      },
+      "Attributes": {
+        "Legend": "Attributes",
+        "AttrA": {
+          "Label": "Attr A:"
+        },
+        "AttrB": {
+          "Label": "Attr B:"
+        }
+      },
+      "Preview": {
+        "Legend": "Preview",
+        "Placeholder": "CONTENT",
+        "Handed": {
+          "One": "One-Handed",
+          "Two": "Two-Handed",
+          "Unknown": "Handed"
+        },
+        "Stats": {
+          "Def": "DEF",
+          "MDef": "M.DEF",
+          "Init": "INIT",
+          "HR": "HR"
+        },
+        "Muted": {
+          "OtherKind": "Preview for another item type.",
+          "SelectWeaponTemplate": "Select a weapon template to preview."
+        },
+        "Error": {
+          "Generic": "Unable to render preview."
+        }
+      },
+      "Customize": {
+        "Legend": "Customize",
+        "PlusOneAccuracy": "+1 Accuracy",
+        "PlusFourDamage": "+4 Damage",
+        "NoOptions": "No Options",
+        "HandToggle": {
+          "MakeOneHanded": "Make One-Handed",
+          "MakeTwoHanded": "Make Two-Handed"
+        },
+        "Tooltip": {
+          "HandToggleRestricted": "This weapon cannot change its handedness.",
+          "GMOnly": "Only the GM can change this option.",
+          "PlusOneAlready": "This weapon already has at least +1 Accuracy.",
+          "VariantDamageInfo": "Damage scales from the item's value. This option is disabled."
+        },
+        "Element": {
+          "Label": "Type:",
+          "Physical": "Physical",
+          "Fire": "Fire",
+          "Ice": "Ice",
+          "Earth": "Earth",
+          "Air": "Air",
+          "Bolt": "Bolt",
+          "Dark": "Dark",
+          "Light": "Light",
+          "Poison": "Poison"
+        }
+      },
+      "Qualities": {
+        "Legend": "Qualities",
+        "NoneText": "No quality.",
+        "NoData": "No quality data found.",
+        "NoneAvailable": "No qualities available for this item type.",
+        "Category": {
+          "None": "None",
+          "Basic": "Basic",
+          "Custom": "Custom",
+          "Ardent": "Ardent",
+          "Aerial": "Aerial",
+          "Thunderous": "Thunderous",
+          "Paradox": "Paradox",
+          "Terrestrial": "Terrestrial",
+          "Glacial": "Glacial",
+          "Spiritual": "Spiritual",
+          "Corrupted": "Corrupted",
+          "Aquatic": "Aquatic",
+          "Mechanical": "Mechanical"
+        },
+        "List": {
+          "Aria": "Qualities list"
+        },
+        "Custom": {
+          "Effect": {
+            "Title": "Type your custom effect text"
+          },
+          "Cost": {
+            "Label": "Cost:",
+            "Title": "Enter a non-negative integer"
+          },
+          "Apply": "Apply"
+        }
+      },
+      "Cost": {
+        "Legend": "Cost",
+        "NoFee": "No Fee"
+      },
+      "Materials": {
+        "Legend": "Materials",
+        "Drop": {
+          "Aria": "Materials drop zone"
+        },
+        "Hint": "Drag & drop Item documents here (max 5).",
+        "RequireOriginHint": "At least one material with origin \"{origin}\" is required.",
+        "Tooltip": {
+          "OriginLabel": "Origin",
+          "CostLabel": "Cost",
+          "Remove": "Click to remove this material",
+          "RequestRemove": "Click to request removing this material"
+        },
+        "Errors": {
+          "OnlyItems": "Only Item documents can be used as materials.",
+          "OnlyTreasure": "Only Treasure-type items can be used as materials.",
+          "MaxMaterials": "You cannot use more than 5 materials.",
+          "NoMoreItem": "You cannot use this material any more times.",
+          "NotEnoughQuantity": "Not enough copies of {name}. Need {need}, have {have}."
+        }
+      },
+      "Create": {
+        "NamePattern": {
+          "Weapon": "{base} (Forged)",
+          "Armor": "{base} (Forged)",
+          "Shield": "{base} (Forged)",
+          "Accessory": "{base} (Forged)"
+        },
+        "Summary": {
+          "Weapon": "A forged weapon of the {category} type.",
+          "Armor": "Forged armor ({martialType}).",
+          "Shield": "A forged shield ({martialType}).",
+          "Accessory": "A forged accessory based on {base}."
+        }
+      },
+      "Fallback": {
+        "WeaponName": "Weapon",
+        "ArmorName": "Armor",
+        "ShieldName": "Shield",
+        "AccessoryName": "Accessory",
+        "WeaponCategory": "weapon"
+      },
+      "Armor": {
+        "Martial": "Martial armor",
+        "NonMartial": "Non-martial armor"
+      },
+      "Shield": {
+        "Martial": "Martial shield",
+        "NonMartial": "Non-martial shield"
+      },
+      "PreviewCard": {
+        "MutedText": "Unavailable"
+      }
+    }
+  }
 }
