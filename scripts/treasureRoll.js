@@ -593,19 +593,25 @@ async function renderTreasureResultDialog(items, budget, config) {
             const variantBonus = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
             // Handle Masterwork prefix
-            const prefix = (data.isMaster && !variantEnabled) ?
-                `A masterwork ${baseWeapon?.category || "unknown"} weapon` :
-                `A ${baseWeapon?.category || "unknown"} weapon`;
+            const unknown = game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.Unknown");
+            const cat = baseWeapon?.category || unknown;
+
+            const prefixKey =
+              (data.isMaster && !variantEnabled)
+                ? "LOOKFAR.TreasureRoll.WeaponPrefix.Masterwork"
+                : "LOOKFAR.TreasureRoll.WeaponPrefix.Base";
+
+            const prefix = game.i18n.format(prefixKey, { category: cat });
 
             // Handle +1 accuracy variants
             const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
 
             // Build localized display name
             const parts = [];
-            if (data.hasPlusOne && baseAcc !== 1) parts.push("+1");
+            if (data.hasPlusOne && baseAcc !== 1) parts.push(game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.PlusOne"));
             if (qualityName) parts.push(qualityName);
             if (data.element?.name) parts.push(data.element.name);
-            if (data.isMaster && !variantEnabled) parts.push("Master");
+            if (data.isMaster && !variantEnabled) parts.push(game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.Master"));
             parts.push(baseName);
             const displayName = parts.join(" ");
 
@@ -646,7 +652,7 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: baseWeapon?.isMartial ?? false
                     },
                     quality: {
-                        value: qualityDesc || "No quality"
+                        value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.NoQuality" )
                     },
                     cost: {
                         value: data.value
@@ -695,7 +701,7 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: baseArmor?.isMartial ?? false
                     },
                     quality: {
-                        value: qualityDesc || "No quality"
+                        value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.NoQuality" )
                     },
                     cost: {
                         value: data.value
@@ -744,7 +750,7 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: baseShield?.isMartial ?? false
                     },
                     quality: {
-                        value: qualityDesc || "No quality"
+                        value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.NoQuality" )
                     },
                     cost: {
                         value: data.value
@@ -788,7 +794,7 @@ async function renderTreasureResultDialog(items, budget, config) {
                         value: baseAccessory?.init ?? 0
                     },
                     quality: {
-                        value: qualityDesc || "No quality"
+                        value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.NoQuality" )
                     },
                     cost: {
                         value: data.value
