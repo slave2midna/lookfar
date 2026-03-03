@@ -23,6 +23,9 @@
             "Title":"Forge and Item"
          }
       },
+
+
+      
       "__SECTION__Settings":"=== Settings ===",
       "Settings":{
          "ResultVisibility":{
@@ -87,129 +90,133 @@
          "NoActorCompendiums":"No Actor compendiums found",
          "NoScenes":"No scenes found"
       },
-      "__SECTION__NamePatterns":"=== Name Patterns ===",
-      "NamePatterns":{
-         "Material":"{detail} {origin} {nature}",
-         "Ingredient":"{taste} {origin} {nature}",
-         "Weapon":"{quality} {element} {base}",
-         "Armor":"{quality} {base}",
-         "Shield":"{quality} {base}",
-         "Accessory":"{quality} {base}"
-      },
+
+
+      
       "__SECTION__TreasureRoll":"=== Treasure Roll ===",
-      "TreasureRoll":{
-         "Dialogs":{
-            "TreasureRoll":{
-               "Title":"Treasure Generator",
-               "Buttons":{
-                  "RollLoot":"Roll Loot"
-               }
-            },
-            "TreasureResult":{
-               "Title":"Treasure Results",
-               "Buttons":{
-                  "Keep":"Keep",
-                  "Stash":"Stash",
-                  "Reroll":"Reroll"
-               }
-            }
-         },
-         "Fields":{
-            "Budget":"Budget",
-            "Level":"Level",
-            "Origin":"Origin",
-            "Nature":"Nature",
-            "Items":"Items"
-         },
-         "Origin":{
-            "Random":"Random",
-            "Aerial":"Aerial",
-            "Thunderous":"Thunderous",
-            "Paradox":"Paradox",
-            "Terrestrial":"Terrestrial",
-            "Ardent":"Ardent",
-            "Glacial":"Glacial",
-            "Spiritual":"Spiritual",
-            "Corrupted":"Corrupted",
-            "Aquatic":"Aquatic",
-            "Mechanical":"Mechanical"
-         },
-         "Nature":{
-            "Random":"Random",
-            "Anthropod":"Anthropod",
-            "Bird":"Bird",
-            "Fish":"Fish",
-            "Mammal":"Mammal",
-            "Mollusk":"Mollusk",
-            "Reptile":"Reptile",
-            "Fungus":"Fungus",
-            "Incorporeal":"Incorporeal",
-            "Liquid":"Liquid",
-            "Artificial":"Artificial",
-            "Mineral":"Mineral"
-         },
-         "Options":{
-            "IgnoreValues":"Ignore budget/level",
-            "SelectAll":"Select all"
-         },
-         "Types":{
-            "Weapons":"Weapons",
-            "Armor":"Armor",
-            "Accessories":"Accessories",
-            "Shields":"Shields",
-            "Materials":"Materials",
-            "Ingredients":"Ingredients",
-            "Currency":"Currency",
-            "Custom":"Custom"
-         },
-         "Result":{
-            "Budget":{
-               "Remaining":"Remaining Budget",
-               "Ignored": "Ignored"
-            },
-            "ValueLabel": "Value"
-         },
-         "Stash": {
-           "DefaultName": "New Stash #{num}"
-         },
-         "Tokens": {
-           "Random": "Random",
-           "None": "None",
-           "Master": "Master",
-           "PlusOne": "+1",
-           "Unknown": "unknown",
-           "NoQuality": "No quality",
-           "NoSpecialProperties": "has no special properties."
-         },
-         "Labels": {
-           "Martial": "martial",
-           "NonMartial": "non-martial"
-         },
-         "Summaries": {
-           "Ingredient": "An ingredient that tastes {taste}.",
-           "Material": "{nature} material of {originLower} origins. It can be used to craft {detail} items.",
-           "Weapon": "{prefix} that {qualityText}",
-           "Armor": "A set of {martialType} armor that {qualityText}",
-           "Shield": "A {martialType} shield that {qualityText}",
-           "Accessory": "An accessory that {qualityText}"
-         },
-         "WeaponPrefix": {
-           "Base": "A {category} weapon",
-           "Masterwork": "A masterwork {category} weapon"
-         },
-         "Chat": {
-           "Alias": "Treasure Result",
-           "CreatedStash": "Created {count} item(s) in {stashLink}.",
-           "Deposited": "Deposited {amount} {currency} into the stash.",
-           "SkippedIngredients": "Skipped {count} ingredient(s); cannot be stashed."
-         },
-         "Errors":{
-            "CustomTreasureTableMissing":"No Custom Treasure Roll Table selected in settings.",
-            "CustomTreasureTableNotFound":"Selected Custom Treasure Roll Table not found.",
-            "SkippedIngredientsWarning":"Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
-            "NoLootGenerated":"No loot generated."
-         }
-      },
+"TreasureRoll":{
+  "NamePatterns":{
+    "Material":"{detail} {origin} {nature}",
+    "Ingredient":"{taste} {origin} {nature}",
+    "Weapon":"{quality} {element} {base}",
+    "Armor":"{quality} {base}",
+    "Shield":"{quality} {base}",
+    "Accessory":"{quality} {base}"
+  },
+  "Dialogs":{
+  "Generator":{
+    "Title":"Treasure Generator",
+    "Buttons":{
+      "RollLoot":"Roll Loot"
+    }
+  },
+  "Result":{
+    "Title":"Treasure Results",
+    "Buttons":{
+      "Keep":"Keep",
+      "Stash":"Stash",
+      "Reroll":"Reroll"
+    }
+  }
+},
+  "Fields":{
+    "Budget":"Budget",
+    "Level":"Level",
+    "Origin":"Origin",
+    "Nature":"Nature",
+    "Items":"Items"
+  },
+  "Origin":{
+    "Random":"Random",
+    "Aerial":"Aerial",
+    "Thunderous":"Thunderous",
+    "Paradox":"Paradox",
+    "Terrestrial":"Terrestrial",
+    "Ardent":"Ardent",
+    "Glacial":"Glacial",
+    "Spiritual":"Spiritual",
+    "Corrupted":"Corrupted",
+    "Aquatic":"Aquatic",
+    "Mechanical":"Mechanical"
+  },
+  "Nature":{
+    "Random":"Random",
+    "Anthropod":"Anthropod",
+    "Bird":"Bird",
+    "Fish":"Fish",
+    "Mammal":"Mammal",
+    "Mollusk":"Mollusk",
+    "Reptile":"Reptile",
+    "Fungus":"Fungus",
+    "Incorporeal":"Incorporeal",
+    "Liquid":"Liquid",
+    "Artificial":"Artificial",
+    "Mineral":"Mineral"
+  },
+  "Options":{
+    "IgnoreValues":"Ignore budget/level",
+    "SelectAll":"Select all"
+  },
+  "Types":{
+    "Weapons":"Weapons",
+    "Armor":"Armor",
+    "Accessories":"Accessories",
+    "Shields":"Shields",
+    "Materials":"Materials",
+    "Ingredients":"Ingredients",
+    "Currency":"Currency",
+    "Custom":"Custom"
+  },
+  "Result":{
+    "Budget":{
+      "Remaining":"Remaining Budget",
+      "Ignored":"Ignored"
+    },
+    "ValueLabel":"Value"
+  },
+  "Stash":{
+    "DefaultName":"New Stash #{num}",
+    "NamePrefix":"New Stash #"
+  },
+  "Tokens":{
+    "Random":"Random",
+    "None":"None",
+    "Master":"Master",
+    "PlusOne":"+1",
+    "Unknown":"unknown",
+    "NoQuality":"No quality",
+    "NoSpecialProperties":"has no special properties.",
+    "CurrencyFallback":"Zenit"
+  },
+  "Labels":{
+    "Martial":"martial",
+    "NonMartial":"non-martial"
+  },
+  "Summaries":{
+    "Ingredient":"An ingredient that tastes {taste}.",
+    "Material":"{nature} material of {originLower} origins. It can be used to craft {detail} items.",
+    "Weapon":"{prefix} that {qualityText}",
+    "Armor":"A set of {martialType} armor that {qualityText}",
+    "Shield":"A {martialType} shield that {qualityText}",
+    "Accessory":"An accessory that {qualityText}"
+  },
+  "WeaponPrefix":{
+    "Base":"A {category} weapon",
+    "Masterwork":"A masterwork {category} weapon"
+  },
+  "Chat":{
+    "Alias":"Treasure Result",
+    "CreatedStash":"Created {count} item(s) in {stashLink}.",
+    "Deposited":"Deposited {amount} {currency} into the stash.",
+    "SkippedIngredients":"Skipped {count} ingredient(s); cannot be stashed."
+  },
+  "Errors":{
+    "CustomTreasureTableMissing":"No Custom Treasure Roll Table selected in settings.",
+    "CustomTreasureTableNotFound":"Selected Custom Treasure Roll Table not found.",
+    "SkippedIngredientsWarning":"Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
+    "NoLootGenerated":"No loot generated."
+  }
+},
 
        
       "__SECTION__TravelCheck":"=== Travel Check ===",
@@ -533,11 +540,3 @@
       }
    }
 }
-
-
-
-
-
-
-
-
