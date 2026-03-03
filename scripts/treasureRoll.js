@@ -294,7 +294,7 @@ function rollCurrency(remainingBudget, maxVal, {
     if (cap < Math.max(1, minAmount)) return null;
 
     // Grab the display name the system uses for money
-    const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || "Zenit";
+    const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.CurrencyFallback");
 
     // Math Magic!
     const raw = Math.floor(Math.random() * (cap - minAmount + 1)) + minAmount;
@@ -404,7 +404,9 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     const skippedIngredients = items.filter(isIngredientItem);
 
     const allStashes = game.actors.filter(a => a.type === "stash");
-    const re = /^New Stash #(\d+)$/i;
+    const prefix = game.i18n.localize("LOOKFAR.TreasureRoll.Stash.NamePrefix");
+    const esc = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // escape for regex
+    const re = new RegExp(`^${esc}(\\d+)$`, "i");
     let nextNum = 1;
     for (const a of allStashes) {
         const m = re.exec(a.name);
@@ -437,7 +439,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
 
     // Deposit rolled currency into the stash's zenit resource
     if (currencyTotal > 0) {
-        const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || "Zenit";
+        const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.CurrencyFallback");
         const current = foundry.utils.getProperty(stash, "system.resources.zenit.value") ?? 0;
         await stash.update({
             "system.resources.zenit.value": current + currencyTotal
@@ -461,7 +463,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     }
 
     // Build chat message
-    const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || "Zenit";
+    const currencyName = game.settings.get("projectfu", "optionRenameCurrency") || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.CurrencyFallback");
     const stashLink = `<a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>`;
 
     let content = game.i18n.format("LOOKFAR.TreasureRoll.Chat.CreatedStash", {
@@ -840,7 +842,7 @@ async function renderTreasureResultDialog(items, budget, config) {
               <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
               <a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br>
               <small>${desc}</small><br>
-              <small>${game.i18n.localize("LOOKFAR.TreasureRoll.Result.ValueLabel")}: ${cost} ${(game.settings.get("projectfu","optionRenameCurrency") || "Zenit")}</small>
+              <small>${game.i18n.localize("LOOKFAR.TreasureRoll.Result.ValueLabel")}: ${cost} ${(game.settings.get("projectfu","optionRenameCurrency") || game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.CurrencyFallback"))}</small>
             </div>`;
     });
 
@@ -885,11 +887,11 @@ async function renderTreasureResultDialog(items, budget, config) {
     const content = await renderTemplate(TREASURE_RESULT_TEMPLATE, templateData);
 
     const dialog = new Dialog({
-        title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Title"),
+        title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Result.Title"),
         content,
         buttons: {
             keep: {
-                label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Keep"),
+                label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Result.Buttons.Keep"),
                 callback: async () => {
                     // Move items out of cache
                     for (const item of finalItems) {
@@ -908,14 +910,14 @@ async function renderTreasureResultDialog(items, budget, config) {
                 }
             },
             stash: {
-                label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Stash"),
+                label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Result.Buttons.Stash"),
                 callback: async () => {
                     const currencyTotal = (currencyLines || []).reduce((sum, c) => sum + (Number(c?.value) || 0), 0);
                     await createStash(finalItems, cacheFolder, currencyTotal);
                 }
             },
             reroll: {
-                label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Reroll"),
+                label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Result.Buttons.Reroll"),
                 callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
             }
         }
@@ -1106,11 +1108,11 @@ Hooks.once("ready", () => {
             // --- Main Dialog Form via template ---
             const content = await renderTemplate(TREASURE_ROLL_TEMPLATE, {});
             const genDialog = new Dialog({
-                title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Title"),
+                title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Generator.Title"),
                 content,
                 buttons: {
                     ok: {
-                        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Buttons.RollLoot"),
+                        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Generator.Buttons.RollLoot"),
                         callback: (html) => {
                             const budget = parseInt(html.find("#treasureBudget").val());
                             const maxVal = parseInt(html.find("#highestPCLevel").val());
