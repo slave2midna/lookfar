@@ -50,6 +50,25 @@ const F = (key, data) => {
   }
 };
 
+// ---- Vocabulary helpers (align with en.json) -------------------------------
+
+const statLabel = (code) => {
+  const k = `LOOKFAR.Vocabulary.Attributes.${String(code ?? "").toUpperCase()}`;
+  const out = L(k);
+  return out === k ? String(code ?? "") : out;
+};
+
+const martialLabel = (isMartial) =>
+  L(isMartial ? "LOOKFAR.Vocabulary.Martial.Martial" : "LOOKFAR.Vocabulary.Martial.NonMartial");
+
+const elementLabel = (val) => {
+  const v = String(val ?? "").toLowerCase();
+  if (!v) return "";
+  const key = `LOOKFAR.Vocabulary.Element.${v.charAt(0).toUpperCase()}${v.slice(1)}`;
+  const out = L(key);
+  return out === key ? v : out;
+};
+
 // ---- Strict data helpers ----------------------------------------------------
 // We don't use localization fallbacks anymore. If a required module-owned value is missing,
 // we treat it as a module data error (loud during forging, non-fatal during list rendering).
@@ -499,10 +518,7 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
     craft = Math.floor(craft * 1.10);
   }
 
-  return {
-    worth,
-    craft
-  };
+  return { worth, craft };
 };
 
 // Playtest damage: +2 damage per full 1000 worth (no fee)
@@ -556,10 +572,7 @@ const computeWeaponStats = (base, html, worthOverride) => {
 
   return {
     hands: handsOut,
-    attrs: {
-      A: selA,
-      B: selB
-    },
+    attrs: { A: selA, B: selB },
     acc: accOut,
     dmg: dmgOut,
     dmgType: elementVal,
@@ -591,45 +604,21 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
       type: "weapon",
       img,
       system: {
-        category: {
-          value: base?.category ?? ""
-        },
-        hands: {
-          value: w.hands || ""
-        },
-        type: {
-          value: base?.type ?? ""
-        },
+        category: { value: base?.category ?? "" },
+        hands:    { value: w.hands || "" },
+        type:     { value: base?.type ?? "" },
         attributes: {
-          primary: {
-            value: asAttrKey(w.attrs.A)
-          },
-          secondary: {
-            value: asAttrKey(w.attrs.B)
-          }
+          primary:   { value: asAttrKey(w.attrs.A) },
+          secondary: { value: asAttrKey(w.attrs.B) }
         },
-        accuracy: {
-          value: w.acc
-        },
+        accuracy: { value: w.acc },
         defense: "def", // per spec: DEF for now
-        damageType: {
-          value: w.dmgType || (base?.element ?? "physical")
-        },
-        damage: {
-          value: w.dmg
-        },
-        isMartial: {
-          value: !!w.isMartial
-        },
-        quality: {
-          value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
-        },
-        cost: {
-          value: costField
-        },
-        source: {
-          value: "LOOKFAR"
-        },
+        damageType: { value: w.dmgType || (base?.element ?? "physical") },
+        damage: { value: w.dmg },
+        isMartial: { value: !!w.isMartial },
+        quality: { value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText") },
+        cost: { value: costField },
+        source: { value: "LOOKFAR" },
         summary: {
           value: F("LOOKFAR.ItemForge.Create.Summary.Weapon", {
             category: base?.category ?? ""
@@ -644,10 +633,6 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
     const baseId = requireString("armor template id", base?.id);
     const typeName = getLocalizedEquipNameStrict("armor", baseId);
 
-    const martialKey = base?.isMartial
-      ? "LOOKFAR.ItemForge.Armor.Martial"
-      : "LOOKFAR.ItemForge.Armor.NonMartial";
-
     return {
       name: F("LOOKFAR.ItemForge.Create.NamePattern.Armor", { type: typeName }),
       type: "armor",
@@ -661,23 +646,15 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
           attribute: asAttrKey(base?.mdefAttr || "ins"),
           value: Number(base?.mdef ?? 0) || 0
         },
-        init: {
-          value: Number(base?.init ?? 0) || 0
-        },
-        isMartial: {
-          value: !!base?.isMartial
-        },
-        quality: {
-          value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
-        },
-        cost: {
-          value: costField
-        },
+        init: { value: Number(base?.init ?? 0) || 0 },
+        isMartial: { value: !!base?.isMartial },
+        quality: { value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText") },
+        cost: { value: costField },
         // NOTE: Armor must use scalar source here (system quirk).
         source: "LOOKFAR",
         summary: {
           value: F("LOOKFAR.ItemForge.Create.Summary.Armor", {
-            martialType: L(martialKey)
+            martialType: martialLabel(!!base?.isMartial)
           })
         }
       }
@@ -688,10 +665,6 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
   if (kind === "shield") {
     const baseId = requireString("shield template id", base?.id);
     const typeName = getLocalizedEquipNameStrict("shield", baseId);
-
-    const martialKey = base?.isMartial
-      ? "LOOKFAR.ItemForge.Shield.Martial"
-      : "LOOKFAR.ItemForge.Shield.NonMartial";
 
     return {
       name: F("LOOKFAR.ItemForge.Create.NamePattern.Shield", { type: typeName }),
@@ -706,24 +679,14 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
           attribute: asAttrKey(base?.mdefAttr || "ins"),
           value: Number(base?.mdef ?? 0) || 0
         },
-        init: {
-          value: Number(base?.init ?? 0) || 0
-        },
-        isMartial: {
-          value: !!base?.isMartial
-        },
-        quality: {
-          value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
-        },
-        cost: {
-          value: costField
-        },
-        source: {
-          value: "LOOKFAR"
-        },
+        init: { value: Number(base?.init ?? 0) || 0 },
+        isMartial: { value: !!base?.isMartial },
+        quality: { value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText") },
+        cost: { value: costField },
+        source: { value: "LOOKFAR" },
         summary: {
           value: F("LOOKFAR.ItemForge.Create.Summary.Shield", {
-            martialType: L(martialKey)
+            martialType: martialLabel(!!base?.isMartial)
           })
         }
       }
@@ -739,24 +702,12 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
     type: "accessory",
     img,
     system: {
-      def: {
-        value: Number(base?.def ?? 0) || 0
-      },
-      mdef: {
-        value: Number(base?.mdef ?? 0) || 0
-      },
-      init: {
-        value: Number(base?.init ?? 0) || 0
-      },
-      quality: {
-        value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
-      },
-      cost: {
-        value: costField
-      },
-      source: {
-        value: "LOOKFAR"
-      },
+      def:  { value: Number(base?.def ?? 0) || 0 },
+      mdef: { value: Number(base?.mdef ?? 0) || 0 },
+      init: { value: Number(base?.init ?? 0) || 0 },
+      quality: { value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText") },
+      cost: { value: costField },
+      source: { value: "LOOKFAR" },
       summary: {
         // No placeholders expected per en.json; extra data ignored if present.
         value: F("LOOKFAR.ItemForge.Create.Summary.Accessory", {})
@@ -1380,9 +1331,10 @@ async function openItemForgeDialog() {
           const mdef      = (a?.mdef ?? "—");
           const init      = (a?.init ?? "—");
 
-          const defLabel   = L("LOOKFAR.ItemForge.Preview.Stats.Def");
-          const mdefLabel  = L("LOOKFAR.ItemForge.Preview.Stats.MDef");
-          const initLabel  = L("LOOKFAR.ItemForge.Preview.Stats.Init");
+          // en.json-aligned stat labels
+          const defLabel   = statLabel("DEF");
+          const mdefLabel  = statLabel("MDEF");
+          const initLabel  = statLabel("INIT");
 
           const rowArmor = !isMartial
             ? `${defLabel}: ${defAttr}+${def} | ${mdefLabel}: ${mdefAttr}+${mdef} | ${initLabel}: ${init}`
@@ -1407,8 +1359,9 @@ async function openItemForgeDialog() {
           const def       = (s?.def ?? "—");
           const mdef      = (s?.mdef ?? "—");
 
-          const defLabel  = L("LOOKFAR.ItemForge.Preview.Stats.Def");
-          const mdefLabel = L("LOOKFAR.ItemForge.Preview.Stats.MDef");
+          // en.json-aligned stat labels
+          const defLabel  = statLabel("DEF");
+          const mdefLabel = statLabel("MDEF");
 
           const rowShield = `${defLabel}: +${def} | ${mdefLabel}: +${mdef}`;
 
@@ -1457,9 +1410,11 @@ async function openItemForgeDialog() {
           const handNorm = normHand(stats.hands) || baseHand;
           const dispHandText = handLabel(handNorm ?? baseHandText);
 
-          const hrLabel = L("LOOKFAR.ItemForge.Preview.Stats.HR");
+          // en.json-aligned stat label
+          const hrLabel = statLabel("HR");
+
           const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-          const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+${stats.acc} | ${hrLabel}+${stats.dmg} ${stats.dmgType}`;
+          const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+${stats.acc} | ${hrLabel}+${stats.dmg} ${elementLabel(stats.dmgType) || stats.dmgType}`;
 
           ctx.isMartial = !!stats.isMartial;
           ctx.rows = [esc(clip(row1)), esc(clip(row2))];
