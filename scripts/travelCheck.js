@@ -47,14 +47,11 @@ Hooks.once("ready", () => {
         data.resultHtml,
         data.selectedDifficulty,
         data.groupLevel,
-        data.dangerSeverity,
         data.keywords,
         data.outcomeType
       );
     } else if (data?.type === "closeDialog") {
-      if (currentDialog) {
-        currentDialog.close();
-      }
+      if (currentDialog) currentDialog.close();
     }
   });
 });
@@ -238,18 +235,15 @@ async function handleRoll(selectedDifficulty, html) {
   let keywords = null; // keyword data object or null
   const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
   const isDiscovery = shouldMakeDiscovery(roll.total, treasureHunterLevel);
-  let dangerSeverity = "";
   let outcomeType = "none";
 
   if (roll.total >= 6) {
     outcomeType = "danger";
-    dangerSeverity = randomSeverity(effectiveDifficulty);
 
-    // Build a single localized key: LOOKFAR.TravelCheck.Dialogs.Result.DangerMinor / Heavy / Massive
-    const resultTypeKey = `LOOKFAR.TravelCheck.Dialogs.Result.Danger${dangerSeverity}`;
-    const resultType = game.i18n.localize(resultTypeKey);
+    // Single label (no severity)
+    const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.Result.Danger");
 
-    const dangerResult = await generateDanger(effectiveDifficulty, groupLevel, dangerSeverity);
+    const dangerResult = await generateDanger(groupLevel);
     keywords = dangerResult.keywords;
 
     resultHtml = `
@@ -285,7 +279,6 @@ async function handleRoll(selectedDifficulty, html) {
     resultHtml,
     selectedDifficulty: effectiveDifficulty,
     groupLevel,
-    dangerSeverity,
     keywords,
     outcomeType,
   });
@@ -295,7 +288,7 @@ async function handleRoll(selectedDifficulty, html) {
 
   // Show dialog locally only if it's public, or this user is a GM
   if (visibility === "public" || isGM) {
-    showRerollDialog(resultHtml, effectiveDifficulty, groupLevel, dangerSeverity, keywords, outcomeType);
+    showRerollDialog(resultHtml, effectiveDifficulty, groupLevel, keywords, outcomeType);
   }
 }
 
@@ -307,7 +300,6 @@ async function showRerollDialog(
   resultHtml,
   selectedDifficulty,
   groupLevel,
-  dangerSeverity,
   keywords,
   outcomeType
 ) {
@@ -315,9 +307,7 @@ async function showRerollDialog(
   const isDiscovery = outcomeType === "discovery";
 
   // Close the existing dialog if it's open
-  if (currentDialog) {
-    currentDialog.close();
-  }
+  if (currentDialog) currentDialog.close();
 
   const isGM = game.user.isGM;
 
@@ -335,32 +325,23 @@ async function showRerollDialog(
             });
 
             // Emit a message to close the dialog on all clients
-            game.socket.emit("module.lookfar", {
-              type: "closeDialog",
-            });
+            game.socket.emit("module.lookfar", { type: "closeDialog" });
 
             // Close the dialog locally
-            if (currentDialog) {
-              currentDialog.close();
-            }
+            if (currentDialog) currentDialog.close();
           },
         },
         reroll: {
           icon: '<i class="fas fa-redo"></i>',
           callback: async () => {
             if (outcomeType === "none") return;
+
             let newResultHtml;
             let newKeywords = null;
 
             if (isDanger) {
-              const severityKey = `LOOKFAR.TravelCheck.Dialogs.Result.Danger${dangerSeverity}`;
-              const resultType = game.i18n.localize(severityKey);
-              const dangerResult = await generateDanger(
-                selectedDifficulty,
-                groupLevel,
-                dangerSeverity
-              );
-
+              const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.Result.Danger");
+              const dangerResult = await generateDanger(groupLevel);
               newKeywords = dangerResult.keywords;
 
               newResultHtml = `
@@ -369,7 +350,7 @@ async function showRerollDialog(
                 </div>
                 ${dangerResult.html}
               `;
-            } else {
+            } else if (isDiscovery) {
               const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.Result.Discovery");
               const discoveryResult = await generateDiscovery();
               newKeywords = discoveryResult.keywords;
@@ -380,6 +361,8 @@ async function showRerollDialog(
                 </div>
                 ${discoveryResult.html}
               `;
+            } else {
+              return;
             }
 
             // Emit the new result to all clients
@@ -388,7 +371,6 @@ async function showRerollDialog(
               resultHtml: newResultHtml,
               selectedDifficulty,
               groupLevel,
-              dangerSeverity,
               keywords: newKeywords,
               outcomeType,
             });
@@ -397,7 +379,6 @@ async function showRerollDialog(
               newResultHtml,
               selectedDifficulty,
               groupLevel,
-              dangerSeverity,
               newKeywords,
               outcomeType
             );
@@ -433,7 +414,7 @@ async function showRerollDialog(
 }
 
 // -----------------------------------------------------------------------------
-// Threat / Discovery Generation
+// Keyword helper
 // -----------------------------------------------------------------------------
 
 /**
@@ -463,101 +444,78 @@ function generateKeywordsData() {
   };
 }
 
-async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
-  if (!dataLoader.threatsData) {
-    console.error("Threats data is not fully loaded.");
-    return {
-      html: game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable"),
-      keywords: null,
-    };
-  }
+// -----------------------------------------------------------------------------
+// Danger Generation (mirrors Discovery Generation)
+// -----------------------------------------------------------------------------
 
-  const threatType = randomThreatType();
+async function generateDanger(groupLevel) {
+  console.log("Generating Danger...");
 
-  // Get the selected danger source roll table
-  const dangerSourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");
+  // Roll table overrides
+  const effectTableId = game.settings.get("lookfar", "dangerThreatRollTable");   // "Threat" rolltable -> effect
+  const sourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");  // "Source" rolltable -> source
 
-  // Variable to hold the source text
+  let effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable");
   let sourceText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDangerSource");
 
-  // Use the selected Danger Source Roll Table if it's not the default
-  if (dangerSourceTableId && dangerSourceTableId !== "default") {
-    const rollTable = game.tables.get(dangerSourceTableId);
+  // -----------------------------
+  // Danger Effect
+  // -----------------------------
+  if (effectTableId && effectTableId !== "default") {
+    const rollTable = game.tables.get(effectTableId);
+    if (rollTable) {
+      console.log(`Rolling on the Danger Effect Roll Table: ${rollTable.name}`);
+      const rollResult = await rollTable.draw();
+      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+        effectText = rollResult.results[0].text;
+      }
+    } else {
+      console.error("Selected Danger Effect Roll Table not found. Falling back to defaults.");
+    }
+  }
+
+  // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
+  if (
+    effectText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable") ||
+    !effectText
+  ) {
+    const pool = dataLoader?.dangersData?.effects;
+    if (Array.isArray(pool) && pool.length) {
+      effectText = pool[Math.floor(Math.random() * pool.length)];
+    } else {
+      console.error("No danger effects available in dataLoader.dangersData.effects.");
+      effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable");
+    }
+  }
+
+  // -----------------------------
+  // Danger Source
+  // -----------------------------
+  if (sourceTableId && sourceTableId !== "default") {
+    const rollTable = game.tables.get(sourceTableId);
     if (rollTable) {
       console.log(`Rolling on the Danger Source Roll Table: ${rollTable.name}`);
       const rollResult = await rollTable.draw();
       if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-        sourceText = rollResult.results[0].text; // Use the roll result text as the source
+        sourceText = rollResult.results[0].text;
       }
     } else {
       console.error("Selected Danger Source Roll Table not found. Falling back to defaults.");
     }
-  } else {
-    // Use Lookfar Defaults: Pick a random source from dangers.json
-    if (dataLoader.sourceData && Array.isArray(dataLoader.sourceData)) {
-      const randomSourceIndex = Math.floor(Math.random() * dataLoader.sourceData.length);
-      const sourceId = dataLoader.sourceData[randomSourceIndex]; // e.g. "Source3"
-      const i18nKey = `LOOKFAR.TravelCheck.Dangers.Sources.${sourceId}`;
-      sourceText = game.i18n.localize(i18nKey);
-    } else {
-      console.error("No source data available in dangers.json.");
-    }
   }
 
-  const threatTableId = game.settings.get("lookfar", "dangerThreatRollTable");
-  let result = "";
-
-  if (threatTableId && threatTableId !== "default") {
-    const rollTable = game.tables.get(threatTableId);
-    if (rollTable) {
-      console.log(`Rolling on the Danger Threat Roll Table: ${rollTable.name}`);
-      const rollResult = await rollTable.draw();
-      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-        result = rollResult.results[0].text;
-      }
+  // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
+  if (sourceText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDangerSource")) {
+    const pool = dataLoader?.dangersData?.sources;
+    if (Array.isArray(pool) && pool.length) {
+      sourceText = pool[Math.floor(Math.random() * pool.length)];
     } else {
-      console.error("Selected Danger Threat Roll Table not found. Falling back to defaults.");
-    }
-  }
-
-  if (!result) {
-    switch (threatType) {
-      case "Damage":
-        result += handleDamage(dataLoader.threatsData, groupLevel, dangerSeverity);
-        break;
-      case "statusEffect":
-        result += handleStatusEffect(dangerSeverity);
-        break;
-      case "Combat": {
-        // LOOKFAR.TravelCheck.Dangers.Combat.Minor/Heavy/Massive
-        const key = `LOOKFAR.TravelCheck.Dangers.Combat.${dangerSeverity}`;
-        result += game.i18n.localize(key);
-        break;
-      }
-      case "dangerClock": {
-        // LOOKFAR.TravelCheck.Dangers.DangerClock.Minor/Heavy/Massive
-        const key = `LOOKFAR.TravelCheck.Dangers.DangerClock.${dangerSeverity}`;
-        result += game.i18n.localize(key);
-        break;
-      }
-      case "villainPlanAdvance": {
-        // LOOKFAR.TravelCheck.Dangers.VillainPlanAdvance.Minor/Heavy/Massive
-        const key = `LOOKFAR.TravelCheck.Dangers.VillainPlanAdvance.${dangerSeverity}`;
-        result += game.i18n.localize(key);
-        break;
-      }
-      default:
-        console.error("Unknown threat type:", threatType);
-        return {
-          html: game.i18n.localize("LOOKFAR.TravelCheck.Errors.ThreatUnknown"),
-          keywords: null,
-        };
+      console.error("No danger sources available in dataLoader.dangersData.sources.");
     }
   }
 
   const keywords = generateKeywordsData();
 
-  // Return HTML + keyword data (keyword table is rendered in HBS)
   return {
     html: `
       <table style="width: 100%; border-collapse: collapse;">
@@ -565,7 +523,7 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
           <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
             ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TableHeaders.Threat")}
           </th>
-          <td style="padding: 5px; border: 1px solid; text-align: left;">${result}</td>
+          <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
         </tr>
         <tr>
           <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
@@ -577,79 +535,6 @@ async function generateDanger(selectedDifficulty, groupLevel, dangerSeverity) {
     `,
     keywords,
   };
-}
-
-function handleDamage(threatsData, groupLevel, dangerSeverity) {
-  const damageData = threatsData.Damage ? threatsData.Damage[groupLevel] : undefined;
-
-  if (!damageData || !damageData[dangerSeverity]) {
-    console.error(
-      `Damage data not found for groupLevel: ${groupLevel}, severity: ${dangerSeverity}`
-    );
-    return game.i18n.localize("LOOKFAR.TravelCheck.Errors.DamageMissing");
-  }
-
-  const amount = damageData[dangerSeverity];
-
-  return game.i18n.format("LOOKFAR.TravelCheck.Dangers.Damage", { amount });
-}
-
-function handleStatusEffect(dangerSeverity) {
-  const poolsBySeverity = {
-    Minor: ["Dazed", "Shaken", "Slow", "Weak"],
-    Heavy: ["Dazed", "Shaken", "Slow", "Weak", "Poisoned", "Enraged"],
-    Massive: ["Poisoned", "Enraged"],
-  };
-
-  const pool = poolsBySeverity[dangerSeverity] || [];
-  if (!pool.length) {
-    console.error(`No status effects pool for dangerSeverity: ${dangerSeverity}`);
-    return game.i18n.localize("LOOKFAR.TravelCheck.Errors.ThreatUnknown");
-  }
-
-  const key = getRandomElement(pool);
-  return game.i18n.localize(`LOOKFAR.TravelCheck.Dangers.StatusEffects.${key}`);
-}
-
-// -----------------------------------------------------------------------------
-// Random helpers
-// -----------------------------------------------------------------------------
-
-function randomSeverity(difficulty) {
-  // Use regex to extract the number from the die string (e.g., 'd6' -> 6)
-  const difficultyMatch = /^d(\d+)$/.exec(difficulty);
-
-  // Parse the extracted number
-  const difficultyNumber = difficultyMatch ? parseInt(difficultyMatch[1]) : NaN;
-
-  // Error out if we can't parse the difficulty number or if it's not a valid positive number
-  if (isNaN(difficultyNumber) || difficultyNumber <= 0) {
-    throw new Error(`Invalid difficulty number: ${difficulty}`);
-  }
-
-  // Roll a random number from 1 to difficultyNumber
-  const severityRoll = Math.floor(Math.random() * difficultyNumber) + 1;
-
-  // Adjust severity based on the new ranges
-  if (severityRoll <= 5) {
-    return "Minor";
-  } else if (severityRoll <= 9) {
-    return "Heavy";
-  } else {
-    return "Massive";
-  }
-}
-
-function randomThreatType() {
-  const types = ["Damage", "statusEffect", "Combat", "dangerClock", "villainPlanAdvance"];
-  return getRandomElement(types);
-}
-
-function getRandomElement(arrayOrObject) {
-  const isObject = typeof arrayOrObject === "object" && !Array.isArray(arrayOrObject);
-  const keys = isObject ? Object.keys(arrayOrObject) : arrayOrObject;
-  const randomKey = keys[Math.floor(Math.random() * keys.length)];
-  return isObject ? arrayOrObject[randomKey] : randomKey;
 }
 
 // -----------------------------------------------------------------------------
