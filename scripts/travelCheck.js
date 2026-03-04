@@ -521,7 +521,7 @@ async function generateDanger(groupLevel) {
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TableHeaders.Threat")}
+            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TableHeaders.Effect")}
           </th>
           <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
         </tr>
@@ -626,3 +626,4 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
