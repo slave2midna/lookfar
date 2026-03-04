@@ -50,6 +50,21 @@ const F = (key, data) => {
   }
 };
 
+// ---- Strict data helpers ----------------------------------------------------
+// We don't use localization fallbacks anymore. If a required module-owned value is missing,
+// we treat it as a module data error (loud during forging, non-fatal during list rendering).
+
+const requireString = (label, v) => {
+  const s = (typeof v === "string") ? v.trim() : "";
+  if (!s) throw new Error(`Missing required ${label}.`);
+  return s;
+};
+
+const getLocalizedEquipNameStrict = (kind, id) => {
+  const name = dataLoader.getEquipmentName?.(kind, id, null);
+  return requireString(`localized equipment name for ${kind}:${id}`, name);
+};
+
 // ---- General helpers --------------------------------------------------------
 
 const getName = r =>
@@ -58,18 +73,22 @@ const getName = r =>
   r?.armorName ??
   r?.shieldName ??
   r?.accessoryName ??
-  "(Unnamed)";
+  "";
 
-// Resolve template display name from i18n bundle by id (primary), with fallbacks.
+// Resolve template display name from i18n bundle by id (primary).
+// No fallbacks: if missing, we surface the template id to keep the UI usable.
 const getTemplateDisplayName = (kind, r) => {
   const id = r?.id ?? r?._id ?? null;
-  const fallback =
-    r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
-  if (!id) return fallback;
+  if (!id) return "";
   try {
-    return dataLoader.getEquipmentName?.(kind, id, fallback) ?? fallback;
-  } catch {
-    return fallback;
+    const name = dataLoader.getEquipmentName?.(kind, id, null);
+    if (typeof name === "string" && name.trim().length) return name.trim();
+
+    console.error(`[Item Forger] Missing localized equipment name for ${kind}:${id}`);
+    return String(id);
+  } catch (e) {
+    console.error(`[Item Forger] Equipment name lookup failed for ${kind}:${id}`, e);
+    return String(id);
   }
 };
 
@@ -87,14 +106,15 @@ const matchesAppliesTo = (q, type) => {
 };
 
 const qualityDisplayName = (q, type) => {
-  // New derived qualities use q.name. Keep the old per-slot fallback too.
+  // New derived qualities use q.name.
   if (q?.name) return q.name;
 
-  if (type === "weapon") return q.weaponName ?? q.name ?? "(Unnamed)";
-  if (type === "armor") return q.armorName ?? q.name ?? "(Unnamed)";
-  if (type === "shield") return q.shieldName ?? q.name ?? "(Unnamed)";
-  if (type === "accessory") return q.accessoryName ?? q.name ?? "(Unnamed)";
-  return q.name ?? "(Unnamed)";
+  // Back-compat per-slot shapes
+  if (type === "weapon") return q.weaponName ?? q.name ?? "";
+  if (type === "armor") return q.armorName ?? q.name ?? "";
+  if (type === "shield") return q.shieldName ?? q.name ?? "";
+  if (type === "accessory") return q.accessoryName ?? q.name ?? "";
+  return q.name ?? "";
 };
 
 const normHand = (h) => {
@@ -494,7 +514,6 @@ const getVariantDamageBonus = (worth) => {
 
 // Recalculate weapon stats based on UI toggles
 const computeWeaponStats = (base, html, worthOverride) => {
-
   const variant = useVariantDamageRules();
 
   const baseHand = normHand(base?.hand) || null; // "1" | "2" | null
@@ -519,7 +538,7 @@ const computeWeaponStats = (base, html, worthOverride) => {
   const accOut = (Number(base?.accuracy ?? base?.acc ?? 0) || 0) + (plus1 ? 1 : 0);
 
   let dmgOut = (Number(base?.damage ?? base?.dmg ?? 0) || 0)
-             + (plus4 ? 4 : 0)        // this will effectively never apply when variant rules are on, because the checkbox is disabled
+             + (plus4 ? 4 : 0) // disabled when variant rules are on
              + handMod;
 
   // Variant rules: add scaling bonus based on worth (no fee)
@@ -561,18 +580,14 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
   const { worth } = getCurrentCosts(html, tmpl, currentQualities);
   const costField = worth;
 
-  // Localized fallbacks for unnamed base templates
-  const fallbackWeaponName    = L("LOOKFAR.ItemForge.Fallback.WeaponName");
-  const fallbackArmorName     = L("LOOKFAR.ItemForge.Fallback.ArmorName");
-  const fallbackShieldName    = L("LOOKFAR.ItemForge.Fallback.ShieldName");
-  const fallbackAccessoryName = L("LOOKFAR.ItemForge.Fallback.AccessoryName");
-
   // handle weapon item data.
   if (kind === "weapon") {
-    const baseName = dataLoader.getEquipmentName?.("weapon", base?.id, fallbackWeaponName) ?? (base?.name || fallbackWeaponName);
+    const baseId = requireString("weapon template id", base?.id);
+    const typeName = getLocalizedEquipNameStrict("weapon", baseId);
+
     const w = computeWeaponStats(base, html, worth);
     return {
-      name: F("LOOKFAR.ItemForge.Create.NamePattern.Weapon", { base: baseName }),
+      name: F("LOOKFAR.ItemForge.Create.NamePattern.Weapon", { type: typeName }),
       type: "weapon",
       img,
       system: {
@@ -617,7 +632,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
         },
         summary: {
           value: F("LOOKFAR.ItemForge.Create.Summary.Weapon", {
-            category: base?.category ?? L("LOOKFAR.ItemForge.Fallback.WeaponCategory")
+            category: base?.category ?? ""
           })
         }
       }
@@ -626,13 +641,15 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
 
   // handle armor item data.
   if (kind === "armor") {
-    const baseName = dataLoader.getEquipmentName?.("armor", base?.id, fallbackArmorName) ?? (base?.name || fallbackArmorName);
+    const baseId = requireString("armor template id", base?.id);
+    const typeName = getLocalizedEquipNameStrict("armor", baseId);
+
     const martialKey = base?.isMartial
       ? "LOOKFAR.ItemForge.Armor.Martial"
       : "LOOKFAR.ItemForge.Armor.NonMartial";
 
     return {
-      name: F("LOOKFAR.ItemForge.Create.NamePattern.Armor", { base: baseName }),
+      name: F("LOOKFAR.ItemForge.Create.NamePattern.Armor", { type: typeName }),
       type: "armor",
       img,
       system: {
@@ -669,13 +686,15 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
 
   // handle shield item data.
   if (kind === "shield") {
-    const baseName = dataLoader.getEquipmentName?.("shield", base?.id, fallbackShieldName) ?? (base?.name || fallbackShieldName);
+    const baseId = requireString("shield template id", base?.id);
+    const typeName = getLocalizedEquipNameStrict("shield", baseId);
+
     const martialKey = base?.isMartial
       ? "LOOKFAR.ItemForge.Shield.Martial"
       : "LOOKFAR.ItemForge.Shield.NonMartial";
 
     return {
-      name: F("LOOKFAR.ItemForge.Create.NamePattern.Shield", { base: baseName }),
+      name: F("LOOKFAR.ItemForge.Create.NamePattern.Shield", { type: typeName }),
       type: "shield",
       img,
       system: {
@@ -712,9 +731,11 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
   }
 
   // handle accessory item data.
-  const baseName = dataLoader.getEquipmentName?.("accessory", base?.id, fallbackAccessoryName) ?? (base?.name || fallbackAccessoryName);
+  const baseId = requireString("accessory template id", base?.id);
+  const typeName = getLocalizedEquipNameStrict("accessory", baseId);
+
   return {
-    name: F("LOOKFAR.ItemForge.Create.NamePattern.Accessory", { base: baseName }),
+    name: F("LOOKFAR.ItemForge.Create.NamePattern.Accessory", { type: typeName }),
     type: "accessory",
     img,
     system: {
@@ -737,9 +758,8 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
         value: "LOOKFAR"
       },
       summary: {
-        value: F("LOOKFAR.ItemForge.Create.Summary.Accessory", {
-          base: baseName
-        })
+        // No placeholders expected per en.json; extra data ignored if present.
+        value: F("LOOKFAR.ItemForge.Create.Summary.Accessory", {})
       }
     }
   };
@@ -1683,6 +1703,7 @@ async function openItemForgeDialog() {
           </div>
         `).join("");
         $templateList.html(items);
+
         wireSelectableList($templateList, ".if-template", {
           initialIndex,
           onSelect: (el) => {
