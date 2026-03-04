@@ -66,9 +66,9 @@
         "Name": "Discovery Source Roll Table",
         "Hint": "Select the Roll Table to use for generating discovery sources."
       },
-      "DangerThreatTable": {
-        "Name": "Danger Threat Roll Table",
-        "Hint": "Select the Roll Table to use for generating danger threats."
+      "DangerEffectTable": {
+        "Name": "Danger Effect Roll Table",
+        "Hint": "Select the Roll Table to use for generating danger effects."
       },
       "DangerSourceTable": {
         "Name": "Danger Source Roll Table",
@@ -468,4 +468,5 @@
     }
   }
 }
+
 
