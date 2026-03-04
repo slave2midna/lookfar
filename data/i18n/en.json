@@ -1737,6 +1737,46 @@
       }
     }
   },
+  "dangers": {
+  "effects": [
+    "The party takes minor damage.",
+    "The party takes medium damage.",
+    "The party takes heavy damage.",
+    "The party becomes dazed.",
+    "The party becomes slow.",
+    "The party becomes weak.",
+    "The party becomes poisoned.",
+    "The party becomes enraged.",
+    "The party encounters an easy enemy.",
+    "The party encounters a challenging enemy.",
+    "The party encounters a deadly enemy.",
+    "The party triggers a 4-step danger clock.",
+    "The party triggers a 6-step danger clock.",
+    "The party triggers an 8-step danger clock.",
+    "The villain's plan advances by 1 step.",
+    "The villain's plan advances by 2 steps.",
+    "The villain's plan advances by 3 steps."
+  ],
+  "sources": [
+    "Altitude sickness, food poisoning, or general exhaustion slows the group.",
+    "Travel gear fails — wagons break, weapons snap, or crucial items go missing.",
+    "Local or global political unrest causes interruptions or confrontations.",
+    "A harsh natural event — storms, quakes, floods — brings delay and peril.",
+    "You attract the attention of a rival, villain, or monster.",
+    "Supernatural interference alters the path: portals, hauntings, omens.",
+    "A mysterious NPC appears, altering or obstructing your path.",
+    "An ancient or hidden mechanism is triggered unexpectedly.",
+    "You trespass on sacred ground or violate a taboo unknowingly.",
+    "The wilderness reveals a secret — but it comes at a price.",
+    "Wildlife becomes territorial or aggressive, creating complications.",
+    "A landmark has changed, misguiding your path.",
+    "Resources deplete faster than expected, straining survival.",
+    "Dreams or visions disrupt progress with cryptic warnings.",
+    "A divine or arcane presence tests your worth or purity.",
+    "A curse or magical interference subtly warps your environment.",
+    "An ally reveals a secret that throws everything into question."
+  ]
+},
   "discoveries": {
     "effects": [
       "Each party member regains 1 IP.",
