@@ -12,16 +12,16 @@ const TRAVEL_RESULT_TEMPLATE = "modules/lookfar/templates/travel-result.hbs";
 // -----------------------------------------------------------------------------
 
 // Function to set default "Discovery" rolltable options. Will update for multiple table settings.
-function getRollTableChoices() {
-  const choices = { default: game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") }; // Add "Default" option
-  if (game.tables) {
-    const tables = game.tables.contents; // Use .contents instead of .entities
-    tables.forEach((table) => {
-      choices[table.id] = table.name;
-    });
-  }
-  return choices;
-}
+// function getRollTableChoices() {
+//  const choices = { default: game.i18n.localize("LOOKFAR.Settings.DefaultRollTable") }; // Add "Default" option
+//  if (game.tables) {
+//    const tables = game.tables.contents; // Use .contents instead of .entities
+//    tables.forEach((table) => {
+//     choices[table.id] = table.name;
+//    });
+//  }
+// return choices;
+//}
 
 // Function to generate a unique list of items
 function generateUniqueList(list, minCount, maxCount) {
@@ -626,6 +626,7 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
 
 
 
