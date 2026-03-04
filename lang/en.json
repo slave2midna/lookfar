@@ -24,8 +24,6 @@
       }
     },
 
-
-    
     "__SECTION__Settings": "=== Settings ===",
     "Settings": {
       "ResultVisibility": {
@@ -91,8 +89,75 @@
       "NoScenes": "No scenes found"
     },
 
+    "__SECTION__Vocabulary": "=== Vocabulary ===",
+    "Vocabulary": {
+      "Common": {
+        "Random": "Random",
+        "None": "None",
+        "Unknown": "Unknown",
+        "Unavailable": "Unavailable",
+        "Zenit": "Zenit"
+      },
+      "Fields": {
+        "Budget": "Budget",
+        "Level": "Level",
+        "Origin": "Origin",
+        "Nature": "Nature",
+        "Items": "Items",
+        "Value": "Value"
+      },
+      "ItemType": {
+        "Weapon": "Weapon",
+        "Armor": "Armor",
+        "Shield": "Shield",
+        "Accessory": "Accessory",
+        "Material": "Material",
+        "Ingredient": "Ingredient",
+        "Currency": "Currency",
+        "Custom": "Custom"
+      },
+      "Martial": {
+        "Martial": "Martial",
+        "NonMartial": "Non-martial"
+      },
+      "Element": {
+        "Physical": "Physical",
+        "Fire": "Fire",
+        "Ice": "Ice",
+        "Earth": "Earth",
+        "Air": "Air",
+        "Bolt": "Bolt",
+        "Dark": "Dark",
+        "Light": "Light",
+        "Poison": "Poison"
+      },
+      "Origin": {
+        "Aerial": "Aerial",
+        "Thunderous": "Thunderous",
+        "Paradox": "Paradox",
+        "Terrestrial": "Terrestrial",
+        "Ardent": "Ardent",
+        "Glacial": "Glacial",
+        "Spiritual": "Spiritual",
+        "Corrupted": "Corrupted",
+        "Aquatic": "Aquatic",
+        "Mechanical": "Mechanical"
+      },
+      "Nature": {
+        "Anthropod": "Anthropod",
+        "Bird": "Bird",
+        "Fish": "Fish",
+        "Mammal": "Mammal",
+        "Mollusk": "Mollusk",
+        "Reptile": "Reptile",
+        "Fungus": "Fungus",
+        "Incorporeal": "Incorporeal",
+        "Liquid": "Liquid",
+        "Artificial": "Artificial",
+        "Mineral": "Mineral"
+      }
+    },
 
-    
     "__SECTION__TravelCheck": "=== Travel Check ===",
     "TravelCheck": {
       "Difficulty": {
@@ -148,17 +213,23 @@
       }
     },
 
-
-    
     "__SECTION__TreasureRoll": "=== Treasure Roll ===",
     "TreasureRoll": {
       "NamePatterns": {
         "Material": "{detail} {origin} {nature}",
         "Ingredient": "{taste} {origin} {nature}",
-        "Weapon": "{quality} {element} {base}",
-        "Armor": "{quality} {base}",
-        "Shield": "{quality} {base}",
-        "Accessory": "{quality} {base}"
+        "Weapon": "{accuracyUp} {quality} {damageUp} {element} {type}",
+        "Armor": "{quality} {type}",
+        "Shield": "{quality} {type}",
+        "Accessory": "{quality} {type}"
+      },
+      "Tokens": {
+        "AccuracyUp": "+1",
+        "DamageUp": "Master"
+      },
+      "Text": {
+        "NoQuality": "No quality",
+        "NoSpecialProperties": "has no special properties."
       },
       "Dialogs": {
         "Generator": {
@@ -176,78 +247,19 @@
           }
         }
       },
-      "Fields": {
-        "Budget": "Budget",
-        "Level": "Level",
-        "Origin": "Origin",
-        "Nature": "Nature",
-        "Items": "Items"
-      },
-      "Origin": {
-        "Random": "Random",
-        "Aerial": "Aerial",
-        "Thunderous": "Thunderous",
-        "Paradox": "Paradox",
-        "Terrestrial": "Terrestrial",
-        "Ardent": "Ardent",
-        "Glacial": "Glacial",
-        "Spiritual": "Spiritual",
-        "Corrupted": "Corrupted",
-        "Aquatic": "Aquatic",
-        "Mechanical": "Mechanical"
-      },
-      "Nature": {
-        "Random": "Random",
-        "Anthropod": "Anthropod",
-        "Bird": "Bird",
-        "Fish": "Fish",
-        "Mammal": "Mammal",
-        "Mollusk": "Mollusk",
-        "Reptile": "Reptile",
-        "Fungus": "Fungus",
-        "Incorporeal": "Incorporeal",
-        "Liquid": "Liquid",
-        "Artificial": "Artificial",
-        "Mineral": "Mineral"
-      },
       "Options": {
         "IgnoreValues": "Ignore budget/level",
         "SelectAll": "Select all"
-      },
-      "Types": {
-        "Weapons": "Weapons",
-        "Armor": "Armor",
-        "Accessories": "Accessories",
-        "Shields": "Shields",
-        "Materials": "Materials",
-        "Ingredients": "Ingredients",
-        "Currency": "Currency",
-        "Custom": "Custom"
       },
       "Result": {
         "Budget": {
           "Remaining": "Remaining Budget",
           "Ignored": "Ignored"
-        },
-        "ValueLabel": "Value"
+        }
       },
       "Stash": {
         "DefaultName": "New Stash #{num}",
         "NamePrefix": "New Stash #"
-      },
-      "Tokens": {
-        "Random": "Random",
-        "None": "None",
-        "Master": "Master",
-        "PlusOne": "+1",
-        "Unknown": "unknown",
-        "NoQuality": "No quality",
-        "NoSpecialProperties": "has no special properties.",
-        "CurrencyFallback": "Zenit"
-      },
-      "Labels": {
-        "Martial": "martial",
-        "NonMartial": "non-martial"
       },
       "Summaries": {
         "Ingredient": "An ingredient that tastes {taste}.",
@@ -275,8 +287,6 @@
       }
     },
 
-
-    
     "__SECTION__ItemForge": "=== Item Forge ===",
     "ItemForge": {
       "Dialog": {
@@ -303,12 +313,6 @@
       },
       "ChooseItem": {
         "Legend": "Choose Item"
-      },
-      "ItemType": {
-        "Weapon": "Weapon",
-        "Armor": "Armor",
-        "Shield": "Shield",
-        "Accessory": "Accessory"
       },
       "TemplateList": {
         "Aria": "Template list",
@@ -360,18 +364,6 @@
           "GMOnly": "Only the GM can change this option.",
           "PlusOneAlready": "This weapon already has at least +1 Accuracy.",
           "VariantDamageInfo": "Damage scales from the item's value. This option is disabled."
-        },
-        "Element": {
-          "Label": "Type:",
-          "Physical": "Physical",
-          "Fire": "Fire",
-          "Ice": "Ice",
-          "Earth": "Earth",
-          "Air": "Air",
-          "Bolt": "Bolt",
-          "Dark": "Dark",
-          "Light": "Light",
-          "Poison": "Poison"
         }
       },
       "Qualities": {
@@ -379,21 +371,6 @@
         "NoneText": "No quality.",
         "NoData": "No quality data found.",
         "NoneAvailable": "No qualities available for this item type.",
-        "Category": {
-          "None": "None",
-          "Basic": "Basic",
-          "Custom": "Custom",
-          "Ardent": "Ardent",
-          "Aerial": "Aerial",
-          "Thunderous": "Thunderous",
-          "Paradox": "Paradox",
-          "Terrestrial": "Terrestrial",
-          "Glacial": "Glacial",
-          "Spiritual": "Spiritual",
-          "Corrupted": "Corrupted",
-          "Aquatic": "Aquatic",
-          "Mechanical": "Mechanical"
-        },
         "List": {
           "Aria": "Qualities list"
         },
@@ -435,38 +412,18 @@
       },
       "Create": {
         "NamePattern": {
-          "Weapon": "{base} (Forged)",
-          "Armor": "{base} (Forged)",
-          "Shield": "{base} (Forged)",
-          "Accessory": "{base} (Forged)"
+          "Weapon": "Newly Crafted {type}",
+          "Armor": "Newly Crafted {type}",
+          "Shield": "Newly Crafted {type}",
+          "Accessory": "Newly Crafted {type}"
         },
         "Summary": {
-          "Weapon": "A forged weapon of the {category} type.",
-          "Armor": "Forged armor ({martialType}).",
-          "Shield": "A forged shield ({martialType}).",
-          "Accessory": "A forged accessory based on {base}."
+          "Weapon": "A crafted {category}.",
+          "Armor": "A crafted {martialType} armor set.",
+          "Shield": "A crafted {martialType} shield.",
+          "Accessory": "A forged accessory."
         }
       },
-      "Fallback": {
-        "WeaponName": "Weapon",
-        "ArmorName": "Armor",
-        "ShieldName": "Shield",
-        "AccessoryName": "Accessory",
-        "WeaponCategory": "weapon"
-      },
-      "Armor": {
-        "Martial": "Martial armor",
-        "NonMartial": "Non-martial armor"
-      },
-      "Shield": {
-        "Martial": "Martial shield",
-        "NonMartial": "Non-martial shield"
-      },
-      "PreviewCard": {
-        "MutedText": "Unavailable"
-      }
     }
   }
 }
-
-
