@@ -205,7 +205,7 @@ async function handleRoll(selectedDifficulty, html) {
   }
 
   const roll = new Roll(effectiveDifficulty);
-  await roll.evaluate({ async: true });
+  roll.evaluateSync();
 
   // Post the roll to chat (v13 method)
   const speaker = ChatMessage.getSpeaker({
@@ -626,5 +626,6 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
 
 
