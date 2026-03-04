@@ -3,12 +3,8 @@ export const dataLoader = {
   // Raw datasets (loaded from disk)
   // ---------------------------------------------------------------------------
 
-  // dangers.json
-  threatsData: {},
-  sourceData: [],
-
   // /data/i18n/<lang>.json bundle
-  // Contains: { version, keywords, equipment, qualities, discoveries }
+  // Contains: { version, keywords, equipment, qualities, discoveries, dangers }
   i18nData: {},
 
   // equipment.json
@@ -31,6 +27,9 @@ export const dataLoader = {
   // ✅ always array-shaped; derived from i18nData.discoveries
   discoveryData: { effects: [], sources: [] },
 
+  // ✅ always array-shaped; derived from i18nData.dangers
+  dangersData: { effects: [], sources: [] },
+
   // Public shapes for equipment (legacy-compatible; derived from equipmentData/qualitiesData/i18nData)
   weaponsData:     { weaponList: [], weaponQualities: {} },
   armorData:       { armorList: [],  armorQualities:  {} },
@@ -45,21 +44,7 @@ export const dataLoader = {
   // Public API
   // ---------------------------------------------------------------------------
   async loadData() {
-    // --- dangers (threats & sources) ---
-    try {
-      const r = await fetch("/modules/lookfar/data/dangers.json", { cache: "no-store" });
-      const dangers = await r.json();
-      this.threatsData = dangers.threats || {};
-      this.sourceData  = dangers.sources || [];
-      console.log("[Lookfar] Threats Data:", this.threatsData);
-      console.log("[Lookfar] Danger Sources:", this.sourceData);
-    } catch (err) {
-      console.error("[Lookfar] Failed to load dangers.json:", err);
-      this.threatsData = {};
-      this.sourceData = [];
-    }
-
-    // --- i18n dataset bundle (keywords + equipment names + quality names/descriptions + discoveries) ---
+    // --- i18n dataset bundle (keywords + equipment names + quality names/descriptions + discoveries + dangers) ---
     // Expected paths:
     //   /modules/lookfar/data/i18n/<lang>.json       e.g. en.json, pt-BR.json
     // Fallback chain:
@@ -103,11 +88,18 @@ export const dataLoader = {
         sources: Array.isArray(bundle?.discoveries?.sources) ? bundle.discoveries.sources : []
       };
 
+      // ✅ dangers now live in the i18n bundle (always arrays)
+      this.dangersData = {
+        effects: Array.isArray(bundle?.dangers?.effects) ? bundle.dangers.effects : [],
+        sources: Array.isArray(bundle?.dangers?.sources) ? bundle.dangers.sources : []
+      };
+
       console.log(`[Lookfar] i18n bundle (${lang}) loaded from:`, loadedFrom);
       console.log("[Lookfar] i18n keywords:", bundle?.keywords || {});
       console.log("[Lookfar] i18n equipment:", this.localizedEquipment);
       console.log("[Lookfar] i18n qualities:", this.localizedQualities);
       console.log("[Lookfar] i18n discoveries:", this.discoveryData);
+      console.log("[Lookfar] i18n dangers:", this.dangersData);
     } catch (err) {
       console.error("[Lookfar] Failed to load i18n bundle:", err);
 
@@ -118,6 +110,7 @@ export const dataLoader = {
       this.localizedEquipment = {};
       this.localizedQualities = {};
       this.discoveryData = { effects: [], sources: [] };
+      this.dangersData = { effects: [], sources: [] };
     }
 
     // --- equipment (weapon/armor/shield/accessory lists) ---
