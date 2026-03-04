@@ -116,9 +116,9 @@ export const LookfarSettings = {
       default: "default"
     });
 
-    game.settings.register("lookfar", "dangerThreatRollTable", {
-      name: game.i18n.localize("LOOKFAR.Settings.DangerThreatTable.Name"),
-      hint: game.i18n.localize("LOOKFAR.Settings.DangerThreatTable.Hint"),
+    game.settings.register("lookfar", "dangerEffectRollTable", {
+      name: game.i18n.localize("LOOKFAR.Settings.DangerEffectTable.Name"),
+      hint: game.i18n.localize("LOOKFAR.Settings.DangerEffectTable.Hint"),
       scope: "world",
       config: true,
       type: String,
@@ -257,4 +257,5 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
 
