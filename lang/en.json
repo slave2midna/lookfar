@@ -117,7 +117,8 @@
         "MP": "MP",
         "INIT": "INIT",
         "MDEF": "MDEF",
-        "DEF": "DEF"
+        "DEF": "DEF",
+        "HR": "HR"
       },
       "ItemType": {
         "Weapon": "Weapon",
@@ -302,6 +303,11 @@
 
     "__SECTION__ItemForge": "=== Item Forge ===",
     "ItemForge": {
+      "AriaLabels": {
+        "TemplateList": "Template list",
+        "QualitiesList": "Qualities list",
+        "MaterialsDrop": "Materials drop zone"
+      },
       "Dialog": {
         "Title": "Item Forger",
         "MiniTitle": "Item Forger: Materials",
@@ -328,7 +334,6 @@
         "Legend": "Choose Item"
       },
       "TemplateList": {
-        "Aria": "Template list",
         "Loading": "Loading...",
         "Empty": "No templates available."
       },
@@ -348,12 +353,6 @@
           "One": "One-Handed",
           "Two": "Two-Handed",
           "Unknown": "Handed"
-        },
-        "Stats": {
-          "Def": "DEF",
-          "MDef": "M.DEF",
-          "Init": "INIT",
-          "HR": "HR"
         },
         "Muted": {
           "OtherKind": "Preview for another item type.",
@@ -384,9 +383,6 @@
         "NoneText": "No quality.",
         "NoData": "No quality data found.",
         "NoneAvailable": "No qualities available for this item type.",
-        "List": {
-          "Aria": "Qualities list"
-        },
         "Custom": {
           "Effect": {
             "Title": "Type your custom effect text"
@@ -404,9 +400,6 @@
       },
       "Materials": {
         "Legend": "Materials",
-        "Drop": {
-          "Aria": "Materials drop zone"
-        },
         "Hint": "Drag & drop Item documents here (max 5).",
         "RequireOriginHint": "At least one material with origin \"{origin}\" is required.",
         "Tooltip": {
@@ -440,5 +433,3 @@
     }
   }
 }
-
-
