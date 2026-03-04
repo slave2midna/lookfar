@@ -1,36 +1,45 @@
 export const dataLoader = {
   // ---------------------------------------------------------------------------
-  // Core datasets
+  // Raw datasets (loaded from disk)
   // ---------------------------------------------------------------------------
+
+  // dangers.json
   threatsData: {},
   sourceData: [],
-  discoveryData: {},
 
-  // Localized dataset bundle loaded from /data/i18n/<lang>.json
-  // Contains: { version, keywords, equipment, qualities }
+  // /data/i18n/<lang>.json bundle
+  // Contains: { version, keywords, equipment, qualities, discoveries }
   i18nData: {},
 
-  // Split-out localized helpers (optional convenience)
+  // equipment.json
+  equipmentData: {},
+
+  // qualities.json
+  qualitiesData: {},
+
+  // iconManifest.json
+  iconManifest: [],
+
+  // ---------------------------------------------------------------------------
+  // Derived / convenience views (built from raw datasets)
+  // ---------------------------------------------------------------------------
+
+  // Split-out localized helpers (convenience views of i18nData)
   localizedEquipment: {},
   localizedQualities: {},
 
-  iconManifest: [],
+  // ✅ always array-shaped; derived from i18nData.discoveries
+  discoveryData: { effects: [], sources: [] },
 
-  // Icon index: built after loading manifest
-  // Shape: { weapon: { sword: [paths...], waraxe: [paths...], _all: [paths...] }, armor: { martial: [...], non_martial: [...], _all: [...] }, ... }
-  iconIndex: null,
-
-  // ---------------------------------------------------------------------------
-  // Public shapes for equipment (legacy-compatible)
-  // ---------------------------------------------------------------------------
+  // Public shapes for equipment (legacy-compatible; derived from equipmentData/qualitiesData/i18nData)
   weaponsData:     { weaponList: [], weaponQualities: {} },
   armorData:       { armorList: [],  armorQualities:  {} },
   shieldsData:     { shieldList: [], shieldQualities: {} },
   accessoriesData: { accessoryList: [], accessoryQualities: {} },
 
-  // Merged sources (for debugging)
-  equipmentData: {},
-  qualitiesData: {},
+  // Icon index: built after loading manifest
+  // Shape: { weapon: { sword: [paths...], waraxe: [paths...], _all: [paths...] }, armor: { martial: [...], non_martial: [...], _all: [...] }, ... }
+  iconIndex: null,
 
   // ---------------------------------------------------------------------------
   // Public API
@@ -50,17 +59,7 @@ export const dataLoader = {
       this.sourceData = [];
     }
 
-    // --- discoveries (effects & discovery sources) ---
-    try {
-      const r = await fetch("/modules/lookfar/data/discoveries.json", { cache: "no-store" });
-      this.discoveryData = await r.json();
-      console.log("[Lookfar] Discovery Data:", this.discoveryData);
-    } catch (err) {
-      console.error("[Lookfar] Failed to load discoveries.json:", err);
-      this.discoveryData = {};
-    }
-
-    // --- i18n dataset bundle (keywords + equipment names + quality names/descriptions) ---
+    // --- i18n dataset bundle (keywords + equipment names + quality names/descriptions + discoveries) ---
     // Expected paths:
     //   /modules/lookfar/data/i18n/<lang>.json       e.g. en.json, pt-BR.json
     // Fallback chain:
@@ -91,34 +90,51 @@ export const dataLoader = {
 
       if (!bundle) throw new Error(`No i18n bundle files found for lang=${lang}`);
 
+      // Raw
       this.i18nData = bundle || {};
+
+      // Derived convenience views
       this.localizedEquipment = bundle?.equipment || {};
       this.localizedQualities = bundle?.qualities || {};
 
+      // ✅ discoveries now live in the i18n bundle (always arrays)
+      this.discoveryData = {
+        effects: Array.isArray(bundle?.discoveries?.effects) ? bundle.discoveries.effects : [],
+        sources: Array.isArray(bundle?.discoveries?.sources) ? bundle.discoveries.sources : []
+      };
+
       console.log(`[Lookfar] i18n bundle (${lang}) loaded from:`, loadedFrom);
-      console.log("[Lookfar] i18n keywords:", this.keywordData);
+      console.log("[Lookfar] i18n keywords:", bundle?.keywords || {});
       console.log("[Lookfar] i18n equipment:", this.localizedEquipment);
       console.log("[Lookfar] i18n qualities:", this.localizedQualities);
+      console.log("[Lookfar] i18n discoveries:", this.discoveryData);
     } catch (err) {
       console.error("[Lookfar] Failed to load i18n bundle:", err);
+
+      // Raw
       this.i18nData = {};
+
+      // Derived
       this.localizedEquipment = {};
       this.localizedQualities = {};
+      this.discoveryData = { effects: [], sources: [] };
     }
 
     // --- equipment (weapon/armor/shield/accessory lists) ---
     try {
       const r = await fetch("/modules/lookfar/data/equipment.json", { cache: "no-store" });
       const eq = await r.json();
+
+      // Raw
       this.equipmentData = eq || {};
 
-      // Fan out equipment into lists to fit legacy shapes
+      // Derived legacy lists
       this.weaponsData.weaponList        = Array.isArray(eq?.weaponList)     ? eq.weaponList     : [];
       this.armorData.armorList           = Array.isArray(eq?.armorList)      ? eq.armorList      : [];
       this.shieldsData.shieldList        = Array.isArray(eq?.shieldList)     ? eq.shieldList     : [];
       this.accessoriesData.accessoryList = Array.isArray(eq?.accessoryList)  ? eq.accessoryList  : [];
 
-      // Optional: strip any lingering "name" fields (you’re moving names to i18n)
+      // Optional: strip any lingering "name" fields (names moved to i18n)
       this.weaponsData.weaponList.forEach(w => { if (w && "name" in w) delete w.name; });
       this.armorData.armorList.forEach(a => { if (a && "name" in a) delete a.name; });
       this.shieldsData.shieldList.forEach(s => { if (s && "name" in s) delete s.name; });
@@ -132,7 +148,11 @@ export const dataLoader = {
       });
     } catch (err) {
       console.error("[Lookfar] Failed to load equipment.json:", err);
+
+      // Raw
       this.equipmentData = {};
+
+      // Derived
       this.weaponsData.weaponList = [];
       this.armorData.armorList = [];
       this.shieldsData.shieldList = [];
@@ -143,10 +163,13 @@ export const dataLoader = {
     try {
       const r = await fetch("/modules/lookfar/data/qualities.json", { cache: "no-store" });
       const q = await r.json();
+
+      // Raw
       this.qualitiesData = q || {};
 
-      // Default fast-path case, if file already provides per-type blocks, use them directly.
+      // Derived legacy shapes
       if (q.weaponQualities || q.armorQualities || q.shieldQualities || q.accessoryQualities) {
+        // Fast-path: already per-type
         this.weaponsData.weaponQualities        = q.weaponQualities     || {};
         this.armorData.armorQualities           = q.armorQualities      || {};
         this.shieldsData.shieldQualities        = q.shieldQualities     || {};
@@ -166,7 +189,11 @@ export const dataLoader = {
       console.log("[Lookfar] Acc.   Qualities Groups:", Object.keys(this.accessoriesData.accessoryQualities));
     } catch (err) {
       console.error("[Lookfar] Failed to load qualities.json:", err);
+
+      // Raw
       this.qualitiesData = {};
+
+      // Derived
       this.weaponsData.weaponQualities = {};
       this.armorData.armorQualities = {};
       this.shieldsData.shieldQualities = {};
@@ -177,12 +204,21 @@ export const dataLoader = {
     try {
       const r = await fetch("/modules/lookfar/assets/iconManifest.json", { cache: "no-store" });
       const list = await r.json();
+
+      // Raw
       this.iconManifest = Array.isArray(list) ? list : [];
+
+      // Derived
       this._buildIconIndex();
+
       console.log("[Lookfar] Icon Manifest:", this.iconManifest.length, "icons");
     } catch (err) {
       console.warn("[Lookfar] No iconManifest.json found or failed to load:", err);
+
+      // Raw
       this.iconManifest = [];
+
+      // Derived
       this.iconIndex = Object.create(null);
     }
   },
