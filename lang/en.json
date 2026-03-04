@@ -93,6 +93,8 @@
     "Vocabulary": {
       "Common": {
         "Random": "Random",
+        "Basic": "Basic",
+        "Element": "Element",
         "None": "None",
         "Unknown": "Unknown",
         "Unavailable": "Unavailable",
@@ -105,6 +107,17 @@
         "Nature": "Nature",
         "Items": "Items",
         "Value": "Value"
+      },
+      "Stats": {
+        "MIG": "MIG",
+        "DEX": "DEX",
+        "WLP": "WLP",
+        "INS": "INS",
+        "HP": "HP",
+        "MP": "MP",
+        "INIT": "INIT",
+        "MDEF": "MDEF",
+        "DEF": "DEF"
       },
       "ItemType": {
         "Weapon": "Weapon",
@@ -427,3 +440,4 @@
     }
   }
 }
+
