@@ -14,19 +14,19 @@
             <div class="lf-if-item-types">
               <label>
                 <input type="radio" name="itemType" value="weapon" checked>
-                {{localize "LOOKFAR.ItemForge.ItemType.Weapon"}}
+                {{localize "LOOKFAR.Vocabulary.ItemType.Weapon"}}
               </label><br>
               <label>
                 <input type="radio" name="itemType" value="armor">
-                {{localize "LOOKFAR.ItemForge.ItemType.Armor"}}
+                {{localize "LOOKFAR.Vocabulary.ItemType.Armor"}}
               </label><br>
               <label>
                 <input type="radio" name="itemType" value="shield">
-                {{localize "LOOKFAR.ItemForge.ItemType.Shield"}}
+                {{localize "LOOKFAR.Vocabulary.ItemType.Shield"}}
               </label><br>
               <label>
                 <input type="radio" name="itemType" value="accessory">
-                {{localize "LOOKFAR.ItemForge.ItemType.Accessory"}}
+                {{localize "LOOKFAR.Vocabulary.ItemType.Accessory"}}
               </label>
             </div>
 
@@ -51,20 +51,20 @@
               <label>
                 {{localize "LOOKFAR.ItemForge.Attributes.AttrA.Label"}}
                 <select id="optAttrA" style="max-width:160px;">
-                  <option value="MIG">MIG</option>
-                  <option value="DEX">DEX</option>
-                  <option value="INS">INS</option>
-                  <option value="WLP">WLP</option>
+                  <option value="MIG">{{localize "LOOKFAR.Vocabulary.Attributes.MIG"}}</option>
+                  <option value="DEX">{{localize "LOOKFAR.Vocabulary.Attributes.DEX"}}</option>
+                  <option value="INS">{{localize "LOOKFAR.Vocabulary.Attributes.INS"}}</option>
+                  <option value="WLP">{{localize "LOOKFAR.Vocabulary.Attributes.WLP"}}</option>
                 </select>
               </label>
 
               <label>
                 {{localize "LOOKFAR.ItemForge.Attributes.AttrB.Label"}}
                 <select id="optAttrB" style="max-width:160px;">
-                  <option value="MIG">MIG</option>
-                  <option value="DEX">DEX</option>
-                  <option value="INS">INS</option>
-                  <option value="WLP">WLP</option>
+                  <option value="MIG">{{localize "LOOKFAR.Vocabulary.Attributes.MIG"}}</option>
+                  <option value="DEX">{{localize "LOOKFAR.Vocabulary.Attributes.DEX"}}</option>
+                  <option value="INS">{{localize "LOOKFAR.Vocabulary.Attributes.INS"}}</option>
+                  <option value="WLP">{{localize "LOOKFAR.Vocabulary.Attributes.WLP"}}</option>
                 </select>
               </label>
 
@@ -110,17 +110,17 @@
               </label>
 
               <label>
-                {{localize "LOOKFAR.ItemForge.Customize.Element.Label"}}
+                {{localize "LOOKFAR.Vocabulary.Common.Element"}}
                 <select id="optElement" style="max-width:160px;">
-                  <option value="physical" selected>{{localize "LOOKFAR.ItemForge.Customize.Element.Physical"}}</option>
-                  <option value="fire">{{localize "LOOKFAR.ItemForge.Customize.Element.Fire"}}</option>
-                  <option value="ice">{{localize "LOOKFAR.ItemForge.Customize.Element.Ice"}}</option>
-                  <option value="earth">{{localize "LOOKFAR.ItemForge.Customize.Element.Earth"}}</option>
-                  <option value="air">{{localize "LOOKFAR.ItemForge.Customize.Element.Air"}}</option>
-                  <option value="bolt">{{localize "LOOKFAR.ItemForge.Customize.Element.Bolt"}}</option>
-                  <option value="dark">{{localize "LOOKFAR.ItemForge.Customize.Element.Dark"}}</option>
-                  <option value="light">{{localize "LOOKFAR.ItemForge.Customize.Element.Light"}}</option>
-                  <option value="poison">{{localize "LOOKFAR.ItemForge.Customize.Element.Poison"}}</option>
+                  <option value="physical" selected>{{localize "LOOKFAR.Vocabulary.Element.Physical"}}</option>
+                  <option value="fire">{{localize "LOOKFAR.Vocabulary.Element.Fire"}}</option>
+                  <option value="ice">{{localize "LOOKFAR.Vocabulary.Element.Ice"}}</option>
+                  <option value="earth">{{localize "LOOKFAR.Vocabulary.Element.Earth"}}</option>
+                  <option value="air">{{localize "LOOKFAR.Vocabulary.Element.Air"}}</option>
+                  <option value="bolt">{{localize "LOOKFAR.Vocabulary.Element.Bolt"}}</option>
+                  <option value="dark">{{localize "LOOKFAR.Vocabulary.Element.Dark"}}</option>
+                  <option value="light">{{localize "LOOKFAR.Vocabulary.Element.Light"}}</option>
+                  <option value="poison">{{localize "LOOKFAR.Vocabulary.Element.Poison"}}</option>
                 </select>
               </label>
 
@@ -140,19 +140,21 @@
 
           <div class="lf-if-qualities-select">
             <select id="qualitiesCategory" style="width: 100%;">
-              <option value="none" selected>{{localize "LOOKFAR.ItemForge.Qualities.Category.None"}}</option>
-              <option value="basic">{{localize "LOOKFAR.ItemForge.Qualities.Category.Basic"}}</option>
-              <option value="custom">{{localize "LOOKFAR.ItemForge.Qualities.Category.Custom"}}</option>
-              <option value="ardent">{{localize "LOOKFAR.ItemForge.Qualities.Category.Ardent"}}</option>
-              <option value="aerial">{{localize "LOOKFAR.ItemForge.Qualities.Category.Aerial"}}</option>
-              <option value="thunderous">{{localize "LOOKFAR.ItemForge.Qualities.Category.Thunderous"}}</option>
-              <option value="paradox">{{localize "LOOKFAR.ItemForge.Qualities.Category.Paradox"}}</option>
-              <option value="terrestrial">{{localize "LOOKFAR.ItemForge.Qualities.Category.Terrestrial"}}</option>
-              <option value="glacial">{{localize "LOOKFAR.ItemForge.Qualities.Category.Glacial"}}</option>
-              <option value="spiritual">{{localize "LOOKFAR.ItemForge.Qualities.Category.Spiritual"}}</option>
-              <option value="corrupted">{{localize "LOOKFAR.ItemForge.Qualities.Category.Corrupted"}}</option>
-              <option value="aquatic">{{localize "LOOKFAR.ItemForge.Qualities.Category.Aquatic"}}</option>
-              <option value="mechanical">{{localize "LOOKFAR.ItemForge.Qualities.Category.Mechanical"}}</option>
+              <option value="none" selected>{{localize "LOOKFAR.Vocabulary.Common.None"}}</option>
+              <option value="basic">{{localize "LOOKFAR.Vocabulary.Common.Basic"}}</option>
+              <option value="custom">{{localize "LOOKFAR.Vocabulary.ItemType.Custom"}}</option>
+
+              {{!-- Origin-based categories map to Vocabulary.Origin.* --}}
+              <option value="ardent">{{localize "LOOKFAR.Vocabulary.Origin.Ardent"}}</option>
+              <option value="aerial">{{localize "LOOKFAR.Vocabulary.Origin.Aerial"}}</option>
+              <option value="thunderous">{{localize "LOOKFAR.Vocabulary.Origin.Thunderous"}}</option>
+              <option value="paradox">{{localize "LOOKFAR.Vocabulary.Origin.Paradox"}}</option>
+              <option value="terrestrial">{{localize "LOOKFAR.Vocabulary.Origin.Terrestrial"}}</option>
+              <option value="glacial">{{localize "LOOKFAR.Vocabulary.Origin.Glacial"}}</option>
+              <option value="spiritual">{{localize "LOOKFAR.Vocabulary.Origin.Spiritual"}}</option>
+              <option value="corrupted">{{localize "LOOKFAR.Vocabulary.Origin.Corrupted"}}</option>
+              <option value="aquatic">{{localize "LOOKFAR.Vocabulary.Origin.Aquatic"}}</option>
+              <option value="mechanical">{{localize "LOOKFAR.Vocabulary.Origin.Mechanical"}}</option>
             </select>
           </div>
 
