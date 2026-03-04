@@ -452,8 +452,8 @@ async function generateDanger(groupLevel) {
   console.log("Generating Danger...");
 
   // Roll table overrides
-  const effectTableId = game.settings.get("lookfar", "dangerThreatRollTable");   // "Threat" rolltable -> effect
-  const sourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");  // "Source" rolltable -> source
+  const effectTableId = game.settings.get("lookfar", "dangerEffectRollTable");
+  const sourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");
 
   let effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable");
   let sourceText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDangerSource");
@@ -626,4 +626,5 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
 
