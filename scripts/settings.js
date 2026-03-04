@@ -205,7 +205,7 @@ export const LookfarSettings = {
     const keys = [
       "lookfar.discoveryEffectRollTable",
       "lookfar.discoverySourceRollTable",
-      "lookfar.dangerThreatRollTable",
+      "lookfar.dangerEffectRollTable",
       "lookfar.dangerSourceRollTable",
       "lookfar.customTreasureRollTable"
     ];
@@ -257,5 +257,6 @@ if (!globalThis._lookfarSettingsLiveChoices) {
   Hooks.on("updateRollTable", onTablesChanged);
   Hooks.on("deleteRollTable", onTablesChanged);
 }
+
 
 
