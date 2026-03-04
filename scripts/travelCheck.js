@@ -450,8 +450,8 @@ function generateKeywordsData() {
   if (!game.settings.get("lookfar", "enableKeywords")) return null;
 
   const kw = dataLoader?.i18nData?.keywords || {};
-const traitWords = Array.isArray(kw?.traits) ? kw.traits : [];
-const terrainWords = Array.isArray(kw?.terrain) ? kw.terrain : [];
+  const traitWords = Array.isArray(kw?.traits) ? kw.traits : [];
+  const terrainWords = Array.isArray(kw?.terrain) ? kw.terrain : [];
 
   // Copy before shuffle because generateUniqueList uses sort() which mutates arrays
   const selectedTraits = generateUniqueList([...traitWords], 3, 4);
@@ -666,7 +666,9 @@ async function generateDiscovery() {
   let effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoveryEffect");
   let sourceText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoverySource");
 
-  // Handle Discovery Effect
+  // -----------------------------
+  // Discovery Effect
+  // -----------------------------
   if (effectTableId && effectTableId !== "default") {
     const rollTable = game.tables.get(effectTableId);
     if (rollTable) {
@@ -678,18 +680,21 @@ async function generateDiscovery() {
     } else {
       console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
     }
-  } else {
-    // Use Lookfar defaults via i18n
-    if (dataLoader.discoveryData?.effects && Array.isArray(dataLoader.discoveryData.effects)) {
-      const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.effects.length);
-      const effectId = dataLoader.discoveryData.effects[randomIndex]; // e.g. "Effect3"
-      effectText = game.i18n.localize(`LOOKFAR.TravelCheck.Discoveries.Effects.${effectId}`);
+  }
+
+  // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
+  if (effectText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoveryEffect")) {
+    const pool = dataLoader?.discoveryData?.effects;
+    if (Array.isArray(pool) && pool.length) {
+      effectText = pool[Math.floor(Math.random() * pool.length)];
     } else {
-      console.error("No effects data available in discovery.json.");
+      console.error("No discovery effects available in dataLoader.discoveryData.effects.");
     }
   }
 
-  // Handle Discovery Source
+  // -----------------------------
+  // Discovery Source
+  // -----------------------------
   if (sourceTableId && sourceTableId !== "default") {
     const rollTable = game.tables.get(sourceTableId);
     if (rollTable) {
@@ -701,14 +706,15 @@ async function generateDiscovery() {
     } else {
       console.error("Selected Discovery Source Roll Table not found. Falling back to defaults.");
     }
-  } else {
-    // Use Lookfar defaults via i18n
-    if (dataLoader.discoveryData?.sources && Array.isArray(dataLoader.discoveryData.sources)) {
-      const randomIndex = Math.floor(Math.random() * dataLoader.discoveryData.sources.length);
-      const sourceId = dataLoader.discoveryData.sources[randomIndex]; // e.g. "Source5"
-      sourceText = game.i18n.localize(`LOOKFAR.TravelCheck.Discoveries.Sources.${sourceId}`);
+  }
+
+  // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
+  if (sourceText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoverySource")) {
+    const pool = dataLoader?.discoveryData?.sources;
+    if (Array.isArray(pool) && pool.length) {
+      sourceText = pool[Math.floor(Math.random() * pool.length)];
     } else {
-      console.error("No source data available in discovery.json.");
+      console.error("No discovery sources available in dataLoader.discoveryData.sources.");
     }
   }
 
@@ -735,4 +741,3 @@ async function generateDiscovery() {
     keywords,
   };
 }
-
