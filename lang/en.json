@@ -423,7 +423,7 @@
           "Shield": "A crafted {martialType} shield.",
           "Accessory": "A forged accessory."
         }
-      },
+      }
     }
   }
 }
