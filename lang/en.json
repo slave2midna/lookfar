@@ -108,7 +108,7 @@
         "Items": "Items",
         "Value": "Value"
       },
-      "Stats": {
+      "Attributes": {
         "MIG": "MIG",
         "DEX": "DEX",
         "WLP": "WLP",
@@ -440,4 +440,5 @@
     }
   }
 }
+
 
