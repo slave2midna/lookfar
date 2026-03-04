@@ -1,14 +1,32 @@
 import { dataLoader } from "./dataLoader.js";
 
 // ---- Data roots -------------------------------------------------------------
+// NOTE: equipment.json and qualities.json are mechanics-only now.
+// Names/descriptions are in i18n bundle; dataLoader exposes derived, localized views.
 
-// load equipment templates
+// Equipment templates (mechanics-only lists)
+const getTemplatesForKind = (kind) => {
+  if (kind === "weapon")    return dataLoader?.weaponsData?.weaponList ?? [];
+  if (kind === "armor")     return dataLoader?.armorData?.armorList ?? [];
+  if (kind === "shield")    return dataLoader?.shieldsData?.shieldList ?? [];
+  if (kind === "accessory") return dataLoader?.accessoriesData?.accessoryList ?? [];
+  return [];
+};
+
+// Qualities (derived localized per-type groups)
+const getQualitiesForKind = (kind) => {
+  if (kind === "weapon")    return dataLoader?.weaponsData?.weaponQualities ?? null;
+  if (kind === "armor")     return dataLoader?.armorData?.armorQualities ?? null;
+  if (kind === "shield")    return dataLoader?.shieldsData?.shieldQualities ?? null;
+  if (kind === "accessory") return dataLoader?.accessoriesData?.accessoryQualities ?? null;
+  return null;
+};
+
+// Back-compat roots (older versions may still rely on raw shapes)
 const getEquipmentRoot = () => dataLoader?.equipmentData || dataLoader || {};
+const getQualitiesRootFallback = () => dataLoader?.qualitiesData || dataLoader?.qualities || null;
 
-// load quality categories
-const getQualitiesRoot = () => dataLoader?.qualitiesData || dataLoader?.qualities || null;
-
-// equipment lists
+// equipment lists (back-compat; not used in the new primary path, but kept safe)
 const getWeaponList = d => d?.weapons?.weaponList ?? d?.weaponsData?.weaponList ?? d?.weaponList ?? [];
 const getArmorList = d => d?.armor?.armorList ?? d?.armorData?.armorList ?? d?.armorList ?? [];
 const getShieldList = d => d?.shields?.shieldList ?? d?.shieldsData?.shieldList ?? d?.shieldList ?? [];
@@ -42,6 +60,19 @@ const getName = r =>
   r?.accessoryName ??
   "(Unnamed)";
 
+// Resolve template display name from i18n bundle by id (primary), with fallbacks.
+const getTemplateDisplayName = (kind, r) => {
+  const id = r?.id ?? r?._id ?? null;
+  const fallback =
+    r?.name ?? r?.weaponName ?? r?.armorName ?? r?.shieldName ?? r?.accessoryName ?? "(Unnamed)";
+  if (!id) return fallback;
+  try {
+    return dataLoader.getEquipmentName?.(kind, id, fallback) ?? fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 const esc = s => {
   try {
     return foundry.utils.escapeHTML(String(s));
@@ -56,6 +87,9 @@ const matchesAppliesTo = (q, type) => {
 };
 
 const qualityDisplayName = (q, type) => {
+  // New derived qualities use q.name. Keep the old per-slot fallback too.
+  if (q?.name) return q.name;
+
   if (type === "weapon") return q.weaponName ?? q.name ?? "(Unnamed)";
   if (type === "armor") return q.armorName ?? q.name ?? "(Unnamed)";
   if (type === "shield") return q.shieldName ?? q.name ?? "(Unnamed)";
@@ -315,8 +349,9 @@ const toInt = (v) => {
 const getEquipCost = (r) =>
   toInt(r?.cost ?? r?.value ?? r?.data?.cost ?? r?.data?.cost?.value ?? 0);
 
-// resolve qualities.json cost value
-const getQualityCost = (q) => toInt(q?.cost ?? 0);
+// resolve qualities cost value
+// NOTE: derived qualities from dataLoader use `value` (legacy shape) not always `cost`.
+const getQualityCost = (q) => toInt(q?.cost ?? q?.value ?? 0);
 
 // resolve material item cost value
 const getTreasureCost = (doc) =>
@@ -369,7 +404,7 @@ const getSelectedQualityInfo = (html, currentQualities) => {
   const q = Number.isFinite(qi) ? currentQualities[qi] : null;
   return {
     desc: q?.description ?? q?.desc ?? L("LOOKFAR.ItemForge.Qualities.NoneText"),
-    cost: Number(q?.cost ?? 0) || 0
+    cost: getQualityCost(q)
   };
 };
 
@@ -534,7 +569,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
 
   // handle weapon item data.
   if (kind === "weapon") {
-    const baseName = base?.name || fallbackWeaponName;
+    const baseName = dataLoader.getEquipmentName?.("weapon", base?.id, fallbackWeaponName) ?? (base?.name || fallbackWeaponName);
     const w = computeWeaponStats(base, html, worth);
     return {
       name: F("LOOKFAR.ItemForge.Create.NamePattern.Weapon", { base: baseName }),
@@ -591,7 +626,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
 
   // handle armor item data.
   if (kind === "armor") {
-    const baseName = base?.name || fallbackArmorName;
+    const baseName = dataLoader.getEquipmentName?.("armor", base?.id, fallbackArmorName) ?? (base?.name || fallbackArmorName);
     const martialKey = base?.isMartial
       ? "LOOKFAR.ItemForge.Armor.Martial"
       : "LOOKFAR.ItemForge.Armor.NonMartial";
@@ -634,7 +669,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
 
   // handle shield item data.
   if (kind === "shield") {
-    const baseName = base?.name || fallbackShieldName;
+    const baseName = dataLoader.getEquipmentName?.("shield", base?.id, fallbackShieldName) ?? (base?.name || fallbackShieldName);
     const martialKey = base?.isMartial
       ? "LOOKFAR.ItemForge.Shield.Martial"
       : "LOOKFAR.ItemForge.Shield.NonMartial";
@@ -677,7 +712,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
   }
 
   // handle accessory item data.
-  const baseName = base?.name || fallbackAccessoryName;
+  const baseName = dataLoader.getEquipmentName?.("accessory", base?.id, fallbackAccessoryName) ?? (base?.name || fallbackAccessoryName);
   return {
     name: F("LOOKFAR.ItemForge.Create.NamePattern.Accessory", { base: baseName }),
     type: "accessory",
@@ -859,8 +894,9 @@ async function openItemForgeDialog() {
     return;
   }
 
+  // Back-compat roots (kept so older worlds don’t crash)
   const equipmentRoot = getEquipmentRoot();
-  const qualitiesRoot = getQualitiesRoot();
+  const qualitiesRootFallback = getQualitiesRootFallback();
 
   let currentTemplates = [];
   let currentQualities = [];
@@ -1123,7 +1159,7 @@ async function openItemForgeDialog() {
         $val.text(craft);
       }
 
-      const getNameSafe = (r) => esc(getName(r));
+      const getNameSafe = (kind, r) => esc(getTemplateDisplayName(kind, r));
 
       const getItemImage = (item) => {
         if (item?.img) return item.img;
@@ -1636,10 +1672,13 @@ async function openItemForgeDialog() {
           renderPreview(kind, null);
           return;
         }
+
+        const kindNow = html.find("input[name='itemType']:checked").val() || "weapon";
+
         const items = currentTemplates.map((r, i) => `
           <div class="if-template" data-idx="${i}">
             <span class="if-template-label">
-              ${getNameSafe(r)}
+              ${getNameSafe(kindNow, r)}
             </span>
           </div>
         `).join("");
@@ -1675,19 +1714,8 @@ async function openItemForgeDialog() {
         const $customCost    = html.find("#customCost");
         const $customApply   = html.find("#customApply");
 
-        if (!qualitiesRoot || typeof qualitiesRoot !== "object") {
-          currentQualities = [];
-          $standardBlock.html(`
-            <div style="text-align:center;">
-              ${esc(L("LOOKFAR.ItemForge.Qualities.NoData"))}
-            </div>
-          `);
-          $customBlock.hide();
-          const kind = html.find("input[name='itemType']:checked").val();
-          renderPreview(kind, html.find("#templateList [data-selected='1']").first());
-          updateCost();
-          return;
-        }
+        const derivedRoot = getQualitiesForKind(type);
+        const fallbackRoot = qualitiesRootFallback;
 
         const catKey = String($qualitiesSelect.val() || "none").toLowerCase();
 
@@ -1776,8 +1804,17 @@ async function openItemForgeDialog() {
           return;
         }
 
-        const catList = Array.isArray(qualitiesRoot[catKey]) ? qualitiesRoot[catKey] : [];
-        currentQualities = catList.filter(q => matchesAppliesTo(q, type));
+        // Primary path: derived per-type qualities (already localized and filtered by type)
+        if (derivedRoot && typeof derivedRoot === "object") {
+          const catList = Array.isArray(derivedRoot?.[catKey]) ? derivedRoot[catKey] : [];
+          currentQualities = catList;
+        } else if (fallbackRoot && typeof fallbackRoot === "object") {
+          // Back-compat: raw qualities root (needs appliesTo filtering and per-slot name logic)
+          const catList = Array.isArray(fallbackRoot?.[catKey]) ? fallbackRoot[catKey] : [];
+          currentQualities = catList.filter(q => matchesAppliesTo(q, type));
+        } else {
+          currentQualities = [];
+        }
 
         if (!currentQualities.length) {
           $standardBlock.html(`
@@ -1817,10 +1854,16 @@ async function openItemForgeDialog() {
       };
 
       function populateTemplates(kind, state = null) {
-        const data = kind === "armor" ? getArmorList(equipmentRoot)
-          : kind === "shield" ? getShieldList(equipmentRoot)
-          : kind === "accessory" ? getAccessoryList(equipmentRoot)
-          : getWeaponList(equipmentRoot);
+        // Primary path: derived lists from dataLoader (mechanics-only)
+        let data = getTemplatesForKind(kind);
+
+        // Back-compat fallback if derived lists are unexpectedly empty
+        if (!Array.isArray(data) || !data.length) {
+          data = kind === "armor" ? getArmorList(equipmentRoot)
+            : kind === "shield" ? getShieldList(equipmentRoot)
+            : kind === "accessory" ? getAccessoryList(equipmentRoot)
+            : getWeaponList(equipmentRoot);
+        }
 
         const initialIndex = state && Number.isFinite(state.templateIdx)
           ? state.templateIdx
