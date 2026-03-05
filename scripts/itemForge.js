@@ -268,7 +268,7 @@ function ensureIFSocket() {
     // Everyone: receive authoritative materials
     sock.register(IF_MSG.MaterialsReplace, (payload) => {
         _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
-        _requiredOriginKey = String(payload?.originReq || "").trim();
+        _requiredOriginKey = String(payload?.originReq || "").trim().toLowerCase();
 
         try {
             // Push into ANY open Item Forger window on this client
