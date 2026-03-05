@@ -50,8 +50,6 @@ const F = (key, data) => {
     }
 };
 
-// ---- Vocabulary helpers (align with en.json) -------------------------------
-
 const statLabel = (code) => {
     const k = `LOOKFAR.Vocabulary.Attributes.${String(code ?? "").toUpperCase()}`;
     const out = L(k);
@@ -74,7 +72,7 @@ const normText = (v) => String(v ?? "").trim().toLowerCase();
 const originI18nValueForKey = (originKey) => {
     const k = normText(originKey);
     if (!k) return "";
-    const title = k.charAt(0).toUpperCase() + k.slice(1); // terrestrial -> Terrestrial
+    const title = k.charAt(0).toUpperCase() + k.slice(1);
     const i18nKey = `LOOKFAR.Vocabulary.Origin.${title}`;
     const out = L(i18nKey);
     return normText(out === i18nKey ? title : out);
@@ -85,10 +83,6 @@ const originMatchesRequired = (rawOrigin, requiredKey) => {
     const want = originI18nValueForKey(requiredKey);
     return !!want && got === want;
 };
-
-// ---- Strict data helpers ----------------------------------------------------
-// We don't use localization fallbacks anymore. If a required module-owned value is missing,
-// we treat it as a module data error (loud during forging, non-fatal during list rendering).
 
 const requireString = (label, v) => {
     const s = (typeof v === "string") ? v.trim() : "";
@@ -101,8 +95,6 @@ const getLocalizedEquipNameStrict = (kind, id) => {
     return requireString(`localized equipment name for ${kind}:${id}`, name);
 };
 
-// ---- General helpers --------------------------------------------------------
-
 const getName = r =>
     r?.name ??
     r?.weaponName ??
@@ -112,7 +104,6 @@ const getName = r =>
     "";
 
 // Resolve template display name from i18n bundle by id (primary).
-// No fallbacks: if missing, we surface the template id to keep the UI usable.
 const getTemplateDisplayName = (kind, r) => {
     const id = r?.id ?? r?._id ?? null;
     if (!id) return "";
@@ -884,7 +875,7 @@ async function openMaterialsMiniDialog() {
 
             const renderMaterialsMini = () => {
                 const list = html.data("ifMaterials") || [];
-                const needKey = String(html.data("ifRequiredOriginKey") || "").toLowerCase();
+                const needKey = String(html.data("ifRequiredOriginKey") || "").trim();
                 const hasReq = !needKey || list.some(m => originMatchesRequired(m?.origin, needKey));
 
                 $materialsDrop.children("img[data-mat='1']").remove();
@@ -893,7 +884,7 @@ async function openMaterialsMiniDialog() {
                     if (needKey) {
                         $materialsHint.text(
                             F("LOOKFAR.ItemForge.Materials.RequireOriginHint", {
-                                origin: needKey
+                                origin: originI18nValueForKey(needKey) || needKey
                             })
                         );
                     } else {
@@ -1667,7 +1658,7 @@ async function openItemForgeDialog() {
                     if (needKey) {
                         $materialsHint.text(
                             F("LOOKFAR.ItemForge.Materials.RequireOriginHint", {
-                                origin: needKey
+                                origin: originI18nValueForKey(needKey) || needKey
                             })
                         );
                     }
@@ -2355,7 +2346,8 @@ async function openItemForgeDialog() {
                             try {
                                 html.data("lastIconDir", String(path).replace(/\/[^/]*$/, "/"));
                             } catch {
-                                /* noop */ }
+                                /* noop */
+                            }
                             renderPreview(
                                 kind,
                                 html.find("#templateList [data-selected='1']").first()
