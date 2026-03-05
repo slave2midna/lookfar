@@ -69,6 +69,23 @@ const elementLabel = (val) => {
     return out === key ? v : out;
 };
 
+const normText = (v) => String(v ?? "").trim().toLowerCase();
+
+const originI18nValueForKey = (originKey) => {
+    const k = normText(originKey);
+    if (!k) return "";
+    const title = k.charAt(0).toUpperCase() + k.slice(1); // terrestrial -> Terrestrial
+    const i18nKey = `LOOKFAR.Vocabulary.Origin.${title}`;
+    const out = L(i18nKey);
+    return normText(out === i18nKey ? title : out);
+};
+
+const originMatchesRequired = (rawOrigin, requiredKey) => {
+    const got = normText(rawOrigin);
+    const want = originI18nValueForKey(requiredKey);
+    return !!want && got === want;
+};
+
 // ---- Strict data helpers ----------------------------------------------------
 // We don't use localization fallbacks anymore. If a required module-owned value is missing,
 // we treat it as a module data error (loud during forging, non-fatal during list rendering).
@@ -260,7 +277,7 @@ function ensureIFSocket() {
     // Everyone: receive authoritative materials
     sock.register(IF_MSG.MaterialsReplace, (payload) => {
         _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
-        _requiredOriginKey = String(payload?.originReq || "").toLowerCase();
+        _requiredOriginKey = String(payload?.originReq || "").trim();
 
         try {
             // Push into ANY open Item Forger window on this client
@@ -479,11 +496,11 @@ const getPreviewIcon = (html, fallback) => {
 const validateMaterialsOrigin = (html, materials) => {
     const needKey = getRequiredOriginKey(html);
     if (!needKey) return true;
-    const ok = materials.some(m => String(m.origin) === needKey);
+    const ok = materials.some(m => originMatchesRequired(m?.origin, needKey));
     if (!ok) {
         ui.notifications?.warn(
             F("LOOKFAR.ItemForge.Materials.RequireOriginHint", {
-                origin: needKey
+                origin: originI18nValueForKey(needKey) || needKey
             })
         );
     }
@@ -868,7 +885,7 @@ async function openMaterialsMiniDialog() {
             const renderMaterialsMini = () => {
                 const list = html.data("ifMaterials") || [];
                 const needKey = String(html.data("ifRequiredOriginKey") || "").toLowerCase();
-                const hasReq = !needKey || list.some(m => String(m.origin) === needKey);
+                const hasReq = !needKey || list.some(m => originMatchesRequired(m?.origin, needKey));
 
                 $materialsDrop.children("img[data-mat='1']").remove();
 
@@ -1638,7 +1655,7 @@ async function openItemForgeDialog() {
             const renderMaterials = () => {
                 const mats = html.data("ifMaterials") || [];
                 const needKey = getRequiredOriginKey(html);
-                const hasReq = !needKey || mats.some(m => String(m.origin) === needKey);
+                const hasReq = !needKey || mats.some(m => originMatchesRequired(m?.origin, needKey));
 
                 _requiredOriginKey = needKey;
                 html.data("ifRequiredOriginKey", _requiredOriginKey);
