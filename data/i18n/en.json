@@ -210,84 +210,84 @@
     ],
     "nature": {
       "material": {
-        "Anthropod": [
+        "anthropod": [
           "Carapace",
           "Mandible",
           "Pincer",
           "Shell",
           "Stinger"
         ],
-        "Bird": [
+        "bird": [
           "Feather",
           "Talon",
           "Beak",
           "Claw",
           "Bone"
         ],
-        "Fish": [
+        "fish": [
           "Fin",
           "Scale",
           "Gill",
           "Tooth",
           "Bone"
         ],
-        "Mammal": [
+        "mammal": [
           "Bone",
           "Fur",
           "Horn",
           "Hide",
           "Tusk"
         ],
-        "Mollusk": [
+        "mollusk": [
           "Shell",
           "Pearl",
           "Valve",
           "Mantle",
           "Beak"
         ],
-        "Reptile": [
+        "reptile": [
           "Claw",
           "Scale",
           "Tail",
           "Spine",
           "Fang"
         ],
-        "Fungus": [
+        "fungus": [
           "Sporecase",
           "Cap",
           "Vein",
           "Stem",
           "Fiber"
         ],
-        "Incorporeal": [
+        "incorporeal": [
           "Wisp",
           "Vapor",
           "Ash",
           "Essence",
           "Soul"
         ],
-        "Liquid": [
+        "liquid": [
           "Droplet",
           "Globule",
           "Ichor",
           "Resin",
           "Film"
         ],
-        "Artificial": [
+        "artificial": [
           "Alloy",
           "Circuit",
           "Frame",
           "Casing",
           "Component"
         ],
-        "Mineral": [
+        "mineral": [
           "Crystal",
           "Shard",
           "Ore",
           "Fragment",
           "Nodule"
         ],
-        "Plant": [
+        "plant": [
           "Branch",
           "Vine",
           "Bark",
@@ -296,84 +296,84 @@
         ]
       },
       "ingredient": {
-        "Anthropod": [
+        "anthropod": [
           "Meat",
           "Sac",
           "Egg",
           "Leg",
           "Juice"
         ],
-        "Bird": [
+        "bird": [
           "Egg",
           "Wing",
           "Meat",
           "Heart",
           "Blood"
         ],
-        "Fish": [
+        "fish": [
           "Meat",
           "Egg",
           "Oil",
           "Eye",
           "Bile"
         ],
-        "Mammal": [
+        "mammal": [
           "Meat",
           "Fat",
           "Organ",
           "Milk",
           "Blood"
         ],
-        "Mollusk": [
+        "mollusk": [
           "Flesh",
           "Ink",
           "Gland",
           "Slurry",
           "Meat"
         ],
-        "Reptile": [
+        "reptile": [
           "Meat",
           "Egg",
           "Venom",
           "Blood",
           "Liver"
         ],
-        "Fungus": [
+        "fungus": [
           "Shroom",
           "Spore",
           "Flesh",
           "Pulp",
           "Residue"
         ],
-        "Incorporeal": [
+        "incorporeal": [
           "Mist",
           "Plasma",
           "Breath",
           "Essence",
           "Residue"
         ],
-        "Liquid": [
+        "liquid": [
           "Fluid",
           "Reagent",
           "Syrup",
           "Slime",
           "Gel"
         ],
-        "Artificial": [
+        "artificial": [
           "Gel",
           "Solution",
           "Compound",
           "Serum",
           "Extract"
         ],
-        "Mineral": [
+        "mineral": [
           "Dust",
           "Grain",
           "Powder",
           "Salt",
           "Residue"
         ],
-        "Plant": [
+        "plant": [
           "Leaf",
           "Seed",
           "Fruit",
@@ -384,70 +384,70 @@
     },
     "origin": {
       "material": {
-        "Aerial": [
+        "aerial": [
           "Light",
           "Hollow",
           "Avian",
           "Fowl",
           "Drift"
         ],
-        "Thunderous": [
+        "thunderous": [
           "Conductive",
           "Magnetic",
           "Charged",
           "Ionic",
           "Crackling"
         ],
-        "Paradox": [
+        "paradox": [
           "Fractured",
           "Glitched",
           "Timeless",
           "Looped",
           "Entropic"
         ],
-        "Terrestrial": [
+        "terrestrial": [
           "Fossilized",
           "Quarried",
           "Sedimentary",
           "Iron",
           "Earthen"
         ],
-        "Ardent": [
+        "ardent": [
           "Blazing",
           "Molten",
           "Smoldering",
           "Scorched",
           "Embered"
         ],
-        "Glacial": [
+        "glacial": [
           "Crystalline",
           "Frozen",
           "Encased",
           "Glassy",
           "Still"
         ],
-        "Spiritual": [
+        "spiritual": [
           "Sanctified",
           "Echoing",
           "Hallowed",
           "Woven",
           "Otherbound"
         ],
-        "Corrupted": [
+        "corrupted": [
           "Warped",
           "Blight",
           "Decayed",
           "Toxic",
           "Speckled"
         ],
-        "Aquatic": [
+        "aquatic": [
           "Barnacled",
           "Soaked",
           "Flooded",
           "Tidal",
           "Marshbound"
         ],
-        "Mechanical": [
+        "mechanical": [
           "Cogged",
           "Bolted",
           "Clockwork",
@@ -456,70 +456,70 @@
         ]
       },
       "ingredient": {
-        "Aerial": [
+        "aerial": [
           "Fluffy",
           "Airy",
           "Crisp",
           "Wispy",
           "Downy"
         ],
-        "Thunderous": [
+        "thunderous": [
           "Crackling",
           "Zesty",
           "Sparkling",
           "Sizzling",
           "Charged"
         ],
-        "Paradox": [
+        "paradox": [
           "Flickering",
           "Prismatic",
           "Twisted",
           "Mishapen",
           "Glistening"
         ],
-        "Terrestrial": [
+        "terrestrial": [
           "Coarse",
           "Earthen",
           "Grainy",
           "Brown",
           "Loamy"
         ],
-        "Ardent": [
+        "ardent": [
           "Roasted",
           "Smoked",
           "Charred",
           "Toasted",
           "Glazed"
         ],
-        "Glacial": [
+        "glacial": [
           "Chilled",
           "Crystalline",
           "Cold",
           "Smooth",
           "Brittle"
         ],
-        "Spiritual": [
+        "spiritual": [
           "Luminous",
           "Silk",
           "Translucent",
           "Hollow",
           "Misted"
         ],
-        "Corrupted": [
+        "corrupted": [
           "Stained",
           "Wilted",
           "Marbled",
           "Fermented",
           "Spoiled"
         ],
-        "Aquatic": [
+        "aquatic": [
           "Moist",
           "Scaley",
           "Brined",
           "Puffy",
           "Slick"
         ],
-        "Mechanical": [
+        "mechanical": [
           "Refined",
           "Pressed",
           "Distilled",
