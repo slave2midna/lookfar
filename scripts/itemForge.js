@@ -50,7 +50,7 @@ const F = (key, data) => {
   }
 };
 
-// ---- Vocabulary helpers (align with en.json) -------------------------------
+// ---- Localization helpers -------------------------------
 
 const statLabel = (code) => {
   const k = `LOOKFAR.Vocabulary.Attributes.${String(code ?? "").toUpperCase()}`;
@@ -69,9 +69,38 @@ const elementLabel = (val) => {
   return out === key ? v : out;
 };
 
-// ---- Strict data helpers ----------------------------------------------------
-// We don't use localization fallbacks anymore. If a required module-owned value is missing,
-// we treat it as a module data error (loud during forging, non-fatal during list rendering).
+const ORIGIN_KEYS = [ // Canonical origin keys used for material origin values. Localizers control origin names in lang\<lang>.json
+  "aerial",
+  "thunderous",
+  "paradox",
+  "terrestrial",
+  "ardent",
+  "glacial",
+  "spiritual",
+  "corrupted",
+  "aquatic",
+  "mechanical"
+];
+
+const normText = (v) => String(v ?? "").trim().toLowerCase();
+const originLabel = (key) => {
+  const k = normText(key);
+  if (!k) return "";
+  const title = k.charAt(0).toUpperCase() + k.slice(1); // terrestrial -> Terrestrial
+  const i18nKey = `LOOKFAR.Vocabulary.Origin.${title}`;
+  const out = L(i18nKey);
+  return out === i18nKey ? title : out;
+};
+
+const normalizeOriginKey = (raw) => {
+  const v = normText(raw);
+  if (!v) return "";
+  if (ORIGIN_KEYS.includes(v)) return v;
+  for (const k of ORIGIN_KEYS) {
+    if (normText(originLabel(k)) === v) return k;
+  }
+  return v;
+};
 
 const requireString = (label, v) => {
   const s = (typeof v === "string") ? v.trim() : "";
@@ -396,15 +425,17 @@ const getQualityCost = (q) => toInt(q?.cost ?? q?.value ?? 0);
 const getTreasureCost = (doc) =>
   toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
 
-// resolve material origin value
+// resolve material origin value using origin key
 const getTreasureOrigin = (doc) =>
-  String(doc?.system?.origin?.value ?? "").trim().toLowerCase();
+  normalizeOriginKey(doc?.system?.origin?.value ?? "");
 
-// resolve origin requirement for specific quality
+// resolve origin requirement for specific quality using origin key
 const getRequiredOriginKey = (html) => {
   const key = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
   // No origin requirement for "none", "basic", or "custom"
-  return (key === "none" || key === "basic" || key === "custom") ? "" : key;
+  return (key === "none" || key === "basic" || key === "custom")
+    ? ""
+    : normalizeOriginKey(key);
 };
 
 // --- Item Helpers ------------------------------------------------------------
@@ -457,10 +488,10 @@ const getPreviewIcon = (html, fallback) => {
 const validateMaterialsOrigin = (html, materials) => {
   const needKey = getRequiredOriginKey(html);
   if (!needKey) return true;
-  const ok = materials.some(m => String(m.origin) === needKey);
+  const ok = materials.some(m => normalizeOriginKey(m.origin) === needKey);
   if (!ok) {
     ui.notifications?.warn(
-      F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: needKey })
+      F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: originLabel(needKey) })
     );
   }
   return ok;
@@ -760,15 +791,15 @@ async function openMaterialsMiniDialog() {
 
       const renderMaterialsMini = () => {
         const list    = html.data("ifMaterials") || [];
-        const needKey = String(html.data("ifRequiredOriginKey") || "").toLowerCase();
-        const hasReq  = !needKey || list.some(m => String(m.origin) === needKey);
+        const needKey = normalizeOriginKey(html.data("ifRequiredOriginKey") || "");
+        const hasReq  = !needKey || list.some(m => normalizeOriginKey(m.origin) === needKey);
 
         $materialsDrop.children("img[data-mat='1']").remove();
 
         if (!list.length) {
           if (needKey) {
             $materialsHint.text(
-              F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: needKey })
+              F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: originLabel(needKey) })
             );
           } else {
             $materialsHint.text(L("LOOKFAR.ItemForge.Materials.Hint"));
@@ -1481,7 +1512,7 @@ async function openItemForgeDialog() {
       const renderMaterials = () => {
         const mats    = html.data("ifMaterials") || [];
         const needKey = getRequiredOriginKey(html);
-        const hasReq  = !needKey || mats.some(m => String(m.origin) === needKey);
+        const hasReq  = !needKey || mats.some(m => normalizeOriginKey(m.origin) === needKey);
 
         _requiredOriginKey = needKey;
         html.data("ifRequiredOriginKey", _requiredOriginKey);
@@ -1492,7 +1523,7 @@ async function openItemForgeDialog() {
         if (!mats.length) {
           if (needKey) {
             $materialsHint.text(
-              F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: needKey })
+              F("LOOKFAR.ItemForge.Materials.RequireOriginHint", { origin: originLabel(needKey) })
             );
           }
           $materialsHint.show();
