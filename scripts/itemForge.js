@@ -57,9 +57,9 @@ const statLabel = (code) => {
 
 const martialLabel = (isMartial) =>
     game.i18n.localize(
-        isMartial
-            ? "LOOKFAR.Terms.Common.Martial"
-            : "LOOKFAR.Terms.Common.Non-Martial"
+        isMartial ?
+        "LOOKFAR.Terms.Common.Martial" :
+        "LOOKFAR.Terms.Common.Non-Martial"
     );
 
 const elementLabel = (val) => {
@@ -242,8 +242,7 @@ function ensureIFSocket() {
         _hostId = payload?.hostId ?? null;
         if (game.user.isGM && game.user.id === _hostId) {
             sock.executeForEveryone(
-                IF_MSG.MaterialsReplace,
-                {
+                IF_MSG.MaterialsReplace, {
                     materials: _materials,
                     originReq: _requiredOriginKey
                 }
@@ -261,8 +260,7 @@ function ensureIFSocket() {
         if (game.user.isGM && game.user.id === _hostId) {
             sock.executeForUsers(
                 IF_MSG.MaterialsReplace,
-                [msg.sender],
-                {
+                [msg.sender], {
                     materials: _materials,
                     originReq: _requiredOriginKey
                 }
@@ -300,9 +298,9 @@ function ensureIFSocket() {
 
         // Helper: warn the user who attempted the add (or fallback to host)
         const warnUser = (textKey, data = {}) => {
-            const text = Object.keys(data).length
-                ? game.i18n.format(textKey, data)
-                : game.i18n.localize(textKey);
+            const text = Object.keys(data).length ?
+                game.i18n.format(textKey, data) :
+                game.i18n.localize(textKey);
             const targetId = msg?.sender;
             if (targetId && game.projectfu?.socket) {
                 // Show the warning only on the client who initiated the drag
@@ -316,7 +314,9 @@ function ensureIFSocket() {
         };
 
         try {
-            const { uuid } = payload ?? {};
+            const {
+                uuid
+            } = payload ?? {};
             if (!uuid) return;
             if (_materials.length >= 5) return;
 
@@ -348,8 +348,7 @@ function ensureIFSocket() {
 
             _materials = [..._materials, entry].slice(0, 5);
             sock.executeForEveryone(
-                IF_MSG.MaterialsReplace,
-                {
+                IF_MSG.MaterialsReplace, {
                     materials: _materials,
                     originReq: _requiredOriginKey
                 }
@@ -362,7 +361,10 @@ function ensureIFSocket() {
     // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
     sock.register(IF_MSG.MaterialsRemove, (payload) => {
         if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
-        const { index, uuid } = payload ?? {};
+        const {
+            index,
+            uuid
+        } = payload ?? {};
         if (!Array.isArray(_materials) || !_materials.length) return;
 
         let newList = _materials;
@@ -373,8 +375,7 @@ function ensureIFSocket() {
         }
         _materials = newList;
         sock.executeForEveryone(
-            IF_MSG.MaterialsReplace,
-            {
+            IF_MSG.MaterialsReplace, {
                 materials: _materials,
                 originReq: _requiredOriginKey
             }
@@ -446,7 +447,10 @@ const readCustomQuality = (html) => {
     const eff = String(html.find("#customEffect").val() ?? html.data("customEffect") ?? "").trim();
     const raw = String(html.find("#customCost").val() ?? html.data("customCost") ?? "");
     const cost = Math.max(0, parseInt(raw.replace(/\D+/g, ""), 10) || 0);
-    return { eff, cost };
+    return {
+        eff,
+        cost
+    };
 };
 
 const getSelectedBase = (html, currentTemplates) => {
@@ -458,7 +462,10 @@ const getSelectedBase = (html, currentTemplates) => {
 const getSelectedQualityInfo = (html, currentQualities) => {
     const catKey = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
     if (catKey === "custom") {
-        const { eff, cost } = readCustomQuality(html);
+        const {
+            eff,
+            cost
+        } = readCustomQuality(html);
         return {
             desc: eff || "",
             cost
@@ -508,7 +515,9 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
     const catKey = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
     let qcost = 0;
     if (catKey === "custom") {
-        const { cost } = readCustomQuality(html);
+        const {
+            cost
+        } = readCustomQuality(html);
         qcost = toInt(cost);
     } else if (catKey !== "none") {
         const $q = html.find("#qualitiesStandardBlock [data-selected='1']").first();
@@ -552,7 +561,10 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
         craft = Math.floor(craft * 1.10);
     }
 
-    return { worth, craft };
+    return {
+        worth,
+        craft
+    };
 };
 
 // Playtest damage: +2 damage per full 1000 worth (no fee)
@@ -607,7 +619,10 @@ const computeWeaponStats = (base, html, worthOverride) => {
 
     return {
         hands: handsOut,
-        attrs: { A: selA, B: selB },
+        attrs: {
+            A: selA,
+            B: selB
+        },
         acc: accOut,
         dmg: dmgOut,
         dmgType: elementVal,
@@ -616,16 +631,23 @@ const computeWeaponStats = (base, html, worthOverride) => {
 };
 
 // Build itemData for the selected item.
-const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
+const buildItemData = (kind, html, {
+    currentTemplates,
+    currentQualities
+}) => {
     const base = getSelectedBase(html, currentTemplates);
     if (!base) throw new Error(game.i18n.localize("LOOKFAR.ItemForge.Errors.NoTemplateSelected"));
 
-    const { desc: qualDesc } = getSelectedQualityInfo(html, currentQualities);
+    const {
+        desc: qualDesc
+    } = getSelectedQualityInfo(html, currentQualities);
     const img = getPreviewIcon(html, dataLoader.getRandomIconFor(kind, base));
     const $t = html.find("#templateList [data-selected='1']").first();
     const ti = Number($t.data("idx"));
     const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-    const { worth } = getCurrentCosts(html, tmpl, currentQualities);
+    const {
+        worth
+    } = getCurrentCosts(html, tmpl, currentQualities);
     const costField = worth;
 
     // handle weapon item data.
@@ -1251,7 +1273,9 @@ async function openItemForgeDialog() {
                 const $t = html.find("#templateList [data-selected='1']").first();
                 const ti = Number($t.data("idx"));
                 const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-                const { craft } = getCurrentCosts(html, tmpl, currentQualities);
+                const {
+                    craft
+                } = getCurrentCosts(html, tmpl, currentQualities);
                 $val.text(craft);
             }
 
@@ -1280,7 +1304,7 @@ async function openItemForgeDialog() {
                     armor: dataLoader.armorData?.armorList,
                     shield: dataLoader.shieldsData?.shieldList,
                     accessory: dataLoader.accessoriesData?.accessoryList
-                }[kind] || [];
+                } [kind] || [];
 
                 const base = byKindList.find(e => e?.id === templateId);
                 const img = base ? dataLoader.getRandomIconFor(kind, base) : null;
@@ -1321,12 +1345,12 @@ async function openItemForgeDialog() {
             };
 
             const handLabel = (h) => {
-    const one = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.One-Handed");
-    const two = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Two-Handed");
-    return (h === "1") ? one :
-        (h === "2") ? two :
-        String(h || "");
-};
+                const one = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.One-Handed");
+                const two = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Two-Handed");
+                return (h === "1") ? one :
+                    (h === "2") ? two :
+                    String(h || "");
+            };
 
             // NEW: renderPreview now delegates to item-forge-preview.hbs and uses rows[]
             function renderPreview(kind, selectedEl, opts = {}) {
@@ -1347,7 +1371,7 @@ async function openItemForgeDialog() {
                     shield: "icons/svg/shield.svg",
                     armor: "icons/svg/statue.svg",
                     accessory: "icons/svg/stoned.svg"
-                }[k] || "icons/svg/mystery-man.svg");
+                } [k] || "icons/svg/mystery-man.svg");
 
                 const $sel = selectedEl ?
                     $(selectedEl) :
@@ -1411,23 +1435,23 @@ async function openItemForgeDialog() {
                 const kindNow = html.find("input[name='itemType']:checked").val();
 
                 const ctx = {
-    kind,
-    icon,
-    isMartial: false,
-    rows: [],
-    desc: ""
-};
+                    kind,
+                    icon,
+                    isMartial: false,
+                    rows: [],
+                    desc: ""
+                };
 
                 const renderCtx = (context) => {
-    return renderTemplate(PREVIEW_TEMPLATE_PATH, context)
-        .then(htmlStr => {
-            $preview.html(htmlStr);
-        })
-        .catch(e => {
-            console.error("[Item Forger] Failed to render preview template:", e);
-            $preview.empty();
-        });
-};
+                    return renderTemplate(PREVIEW_TEMPLATE_PATH, context)
+                        .then(htmlStr => {
+                            $preview.html(htmlStr);
+                        })
+                        .catch(e => {
+                            console.error("[Item Forger] Failed to render preview template:", e);
+                            $preview.empty();
+                        });
+                };
 
                 // dial sanity check
                 if (kindNow !== kind) return;
@@ -1512,7 +1536,9 @@ async function openItemForgeDialog() {
 
                     let worthForPreview = 0;
                     try {
-                        const { worth } = getCurrentCosts(html, base2, currentQualities);
+                        const {
+                            worth
+                        } = getCurrentCosts(html, base2, currentQualities);
                         worthForPreview = worth;
                     } catch {
                         worthForPreview = 0;
@@ -1765,47 +1791,47 @@ async function openItemForgeDialog() {
             });
 
             function renderTemplates(rows, initialIndex = null) {
-    currentTemplates = Array.isArray(rows) ? rows : [];
-    if (!currentTemplates.length) {
-        $templateList.empty();
-        const kind = html.find("input[name='itemType']:checked").val();
-        renderPreview(kind, null);
-        return;
-    }
+                currentTemplates = Array.isArray(rows) ? rows : [];
+                if (!currentTemplates.length) {
+                    $templateList.empty();
+                    const kind = html.find("input[name='itemType']:checked").val();
+                    renderPreview(kind, null);
+                    return;
+                }
 
-    const kindNow = html.find("input[name='itemType']:checked").val() || "weapon";
+                const kindNow = html.find("input[name='itemType']:checked").val() || "weapon";
 
-    const items = currentTemplates.map((r, i) => `
+                const items = currentTemplates.map((r, i) => `
       <div class="if-template" data-idx="${i}">
         <span class="if-template-label">
           ${getNameSafe(kindNow, r)}
         </span>
       </div>
     `).join("");
-    $templateList.html(items);
+                $templateList.html(items);
 
-    wireSelectableList($templateList, ".if-template", {
-        initialIndex,
-        onSelect: (el) => {
-            updateHandToggle(el);
-            updatePlusOneToggle(el);
-            applyAttrDefaultsFromTemplate(el);
-            html.removeData("iconOverride");
+                wireSelectableList($templateList, ".if-template", {
+                    initialIndex,
+                    onSelect: (el) => {
+                        updateHandToggle(el);
+                        updatePlusOneToggle(el);
+                        applyAttrDefaultsFromTemplate(el);
+                        html.removeData("iconOverride");
 
-            if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
-                html.removeData("iconPath");
+                        if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
+                            html.removeData("iconPath");
+                        }
+
+                        const kind = html.find("input[name='itemType']:checked").val();
+                        renderPreview(kind, el, {
+                            rerollIcon: true
+                        });
+                        updateCost();
+                        broadcastForgeState();
+                    },
+                    blockClicks: lockControlsForPlayer
+                });
             }
-
-            const kind = html.find("input[name='itemType']:checked").val();
-            renderPreview(kind, el, {
-                rerollIcon: true
-            });
-            updateCost();
-            broadcastForgeState();
-        },
-        blockClicks: lockControlsForPlayer
-    });
-}
 
             const renderQualities = (type, initialIndex = null, state = null) => {
                 const $standardBlock = html.find("#qualitiesStandardBlock");
@@ -1917,12 +1943,12 @@ async function openItemForgeDialog() {
                 }
 
                 if (!currentQualities.length) {
-    $standardBlock.empty();
-    const kindNow = html.find("input[name='itemType']:checked").val();
-    renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
-    updateCost();
-    return;
-}
+                    $standardBlock.empty();
+                    const kindNow = html.find("input[name='itemType']:checked").val();
+                    renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
+                    updateCost();
+                    return;
+                }
 
                 const items = currentQualities.map((q, i) => `
           <div class="if-quality" data-idx="${i}">
