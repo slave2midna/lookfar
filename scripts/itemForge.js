@@ -1778,54 +1778,47 @@ async function openItemForgeDialog() {
             });
 
             function renderTemplates(rows, initialIndex = null) {
-                currentTemplates = Array.isArray(rows) ? rows : [];
-                if (!currentTemplates.length) {
-                    $templateList.html(`
-            <div style="text-align:center; opacity:0.75;">
-              ${esc(game.i18n.localize("LOOKFAR.ItemForge.TemplateList.Empty"))}
-            </div>
-          `); // REVIEW: missing from en.json
-                    const kind = html.find("input[name='itemType']:checked").val();
-                    renderPreview(kind, null);
-                    return;
-                }
+    currentTemplates = Array.isArray(rows) ? rows : [];
+    if (!currentTemplates.length) {
+        $templateList.empty();
+        const kind = html.find("input[name='itemType']:checked").val();
+        renderPreview(kind, null);
+        return;
+    }
 
-                const kindNow = html.find("input[name='itemType']:checked").val() || "weapon";
+    const kindNow = html.find("input[name='itemType']:checked").val() || "weapon";
 
-                const items = currentTemplates.map((r, i) => `
-          <div class="if-template" data-idx="${i}">
-            <span class="if-template-label">
-              ${getNameSafe(kindNow, r)}
-            </span>
-          </div>
-        `).join("");
-                $templateList.html(items);
+    const items = currentTemplates.map((r, i) => `
+      <div class="if-template" data-idx="${i}">
+        <span class="if-template-label">
+          ${getNameSafe(kindNow, r)}
+        </span>
+      </div>
+    `).join("");
+    $templateList.html(items);
 
-                wireSelectableList($templateList, ".if-template", {
-                    initialIndex,
-                    onSelect: (el) => {
-                        updateHandToggle(el);
-                        updatePlusOneToggle(el);
-                        applyAttrDefaultsFromTemplate(el);
-                        html.removeData("iconOverride");
+    wireSelectableList($templateList, ".if-template", {
+        initialIndex,
+        onSelect: (el) => {
+            updateHandToggle(el);
+            updatePlusOneToggle(el);
+            applyAttrDefaultsFromTemplate(el);
+            html.removeData("iconOverride");
 
-                        // Clear any previous auto-picked icon so we can roll a new one:
-                        // - In collab mode (restrictInputs === false), ANY user can do this.
-                        // - In restricted mode, only the host GM may do it.
-                        if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
-                            html.removeData("iconPath");
-                        }
-
-                        const kind = html.find("input[name='itemType']:checked").val();
-                        renderPreview(kind, el, {
-                            rerollIcon: true
-                        });
-                        updateCost();
-                        broadcastForgeState();
-                    },
-                    blockClicks: lockControlsForPlayer
-                });
+            if (!restrictInputs || (game.user.isGM && game.user.id === _hostId)) {
+                html.removeData("iconPath");
             }
+
+            const kind = html.find("input[name='itemType']:checked").val();
+            renderPreview(kind, el, {
+                rerollIcon: true
+            });
+            updateCost();
+            broadcastForgeState();
+        },
+        blockClicks: lockControlsForPlayer
+    });
+}
 
             const renderQualities = (type, initialIndex = null, state = null) => {
                 const $standardBlock = html.find("#qualitiesStandardBlock");
@@ -1937,16 +1930,12 @@ async function openItemForgeDialog() {
                 }
 
                 if (!currentQualities.length) {
-                    $standardBlock.html(`
-            <div style="text-align:center; opacity:0.75;">
-              ${esc(game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneAvailable"))}
-            </div>
-          `); // REVIEW: missing from en.json
-                    const kindNow = html.find("input[name='itemType']:checked").val();
-                    renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
-                    updateCost();
-                    return;
-                }
+    $standardBlock.empty();
+    const kindNow = html.find("input[name='itemType']:checked").val();
+    renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
+    updateCost();
+    return;
+}
 
                 const items = currentQualities.map((q, i) => `
           <div class="if-quality" data-idx="${i}">
