@@ -89,50 +89,10 @@
       "NoScenes": "No scenes found"
     },
 
-    "__SECTION__Vocabulary": "=== Vocabulary ===",
-    "Vocabulary": {
+    "__SECTION__Terms": "=== Terms ===",
+    "Terms": {
       "Common": {
-        "Random": "Random",
-        "Basic": "Basic",
-        "Element": "Element",
-        "None": "None",
-        "Unknown": "Unknown",
-        "Unavailable": "Unavailable",
         "Zenit": "Zenit"
-      },
-      "Fields": {
-        "Budget": "Budget",
-        "Level": "Level",
-        "Origin": "Origin",
-        "Nature": "Nature",
-        "Items": "Items",
-        "Value": "Value"
-      },
-      "Attributes": {
-        "MIG": "MIG",
-        "DEX": "DEX",
-        "WLP": "WLP",
-        "INS": "INS",
-        "HP": "HP",
-        "MP": "MP",
-        "INIT": "INIT",
-        "MDEF": "MDEF",
-        "DEF": "DEF",
-        "HR": "HR"
-      },
-      "ItemType": {
-        "Weapon": "Weapon",
-        "Armor": "Armor",
-        "Shield": "Shield",
-        "Accessory": "Accessory",
-        "Material": "Material",
-        "Ingredient": "Ingredient",
-        "Currency": "Currency",
-        "Custom": "Custom"
-      },
-      "Martial": {
-        "Martial": "Martial",
-        "NonMartial": "Non-martial"
       },
       "Element": {
         "Physical": "Physical",
@@ -174,18 +134,6 @@
 
     "__SECTION__TravelCheck": "=== Travel Check ===",
     "TravelCheck": {
-      "Difficulty": {
-        "Minimal": "Minimal",
-        "Low": "Low",
-        "Medium": "Medium",
-        "High": "High",
-        "VeryHigh": "Very High"
-      },
-      "Severity": {
-        "Minor": "Minor",
-        "Heavy": "Heavy",
-        "Massive": "Massive"
-      },
       "Dialogs": {
         "TravelCheck": {
           "Title": "Travel Check",
@@ -193,23 +141,35 @@
           "Wayfaring": "Wayfaring",
           "PartyLevel": "Party Level:",
           "TreasureHunting": "Treasure Hunting",
-          "WellTraveled": "Well-Traveled"
+          "WellTraveled": "Well-Traveled",
+          "Difficulty": {
+            "Minimal": "Minimal",
+            "Low": "Low",
+            "Medium": "Medium",
+            "High": "High",
+            "VeryHigh": "Very High"
+          }
         },
         "TravelResult": {
           "Title": "Travel Result",
           "Prompt": "Do you want to keep this result or reroll?",
           "Waiting": "Waiting for GM decision...",
-          "NoIncident": "The travel day passed without incident."
-        },
-        "Result": {
-          "Danger": "Danger!",
-          "Discovery": "Discovery!"
-        },
-        "TableHeaders": {
-          "Source": "Source",
-          "Effect": "Effect",
-          "Traits": "Traits",
-          "Terrain": "Terrain"
+          "NoIncident": "The travel day passed without incident.",
+          "Result": {
+            "Danger": "Danger!",
+            "Discovery": "Discovery!"
+          },
+          "Severity": {
+            "Minor": "Minor",
+            "Heavy": "Heavy",
+            "Massive": "Massive"
+          },
+          "TableHeaders": {
+            "Source": "Source",
+            "Effect": "Effect",
+            "Traits": "Traits",
+            "Terrain": "Terrain"
+          }
         }
       },
       "Chat": {
@@ -237,55 +197,62 @@
         "Shield": "{quality} {type}",
         "Accessory": "{quality} {type}"
       },
-      "Tokens": {
-        "AccuracyUp": "+1",
-        "DamageUp": "Master"
-      },
-      "Text": {
-        "NoQuality": "No quality",
-        "NoSpecialProperties": "has no special properties."
-      },
       "Dialogs": {
-        "Generator": {
+        "TreasureRoll": {
           "Title": "Treasure Generator",
-          "Buttons": {
-            "RollLoot": "Roll Loot"
+          "IgnoreValues": "Ignore budget/level",
+          "SelectAll": "Select all",
+          "ItemType": {
+            "Weapon": "Weapon",
+            "Armor": "Armor",
+            "Shield": "Shield",
+            "Accessory": "Accessory",
+            "Material": "Material",
+            "Ingredient": "Ingredient",
+            "Currency": "Currency",
+            "Custom": "Custom"
+          },
+          "Fields": {
+            "Budget": "Budget",
+            "Level": "Level",
+            "Origin": "Origin",
+            "Nature": "Nature",
+            "Items": "Items",
+            "Random": "Random"
           }
         },
-        "Result": {
+        "TreasureResult": {
           "Title": "Treasure Results",
-          "Buttons": {
-            "Keep": "Keep",
-            "Stash": "Stash",
-            "Reroll": "Reroll"
+          "BudgetRemainder": "Remaining Budget",
+          "Martial": "Martial",
+          "NonMartial": "Non-martial",
+          "Value": "Ignored",
+          "NoQuality": "has no special properties."
+        }
+      },
+      "Sheets": {
+        "Stash": {
+          "DefaultName": "New Stash #{num}",
+          "NamePrefix": "New Stash #"
+        },
+        "Weapon": {
+          "Tokens": {
+            "AccuracyUp": "+1",
+            "DamageUp": "Master"
+          },
+          "Prefix": {
+            "Base": "A {category} weapon",
+            "Masterwork": "A masterwork {category} weapon"
           }
+        },
+        "Summaries": {
+          "Ingredient": "An ingredient that tastes {taste}.",
+          "Material": "{nature} material of {originLower} origins. It can be used to craft {detail} items.",
+          "Weapon": "{prefix} that {qualityText}",
+          "Armor": "A set of {martialType} armor that {qualityText}",
+          "Shield": "A {martialType} shield that {qualityText}",
+          "Accessory": "An accessory that {qualityText}"
         }
-      },
-      "Options": {
-        "IgnoreValues": "Ignore budget/level",
-        "SelectAll": "Select all"
-      },
-      "Result": {
-        "Budget": {
-          "Remaining": "Remaining Budget",
-          "Ignored": "Ignored"
-        }
-      },
-      "Stash": {
-        "DefaultName": "New Stash #{num}",
-        "NamePrefix": "New Stash #"
-      },
-      "Summaries": {
-        "Ingredient": "An ingredient that tastes {taste}.",
-        "Material": "{nature} material of {originLower} origins. It can be used to craft {detail} items.",
-        "Weapon": "{prefix} that {qualityText}",
-        "Armor": "A set of {martialType} armor that {qualityText}",
-        "Shield": "A {martialType} shield that {qualityText}",
-        "Accessory": "An accessory that {qualityText}"
-      },
-      "WeaponPrefix": {
-        "Base": "A {category} weapon",
-        "Masterwork": "A masterwork {category} weapon"
       },
       "Chat": {
         "Alias": "Treasure Result",
@@ -303,132 +270,112 @@
 
     "__SECTION__ItemForge": "=== Item Forge ===",
     "ItemForge": {
-      "AriaLabels": {
-        "TemplateList": "Template list",
-        "QualitiesList": "Qualities list",
-        "MaterialsDrop": "Materials drop zone"
+      "NamePattern": {
+        "Weapon": "Newly Crafted {type}",
+        "Armor": "Newly Crafted {type}",
+        "Shield": "Newly Crafted {type}",
+        "Accessory": "Newly Crafted {type}"
       },
-      "Dialog": {
-        "Title": "Item Forger",
-        "MiniTitle": "Item Forger: Materials",
-        "Button": {
-          "Forge": "Forge Item"
-        },
-        "Errors": {
-          "ChooseType": "Please choose an item type.",
-          "ChooseTemplate": "Please choose a template.",
-          "ForgeFailed": "Forge failed: {error}",
-          "OpenFailed": "Failed to open Item Forger dialog."
+      "Dialogs": {
+        "ItemForge": {
+          "Title": "Item Forge",
+          "MiniTitle": "Material Deposit",
+          "Buttons": {
+            "Forge": "Forge"
+          },
+          "ChooseItem": {
+            "Legend": "Choose Item",
+            "Weapon": "Weapon",
+            "Armor": "Armor",
+            "Shield": "Shield",
+            "Accessory": "Accessory"
+          },
+          "Attributes": {
+            "Legend": "Attributes",
+            "AttrA": "Attr A:",
+            "AttrB": "Attr B:",
+            "MIG": "MIG",
+            "DEX": "DEX",
+            "WLP": "WLP",
+            "INS": "INS"
+          },
+          "Customize": {
+            "Legend": "Customize",
+            "NoOptions": "No Options",
+            "PlusOneAccuracy": "+1 Accuracy",
+            "PlusFourDamage": "+4 Damage",
+            "MakeOneHanded": "Make One-Handed",
+            "MakeTwoHanded": "Make Two-Handed",
+            "Tooltip": {
+              "HandToggleRestricted": "This weapon cannot change its handedness.",
+              "GMOnly": "Only the GM can change this option.",
+              "PlusOneAlready": "This weapon already has at least +1 Accuracy.",
+              "VariantDamageInfo": "Damage scales from the item's value. This option is disabled."
+            }
+          },
+          "Qualities": {
+            "Legend": "Qualities",
+            "Options": {
+              "None": "None",
+              "Basic": "Basic",
+              "Custom": "Custom"
+            },
+            "Custom": {
+              "Tooltip": {
+                "Effect": "Type your custom effect text",
+                "Cost": "Enter a non-negative integer"
+              },
+              "Button": "Apply"
+            }
+          },
+          "Preview": {
+            "Legend": "Preview",
+            "One-Handed": "one-Handed",
+            "Two-Handed": "two-Handed",
+            "INIT": "INIT",
+            "MDEF": "MDEF",
+            "DEF": "DEF",
+            "HR": "HR"
+          },
+          "Cost": {
+            "Legend": "Cost",
+            "Fee": "No Fee"
+          },
+          "Materials": {
+            "Legend": "Materials",
+            "Hint": "Drag & drop Item documents here (max 5).",
+            "RequireOriginHint": "At least one material with origin \"{origin}\" is required.",
+            "Tooltip": {
+              "OriginLabel": "Origin",
+              "CostLabel": "Cost",
+              "Remove": "Click to remove this material",
+              "RequestRemove": "Click to request removing this material"
+            }
+          }
         }
       },
-      "Notifications": {
+      "Sheets": {
+        "Summaries": {
+          "Weapon": "A crafted {category}.",
+          "Armor": "A crafted {martialType} armor set.",
+          "Shield": "A crafted {martialType} shield.",
+          "Accessory": "A forged accessory."
+        }
+      },
+      "Chat": {
         "Forged": "Forged: {name}"
       },
       "Errors": {
         "NoTemplateSelected": "No template selected.",
         "GenericForgeFailed": "The forge could not complete.",
         "CouldNotReadDrop": "Could not read dropped data.",
-        "FilePickerOpen": "Could not open the file picker."
-      },
-      "ChooseItem": {
-        "Legend": "Choose Item"
-      },
-      "TemplateList": {
-        "Loading": "Loading...",
-        "Empty": "No templates available."
-      },
-      "Attributes": {
-        "Legend": "Attributes",
-        "AttrA": {
-          "Label": "Attr A:"
-        },
-        "AttrB": {
-          "Label": "Attr B:"
-        }
-      },
-      "Preview": {
-        "Legend": "Preview",
-        "Placeholder": "CONTENT",
-        "Handed": {
-          "One": "One-Handed",
-          "Two": "Two-Handed",
-          "Unknown": "Handed"
-        },
-        "Muted": {
-          "OtherKind": "Preview for another item type.",
-          "SelectWeaponTemplate": "Select a weapon template to preview."
-        },
-        "Error": {
-          "Generic": "Unable to render preview."
-        }
-      },
-      "Customize": {
-        "Legend": "Customize",
-        "PlusOneAccuracy": "+1 Accuracy",
-        "PlusFourDamage": "+4 Damage",
-        "NoOptions": "No Options",
-        "HandToggle": {
-          "MakeOneHanded": "Make One-Handed",
-          "MakeTwoHanded": "Make Two-Handed"
-        },
-        "Tooltip": {
-          "HandToggleRestricted": "This weapon cannot change its handedness.",
-          "GMOnly": "Only the GM can change this option.",
-          "PlusOneAlready": "This weapon already has at least +1 Accuracy.",
-          "VariantDamageInfo": "Damage scales from the item's value. This option is disabled."
-        }
-      },
-      "Qualities": {
-        "Legend": "Qualities",
-        "NoneText": "No quality.",
-        "NoData": "No quality data found.",
-        "NoneAvailable": "No qualities available for this item type.",
-        "Custom": {
-          "Effect": {
-            "Title": "Type your custom effect text"
-          },
-          "Cost": {
-            "Label": "Cost:",
-            "Title": "Enter a non-negative integer"
-          },
-          "Apply": "Apply"
-        }
-      },
-      "Cost": {
-        "Legend": "Cost",
-        "NoFee": "No Fee"
-      },
-      "Materials": {
-        "Legend": "Materials",
-        "Hint": "Drag & drop Item documents here (max 5).",
-        "RequireOriginHint": "At least one material with origin \"{origin}\" is required.",
-        "Tooltip": {
-          "OriginLabel": "Origin",
-          "CostLabel": "Cost",
-          "Remove": "Click to remove this material",
-          "RequestRemove": "Click to request removing this material"
-        },
-        "Errors": {
-          "OnlyItems": "Only Item documents can be used as materials.",
-          "OnlyTreasure": "Only Treasure-type items can be used as materials.",
-          "MaxMaterials": "You cannot use more than 5 materials.",
-          "NoMoreItem": "You cannot use this material any more times.",
-          "NotEnoughQuantity": "Not enough copies of {name}. Need {need}, have {have}."
-        }
-      },
-      "Create": {
-        "NamePattern": {
-          "Weapon": "Newly Crafted {type}",
-          "Armor": "Newly Crafted {type}",
-          "Shield": "Newly Crafted {type}",
-          "Accessory": "Newly Crafted {type}"
-        },
-        "Summary": {
-          "Weapon": "A crafted {category}.",
-          "Armor": "A crafted {martialType} armor set.",
-          "Shield": "A crafted {martialType} shield.",
-          "Accessory": "A forged accessory."
-        }
+        "FilePickerOpen": "Could not open the file picker.",
+        "PreviewRenderFailed": "Unable to render preview.",
+        "OnlyItems": "Only Item documents can be used as materials.",
+        "OnlyTreasure": "Only Treasure-type items can be used as materials.",
+        "MaxMaterials": "You cannot use more than 5 materials.",
+        "NoMoreItem": "You cannot use this material any more times.",
+        "NotEnoughQuantity": "Not enough copies of {name}. Need {need}, have {have}."
       }
     }
   }
