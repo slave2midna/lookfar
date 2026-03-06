@@ -426,7 +426,11 @@ const getTreasureCost = (doc) =>
 
 // resolve material origin value
 const getTreasureOrigin = (doc) =>
-    String(doc?.system?.origin?.value ?? "").trim().toLowerCase();
+    String(doc?.system?.origin?.value ?? "").trim();
+
+const getCurrencyName = () =>
+    game.settings.get("projectfu", "optionRenameCurrency") ||
+    game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
 
 // resolve origin requirement for specific quality
 const getRequiredOriginKey = (html) => {
@@ -877,21 +881,20 @@ async function openMaterialsMiniDialog() {
                 } else {
                     $materialsHint.hide();
                     list.forEach((m, i) => {
-                        const originLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Tooltip.OriginLabel");
-                        const costLabel = game.i18n.localize("LOOKFAR.ItemForge.Materials.Tooltip.CostLabel"); // REVIEW: missing from en.json
+                        const currencyName = getCurrencyName();
 
                         const tip = [
                             m.name || "",
-                            m.origin ? `${originLabel}: ${m.origin}` : "",
-                            Number.isFinite(m.cost) ? `${costLabel}: ${m.cost}` : ""
-                        ].filter(Boolean).join(" • ");
+                            m.origin || "",
+                            Number.isFinite(m.cost) ? `${m.cost} ${currencyName}` : ""
+                        ].filter(Boolean).join("\n");
 
                         const tooltipRemove = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Tooltip.RequestRemove");
 
                         const $img = $(`
-              <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-                   title="${esc(tooltipRemove)}\n${esc(tip)}">
-            `);
+                          <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+                               title="${esc(tooltipRemove)}\n${esc(tip)}">
+                        `);
 
                         $img.addClass("lf-if-material-icon");
 
@@ -1645,20 +1648,19 @@ async function openItemForgeDialog() {
                 } else {
                     $materialsHint.hide();
                     mats.forEach((m, i) => {
-                        const originLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Tooltip.OriginLabel");
-                        const costLabel = game.i18n.localize("LOOKFAR.ItemForge.Materials.Tooltip.CostLabel"); // REVIEW: missing
+                        const currencyName = getCurrencyName();
                         const removeLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Tooltip.Remove");
 
                         const tip = [
                             m.name || "",
-                            m.origin ? `${originLabel}: ${m.origin}` : "",
-                            Number.isFinite(m.cost) ? `${costLabel}: ${m.cost}` : ""
-                        ].filter(Boolean).join(" • ");
+                            m.origin || "",
+                            Number.isFinite(m.cost) ? `${m.cost} ${currencyName}` : ""
+                        ].filter(Boolean).join("\n");
 
                         const $img = $(`
-              <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
-                   title="${esc(removeLabel)}\n${esc(tip)}">
-            `);
+                          <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
+                               title="${esc(removeLabel)}\n${esc(tip)}">
+                        `);
                         $img.addClass("lf-if-material-icon");
 
                         $img.on("click", () => {
