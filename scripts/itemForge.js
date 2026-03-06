@@ -58,8 +58,8 @@ const statLabel = (code) => {
 const martialLabel = (isMartial) =>
     game.i18n.localize(
         isMartial
-            ? "LOOKFAR.Vocabulary.Martial.Martial"      // REVIEW: missing from en.json
-            : "LOOKFAR.Vocabulary.Martial.NonMartial"   // REVIEW: missing from en.json
+            ? "LOOKFAR.Terms.Common.Martial"
+            : "LOOKFAR.Terms.Common.Non-Martial"
     );
 
 const elementLabel = (val) => {
