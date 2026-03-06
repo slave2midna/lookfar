@@ -357,7 +357,6 @@
             "Hint": "Drag & drop Item documents here (max 5).",
             "RequireOriginHint": "At least one material with origin \"{origin}\" is required.",
             "Tooltip": {
-              "OriginLabel": "Origin",
               "Remove": "Click to remove this material",
               "RequestRemove": "Click to request removing this material"
             }
@@ -396,6 +395,7 @@
     }
   }
 }
+
 
 
 
