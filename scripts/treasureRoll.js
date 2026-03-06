@@ -885,7 +885,7 @@ async function renderTreasureResultDialog(items, budget, config) {
     content,
     buttons: {
       keep: {
-        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Result.Buttons.Keep"),
+        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Keep"),
         callback: async () => {
           // Move items out of cache
           for (const item of finalItems) {
@@ -902,14 +902,14 @@ async function renderTreasureResultDialog(items, budget, config) {
         }
       },
       stash: {
-        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Result.Buttons.Stash"),
+        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Stash"),
         callback: async () => {
           const currencyTotal = (currencyLines || []).reduce((sum, c) => sum + (Number(c?.value) || 0), 0);
           await createStash(finalItems, cacheFolder, currencyTotal);
         }
       },
       reroll: {
-        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Result.Buttons.Reroll"),
+        label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Reroll"),
         callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
       }
     }
@@ -1088,7 +1088,7 @@ Hooks.once("ready", () => {
         content,
         buttons: {
           ok: {
-            label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Generator.Buttons.RollLoot"),
+            label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Buttons.RollLoot"),
             callback: (html) => {
               const budget = parseInt(html.find("#treasureBudget").val());
               const maxVal = parseInt(html.find("#highestPCLevel").val());
