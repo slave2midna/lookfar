@@ -341,8 +341,8 @@
           },
           "Preview": {
             "Legend": "Preview",
-            "One-Handed": "one-Handed",
-            "Two-Handed": "two-Handed",
+            "One-Handed": "one-handed",
+            "Two-Handed": "two-handed",
             "INIT": "INIT",
             "MDEF": "MDEF",
             "DEF": "DEF",
@@ -395,4 +395,5 @@
     }
   }
 }
+
 
