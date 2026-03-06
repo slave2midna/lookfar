@@ -225,7 +225,7 @@
           "BudgetRemainder": "Remaining Budget",
           "Martial": "Martial",
           "NonMartial": "Non-martial",
-          "Value": "Ignored",
+          "Value": "Value",
           "NoQuality": "has no special properties.",
           "Buttons": {
             "Keep": "Keep",
@@ -394,3 +394,4 @@
     }
   }
 }
+
