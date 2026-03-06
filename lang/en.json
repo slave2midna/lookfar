@@ -329,6 +329,7 @@
               "Custom": "Custom"
             },
             "Custom": {
+              "CostLabel": "Cost"
               "Tooltip": {
                 "Effect": "Type your custom effect text",
                 "Cost": "Enter a non-negative integer"
@@ -355,7 +356,6 @@
             "RequireOriginHint": "At least one material with origin \"{origin}\" is required.",
             "Tooltip": {
               "OriginLabel": "Origin",
-              "CostLabel": "Cost",
               "Remove": "Click to remove this material",
               "RequestRemove": "Click to request removing this material"
             }
@@ -394,4 +394,5 @@
     }
   }
 }
+
 
