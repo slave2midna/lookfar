@@ -1321,13 +1321,12 @@ async function openItemForgeDialog() {
             };
 
             const handLabel = (h) => {
-                const one = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.One-Handed");
-                const two = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Two-Handed");
-                const dash = game.i18n.localize("LOOKFAR.ItemForge.Preview.Handed.Unknown"); // REVIEW: missing
-                return (h === "1") ? one :
-                    (h === "2") ? two :
-                    (h || dash);
-            };
+    const one = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.One-Handed");
+    const two = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Two-Handed");
+    return (h === "1") ? one :
+        (h === "2") ? two :
+        String(h || "");
+};
 
             // NEW: renderPreview now delegates to item-forge-preview.hbs and uses rows[]
             function renderPreview(kind, selectedEl, opts = {}) {
@@ -1412,34 +1411,26 @@ async function openItemForgeDialog() {
                 const kindNow = html.find("input[name='itemType']:checked").val();
 
                 const ctx = {
-                    kind,
-                    icon,
-                    isMartial: false,
-                    muted: false,
-                    mutedText: "",
-                    rows: [],
-                    desc: ""
-                };
+    kind,
+    icon,
+    isMartial: false,
+    rows: [],
+    desc: ""
+};
 
                 const renderCtx = (context) => {
-                    return renderTemplate(PREVIEW_TEMPLATE_PATH, context)
-                        .then(htmlStr => {
-                            $preview.html(htmlStr);
-                        })
-                        .catch(e => {
-                            console.error("[Item Forger] Failed to render preview template:", e);
-                            $preview.html(
-                                `<div class="if-preview-error">${esc(game.i18n.localize("LOOKFAR.ItemForge.Preview.Error.Generic"))}</div>` // REVIEW: missing
-                            );
-                        });
-                };
+    return renderTemplate(PREVIEW_TEMPLATE_PATH, context)
+        .then(htmlStr => {
+            $preview.html(htmlStr);
+        })
+        .catch(e => {
+            console.error("[Item Forger] Failed to render preview template:", e);
+            $preview.empty();
+        });
+};
 
                 // dial sanity check
-                if (kindNow !== kind) {
-                    ctx.muted = true;
-                    ctx.mutedText = game.i18n.localize("LOOKFAR.ItemForge.Preview.Muted.OtherKind"); // REVIEW: missing
-                    return renderCtx(ctx);
-                }
+                if (kindNow !== kind) return;
 
                 // ---------- ARMOR PREVIEW ----------
                 if (kind === "armor") {
@@ -1512,11 +1503,7 @@ async function openItemForgeDialog() {
                     const idx2 = Number($sel2.data("idx"));
                     const base2 = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
-                    if (!base2) {
-                        ctx.muted = true;
-                        ctx.mutedText = game.i18n.localize("LOOKFAR.ItemForge.Preview.Muted.SelectWeaponTemplate"); // REVIEW: missing
-                        return renderCtx(ctx);
-                    }
+                    if (!base2) return;
 
                     const baseHand = normHand(base2?.hand) || null;
                     const baseHandText = handLabel(baseHand ?? (base2?.hand ?? "—"));
