@@ -303,7 +303,7 @@ function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = 
   // Grab the display name the system uses for money (or default to Zenit)
   const currencyName =
     game.settings.get("projectfu", "optionRenameCurrency") ||
-    game.i18n.localize("LOOKFAR.Vocabulary.Common.Zenit");
+    game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
 
   // Math Magic!
   const raw = Math.floor(Math.random() * (cap - minAmount + 1)) + minAmount;
@@ -403,7 +403,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
   const skippedIngredients = items.filter(isIngredientItem);
 
   const allStashes = game.actors.filter(a => a.type === "stash");
-  const prefix = game.i18n.localize("LOOKFAR.TreasureRoll.Stash.NamePrefix");
+  const prefix = game.i18n.localize("LOOKFAR.TreasureRoll.Sheets.Stash.NamePrefix");
   const esc = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // escape for regex
   const re = new RegExp(`^${esc}(\\d+)$`, "i");
   let nextNum = 1;
@@ -414,7 +414,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
       if (!Number.isNaN(n) && n >= nextNum) nextNum = n + 1;
     }
   }
-  const stashName = game.i18n.format("LOOKFAR.TreasureRoll.Stash.DefaultName", { num: nextNum });
+  const stashName = game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Stash.DefaultName", { num: nextNum });
 
   const stash = await CONFIG.Actor.documentClass.create({
     name: stashName,
@@ -438,7 +438,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
   if (currencyTotal > 0) {
     const currencyName =
       game.settings.get("projectfu", "optionRenameCurrency") ||
-      game.i18n.localize("LOOKFAR.Vocabulary.Common.Zenit");
+      game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
 
     const current = foundry.utils.getProperty(stash, "system.resources.zenit.value") ?? 0;
     await stash.update({
@@ -464,7 +464,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
   // Build chat message
   const currencyName =
     game.settings.get("projectfu", "optionRenameCurrency") ||
-    game.i18n.localize("LOOKFAR.Vocabulary.Common.Zenit");
+    game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
 
   const stashLink = `<a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>`;
 
@@ -544,7 +544,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           },
           featureType: "projectfu.ingredient",
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Ingredient", {
+            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Ingredient", {
               taste: data.taste
             })
           },
@@ -567,7 +567,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           origin: { value: data.origin },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Material", {
+            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Material", {
               nature: data.nature,
               originLower: String(data.origin || "").toLowerCase(),
               detail: data.detail
@@ -593,13 +593,12 @@ async function renderTreasureResultDialog(items, budget, config) {
       const variantBonus = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
       // Handle Masterwork prefix
-      const unknown = game.i18n.localize("LOOKFAR.Vocabulary.Common.Unknown");
-      const cat = baseWeapon?.category || unknown;
+      const cat = baseWeapon?.category || "Unknown";
 
       const prefixKey =
         (data.isMaster && !variantEnabled)
-          ? "LOOKFAR.TreasureRoll.WeaponPrefix.Masterwork"
-          : "LOOKFAR.TreasureRoll.WeaponPrefix.Base";
+          ? "LOOKFAR.TreasureRoll.Sheets.Weapon.Prefix.Masterwork"
+          : "LOOKFAR.TreasureRoll.Sheets.Weapon.Prefix.Base";
 
       const prefix = game.i18n.format(prefixKey, { category: cat });
 
@@ -607,14 +606,14 @@ async function renderTreasureResultDialog(items, budget, config) {
       const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
 
       const accuracyUp = (data.hasPlusOne && baseAcc !== 1)
-        ? game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.AccuracyUp")
+        ? game.i18n.localize("LOOKFAR.TreasureRoll.Sheets.Weapon.Tokens.AccuracyUp")
         : "";
 
       const damageUp = (data.isMaster && !variantEnabled)
-        ? game.i18n.localize("LOOKFAR.TreasureRoll.Tokens.DamageUp")
+        ? game.i18n.localize("LOOKFAR.TreasureRoll.Sheets.Weapon.Tokens.DamageUp")
         : "";
 
-      const weaponNameRaw = game.i18n.format("LOOKFAR.TreasureRoll.NamePatterns.Weapon", {
+      const weaponNameRaw = game.i18n.format("LOOKFAR.TreasureRoll.Sheets.NamePatterns.Weapon", {
         accuracyUp,
         quality: qualityName || "",
         damageUp,
@@ -624,7 +623,7 @@ async function renderTreasureResultDialog(items, budget, config) {
 
       const displayName = cleanName(weaponNameRaw);
 
-      const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Text.NoSpecialProperties");
+      const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
       itemData = {
         name: displayName,
@@ -651,12 +650,12 @@ async function renderTreasureResultDialog(items, budget, config) {
           },
           isMartial: { value: baseWeapon?.isMartial ?? false },
           quality: {
-            value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Text.NoQuality")
+            value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality")
           },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Weapon", {
+            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Weapon", {
               prefix,
               qualityText
             })
@@ -678,10 +677,10 @@ async function renderTreasureResultDialog(items, budget, config) {
 
       const displayName = [qualityName, baseName].filter(Boolean).join(" ");
       const martialType = baseArmor?.isMartial
-        ? game.i18n.localize("LOOKFAR.Vocabulary.Martial.Martial")
-        : game.i18n.localize("LOOKFAR.Vocabulary.Martial.NonMartial");
+        ? game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Martial")
+        : game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NonMartial");
 
-      const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Text.NoSpecialProperties");
+      const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
       itemData = {
         name: displayName,
@@ -700,12 +699,12 @@ async function renderTreasureResultDialog(items, budget, config) {
           init: { value: baseArmor?.init ?? 0 },
           isMartial: { value: baseArmor?.isMartial ?? false },
           quality: {
-            value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Text.NoQuality")
+            value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality")
           },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Armor", {
+            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Armor", {
               martialType,
               qualityText
             })
@@ -727,10 +726,10 @@ async function renderTreasureResultDialog(items, budget, config) {
 
       const displayName = [qualityName, baseName].filter(Boolean).join(" ");
       const martialType = baseShield?.isMartial
-        ? game.i18n.localize("LOOKFAR.Vocabulary.Martial.Martial")
-        : game.i18n.localize("LOOKFAR.Vocabulary.Martial.NonMartial");
+        ? game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Martial")
+        : game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NonMartial");
 
-      const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Text.NoSpecialProperties");
+      const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
       itemData = {
         name: displayName,
@@ -749,12 +748,12 @@ async function renderTreasureResultDialog(items, budget, config) {
           init: { value: baseShield?.init ?? 0 },
           isMartial: { value: baseShield?.isMartial ?? false },
           quality: {
-            value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Text.NoQuality")
+            value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality")
           },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Shield", {
+            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Shield", {
               martialType,
               qualityText
             })
@@ -775,7 +774,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       const img = dataLoader.getRandomIconFor("accessory", baseAccessory) || "icons/svg/stoned.svg";
 
       const displayName = [qualityName, baseName].filter(Boolean).join(" ");
-      const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Text.NoSpecialProperties");
+      const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
       itemData = {
         name: displayName,
@@ -787,12 +786,12 @@ async function renderTreasureResultDialog(items, budget, config) {
           mdef: { value: baseAccessory?.mdef ?? 0 },
           init: { value: baseAccessory?.init ?? 0 },
           quality: {
-            value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Text.NoQuality")
+            value: qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality")
           },
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Summaries.Accessory", {
+            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Accessory", {
               qualityText
             })
           }
@@ -837,13 +836,13 @@ async function renderTreasureResultDialog(items, budget, config) {
 
     const currencyName =
       game.settings.get("projectfu", "optionRenameCurrency") ||
-      game.i18n.localize("LOOKFAR.Vocabulary.Common.Zenit");
+      game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
 
     return `<div style="text-align:center;margin-bottom:0.75em">
               <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
               <a class="content-link" data-uuid="${item.uuid}"><strong>${item.name}${quantitySuffix}</strong></a><br>
               <small>${desc}</small><br>
-              <small>${game.i18n.localize("LOOKFAR.Vocabulary.Fields.Value")}: ${cost} ${currencyName}</small>
+              <small>${game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Value")}: ${cost} ${currencyName}</small>
             </div>`;
   });
 
@@ -879,14 +878,14 @@ async function renderTreasureResultDialog(items, budget, config) {
     resultsHtml: enrichedHtml,
     showBudget: !config?.ignoreValues,
     budgetDisplay: config?.ignoreValues
-      ? game.i18n.localize("LOOKFAR.TreasureRoll.Result.Budget.Ignored")
+      ? game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Value")
       : budget
   };
 
   const content = await renderTemplate(TREASURE_RESULT_TEMPLATE, templateData);
 
   const dialog = new Dialog({
-    title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Result.Title"),
+    title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Title"),
     content,
     buttons: {
       keep: {
@@ -1089,7 +1088,7 @@ Hooks.once("ready", () => {
       // --- Main Dialog Form via template ---
       const content = await renderTemplate(TREASURE_ROLL_TEMPLATE, {});
       const genDialog = new Dialog({
-        title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.Generator.Title"),
+        title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Title"),
         content,
         buttons: {
           ok: {
