@@ -2392,8 +2392,5 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
 
     } catch (err) {
         console.error("[Item Forger] failed to open:", err);
-        ui.notifications?.error(
-            game.i18n.localize("LOOKFAR.ItemForge.Dialog.Errors.OpenFailed") // REVIEW: missing
-        );
     }
 });
