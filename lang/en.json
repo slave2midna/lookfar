@@ -20,7 +20,7 @@
       },
       "ItemForger": {
         "Name": "Item Forge",
-        "Title": "Forge and Item"
+        "Title": "Forge an Item"
       }
     },
 
@@ -385,7 +385,6 @@
         "GenericForgeFailed": "The forge could not complete.",
         "CouldNotReadDrop": "Could not read dropped data.",
         "FilePickerOpen": "Could not open the file picker.",
-        "PreviewRenderFailed": "Unable to render preview.",
         "OnlyItems": "Only Item documents can be used as materials.",
         "OnlyTreasure": "Only Treasure-type items can be used as materials.",
         "MaxMaterials": "You cannot use more than 5 materials.",
@@ -396,3 +395,4 @@
     }
   }
 }
+
