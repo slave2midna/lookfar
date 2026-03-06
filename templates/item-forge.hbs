@@ -9,32 +9,30 @@
 
         {{!-- Choose Item --}}
         <fieldset class="lf-if-fieldset">
-          <legend>{{localize "LOOKFAR.ItemForge.ChooseItem.Legend"}}</legend>
+          <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.ChooseItem.Legend"}}</legend>
           <div class="lf-if-choose-item">
             <div class="lf-if-item-types">
               <label>
                 <input type="radio" name="itemType" value="weapon" checked>
-                {{localize "LOOKFAR.Vocabulary.ItemType.Weapon"}}
+                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.ChooseItem.Weapon"}}
               </label><br>
               <label>
                 <input type="radio" name="itemType" value="armor">
-                {{localize "LOOKFAR.Vocabulary.ItemType.Armor"}}
+                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.ChooseItem.Armor"}}
               </label><br>
               <label>
                 <input type="radio" name="itemType" value="shield">
-                {{localize "LOOKFAR.Vocabulary.ItemType.Shield"}}
+                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.ChooseItem.Shield"}}
               </label><br>
               <label>
                 <input type="radio" name="itemType" value="accessory">
-                {{localize "LOOKFAR.Vocabulary.ItemType.Accessory"}}
+                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.ChooseItem.Accessory"}}
               </label>
             </div>
 
             <div class="lf-if-template-wrapper">
               <div id="templateList"
-                   class="lf-if-scroll lf-if-template-list"
-                   aria-label="{{localize "LOOKFAR.ItemForge.AriaLabels.TemplateList"}}">
-                <div>{{localize "LOOKFAR.ItemForge.TemplateList.Loading"}}</div>
+                   class="lf-if-scroll lf-if-template-list">
               </div>
             </div>
           </div>
@@ -43,28 +41,28 @@
         {{!-- Attributes --}}
         <div id="attrRow" class="lf-if-attr-row">
           <fieldset class="lf-if-fieldset">
-            <legend>{{localize "LOOKFAR.ItemForge.Attributes.Legend"}}</legend>
+            <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.Legend"}}</legend>
 
             <div id="attrInner" class="lf-if-attr-inner">
 
               {{!-- Always present, JS will show/hide --}}
               <label>
-                {{localize "LOOKFAR.ItemForge.Attributes.AttrA.Label"}}
+                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.AttrA"}}
                 <select id="optAttrA" style="max-width:160px;">
-                  <option value="MIG">{{localize "LOOKFAR.Vocabulary.Attributes.MIG"}}</option>
-                  <option value="DEX">{{localize "LOOKFAR.Vocabulary.Attributes.DEX"}}</option>
-                  <option value="INS">{{localize "LOOKFAR.Vocabulary.Attributes.INS"}}</option>
-                  <option value="WLP">{{localize "LOOKFAR.Vocabulary.Attributes.WLP"}}</option>
+                  <option value="MIG">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.MIG"}}</option>
+                  <option value="DEX">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.DEX"}}</option>
+                  <option value="INS">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.INS"}}</option>
+                  <option value="WLP">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.WLP"}}</option>
                 </select>
               </label>
 
               <label>
-                {{localize "LOOKFAR.ItemForge.Attributes.AttrB.Label"}}
+                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.AttrB"}}
                 <select id="optAttrB" style="max-width:160px;">
-                  <option value="MIG">{{localize "LOOKFAR.Vocabulary.Attributes.MIG"}}</option>
-                  <option value="DEX">{{localize "LOOKFAR.Vocabulary.Attributes.DEX"}}</option>
-                  <option value="INS">{{localize "LOOKFAR.Vocabulary.Attributes.INS"}}</option>
-                  <option value="WLP">{{localize "LOOKFAR.Vocabulary.Attributes.WLP"}}</option>
+                  <option value="MIG">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.MIG"}}</option>
+                  <option value="DEX">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.DEX"}}</option>
+                  <option value="INS">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.INS"}}</option>
+                  <option value="WLP">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.WLP"}}</option>
                 </select>
               </label>
 
@@ -74,10 +72,8 @@
 
         {{!-- Preview --}}
         <fieldset class="lf-if-fieldset">
-          <legend>{{localize "LOOKFAR.ItemForge.Preview.Legend"}}</legend>
-          <div id="itemPreviewLarge" class="lf-if-preview">
-            {{localize "LOOKFAR.ItemForge.Preview.Placeholder"}}
-          </div>
+          <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Legend"}}</legend>
+          <div id="itemPreviewLarge" class="lf-if-preview"></div>
         </fieldset>
 
       </div>
@@ -87,7 +83,7 @@
 
         {{!-- Customize --}}
         <fieldset class="lf-if-fieldset">
-          <legend>{{localize "LOOKFAR.ItemForge.Customize.Legend"}}</legend>
+          <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.Legend"}}</legend>
 
           <div id="customizeArea" class="lf-if-customize">
 
@@ -96,12 +92,12 @@
 
               <label>
                 <input type="checkbox" id="optPlusOne">
-                <span>{{localize "LOOKFAR.ItemForge.Customize.PlusOneAccuracy"}}</span>
+                <span>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.PlusOneAccuracy"}}</span>
               </label>
 
               <label>
                 <input type="checkbox" id="optPlusDamage">
-                <span>{{localize "LOOKFAR.ItemForge.Customize.PlusFourDamage"}}</span>
+                <span>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.PlusFourDamage"}}</span>
               </label>
 
               <label id="handToggleWrap" style="display:none;">
@@ -110,17 +106,17 @@
               </label>
 
               <label>
-                {{localize "LOOKFAR.Vocabulary.Common.Element"}}
+                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.Element"}}
                 <select id="optElement" style="max-width:160px;">
-                  <option value="physical" selected>{{localize "LOOKFAR.Vocabulary.Element.Physical"}}</option>
-                  <option value="fire">{{localize "LOOKFAR.Vocabulary.Element.Fire"}}</option>
-                  <option value="ice">{{localize "LOOKFAR.Vocabulary.Element.Ice"}}</option>
-                  <option value="earth">{{localize "LOOKFAR.Vocabulary.Element.Earth"}}</option>
-                  <option value="air">{{localize "LOOKFAR.Vocabulary.Element.Air"}}</option>
-                  <option value="bolt">{{localize "LOOKFAR.Vocabulary.Element.Bolt"}}</option>
-                  <option value="dark">{{localize "LOOKFAR.Vocabulary.Element.Dark"}}</option>
-                  <option value="light">{{localize "LOOKFAR.Vocabulary.Element.Light"}}</option>
-                  <option value="poison">{{localize "LOOKFAR.Vocabulary.Element.Poison"}}</option>
+                  <option value="physical" selected>{{localize "LOOKFAR.Terms.Element.Physical"}}</option>
+                  <option value="fire">{{localize "LOOKFAR.Terms.Element.Fire"}}</option>
+                  <option value="ice">{{localize "LOOKFAR.Terms.Element.Ice"}}</option>
+                  <option value="earth">{{localize "LOOKFAR.Terms.Element.Earth"}}</option>
+                  <option value="air">{{localize "LOOKFAR.Terms.Element.Air"}}</option>
+                  <option value="bolt">{{localize "LOOKFAR.Terms.Element.Bolt"}}</option>
+                  <option value="dark">{{localize "LOOKFAR.Terms.Element.Dark"}}</option>
+                  <option value="light">{{localize "LOOKFAR.Terms.Element.Light"}}</option>
+                  <option value="poison">{{localize "LOOKFAR.Terms.Element.Poison"}}</option>
                 </select>
               </label>
 
@@ -128,7 +124,7 @@
 
             {{!-- Non-weapon fallback --}}
             <div id="noCustomize" style="opacity:0.8; display:none;">
-              {{localize "LOOKFAR.ItemForge.Customize.NoOptions"}}
+              {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.NoOptions"}}
             </div>
 
           </div>
@@ -136,31 +132,30 @@
 
         {{!-- Qualities --}}
         <fieldset class="lf-if-fieldset">
-          <legend>{{localize "LOOKFAR.ItemForge.Qualities.Legend"}}</legend>
+          <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Legend"}}</legend>
 
           <div class="lf-if-qualities-select">
             <select id="qualitiesCategory" style="width: 100%;">
-              <option value="none" selected>{{localize "LOOKFAR.Vocabulary.Common.None"}}</option>
-              <option value="basic">{{localize "LOOKFAR.Vocabulary.Common.Basic"}}</option>
-              <option value="custom">{{localize "LOOKFAR.Vocabulary.ItemType.Custom"}}</option>
+              <option value="none" selected>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Options.None"}}</option>
+              <option value="basic">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Options.Basic"}}</option>
+              <option value="custom">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Options.Custom"}}</option>
 
-              {{!-- Origin-based categories map to Vocabulary.Origin.* --}}
-              <option value="ardent">{{localize "LOOKFAR.Vocabulary.Origin.Ardent"}}</option>
-              <option value="aerial">{{localize "LOOKFAR.Vocabulary.Origin.Aerial"}}</option>
-              <option value="thunderous">{{localize "LOOKFAR.Vocabulary.Origin.Thunderous"}}</option>
-              <option value="paradox">{{localize "LOOKFAR.Vocabulary.Origin.Paradox"}}</option>
-              <option value="terrestrial">{{localize "LOOKFAR.Vocabulary.Origin.Terrestrial"}}</option>
-              <option value="glacial">{{localize "LOOKFAR.Vocabulary.Origin.Glacial"}}</option>
-              <option value="spiritual">{{localize "LOOKFAR.Vocabulary.Origin.Spiritual"}}</option>
-              <option value="corrupted">{{localize "LOOKFAR.Vocabulary.Origin.Corrupted"}}</option>
-              <option value="aquatic">{{localize "LOOKFAR.Vocabulary.Origin.Aquatic"}}</option>
-              <option value="mechanical">{{localize "LOOKFAR.Vocabulary.Origin.Mechanical"}}</option>
+              {{!-- Origin-based categories map to Terms.Origin.* --}}
+              <option value="ardent">{{localize "LOOKFAR.Terms.Origin.Ardent"}}</option>
+              <option value="aerial">{{localize "LOOKFAR.Terms.Origin.Aerial"}}</option>
+              <option value="thunderous">{{localize "LOOKFAR.Terms.Origin.Thunderous"}}</option>
+              <option value="paradox">{{localize "LOOKFAR.Terms.Origin.Paradox"}}</option>
+              <option value="terrestrial">{{localize "LOOKFAR.Terms.Origin.Terrestrial"}}</option>
+              <option value="glacial">{{localize "LOOKFAR.Terms.Origin.Glacial"}}</option>
+              <option value="spiritual">{{localize "LOOKFAR.Terms.Origin.Spiritual"}}</option>
+              <option value="corrupted">{{localize "LOOKFAR.Terms.Origin.Corrupted"}}</option>
+              <option value="aquatic">{{localize "LOOKFAR.Terms.Origin.Aquatic"}}</option>
+              <option value="mechanical">{{localize "LOOKFAR.Terms.Origin.Mechanical"}}</option>
             </select>
           </div>
 
           <div id="qualitiesList"
-               class="lf-if-scroll lf-if-qualities-list"
-               aria-label="{{localize "LOOKFAR.ItemForge.AriaLabels.QualitiesList"}}">
+               class="lf-if-scroll lf-if-qualities-list">
 
             {{!-- STANDARD QUALITY LIST --}}
             <div id="qualitiesStandardBlock"></div>
@@ -172,13 +167,13 @@
                 rows="2"
                 wrap="soft"
                 style="width:100%; height:44px; box-sizing:border-box; resize:none; overflow-y:auto;"
-                title="{{localize "LOOKFAR.ItemForge.Qualities.Custom.Effect.Title"}}">
+                title="{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Tooltip.Effect"}}">
               </textarea>
 
               <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                 <label for="customCost"
                        style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">
-                  {{localize "LOOKFAR.ItemForge.Qualities.Custom.Cost.Label"}}
+                  {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.CostLabel"}}
                 </label>
                 <input id="customCost"
                        type="number"
@@ -188,12 +183,12 @@
                        pattern="\\d*"
                        value="0"
                        style="width:100%; height:25px; box-sizing:border-box;"
-                       title="{{localize "LOOKFAR.ItemForge.Qualities.Custom.Cost.Title"}}">
+                       title="{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Tooltip.Cost"}}">
               </div>
 
               <button type="button" id="customApply"
                 style="width:auto; height:28px; margin:4px auto 0; padding:0 10px;">
-                {{localize "LOOKFAR.ItemForge.Qualities.Custom.Apply"}}
+                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Button"}}
               </button>
 
             </div>
@@ -203,13 +198,13 @@
 
         {{!-- Cost --}}
         <fieldset class="lf-if-fieldset">
-          <legend>{{localize "LOOKFAR.ItemForge.Cost.Legend"}}</legend>
+          <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Cost.Legend"}}</legend>
           <div id="costRow" class="lf-if-cost-row">
             <i class="fuk fu-zenit" aria-hidden="true"></i>
             <span id="costValue" class="lf-if-cost-value">0</span>
             <label class="lf-if-cost-fee">
               <input type="checkbox" id="optFee">
-              <span>{{localize "LOOKFAR.ItemForge.Cost.NoFee"}}</span>
+              <span>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Cost.Fee"}}</span>
             </label>
           </div>
         </fieldset>
@@ -220,12 +215,11 @@
 
     {{!-- Materials --}}
     <fieldset class="lf-if-fieldset lf-if-materials-fieldset">
-      <legend>{{localize "LOOKFAR.ItemForge.Materials.Legend"}}</legend>
+      <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Legend"}}</legend>
       <div id="materialsDrop"
-           class="lf-if-materials-drop"
-           aria-label="{{localize "LOOKFAR.ItemForge.AriaLabels.MaterialsDrop"}}">
+           class="lf-if-materials-drop">
         <div id="materialsHint" class="lf-if-materials-hint">
-          {{localize "LOOKFAR.ItemForge.Materials.Hint"}}
+          {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Hint"}}
         </div>
       </div>
     </fieldset>
