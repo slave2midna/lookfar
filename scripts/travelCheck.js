@@ -62,11 +62,11 @@ Hooks.once("ready", () => {
 
 class TravelRolls {
   static travelChecks = {
-    "LOOKFAR.TravelCheck.Difficulty.Minimal": "d6",
-    "LOOKFAR.TravelCheck.Difficulty.Low": "d8",
-    "LOOKFAR.TravelCheck.Difficulty.Medium": "d10",
-    "LOOKFAR.TravelCheck.Difficulty.High": "d12",
-    "LOOKFAR.TravelCheck.Difficulty.VeryHigh": "d20",
+    "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.Minimal": "d6",
+    "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.Low": "d8",
+    "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.Medium": "d10",
+    "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.High": "d12",
+    "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.VeryHigh": "d20",
   };
 }
 
@@ -241,7 +241,7 @@ async function handleRoll(selectedDifficulty, html) {
     outcomeType = "danger";
 
     // Single label (no severity)
-    const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.Result.Danger");
+    const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Danger");
 
     const dangerResult = await generateDanger(groupLevel);
     keywords = dangerResult.keywords;
@@ -254,7 +254,7 @@ async function handleRoll(selectedDifficulty, html) {
     `;
   } else if (isDiscovery) {
     outcomeType = "discovery";
-    const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.Result.Discovery");
+    const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Discovery");
     const discoveryResult = await generateDiscovery();
     keywords = discoveryResult.keywords;
 
@@ -340,7 +340,7 @@ async function showRerollDialog(
             let newKeywords = null;
 
             if (isDanger) {
-              const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.Result.Danger");
+              const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Danger");
               const dangerResult = await generateDanger(groupLevel);
               newKeywords = dangerResult.keywords;
 
@@ -351,7 +351,7 @@ async function showRerollDialog(
                 ${dangerResult.html}
               `;
             } else if (isDiscovery) {
-              const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.Result.Discovery");
+              const resultType = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Discovery");
               const discoveryResult = await generateDiscovery();
               newKeywords = discoveryResult.keywords;
 
@@ -521,13 +521,13 @@ async function generateDanger(groupLevel) {
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TableHeaders.Effect")}
+            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.TableHeaders.Effect")}
           </th>
           <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
         </tr>
         <tr>
           <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TableHeaders.Source")}
+            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.TableHeaders.Source")}
           </th>
           <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
         </tr>
@@ -611,13 +611,13 @@ async function generateDiscovery() {
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TableHeaders.Effect")}
+            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.TableHeaders.Effect")}
           </th>
           <td style="padding: 5px; border: 1px solid; text-align: left;">${effectText}</td>
         </tr>
         <tr>
           <th style="padding: 5px; border: 1px solid; white-space: nowrap;">
-            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TableHeaders.Source")}
+            ${game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.TableHeaders.Source")}
           </th>
           <td style="padding: 5px; border: 1px solid; text-align: left;">${sourceText}</td>
         </tr>
@@ -626,8 +626,3 @@ async function generateDiscovery() {
     keywords,
   };
 }
-
-
-
-
-
