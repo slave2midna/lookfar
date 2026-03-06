@@ -593,14 +593,12 @@ async function renderTreasureResultDialog(items, budget, config) {
       const variantBonus = variantEnabled ? (2 * Math.floor((data.value || 0) / 1000)) : 0;
 
       // Handle Masterwork prefix
-      const cat = baseWeapon?.category || "Unknown";
-
       const prefixKey =
         (data.isMaster && !variantEnabled)
           ? "LOOKFAR.TreasureRoll.Sheets.Weapon.Prefix.Masterwork"
           : "LOOKFAR.TreasureRoll.Sheets.Weapon.Prefix.Base";
 
-      const prefix = game.i18n.format(prefixKey, { category: cat });
+      const prefix = game.i18n.format(prefixKey, { category: baseWeapon.category });
 
       // Handle +1 accuracy variants
       const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
@@ -877,9 +875,7 @@ async function renderTreasureResultDialog(items, budget, config) {
   const templateData = {
     resultsHtml: enrichedHtml,
     showBudget: !config?.ignoreValues,
-    budgetDisplay: config?.ignoreValues
-      ? game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Value")
-      : budget
+    budgetDisplay: budget
   };
 
   const content = await renderTemplate(TREASURE_RESULT_TEMPLATE, templateData);
