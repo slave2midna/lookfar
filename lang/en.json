@@ -189,14 +189,6 @@
 
     "__SECTION__TreasureRoll": "=== Treasure Roll ===",
     "TreasureRoll": {
-      "NamePatterns": {
-        "Material": "{detail} {origin} {nature}",
-        "Ingredient": "{taste} {origin} {nature}",
-        "Weapon": "{accuracyUp} {quality} {damageUp} {element} {type}",
-        "Armor": "{quality} {type}",
-        "Shield": "{quality} {type}",
-        "Accessory": "{quality} {type}"
-      },
       "Dialogs": {
         "TreasureRoll": {
           "Title": "Treasure Generator",
@@ -231,6 +223,14 @@
         }
       },
       "Sheets": {
+        "NamePatterns": {
+          "Material": "{detail} {origin} {nature}",
+          "Ingredient": "{taste} {origin} {nature}",
+          "Weapon": "{accuracyUp} {quality} {damageUp} {element} {type}",
+          "Armor": "{quality} {type}",
+          "Shield": "{quality} {type}",
+          "Accessory": "{quality} {type}"
+        },
         "Stash": {
           "DefaultName": "New Stash #{num}",
           "NamePrefix": "New Stash #"
@@ -270,12 +270,6 @@
 
     "__SECTION__ItemForge": "=== Item Forge ===",
     "ItemForge": {
-      "NamePattern": {
-        "Weapon": "Newly Crafted {type}",
-        "Armor": "Newly Crafted {type}",
-        "Shield": "Newly Crafted {type}",
-        "Accessory": "Newly Crafted {type}"
-      },
       "Dialogs": {
         "ItemForge": {
           "Title": "Item Forge",
@@ -306,6 +300,7 @@
             "PlusFourDamage": "+4 Damage",
             "MakeOneHanded": "Make One-Handed",
             "MakeTwoHanded": "Make Two-Handed",
+            "Element": "Element",
             "Tooltip": {
               "HandToggleRestricted": "This weapon cannot change its handedness.",
               "GMOnly": "Only the GM can change this option.",
@@ -355,6 +350,12 @@
         }
       },
       "Sheets": {
+        "NamePattern": {
+          "Weapon": "Newly Crafted {type}",
+          "Armor": "Newly Crafted {type}",
+          "Shield": "Newly Crafted {type}",
+          "Accessory": "Newly Crafted {type}"
+        },
         "Summaries": {
           "Weapon": "A crafted {category}.",
           "Armor": "A crafted {martialType} armor set.",
