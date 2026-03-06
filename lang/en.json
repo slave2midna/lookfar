@@ -24,6 +24,7 @@
       }
     },
 
+    
     "__SECTION__Settings": "=== Settings ===",
     "Settings": {
       "ResultVisibility": {
@@ -89,6 +90,7 @@
       "NoScenes": "No scenes found"
     },
 
+    
     "__SECTION__Terms": "=== Terms ===",
     "Terms": {
       "Common": {
@@ -132,6 +134,7 @@
       }
     },
 
+    
     "__SECTION__TravelCheck": "=== Travel Check ===",
     "TravelCheck": {
       "Dialogs": {
@@ -187,6 +190,7 @@
       }
     },
 
+    
     "__SECTION__TreasureRoll": "=== Treasure Roll ===",
     "TreasureRoll": {
       "Dialogs": {
@@ -194,6 +198,9 @@
           "Title": "Treasure Generator",
           "IgnoreValues": "Ignore budget/level",
           "SelectAll": "Select all",
+          "Buttons": {
+            "RollLoot": "Roll Loot"
+          },
           "ItemType": {
             "Weapon": "Weapon",
             "Armor": "Armor",
@@ -219,7 +226,12 @@
           "Martial": "Martial",
           "NonMartial": "Non-martial",
           "Value": "Ignored",
-          "NoQuality": "has no special properties."
+          "NoQuality": "has no special properties.",
+          "Buttons": {
+            "Keep": "Keep",
+            "Stash": "Stash",
+            "Reroll": "Reroll"
+          }
         }
       },
       "Sheets": {
@@ -268,6 +280,7 @@
       }
     },
 
+    
     "__SECTION__ItemForge": "=== Item Forge ===",
     "ItemForge": {
       "Dialogs": {
