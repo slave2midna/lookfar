@@ -34,36 +34,39 @@ const getAccessoryList = d => d?.accessories?.accessoryList ?? d?.accessoriesDat
 
 // ---- Localization helpers ---------------------------------------------------
 
-const L = (key) => {
-    try {
-        return game.i18n?.localize?.(key) ?? key;
-    } catch {
-        return key;
-    }
-};
-
-const F = (key, data) => {
-    try {
-        return game.i18n?.format?.(key, data) ?? key;
-    } catch {
-        return key;
-    }
-};
-
 const statLabel = (code) => {
-    const k = `LOOKFAR.Vocabulary.Attributes.${String(code ?? "").toUpperCase()}`;
-    const out = L(k);
-    return out === k ? String(code ?? "") : out;
+    const normalized = String(code ?? "").toUpperCase();
+
+    const keyMap = {
+        MIG: "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.MIG",
+        DEX: "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.DEX",
+        WLP: "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.WLP",
+        INS: "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.INS",
+        INIT: "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.INIT",
+        MDEF: "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.MDEF",
+        DEF: "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.DEF",
+        HR: "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.HR"
+    };
+
+    const key = keyMap[normalized];
+    if (!key) return String(code ?? "");
+
+    const out = game.i18n.localize(key);
+    return out === key ? String(code ?? "") : out;
 };
 
 const martialLabel = (isMartial) =>
-    L(isMartial ? "LOOKFAR.Vocabulary.Martial.Martial" : "LOOKFAR.Vocabulary.Martial.NonMartial");
+    game.i18n.localize(
+        isMartial
+            ? "LOOKFAR.Vocabulary.Martial.Martial"      // REVIEW: missing from en.json
+            : "LOOKFAR.Vocabulary.Martial.NonMartial"   // REVIEW: missing from en.json
+    );
 
 const elementLabel = (val) => {
     const v = String(val ?? "").toLowerCase();
     if (!v) return "";
-    const key = `LOOKFAR.Vocabulary.Element.${v.charAt(0).toUpperCase()}${v.slice(1)}`;
-    const out = L(key);
+    const key = `LOOKFAR.Terms.Element.${v.charAt(0).toUpperCase()}${v.slice(1)}`;
+    const out = game.i18n.localize(key);
     return out === key ? v : out;
 };
 
@@ -73,8 +76,8 @@ const originI18nValueForKey = (originKey) => {
     const k = normText(originKey);
     if (!k) return "";
     const title = k.charAt(0).toUpperCase() + k.slice(1);
-    const i18nKey = `LOOKFAR.Vocabulary.Origin.${title}`;
-    const out = L(i18nKey);
+    const i18nKey = `LOOKFAR.Terms.Origin.${title}`;
+    const out = game.i18n.localize(i18nKey);
     return normText(out === i18nKey ? title : out);
 };
 
@@ -239,7 +242,8 @@ function ensureIFSocket() {
         _hostId = payload?.hostId ?? null;
         if (game.user.isGM && game.user.id === _hostId) {
             sock.executeForEveryone(
-                IF_MSG.MaterialsReplace, {
+                IF_MSG.MaterialsReplace,
+                {
                     materials: _materials,
                     originReq: _requiredOriginKey
                 }
@@ -257,7 +261,8 @@ function ensureIFSocket() {
         if (game.user.isGM && game.user.id === _hostId) {
             sock.executeForUsers(
                 IF_MSG.MaterialsReplace,
-                [msg.sender], {
+                [msg.sender],
+                {
                     materials: _materials,
                     originReq: _requiredOriginKey
                 }
@@ -295,7 +300,9 @@ function ensureIFSocket() {
 
         // Helper: warn the user who attempted the add (or fallback to host)
         const warnUser = (textKey, data = {}) => {
-            const text = Object.keys(data).length ? F(textKey, data) : L(textKey);
+            const text = Object.keys(data).length
+                ? game.i18n.format(textKey, data)
+                : game.i18n.localize(textKey);
             const targetId = msg?.sender;
             if (targetId && game.projectfu?.socket) {
                 // Show the warning only on the client who initiated the drag
@@ -309,9 +316,7 @@ function ensureIFSocket() {
         };
 
         try {
-            const {
-                uuid
-            } = payload ?? {};
+            const { uuid } = payload ?? {};
             if (!uuid) return;
             if (_materials.length >= 5) return;
 
@@ -321,14 +326,14 @@ function ensureIFSocket() {
 
             const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
             if (qty <= 0) {
-                warnUser("LOOKFAR.ItemForge.Materials.Errors.NoMoreItem");
+                warnUser("LOOKFAR.ItemForge.Errors.NoMoreItem");
                 return;
             }
 
             // How many times this uuid is already in the materials list
             const alreadyUsed = _materials.filter(m => m.uuid === uuid).length;
             if (alreadyUsed >= qty) {
-                warnUser("LOOKFAR.ItemForge.Materials.Errors.NoMoreItem");
+                warnUser("LOOKFAR.ItemForge.Errors.NoMoreItem");
                 return;
             }
 
@@ -343,7 +348,8 @@ function ensureIFSocket() {
 
             _materials = [..._materials, entry].slice(0, 5);
             sock.executeForEveryone(
-                IF_MSG.MaterialsReplace, {
+                IF_MSG.MaterialsReplace,
+                {
                     materials: _materials,
                     originReq: _requiredOriginKey
                 }
@@ -356,10 +362,7 @@ function ensureIFSocket() {
     // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
     sock.register(IF_MSG.MaterialsRemove, (payload) => {
         if (!(game.user.isGM && game.user.id === _hostId)) return; // only host mutates
-        const {
-            index,
-            uuid
-        } = payload ?? {};
+        const { index, uuid } = payload ?? {};
         if (!Array.isArray(_materials) || !_materials.length) return;
 
         let newList = _materials;
@@ -370,7 +373,8 @@ function ensureIFSocket() {
         }
         _materials = newList;
         sock.executeForEveryone(
-            IF_MSG.MaterialsReplace, {
+            IF_MSG.MaterialsReplace,
+            {
                 materials: _materials,
                 originReq: _requiredOriginKey
             }
@@ -438,10 +442,7 @@ const readCustomQuality = (html) => {
     const eff = String(html.find("#customEffect").val() ?? html.data("customEffect") ?? "").trim();
     const raw = String(html.find("#customCost").val() ?? html.data("customCost") ?? "");
     const cost = Math.max(0, parseInt(raw.replace(/\D+/g, ""), 10) || 0);
-    return {
-        eff,
-        cost
-    };
+    return { eff, cost };
 };
 
 const getSelectedBase = (html, currentTemplates) => {
@@ -453,18 +454,15 @@ const getSelectedBase = (html, currentTemplates) => {
 const getSelectedQualityInfo = (html, currentQualities) => {
     const catKey = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
     if (catKey === "custom") {
-        const {
-            eff,
-            cost
-        } = readCustomQuality(html);
+        const { eff, cost } = readCustomQuality(html);
         return {
-            desc: eff || L("LOOKFAR.ItemForge.Qualities.NoneText"),
+            desc: eff || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText"), // REVIEW: missing from en.json
             cost
         };
     }
     if (catKey === "none" || !currentQualities?.length) {
         return {
-            desc: L("LOOKFAR.ItemForge.Qualities.NoneText"),
+            desc: game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText"), // REVIEW: missing from en.json
             cost: 0
         };
     }
@@ -472,7 +470,7 @@ const getSelectedQualityInfo = (html, currentQualities) => {
     const qi = Number($q.data("idx"));
     const q = Number.isFinite(qi) ? currentQualities[qi] : null;
     return {
-        desc: q?.description ?? q?.desc ?? L("LOOKFAR.ItemForge.Qualities.NoneText"),
+        desc: q?.description ?? q?.desc ?? game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText"), // REVIEW: missing
         cost: getQualityCost(q)
     };
 };
@@ -490,7 +488,7 @@ const validateMaterialsOrigin = (html, materials) => {
     const ok = materials.some(m => originMatchesRequired(m?.origin, needKey));
     if (!ok) {
         ui.notifications?.warn(
-            F("LOOKFAR.ItemForge.Materials.RequireOriginHint", {
+            game.i18n.format("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.RequireOriginHint", {
                 origin: originI18nValueForKey(needKey) || needKey
             })
         );
@@ -506,9 +504,7 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
     const catKey = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
     let qcost = 0;
     if (catKey === "custom") {
-        const {
-            cost
-        } = readCustomQuality(html);
+        const { cost } = readCustomQuality(html);
         qcost = toInt(cost);
     } else if (catKey !== "none") {
         const $q = html.find("#qualitiesStandardBlock [data-selected='1']").first();
@@ -552,10 +548,7 @@ const getCurrentCosts = (html, tmpl, currentQualities) => {
         craft = Math.floor(craft * 1.10);
     }
 
-    return {
-        worth,
-        craft
-    };
+    return { worth, craft };
 };
 
 // Playtest damage: +2 damage per full 1000 worth (no fee)
@@ -610,10 +603,7 @@ const computeWeaponStats = (base, html, worthOverride) => {
 
     return {
         hands: handsOut,
-        attrs: {
-            A: selA,
-            B: selB
-        },
+        attrs: { A: selA, B: selB },
         acc: accOut,
         dmg: dmgOut,
         dmgType: elementVal,
@@ -622,23 +612,16 @@ const computeWeaponStats = (base, html, worthOverride) => {
 };
 
 // Build itemData for the selected item.
-const buildItemData = (kind, html, {
-    currentTemplates,
-    currentQualities
-}) => {
+const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
     const base = getSelectedBase(html, currentTemplates);
-    if (!base) throw new Error(L("LOOKFAR.ItemForge.Errors.NoTemplateSelected"));
+    if (!base) throw new Error(game.i18n.localize("LOOKFAR.ItemForge.Errors.NoTemplateSelected"));
 
-    const {
-        desc: qualDesc
-    } = getSelectedQualityInfo(html, currentQualities);
+    const { desc: qualDesc } = getSelectedQualityInfo(html, currentQualities);
     const img = getPreviewIcon(html, dataLoader.getRandomIconFor(kind, base));
     const $t = html.find("#templateList [data-selected='1']").first();
     const ti = Number($t.data("idx"));
     const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-    const {
-        worth
-    } = getCurrentCosts(html, tmpl, currentQualities);
+    const { worth } = getCurrentCosts(html, tmpl, currentQualities);
     const costField = worth;
 
     // handle weapon item data.
@@ -648,7 +631,7 @@ const buildItemData = (kind, html, {
 
         const w = computeWeaponStats(base, html, worth);
         return {
-            name: F("LOOKFAR.ItemForge.Create.NamePattern.Weapon", {
+            name: game.i18n.format("LOOKFAR.ItemForge.Sheets.NamePattern.Weapon", {
                 type: typeName
             }),
             type: "weapon",
@@ -685,7 +668,7 @@ const buildItemData = (kind, html, {
                     value: !!w.isMartial
                 },
                 quality: {
-                    value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
+                    value: qualDesc || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText") // REVIEW: missing
                 },
                 cost: {
                     value: costField
@@ -694,7 +677,7 @@ const buildItemData = (kind, html, {
                     value: "LOOKFAR"
                 },
                 summary: {
-                    value: F("LOOKFAR.ItemForge.Create.Summary.Weapon", {
+                    value: game.i18n.format("LOOKFAR.ItemForge.Sheets.Summaries.Weapon", {
                         category: base?.category ?? ""
                     })
                 }
@@ -708,7 +691,7 @@ const buildItemData = (kind, html, {
         const typeName = getLocalizedEquipNameStrict("armor", baseId);
 
         return {
-            name: F("LOOKFAR.ItemForge.Create.NamePattern.Armor", {
+            name: game.i18n.format("LOOKFAR.ItemForge.Sheets.NamePattern.Armor", {
                 type: typeName
             }),
             type: "armor",
@@ -729,7 +712,7 @@ const buildItemData = (kind, html, {
                     value: !!base?.isMartial
                 },
                 quality: {
-                    value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
+                    value: qualDesc || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText") // REVIEW: missing
                 },
                 cost: {
                     value: costField
@@ -737,7 +720,7 @@ const buildItemData = (kind, html, {
                 // NOTE: Armor must use scalar source here (system quirk).
                 source: "LOOKFAR",
                 summary: {
-                    value: F("LOOKFAR.ItemForge.Create.Summary.Armor", {
+                    value: game.i18n.format("LOOKFAR.ItemForge.Sheets.Summaries.Armor", {
                         martialType: martialLabel(!!base?.isMartial)
                     })
                 }
@@ -751,7 +734,7 @@ const buildItemData = (kind, html, {
         const typeName = getLocalizedEquipNameStrict("shield", baseId);
 
         return {
-            name: F("LOOKFAR.ItemForge.Create.NamePattern.Shield", {
+            name: game.i18n.format("LOOKFAR.ItemForge.Sheets.NamePattern.Shield", {
                 type: typeName
             }),
             type: "shield",
@@ -772,7 +755,7 @@ const buildItemData = (kind, html, {
                     value: !!base?.isMartial
                 },
                 quality: {
-                    value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
+                    value: qualDesc || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText") // REVIEW: missing
                 },
                 cost: {
                     value: costField
@@ -781,7 +764,7 @@ const buildItemData = (kind, html, {
                     value: "LOOKFAR"
                 },
                 summary: {
-                    value: F("LOOKFAR.ItemForge.Create.Summary.Shield", {
+                    value: game.i18n.format("LOOKFAR.ItemForge.Sheets.Summaries.Shield", {
                         martialType: martialLabel(!!base?.isMartial)
                     })
                 }
@@ -794,7 +777,7 @@ const buildItemData = (kind, html, {
     const typeName = getLocalizedEquipNameStrict("accessory", baseId);
 
     return {
-        name: F("LOOKFAR.ItemForge.Create.NamePattern.Accessory", {
+        name: game.i18n.format("LOOKFAR.ItemForge.Sheets.NamePattern.Accessory", {
             type: typeName
         }),
         type: "accessory",
@@ -810,7 +793,7 @@ const buildItemData = (kind, html, {
                 value: Number(base?.init ?? 0) || 0
             },
             quality: {
-                value: qualDesc || L("LOOKFAR.ItemForge.Qualities.NoneText")
+                value: qualDesc || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText") // REVIEW: missing
             },
             cost: {
                 value: costField
@@ -820,7 +803,7 @@ const buildItemData = (kind, html, {
             },
             summary: {
                 // No placeholders expected per en.json; extra data ignored if present.
-                value: F("LOOKFAR.ItemForge.Create.Summary.Accessory", {})
+                value: game.i18n.format("LOOKFAR.ItemForge.Sheets.Summaries.Accessory", {})
             }
         }
     };
@@ -843,7 +826,7 @@ async function openMaterialsMiniDialog() {
     );
 
     const dlg = new Dialog({
-        title: L("LOOKFAR.ItemForge.Dialog.MiniTitle"),
+        title: game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.MiniTitle"),
         content,
         buttons: {},
         render: async (html) => {
@@ -883,19 +866,19 @@ async function openMaterialsMiniDialog() {
                 if (!list.length) {
                     if (needKey) {
                         $materialsHint.text(
-                            F("LOOKFAR.ItemForge.Materials.RequireOriginHint", {
+                            game.i18n.format("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.RequireOriginHint", {
                                 origin: originI18nValueForKey(needKey) || needKey
                             })
                         );
                     } else {
-                        $materialsHint.text(L("LOOKFAR.ItemForge.Materials.Hint"));
+                        $materialsHint.text(game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Hint"));
                     }
                     $materialsHint.show();
                 } else {
                     $materialsHint.hide();
                     list.forEach((m, i) => {
-                        const originLabel = L("LOOKFAR.ItemForge.Materials.Tooltip.OriginLabel");
-                        const costLabel = L("LOOKFAR.ItemForge.Materials.Tooltip.CostLabel");
+                        const originLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Tooltip.OriginLabel");
+                        const costLabel = game.i18n.localize("LOOKFAR.ItemForge.Materials.Tooltip.CostLabel"); // REVIEW: missing from en.json
 
                         const tip = [
                             m.name || "",
@@ -903,7 +886,7 @@ async function openMaterialsMiniDialog() {
                             Number.isFinite(m.cost) ? `${costLabel}: ${m.cost}` : ""
                         ].filter(Boolean).join(" • ");
 
-                        const tooltipRemove = L("LOOKFAR.ItemForge.Materials.Tooltip.RequestRemove");
+                        const tooltipRemove = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Tooltip.RequestRemove");
 
                         const $img = $(`
               <img data-mat="1" data-index="${i}" src="${esc(m.img)}"
@@ -1004,25 +987,25 @@ async function openItemForgeDialog() {
     );
 
     const dlg = new Dialog({
-        title: L("LOOKFAR.ItemForge.Dialog.Title"),
+        title: game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Title"),
         content,
         buttons: {
             forge: {
-                label: L("LOOKFAR.ItemForge.Dialog.Button.Forge"),
+                label: game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Buttons.Forge"),
                 icon: '<i class="fas fa-hammer"></i>',
                 callback: async (html) => {
                     try {
                         const kind = html.find("input[name='itemType']:checked").val();
                         if (!kind) {
                             return ui.notifications.warn(
-                                L("LOOKFAR.ItemForge.Dialog.Errors.ChooseType")
+                                game.i18n.localize("LOOKFAR.ItemForge.Dialog.Errors.ChooseType") // REVIEW: missing from en.json
                             );
                         }
 
                         const base = getSelectedBase(html, currentTemplates);
                         if (!base) {
                             return ui.notifications.warn(
-                                L("LOOKFAR.ItemForge.Dialog.Errors.ChooseTemplate")
+                                game.i18n.localize("LOOKFAR.ItemForge.Dialog.Errors.ChooseTemplate") // REVIEW: missing
                             );
                         }
 
@@ -1045,7 +1028,7 @@ async function openItemForgeDialog() {
                                 const currQty = Number(doc.system?.quantity?.value ?? 0) || 0;
                                 if (currQty < used) {
                                     ui.notifications?.error(
-                                        F("LOOKFAR.ItemForge.Materials.Errors.NotEnoughQuantity", {
+                                        game.i18n.format("LOOKFAR.ItemForge.Errors.NotEnoughQuantity", {
                                             name: doc.name,
                                             need: used,
                                             have: currQty
@@ -1076,15 +1059,15 @@ async function openItemForgeDialog() {
                         });
                         if (!created) throw new Error("Item creation failed.");
                         ui.notifications.info(
-                            F("LOOKFAR.ItemForge.Notifications.Forged", {
+                            game.i18n.format("LOOKFAR.ItemForge.Chat.Forged", {
                                 name: created.name
                             })
                         );
                     } catch (err) {
                         console.error("[Item Forger] Forge failed:", err);
                         ui.notifications?.error(
-                            F("LOOKFAR.ItemForge.Dialog.Errors.ForgeFailed", {
-                                error: err.message || L("LOOKFAR.ItemForge.Errors.GenericForgeFailed")
+                            game.i18n.format("LOOKFAR.ItemForge.Dialog.Errors.ForgeFailed", { // REVIEW: missing
+                                error: err.message || game.i18n.localize("LOOKFAR.ItemForge.Errors.GenericForgeFailed")
                             })
                         );
                         return false;
@@ -1276,9 +1259,7 @@ async function openItemForgeDialog() {
                 const $t = html.find("#templateList [data-selected='1']").first();
                 const ti = Number($t.data("idx"));
                 const tmpl = Number.isFinite(ti) ? currentTemplates[ti] : null;
-                const {
-                    craft
-                } = getCurrentCosts(html, tmpl, currentQualities);
+                const { craft } = getCurrentCosts(html, tmpl, currentQualities);
                 $val.text(craft);
             }
 
@@ -1307,7 +1288,7 @@ async function openItemForgeDialog() {
                     armor: dataLoader.armorData?.armorList,
                     shield: dataLoader.shieldsData?.shieldList,
                     accessory: dataLoader.accessoriesData?.accessoryList
-                } [kind] || [];
+                }[kind] || [];
 
                 const base = byKindList.find(e => e?.id === templateId);
                 const img = base ? dataLoader.getRandomIconFor(kind, base) : null;
@@ -1348,9 +1329,9 @@ async function openItemForgeDialog() {
             };
 
             const handLabel = (h) => {
-                const one = L("LOOKFAR.ItemForge.Preview.Handed.One");
-                const two = L("LOOKFAR.ItemForge.Preview.Handed.Two");
-                const dash = L("LOOKFAR.ItemForge.Preview.Handed.Unknown");
+                const one = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.One-Handed");
+                const two = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Two-Handed");
+                const dash = game.i18n.localize("LOOKFAR.ItemForge.Preview.Handed.Unknown"); // REVIEW: missing
                 return (h === "1") ? one :
                     (h === "2") ? two :
                     (h || dash);
@@ -1375,7 +1356,7 @@ async function openItemForgeDialog() {
                     shield: "icons/svg/shield.svg",
                     armor: "icons/svg/statue.svg",
                     accessory: "icons/svg/stoned.svg"
-                } [k] || "icons/svg/mystery-man.svg");
+                }[k] || "icons/svg/mystery-man.svg");
 
                 const $sel = selectedEl ?
                     $(selectedEl) :
@@ -1456,7 +1437,7 @@ async function openItemForgeDialog() {
                         .catch(e => {
                             console.error("[Item Forger] Failed to render preview template:", e);
                             $preview.html(
-                                `<div class="if-preview-error">${esc(L("LOOKFAR.ItemForge.Preview.Error.Generic"))}</div>`
+                                `<div class="if-preview-error">${esc(game.i18n.localize("LOOKFAR.ItemForge.Preview.Error.Generic"))}</div>` // REVIEW: missing
                             );
                         });
                 };
@@ -1464,7 +1445,7 @@ async function openItemForgeDialog() {
                 // dial sanity check
                 if (kindNow !== kind) {
                     ctx.muted = true;
-                    ctx.mutedText = L("LOOKFAR.ItemForge.Preview.Muted.OtherKind");
+                    ctx.mutedText = game.i18n.localize("LOOKFAR.ItemForge.Preview.Muted.OtherKind"); // REVIEW: missing
                     return renderCtx(ctx);
                 }
 
@@ -1541,7 +1522,7 @@ async function openItemForgeDialog() {
 
                     if (!base2) {
                         ctx.muted = true;
-                        ctx.mutedText = L("LOOKFAR.ItemForge.Preview.Muted.SelectWeaponTemplate");
+                        ctx.mutedText = game.i18n.localize("LOOKFAR.ItemForge.Preview.Muted.SelectWeaponTemplate"); // REVIEW: missing
                         return renderCtx(ctx);
                     }
 
@@ -1552,9 +1533,7 @@ async function openItemForgeDialog() {
 
                     let worthForPreview = 0;
                     try {
-                        const {
-                            worth
-                        } = getCurrentCosts(html, base2, currentQualities);
+                        const { worth } = getCurrentCosts(html, base2, currentQualities);
                         worthForPreview = worth;
                     } catch {
                         worthForPreview = 0;
@@ -1651,13 +1630,13 @@ async function openItemForgeDialog() {
                 _requiredOriginKey = needKey;
                 html.data("ifRequiredOriginKey", _requiredOriginKey);
 
-                $materialsHint.text(L("LOOKFAR.ItemForge.Materials.Hint"));
+                $materialsHint.text(game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Hint"));
                 $materialsDrop.children("img[data-mat='1']").remove();
 
                 if (!mats.length) {
                     if (needKey) {
                         $materialsHint.text(
-                            F("LOOKFAR.ItemForge.Materials.RequireOriginHint", {
+                            game.i18n.format("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.RequireOriginHint", {
                                 origin: originI18nValueForKey(needKey) || needKey
                             })
                         );
@@ -1666,9 +1645,9 @@ async function openItemForgeDialog() {
                 } else {
                     $materialsHint.hide();
                     mats.forEach((m, i) => {
-                        const originLabel = L("LOOKFAR.ItemForge.Materials.Tooltip.OriginLabel");
-                        const costLabel = L("LOOKFAR.ItemForge.Materials.Tooltip.CostLabel");
-                        const removeLabel = L("LOOKFAR.ItemForge.Materials.Tooltip.Remove");
+                        const originLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Tooltip.OriginLabel");
+                        const costLabel = game.i18n.localize("LOOKFAR.ItemForge.Materials.Tooltip.CostLabel"); // REVIEW: missing
+                        const removeLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Materials.Tooltip.Remove");
 
                         const tip = [
                             m.name || "",
@@ -1737,7 +1716,7 @@ async function openItemForgeDialog() {
                     data = JSON.parse(raw);
                 } catch (e) {
                     console.error("[Item Forger] Drop parse failed (JSON):", e);
-                    ui.notifications?.error(L("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
+                    ui.notifications?.error(game.i18n.localize("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
                     return;
                 }
                 if (!data?.uuid) return;
@@ -1755,31 +1734,31 @@ async function openItemForgeDialog() {
                     const doc = await fromUuid(data.uuid);
                     if (!doc || doc.documentName !== "Item") {
                         return ui.notifications?.warn(
-                            L("LOOKFAR.ItemForge.Materials.Errors.OnlyItems")
+                            game.i18n.localize("LOOKFAR.ItemForge.Errors.OnlyItems")
                         );
                     }
                     if (String(doc.type) !== "treasure") {
                         return ui.notifications?.warn(
-                            L("LOOKFAR.ItemForge.Materials.Errors.OnlyTreasure")
+                            game.i18n.localize("LOOKFAR.ItemForge.Errors.OnlyTreasure")
                         );
                     }
                     if (_materials.length >= 5) {
                         return ui.notifications?.warn(
-                            L("LOOKFAR.ItemForge.Materials.Errors.MaxMaterials")
+                            game.i18n.localize("LOOKFAR.ItemForge.Errors.MaxMaterials")
                         );
                     }
 
                     const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
                     if (qty <= 0) {
                         return ui.notifications?.warn(
-                            L("LOOKFAR.ItemForge.Materials.Errors.NoMoreItem")
+                            game.i18n.localize("LOOKFAR.ItemForge.Errors.NoMoreItem")
                         );
                     }
 
                     const alreadyUsed = _materials.filter(m => m.uuid === data.uuid).length;
                     if (alreadyUsed >= qty) {
                         return ui.notifications?.warn(
-                            L("LOOKFAR.ItemForge.Materials.Errors.NoMoreItem")
+                            game.i18n.localize("LOOKFAR.ItemForge.Errors.NoMoreItem")
                         );
                     }
 
@@ -1803,7 +1782,7 @@ async function openItemForgeDialog() {
                     });
                 } catch (e) {
                     console.error("[Item Forger] Drop parse failed:", e);
-                    ui.notifications?.error(L("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
+                    ui.notifications?.error(game.i18n.localize("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
                 }
             });
 
@@ -1812,9 +1791,9 @@ async function openItemForgeDialog() {
                 if (!currentTemplates.length) {
                     $templateList.html(`
             <div style="text-align:center; opacity:0.75;">
-              ${esc(L("LOOKFAR.ItemForge.TemplateList.Empty"))}
+              ${esc(game.i18n.localize("LOOKFAR.ItemForge.TemplateList.Empty"))}
             </div>
-          `);
+          `); // REVIEW: missing from en.json
                     const kind = html.find("input[name='itemType']:checked").val();
                     renderPreview(kind, null);
                     return;
@@ -1969,9 +1948,9 @@ async function openItemForgeDialog() {
                 if (!currentQualities.length) {
                     $standardBlock.html(`
             <div style="text-align:center; opacity:0.75;">
-              ${esc(L("LOOKFAR.ItemForge.Qualities.NoneAvailable"))}
+              ${esc(game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneAvailable"))}
             </div>
-          `);
+          `); // REVIEW: missing from en.json
                     const kindNow = html.find("input[name='itemType']:checked").val();
                     renderPreview(kindNow, html.find("#templateList [data-selected='1']").first());
                     updateCost();
@@ -2051,9 +2030,9 @@ async function openItemForgeDialog() {
                     else $wrap.removeAttr("title");
                 };
 
-                const makeOneHandLabel = L("LOOKFAR.ItemForge.Customize.HandToggle.MakeOneHanded");
-                const makeTwoHandLabel = L("LOOKFAR.ItemForge.Customize.HandToggle.MakeTwoHanded");
-                const restrictedLabel = L("LOOKFAR.ItemForge.Customize.Tooltip.HandToggleRestricted");
+                const makeOneHandLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.MakeOneHanded");
+                const makeTwoHandLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.MakeTwoHanded");
+                const restrictedLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.Tooltip.HandToggleRestricted");
 
                 if (h === "2") {
                     $labelSpan.text(makeOneHandLabel);
@@ -2077,8 +2056,8 @@ async function openItemForgeDialog() {
                 const $cb = html.find("#optPlusOne");
                 const $label = $cb.closest("label");
 
-                const gmOnlyLabel = L("LOOKFAR.ItemForge.Customize.Tooltip.GMOnly");
-                const alreadyPlusOne = L("LOOKFAR.ItemForge.Customize.Tooltip.PlusOneAlready");
+                const gmOnlyLabel = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.Tooltip.GMOnly");
+                const alreadyPlusOne = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.Tooltip.PlusOneAlready");
 
                 // If this client is a locked player, keep current checked state but disable & grey it out
                 if (!game.user.isGM && lockControlsForPlayer) {
@@ -2152,7 +2131,7 @@ async function openItemForgeDialog() {
                     const $pd = html.find("#optPlusDamage");
                     const $pdLabel = $pd.closest("label");
 
-                    const variantTooltip = L("LOOKFAR.ItemForge.Customize.Tooltip.VariantDamageInfo");
+                    const variantTooltip = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.Tooltip.VariantDamageInfo");
 
                     if (useVariantDamageRules()) {
                         $pd.prop("checked", false)
@@ -2359,7 +2338,7 @@ async function openItemForgeDialog() {
                 } catch (err) {
                     console.error("[Item Forger] FilePicker error:", err);
                     ui.notifications?.error(
-                        L("LOOKFAR.ItemForge.Errors.FilePickerOpen")
+                        game.i18n.localize("LOOKFAR.ItemForge.Errors.FilePickerOpen")
                     );
                 }
             });
@@ -2447,7 +2426,7 @@ Hooks.on("lookfarShowItemForgeDialog", () => {
     } catch (err) {
         console.error("[Item Forger] failed to open:", err);
         ui.notifications?.error(
-            L("LOOKFAR.ItemForge.Dialog.Errors.OpenFailed")
+            game.i18n.localize("LOOKFAR.ItemForge.Dialog.Errors.OpenFailed") // REVIEW: missing
         );
     }
 });
