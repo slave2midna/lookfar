@@ -94,7 +94,9 @@
     "__SECTION__Terms": "=== Terms ===",
     "Terms": {
       "Common": {
-        "Zenit": "Zenit"
+        "Zenit": "Zenit",
+        "Martial": "Martial",
+        "Non-Martial": "Non-Martial"
       },
       "Element": {
         "Physical": "Physical",
@@ -394,6 +396,7 @@
     }
   }
 }
+
 
 
 
