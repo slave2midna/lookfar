@@ -390,13 +390,9 @@
         "OnlyTreasure": "Only Treasure-type items can be used as materials.",
         "MaxMaterials": "You cannot use more than 5 materials.",
         "NoMoreItem": "You cannot use this material any more times.",
-        "NotEnoughQuantity": "Not enough copies of {name}. Need {need}, have {have}."
+        "NotEnoughQuantity": "Not enough copies of {name}. Need {need}, have {have}.",
+        "ForgeFailed": "The forge failed: {error}"
       }
     }
   }
 }
-
-
-
-
-
