@@ -460,13 +460,13 @@ const getSelectedQualityInfo = (html, currentQualities) => {
     if (catKey === "custom") {
         const { eff, cost } = readCustomQuality(html);
         return {
-            desc: eff || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText"), // REVIEW: missing from en.json
+            desc: eff || "",
             cost
         };
     }
     if (catKey === "none" || !currentQualities?.length) {
         return {
-            desc: game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText"), // REVIEW: missing from en.json
+            desc: "",
             cost: 0
         };
     }
@@ -474,7 +474,7 @@ const getSelectedQualityInfo = (html, currentQualities) => {
     const qi = Number($q.data("idx"));
     const q = Number.isFinite(qi) ? currentQualities[qi] : null;
     return {
-        desc: q?.description ?? q?.desc ?? game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText"), // REVIEW: missing
+        desc: q?.description ?? q?.desc ?? "",
         cost: getQualityCost(q)
     };
 };
@@ -672,7 +672,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
                     value: !!w.isMartial
                 },
                 quality: {
-                    value: qualDesc || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText") // REVIEW: missing
+                    value: qualDesc || ""
                 },
                 cost: {
                     value: costField
@@ -716,7 +716,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
                     value: !!base?.isMartial
                 },
                 quality: {
-                    value: qualDesc || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText") // REVIEW: missing
+                    value: qualDesc || ""
                 },
                 cost: {
                     value: costField
@@ -759,7 +759,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
                     value: !!base?.isMartial
                 },
                 quality: {
-                    value: qualDesc || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText") // REVIEW: missing
+                    value: qualDesc || ""
                 },
                 cost: {
                     value: costField
@@ -797,7 +797,7 @@ const buildItemData = (kind, html, { currentTemplates, currentQualities }) => {
                 value: Number(base?.init ?? 0) || 0
             },
             quality: {
-                value: qualDesc || game.i18n.localize("LOOKFAR.ItemForge.Qualities.NoneText") // REVIEW: missing
+                value: qualDesc || ""
             },
             cost: {
                 value: costField
