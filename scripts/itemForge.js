@@ -999,18 +999,7 @@ async function openItemForgeDialog() {
                 callback: async (html) => {
                     try {
                         const kind = html.find("input[name='itemType']:checked").val();
-                        if (!kind) {
-                            return ui.notifications.warn(
-                                game.i18n.localize("LOOKFAR.ItemForge.Dialog.Errors.ChooseType") // REVIEW: missing from en.json
-                            );
-                        }
-
                         const base = getSelectedBase(html, currentTemplates);
-                        if (!base) {
-                            return ui.notifications.warn(
-                                game.i18n.localize("LOOKFAR.ItemForge.Dialog.Errors.ChooseTemplate") // REVIEW: missing
-                            );
-                        }
 
                         const mats = html.data("ifMaterials") || [];
                         if (!validateMaterialsOrigin(html, mats)) return false;
@@ -1069,7 +1058,7 @@ async function openItemForgeDialog() {
                     } catch (err) {
                         console.error("[Item Forger] Forge failed:", err);
                         ui.notifications?.error(
-                            game.i18n.format("LOOKFAR.ItemForge.Dialog.Errors.ForgeFailed", { // REVIEW: missing
+                            game.i18n.format("LOOKFAR.ItemForge.Errors.ForgeFailed", {
                                 error: err.message || game.i18n.localize("LOOKFAR.ItemForge.Errors.GenericForgeFailed")
                             })
                         );
