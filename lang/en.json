@@ -329,7 +329,7 @@
               "Custom": "Custom"
             },
             "Custom": {
-              "CostLabel": "Cost"
+              "CostLabel": "Cost",
               "Tooltip": {
                 "Effect": "Type your custom effect text",
                 "Cost": "Enter a non-negative integer"
@@ -394,5 +394,6 @@
     }
   }
 }
+
 
 
