@@ -136,7 +136,6 @@ const matchesAppliesTo = (q, type) => {
 };
 
 const qualityDisplayName = (q, type) => {
-    // New derived qualities use q.name.
     if (q?.name) return q.name;
 
     // Back-compat per-slot shapes
@@ -146,6 +145,12 @@ const qualityDisplayName = (q, type) => {
     if (type === "accessory") return q.accessoryName ?? q.name ?? "";
     return q.name ?? "";
 };
+
+const qualityDescription = (q) =>
+    q?.description ??
+    q?.desc ??
+    q?.Description ??
+    "";
 
 const normHand = (h) => {
     const v = String(h ?? "").trim().toLowerCase();
@@ -1950,13 +1955,17 @@ async function openItemForgeDialog() {
                     return;
                 }
 
-                const items = currentQualities.map((q, i) => `
-          <div class="if-quality" data-idx="${i}">
-            <span class="if-quality-label">
-              ${esc(qualityDisplayName(q, type))}
-            </span>
-          </div>
-        `).join("");
+                const items = currentQualities.map((q, i) => {
+                    const desc = esc(qualityDescription(q));
+
+                    return `
+                      <div class="if-quality" data-idx="${i}" title="${desc}">
+                        <span class="if-quality-label">
+                          ${esc(qualityDisplayName(q, type))}
+                        </span>
+                      </div>
+                    `;
+                }).join("");
                 $standardBlock.html(items);
 
                 wireSelectableList($standardBlock, ".if-quality", {
