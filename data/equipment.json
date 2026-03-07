@@ -43,7 +43,7 @@
          "isMartial":false
       },
       {
-         "id":"shortbow",
+         "id":"bow",
          "value":200,
          "category":"bow",
          "hand":"two-handed",
@@ -57,7 +57,7 @@
          "isMartial":false
       },
       {
-         "id":"iron-knuckle",
+         "id":"knuckle",
          "value":150,
          "category":"brawling",
          "hand":"one-handed",
@@ -71,7 +71,7 @@
          "isMartial":false
       },
       {
-         "id":"steel-dagger",
+         "id":"dagger",
          "value":150,
          "category":"dagger",
          "hand":"one-handed",
@@ -99,7 +99,7 @@
          "isMartial":true
       },
       {
-         "id":"chain-whip",
+         "id":"whip",
          "value":150,
          "category":"flail",
          "hand":"two-handed",
@@ -113,7 +113,7 @@
          "isMartial":false
       },
       {
-         "id":"iron-hammer",
+         "id":"hammer",
          "value":200,
          "category":"heavy",
          "hand":"one-handed",
@@ -183,7 +183,7 @@
          "isMartial":true
       },
       {
-         "id":"bronze-sword",
+         "id":"sword",
          "value":200,
          "category":"sword",
          "hand":"one-handed",
