@@ -184,7 +184,7 @@
         }
       },
       "Errors": {
-        "DataUnavailable": "Error: Data not available.",
+        "DataUnavailable": "Data not available.",
         "NoDangerEffect": "No danger effect available.",
         "NoDangerSource": "No danger source available.",
         "NoDiscoveryEffect": "No discovery effect available.",
@@ -240,7 +240,7 @@
         "NamePatterns": {
           "Material": "{detail} {origin} {nature}",
           "Ingredient": "{taste} {origin} {nature}",
-          "Weapon": "{accuracyUp} {quality} {damageUp} {element} {type}",
+          "Weapon": "{accuracyUp} {damageUp} {quality} {element} {type}",
           "Armor": "{quality} {type}",
           "Shield": "{quality} {type}",
           "Accessory": "{quality} {type}"
@@ -395,5 +395,6 @@
     }
   }
 }
+
 
 
