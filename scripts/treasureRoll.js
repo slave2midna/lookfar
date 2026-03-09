@@ -65,6 +65,12 @@ function cleanName(s) {
   return String(s || "").replace(/\s+/g, " ").trim();
 }
 
+function normalizeTreasureKey(value) {
+  const s = String(value ?? "").trim();
+  if (!s || s === "Random") return "Random";
+  return s.toLowerCase();
+}
+
 // Normalize cost across different schemas
 function getItemCost(sys) {
   return sys?.cost?.value ??
@@ -80,13 +86,16 @@ function getItemCost(sys) {
 
 // Material Generation
 function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeywordsMaterial, natureKeywordsMaterial) {
-  const localNature = (nature === "Random" || !natureKeywordsMaterial[nature]) ?
-    getRandom(Object.keys(natureKeywordsMaterial)) :
-    nature;
+  const normalizedNature = normalizeTreasureKey(nature);
+  const normalizedOrigin = normalizeTreasureKey(origin);
 
-  const localOrigin = (origin === "Random" || !originKeywordsMaterial[origin]) ?
+  const localNature = (normalizedNature === "Random" || !natureKeywordsMaterial[normalizedNature]) ?
+    getRandom(Object.keys(natureKeywordsMaterial)) :
+    normalizedNature;
+
+  const localOrigin = (normalizedOrigin === "Random" || !originKeywordsMaterial[normalizedOrigin]) ?
     getRandom(Object.keys(originKeywordsMaterial)) :
-    origin;
+    normalizedOrigin;
 
   if (!natureKeywordsMaterial[localNature] || budget < 50) return null;
 
@@ -111,13 +120,16 @@ function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeyw
 
 // Ingredient Generation
 function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIngredient, originKeywordsIngredient) {
-  const localNature = (nature === "Random" || !natureKeywordsIngredient[nature]) ?
-    getRandom(Object.keys(natureKeywordsIngredient)) :
-    nature;
+  const normalizedNature = normalizeTreasureKey(nature);
+  const normalizedOrigin = normalizeTreasureKey(origin);
 
-  const localOrigin = (origin === "Random" || !originKeywordsIngredient[origin]) ?
+  const localNature = (normalizedNature === "Random" || !natureKeywordsIngredient[normalizedNature]) ?
+    getRandom(Object.keys(natureKeywordsIngredient)) :
+    normalizedNature;
+
+  const localOrigin = (normalizedOrigin === "Random" || !originKeywordsIngredient[normalizedOrigin]) ?
     getRandom(Object.keys(originKeywordsIngredient)) :
-    origin;
+    normalizedOrigin;
 
   if (!natureKeywordsIngredient[localNature] || budget < 10) return null;
 
@@ -144,10 +156,11 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
 
 // Weapon Generation
 function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamageRules = false) {
+  const normalizedOrigin = normalizeTreasureKey(origin);
   const originKeys = Object.keys(weaponQualities).filter(k => k !== "basic");
-  const localOrigin = (origin === "Random" || !weaponQualities[origin]) ?
+  const localOrigin = (normalizedOrigin === "Random" || !weaponQualities[normalizedOrigin]) ?
     getRandom(originKeys) :
-    origin;
+    normalizedOrigin;
 
   let base, qualityId = null,
     hasPlusOne = false,
@@ -195,10 +208,11 @@ function rollWeapon(weapons, weaponQualities, elements, origin, useVariantDamage
 
 // Armor Generation
 function rollArmor(armorList, armorQualities, origin, cap) {
+  const normalizedOrigin = normalizeTreasureKey(origin);
   const originKeys = Object.keys(armorQualities).filter(k => k !== "basic");
-  const localOrigin = (origin === "Random" || !armorQualities[origin]) ?
+  const localOrigin = (normalizedOrigin === "Random" || !armorQualities[normalizedOrigin]) ?
     getRandom(originKeys) :
-    origin;
+    normalizedOrigin;
 
   const base = getRandom(armorList);
   let value = base.value ?? 0;
@@ -228,10 +242,11 @@ function rollArmor(armorList, armorQualities, origin, cap) {
 
 // Shield Generation
 function rollShield(shieldList, shieldQualities, origin, cap) {
+  const normalizedOrigin = normalizeTreasureKey(origin);
   const originKeys = Object.keys(shieldQualities).filter(k => k !== "basic");
-  const localOrigin = (origin === "Random" || !shieldQualities[origin]) ?
+  const localOrigin = (normalizedOrigin === "Random" || !shieldQualities[normalizedOrigin]) ?
     getRandom(originKeys) :
-    origin;
+    normalizedOrigin;
 
   const base = getRandom(shieldList);
   let value = base.value ?? 0;
@@ -261,10 +276,11 @@ function rollShield(shieldList, shieldQualities, origin, cap) {
 
 // Accessory Generation
 function rollAccessory(accessories, accessoryQualities, origin, cap) {
+  const normalizedOrigin = normalizeTreasureKey(origin);
   const originKeys = Object.keys(accessoryQualities).filter(k => k !== "basic");
-  const localOrigin = (origin === "Random" || !accessoryQualities[origin]) ?
+  const localOrigin = (normalizedOrigin === "Random" || !accessoryQualities[normalizedOrigin]) ?
     getRandom(originKeys) :
-    origin;
+    normalizedOrigin;
 
   const base = getRandom(accessories);
   let value = base.value ?? 0;
