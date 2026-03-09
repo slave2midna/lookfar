@@ -38,21 +38,17 @@ const statLabel = (code) => {
     const normalized = String(code ?? "").toUpperCase();
 
     const keyMap = {
-        MIG: "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.MIG",
-        DEX: "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.DEX",
-        WLP: "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.WLP",
-        INS: "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.INS",
-        INIT: "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.INIT",
-        MDEF: "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.MDEF",
-        DEF: "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.DEF",
-        HR: "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.HR"
+        MIG: "LOOKFAR.Terms.Attributes.MIG",
+        DEX: "LOOKFAR.Terms.Attributes.DEX",
+        WLP: "LOOKFAR.Terms.Attributes.WLP",
+        INS: "LOOKFAR.Terms.Attributes.INS",
+        INIT: "LOOKFAR.Terms.Attributes.INIT",
+        MDEF: "LOOKFAR.Terms.Attributes.MDEF",
+        DEF: "LOOKFAR.Terms.Attributes.DEF",
+        HR: "LOOKFAR.Terms.Attributes.HR"
     };
 
-    const key = keyMap[normalized];
-    if (!key) return String(code ?? "");
-
-    const out = game.i18n.localize(key);
-    return out === key ? String(code ?? "") : out;
+    return game.i18n.localize(keyMap[normalized]);
 };
 
 const martialLabel = (isMartial) =>
@@ -68,6 +64,36 @@ const elementLabel = (val) => {
     const key = `LOOKFAR.Terms.Element.${v.charAt(0).toUpperCase()}${v.slice(1)}`;
     const out = game.i18n.localize(key);
     return out === key ? v : out;
+};
+
+const weaponTypeLabel = (val) => {
+    const normalized = String(val ?? "").trim().toLowerCase();
+
+    const keyMap = {
+        melee: "LOOKFAR.Terms.Common.Melee",
+        ranged: "LOOKFAR.Terms.Common.Ranged"
+    };
+
+    return game.i18n.localize(keyMap[normalized]);
+};
+
+const weaponCategoryLabel = (val) => {
+    const normalized = String(val ?? "").trim().toLowerCase();
+
+    const keyMap = {
+        arcane: "LOOKFAR.Terms.Category.Arcane",
+        bow: "LOOKFAR.Terms.Category.Bow",
+        brawling: "LOOKFAR.Terms.Category.Brawling",
+        dagger: "LOOKFAR.Terms.Category.Dagger",
+        firearm: "LOOKFAR.Terms.Category.Firearm",
+        flail: "LOOKFAR.Terms.Category.Flail",
+        heavy: "LOOKFAR.Terms.Category.Heavy",
+        spear: "LOOKFAR.Terms.Category.Spear",
+        sword: "LOOKFAR.Terms.Category.Sword",
+        thrown: "LOOKFAR.Terms.Category.Thrown"
+    };
+
+    return game.i18n.localize(keyMap[normalized]);
 };
 
 const normText = (v) => String(v ?? "").trim().toLowerCase();
@@ -1350,8 +1376,8 @@ async function openItemForgeDialog() {
             };
 
             const handLabel = (h) => {
-                const one = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.One-Handed");
-                const two = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Two-Handed");
+                const one = game.i18n.localize("LOOKFAR.Terms.Common.One-Handed");
+                const two = game.i18n.localize("LOOKFAR.Terms.Common.Two-Handed");
                 return (h === "1") ? one :
                     (h === "2") ? two :
                     String(h || "");
@@ -1470,13 +1496,12 @@ async function openItemForgeDialog() {
                     const a = Number.isFinite(idx2) ? currentTemplates[idx2] : null;
 
                     const isMartial = !!a?.isMartial;
-                    const defAttr = (a?.defAttr ?? "").toString().toUpperCase();
+                    const defAttr = statLabel((a?.defAttr ?? "").toString().toUpperCase());
                     const def = (a?.def ?? "—");
-                    const mdefAttr = (a?.mdefAttr ?? "").toString().toUpperCase();
+                    const mdefAttr = statLabel((a?.mdefAttr ?? "").toString().toUpperCase());
                     const mdef = (a?.mdef ?? "—");
                     const init = (a?.init ?? "—");
 
-                    // en.json-aligned stat labels
                     const defLabel = statLabel("DEF");
                     const mdefLabel = statLabel("MDEF");
                     const initLabel = statLabel("INIT");
@@ -1536,15 +1561,15 @@ async function openItemForgeDialog() {
 
                     const baseHand = normHand(base2?.hand) || null;
                     const baseHandText = handLabel(baseHand ?? (base2?.hand ?? "—"));
-                    const baseType = base2?.type ?? "—";
-                    const baseCat = base2?.category ?? base2?.cat ?? "—";
+                    const baseType = weaponTypeLabel(base2?.type ?? "");
+                    const baseCat = weaponCategoryLabel(base2?.category ?? base2?.cat ?? "");
 
                     let worthForPreview = 0;
                     try {
                         const {
                             worth
                         } = getCurrentCosts(html, base2, currentQualities);
-                        worthForPreview = worth;
+                            worthForPreview = worth;
                     } catch {
                         worthForPreview = 0;
                     }
@@ -1553,11 +1578,12 @@ async function openItemForgeDialog() {
                     const handNorm = normHand(stats.hands) || baseHand;
                     const dispHandText = handLabel(handNorm ?? baseHandText);
 
-                    // en.json-aligned stat label
                     const hrLabel = statLabel("HR");
+                    const attrALabel = statLabel(stats.attrs.A);
+                    const attrBLabel = statLabel(stats.attrs.B);
 
                     const row1 = `${dispHandText} • ${baseType} • ${baseCat}`;
-                    const row2 = `【${stats.attrs.A} + ${stats.attrs.B}】+${stats.acc} | ${hrLabel}+${stats.dmg} ${elementLabel(stats.dmgType) || stats.dmgType}`;
+                    const row2 = `【${attrALabel} + ${attrBLabel}】+${stats.acc} | ${hrLabel}+${stats.dmg} ${elementLabel(stats.dmgType)}`;
 
                     ctx.isMartial = !!stats.isMartial;
                     ctx.rows = [esc(clip(row1)), esc(clip(row2))];
