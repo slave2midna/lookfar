@@ -54,6 +54,25 @@ function lfQualityDesc(group, id) {
   return (typeof desc === "string" && desc.trim()) ? desc.trim() : "";
 }
 
+function lfWeaponCategoryLabel(value) {
+  const normalized = String(value ?? "").trim().toLowerCase();
+
+  const keyMap = {
+    arcane: "LOOKFAR.Terms.Category.Arcane",
+    bow: "LOOKFAR.Terms.Category.Bow",
+    brawling: "LOOKFAR.Terms.Category.Brawling",
+    dagger: "LOOKFAR.Terms.Category.Dagger",
+    firearm: "LOOKFAR.Terms.Category.Firearm",
+    flail: "LOOKFAR.Terms.Category.Flail",
+    heavy: "LOOKFAR.Terms.Category.Heavy",
+    spear: "LOOKFAR.Terms.Category.Spear",
+    sword: "LOOKFAR.Terms.Category.Sword",
+    thrown: "LOOKFAR.Terms.Category.Thrown"
+  };
+
+  return game.i18n.localize(keyMap[normalized]);
+}
+
 // ------------------------------
 // Utility
 // ------------------------------
@@ -614,7 +633,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           ? "LOOKFAR.TreasureRoll.Sheets.Weapon.Prefix.Masterwork"
           : "LOOKFAR.TreasureRoll.Sheets.Weapon.Prefix.Base";
 
-      const prefix = game.i18n.format(prefixKey, { category: baseWeapon.category });
+      const prefix = game.i18n.format(prefixKey, { category: lfWeaponCategoryLabel(baseWeapon.category) });
 
       // Handle +1 accuracy variants
       const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
