@@ -369,10 +369,10 @@
       },
       "Sheets": {
         "NamePattern": {
-          "Weapon": "Newly Crafted {template}",
-          "Armor": "Newly Crafted {template}",
-          "Shield": "Newly Crafted {template}",
-          "Accessory": "Newly Crafted {template}"
+          "Weapon": "Newly Crafted {type}",
+          "Armor": "Newly Crafted {type}",
+          "Shield": "Newly Crafted {type}",
+          "Accessory": "Newly Crafted {type}"
         },
         "Summaries": {
           "Weapon": "A crafted {category}.",
@@ -399,5 +399,6 @@
     }
   }
 }
+
 
 
