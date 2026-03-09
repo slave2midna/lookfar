@@ -1,384 +1,396 @@
 {
   "LOOKFAR": {
+    "__SECTION__Buttons": "=== Botões ===",
     "Button": {
       "TravelCheck": {
         "Name": "Teste de Viagem",
-        "Title": "Fazer um Teste de Viagem"
+        "Title": "Realizar um Teste de Viagem"
       },
       "TreasureRoll": {
         "Name": "Rolagem de Tesouro",
         "Title": "Gere algum tesouro"
+      },
+      "DungeonBuilder": {
+        "Name": "Mapeador de Dungeon",
+        "Title": "Mapeie uma Dungeon"
+      },
+      "ConflictBuilder": {
+        "Name": "Construtor de Conflitos",
+        "Title": "Crie um Conflito"
+      },
+      "ItemForger": {
+        "Name": "Forja de Itens",
+        "Title": "Forja um Item"
       }
     },
+
+    
+    "__SECTION__Settings": "=== Configurações ===",
     "Settings": {
       "ResultVisibility": {
-        "Name": "Visibilidade do Resultado",
-        "Hint": "Escolha se os resultados e saídas do chat são públicos ou somente para o GM.",
+        "Name": "Visibilidade de Resultados",
+        "Hint": "Escolha se os resultados e chats serão públicos ou disponíveis apenas para o Narrador",
         "Choices": {
           "Public": "Público",
           "GMOnly": "Apenas Narrador"
         }
       },
-      "EnableKeywords": {
-        "Name": "Habilitar palavras-chave",
-        "Hint": "Habilitar palavras-chave ao gerar resultados de verificação de viagem."
-      },
-      "DiscoveryEffectTable": {
-        "Name": "Tabela de rolagem de efeitos de descoberta",
-        "Hint": "Selecione a Tabela de Rolagem a ser usada para gerar efeitos de descoberta."
-      },
-      "DiscoverySourceTable": {
-        "Name": "Tabela de rolagem de fonte de descoberta",
-        "Hint": "Selecione a Tabela de Rolagem a ser usada para gerar fontes de descoberta."
-      },
-      "DangerThreatTable": {
-        "Name": "Tabela de Rolagem de Ameaça e Perigo",
-        "Hint": "Selecione a Tabela de Rolagem a ser usada para gerar ameaças perigosas."
-      },
-      "DangerSourceTable": {
-        "Name": "Tabela de rolagem de fonte de perigo",
-        "Hint": "Selecione a Tabela de Rolagem a ser usada para gerar fontes de perigo."
-      },
-      "DefaultRollTable": "Padrões Lookfar"
-    },
-    "Dialogs": {
-      "TravelCheck": {
-        "Title": "Teste de Viagem",
-        "ThreatLevel": "Nível de Ameaça",
-        "Wayfaring": "Viajante",
-        "PartyLevel": "Nível do Grupo:",
-        "TreasureHunting": "Caça ao Tesouro",
-        "WellTraveled": "Viajante Experiente"
-      },
-      "TravelResult": {
-        "Title": "Resultado da Viagem",
-        "Prompt": "Você quer manter este resultado ou rolar novamente??",
-        "Waiting": "Aguardando decisão do Narrador...",
-        "NoIncident": "O dia de viagem transcorreu sem incidentes."
-      },
-      "Result": {
-        "Danger": "Perigo!",
-        "Discovery": "Descoberta!"
-      },
-      "TableHeaders": {
-        "Threat": "Ameaça",
-        "Source": "Fonte",
-        "Effect": "Efeito",
-        "Traits": "Traços",
-        "Terrain": "Terreno"
-      }
-    },
-    "Severity": {
-      "Minor": "Menor",
-      "Heavy": "Pesado",
-      "Massive": "Massivo"
-    },
-    "Chat": {
-      "Alias": {
-        "Roll": "Rolagem de Viagem",
-        "Result": "Resultado da Viagem"
-      }
-    },
-    "Errors": {
-      "DataUnavailable": "Erro: Dados não disponíveis.",
-      "DamageMissing": "Erro: Dados de danos não encontrados.",
-      "ThreatUnknown": "Erro: Tipo de ameaça desconhecido.",
-      "NoDangerSource": "Nenhuma fonte de perigo disponível.",
-      "NoDiscoveryEffect": "Nenhum efeito de descoberta disponível.",
-      "NoDiscoverySource": "Nenhuma fonte de descoberta disponível."
-    },
-    "Keywords": {
-      "Traits": {
-        "Abandoned": "abandonado",
-        "Ancient": "ancestral",
-        "Arcane": "arcano",
-        "Bewitched": "enfeitiçado",
-        "Blighted": "arruinado",
-        "Cavernous": "cavernoso",
-        "Celestial": "celestial",
-        "Chimeric": "quimérico",
-        "Crumbling": "desmoronando",
-        "Cryptic": "críptico",
-        "Cursed": "amaldiçoado",
-        "Decayed": "decadente",
-        "Desolate": "desolado",
-        "Deserted": "deserto",
-        "Dilapidated": "dilapidado",
-        "Dimensional": "dimensional",
-        "Eldritch": "sobrenatural",
-        "Ephemeral": "efêmero",
-        "Ethereal": "etéreo",
-        "Eternal": "eterno",
-        "Fabled": "fabuloso",
-        "Faded": "apagado",
-        "Forbidden": "proibido",
-        "Forging": "forjado",
-        "Forgotten": "esquecido",
-        "Fractured": "fraturado",
-        "Frozen": "congelado",
-        "Ghostly": "fantasmático",
-        "Gloomy": "melancólico",
-        "Gossamer": "delicado",
-        "Hallowed": "consagrado",
-        "Haunted": "assombrado",
-        "Hidden": "escondido",
-        "Infernal": "infernal",
-        "Isolated": "isolado",
-        "Legendary": "lendário",
-        "Luminous": "luminoso",
-        "Lurking": "oculto",
-        "Magical": "mágico",
-        "Moonlit": "enluarado",
-        "Mysterious": "misterioso",
-        "Mystic": "místico",
-        "Mystical": "misterioso",
-        "Neglected": "negligenciado",
-        "Obsidian": "obsidiana",
-        "Obscured": "obscurecido",
-        "Obscure": "obscuro",
-        "Obscuring": "obscurecendo",
-        "Otherworldly": "de outro mundo",
-        "Overgrown": "tomado por vegetação",
-        "Overlooked": "despercebido",
-        "Petrified": "petrificado",
-        "Phantasmal": "fantasmagórico",
-        "Primeval": "primevo",
-        "Pristine": "imaculado",
-        "Relic": "relíquia",
-        "Resplendent": "resplandecente",
-        "Runed": "rúnico",
-        "Ruined": "arruinado",
-        "Sacred": "sagrado",
-        "Sanctified": "santificado",
-        "Secret": "secreto",
-        "Secluded": "afastado",
-        "Serene": "sereno",
-        "Shaded": "sombreado",
-        "Shadowed": "envolto em sombras",
-        "Shattered": "estilhaçado",
-        "Shimmering": "cintilante",
-        "Spectral": "espectral",
-        "Stygian": "estígio",
-        "Sunken": "afundado",
-        "Surreal": "surreal",
-        "Sylvan": "silvano",
-        "Temporal": "temporal",
-        "TimeWorn": "envelhecido",
-        "Twilight": "crepúsculo",
-        "Uncharted": "Inexplorado",
-        "Unhallowed": "Profano",
-        "Unseen": "não visto",
-        "Unearthed": "desenterrado",
-        "Verdant": "verdejante",
-        "Veiled": "encoberto",
-        "Venerable": "venerável",
-        "Vivid": "vívido",
-        "Weathered": "sofrido",
-        "Withered": "definhado",
-        "Wraithlike": "sombrio"
-      },
-      "Terrain": {
-        "Alcove": "alcova",
-        "Altar": "altar",
-        "Aqueduct": "aqueduto",
-        "Archipelago": "arquipélago",
-        "Arena": "arena",
-        "Archive": "arquivo",
-        "Bazaar": "bazr",
-        "Barracks": "barracas",
-        "Battleground": "campo de batalha",
-        "Butte": "colina isolada",
-        "Cairn": "cairn",
-        "Campsite": "acampamento",
-        "Catacombs": "catacumbas",
-        "Causeway": "estrada elevada",
-        "Cauldron": "bacia",
-        "Cavern": "caverna",
-        "Castle": "castelo",
-        "Chapel": "capela",
-        "Chasm": "fenda",
-        "Citadel": "cidadela",
-        "Cliff": "penhasco",
-        "Conservatory": "conservatório",
-        "Corridor": "corredor",
-        "Crags": "penhasco ingríme",
-        "Crater": "cratera",
-        "Crypt": "cripta",
-        "Den": "toca",
-        "Dome": "domo",
-        "Dungeon": "masmorra",
-        "Eddy": "redemoinho",
-        "Embankment": "dique",
-        "Estuary": "estuário",
-        "Expanse": "vastidão",
-        "Fane": "templo",
-        "Fen": "charco",
-        "Fjord": "fjord",
-        "Forest": "floresta",
-        "Fortress": "fortaleza",
-        "Fountain": "fonte",
-        "Foundry": "fundação",
-        "Garrison": "guarnição",
-        "Garden": "jardim",
-        "Glade": "clareira",
-        "Grove": "arvoredo",
-        "Grotto": "gruta",
-        "Harbor": "porto",
-        "Haven": "refúgio",
-        "Henge": "henge",
-        "Isle": "ilha",
-        "Jungle": "selva",
-        "Keep": "bastião",
-        "Knoll": "morro",
-        "Labyrinth": "labirinto",
-        "Library": "livraria",
-        "Lodge": "cabana",
-        "Manor": "mansão",
-        "Mausoleum": "mausoléu",
-        "Meadow": "prado",
-        "Menhir": "menhir",
-        "Mesa": "meseta",
-        "Mill": "moinho",
-        "Mire": "lamaçal",
-        "Monolith": "monolito",
-        "Moat": "fosso",
-        "Nexus": "nexo",
-        "Observatory": "observatório",
-        "Oasis": "oásis",
-        "Obelisk": "obelisco",
-        "Outpost": "posto avançado",
-        "Orchard": "pomar",
-        "Parapet": "parapeito",
-        "Pathway": "caminho",
-        "Pavilion": "pavilhão",
-        "Pit": "poço",
-        "Plaza": "praça",
-        "Portal": "portal",
-        "Promontory": "promontório",
-        "Quarry": "pedreira",
-        "Quicksand": "areia movediça",
-        "Ravine": "ravina",
-        "Reef": "recife",
-        "Ridge": "cume",
-        "Rift": "falha",
-        "Ruination": "arruinamento",
-        "Ruins": "ruínas",
-        "Sanctuary": "santuário",
-        "Sanctum": "sanctum",
-        "Seraglio": "seralho",
-        "Shrine": "santuário",
-        "Shipwreck": "naufrágio",
-        "Shelter": "abrigo",
-        "Spire": "pináculo",
-        "Spring": "nascente",
-        "Steppe": "estepe",
-        "Stronghold": "fortaleza",
-        "Summit": "cume",
-        "Tavern": "taverna",
-        "Temple": "templo",
-        "Throne": "trono",
-        "Tomb": "tumba",
-        "Tombstone": "lápide",
-        "Tower": "torre",
-        "Trails": "trilha",
-        "Trenches": "trincheiras",
-        "Tundra": "tundra",
-        "Undercroft": "subsolo",
-        "Valley": "vale",
-        "Vault": "cofre",
-        "Village": "vila",
-        "Vortex": "vórtice",
-        "Waterfall": "cachoeira",
-        "Wreckage": "destroços",
-        "Xystus": "xisto",
-        "Yard": "pátio",
-        "Zeppelin": "dirigível",
-        "Ziggurat": "zigurate"
-      }
-    },
-    "Dangers": {
-      "StatusEffects": {
-        "Minor": {
-          "Dazed": "Sofre confuso",
-          "Shaken": "Sofre abalado",
-          "Slow": "Sofre lento",
-          "Weak": "Sofre fraco"
-        },
-        "Heavy": {
-          "Poison": "Sofre envenenado",
-          "Enrage": "Sofre enfurecido"
-        },
-        "Massive": {
-          "Dazed": "Sofre confuso",
-          "Shaken": "Sofre abalado",
-          "Slow": "Sofre lento",
-          "Weak": "Sofre fraco",
-          "Poisoned": "Sofre envenenado",
-          "Enraged": "Sofre enfurecido"
+      "ItemForgeEditMode": {
+        "Name": "Modo de Edição da Forja de Itens",
+        "Hint": "Muda como interagir com a Forja de Itens funciona para os usuários.",
+        "Choices": {
+          "Public": "Público",
+          "GMOnly": "Apenas Narrador",
+          "Locked": "Trancado",
+          "Hidden": "Escondido"
         }
       },
-      "Combat": {
-        "Minor": "Um encontro de combate fácil",
-        "Heavy": "Um encontro de combate desafiador",
-        "Massive": "Um encontro de combate mortal"
+      "EnableKeywords": {
+        "Name": "Habilitar Palavras-Chave",
+        "Hint": "Habilitar Palavras-Chave quando gerar resultados de Testes de Viagem."
       },
-      "DangerClock": {
-        "Minor": "Um relógio de perigo de 4 seções começa a contar",
-        "Heavy": "Um relógio de perigo de 6 seções começa a contar",
-        "Massive": "Um relógio de perigo de 8 seções começa a contar"
+      "UseVariantTravelRules": {
+        "Name": "Usar as Regras Variantes de Viagem.",
+        "Hint": "Configuração Placeholder: Ativa as mecânicas de viagem alternativas (atualmente sem uso)."
       },
-      "VillainPlanAdvance": {
-        "Minor": "O plano do vilão avança 2 passos",
-        "Heavy": "O plano do vilão avança 3 passos",
-        "Massive": "O plano do vilão avança 4 passos"
+      "UseVariantDamageRules": {
+        "Name": "Usar as Regras de Dano do Playtest",
+        "Hint": "Ao gerar novas armas, o dano será baseado nas novas regras do Playtest."
       },
-      "Sources": {
-        "Source1": "O mal da altitude, a intoxicação alimentar ou a exaustão geral retardam o grupo.",
-        "Source2": "Equipamentos de viagem falham — vagões quebram, armas quebram ou itens cruciais desaparecem.",
-        "Source3": "A agitação política local ou global causa interrupções ou confrontos.",
-        "Source4": "Um evento natural severo — tempestades, terremotos, inundações — traz atrasos e perigos.",
-        "Source5": "Você atrai a atenção de um rival, vilão ou monstro.",
-        "Source6": "Interferência sobrenatural altera o caminho: portais, assombrações, presságios.",
-        "Source7": "Um PNJ misterioso aparece, alterando ou obstruindo seu caminho.",
-        "Source8": "Um mecanismo antigo ou oculto é acionado inesperadamente.",
-        "Source9": "Você invadiu território sagrado ou violou um tabu sem saber.",
-        "Source10": "A natureza selvagem revela um segredo — mas tem um preço.",
-        "Source11": "A vida selvagem torna-se territorial ou agressiva, criando complicações.",
-        "Source12": "Um marco mudou, desviando seu caminho.",
-        "Source13": "Os recursos esgotam-se mais rapidamente do que o esperado, colocando em risco a sobrevivência.",
-        "Source14": "Sonhos ou visões interrompem o progresso com avisos enigmáticos.",
-        "Source15": "Uma presença divina ou arcana testa seu valor ou pureza.",
-        "Source16": "Uma maldição ou interferência mágica distorce sutilmente seu ambiente.",
-        "Source17": "Um aliado revela um segredo que coloca tudo em questão."
+      "DiscoveryEffectTable": {
+        "Name": "Tabela de Descobertas (Efeitos)",
+        "Hint": "Selecione a tabela a ser usada para gerar efeitos de descoberta."
+      },
+      "DiscoverySourceTable": {
+        "Name": "Tabela de Descobertas (Fontes)",
+        "Hint": "Selecione a tabela a ser usada para gerar as fontes de descoberta."
+      },
+      "DangerEffectTable": {
+        "Name": "Tabela de Perigos (Efeitos)",
+        "Hint": "Selecione a tabela a ser usada para gerar efeitos de perigo."
+      },
+      "DangerSourceTable": {
+        "Name": "Tabela de Perigos (Fontes)",
+        "Hint": "Selecione a tabela a ser usada para gerar as fontes de perigo."
+      },
+      "CustomTreasureRollTable": {
+        "Name": "Tabela de Tesouro Personalizado",
+        "Hint": "Selecione a tabela a ser usada para gerar tesouros personalizados."
+      },
+      "MonsterCompendium": {
+        "Name": "Compêndio de Monstros",
+        "Hint": "Selecione o compêndio de atores a ser usado como fonte para o Construtor de Conflitos."
+      },
+      "BattleSceneName": {
+        "Name": "Cena de Batalha",
+        "Hint": "Selecione a Cena a ser usada para a pré-visualização do Construtor de Conflitos."
+      },
+      "DefaultRollTable": "Padrões Lookfar",
+      "NoActorCompendiums": "Não foram encontrados compêndios de atores.",
+      "NoScenes": "Nenhuma cena encontrada"
+    },
+
+    
+    "__SECTION__Terms": "=== Termos ===",
+    "Terms": {
+      "Common": {
+        "Zenit": "Zênite",
+        "Martial": "Marcial",
+        "Non-Martial": "Não-Marcial"
+      },
+      "Element": {
+        "Physical": "Físico",
+        "Fire": "Fogo",
+        "Ice": "Gelo",
+        "Earth": "Terra",
+        "Air": "Ar",
+        "Bolt": "Raio",
+        "Dark": "Trevas",
+        "Light": "Luz",
+        "Poison": "Veneno"
+      },
+      "Origin": {
+        "Aerial": "Aéreo",
+        "Thunderous": "Trovejante",
+        "Paradox": "Paradoxal",
+        "Terrestrial": "Terrestre",
+        "Ardent": "Ardente",
+        "Glacial": "Glacial",
+        "Spiritual": "Espiritual",
+        "Corrupted": "Corrompido",
+        "Aquatic": "Aquático",
+        "Mechanical": "Mecânico"
+      },
+      "Nature": {
+        "Anthropod": "Artrópode",
+        "Bird": "Pássaro",
+        "Fish": "Peixe",
+        "Mammal": "Mamífero",
+        "Mollusk": "Molusco",
+        "Reptile": "Réptil",
+        "Fungus": "Fungo",
+        "Incorporeal": "Incorpóreo",
+        "Liquid": "Líquido",
+        "Artificial": "Artificial",
+        "Mineral": "Mineral"
       }
     },
-    "Discoveries": {
-      "Effects": {
-        "Effect1": "Cada membro do grupo recupera 1 PI.",
-        "Effect2": "Cada membro do grupo recupera 10 PV.",
-        "Effect3": "Você descobre uma erva rara com propriedades curativas.",
-        "Effect4": "Você encontra uma relíquia de importância cultural ou histórica.",
-        "Effect5": "Você ganha uma visão sobre um costume ou lenda local.",
-        "Effect6": "Você aprende um atalho que ajudará em viagens futuras.",
-        "Effect7": "Uma criatura amigável ajuda temporariamente seu grupo.",
-        "Effect8": "Você encontra uma escrita antiga que sugere eventos futuros.",
-        "Effect9": "Uma pista para um mistério maior é descoberta.",
-        "Effect10": "A paisagem inspira uma súbita explosão de criatividade.",
-        "Effect11": "Você forja uma ferramenta ou item útil a partir de peças resgatadas."
+
+    
+    "__SECTION__TravelCheck": "=== Teste de Viagem ===",
+    "TravelCheck": {
+      "Dialogs": {
+        "TravelCheck": {
+          "Title": "Teste de Viagem",
+          "ThreatLevel": "Nível de Ameaça",
+          "Wayfaring": "Viagem",
+          "PartyLevel": "Nível do Grupo:",
+          "TreasureHunting": "Caça ao Tesouro",
+          "WellTraveled": "Viajante Experiente",
+          "Difficulty": {
+            "Minimal": "Mínimo",
+            "Low": "Baixo",
+            "Medium": "Médio",
+            "High": "Alto",
+            "VeryHigh": "Muito Alto"
+          }
+        },
+        "TravelResult": {
+          "Title": "Resultado da Viagem",
+          "Prompt": "Você quer manter esse resultado ou prefere re-rolar?",
+          "Waiting": "Aguardando a decisão do Narrador..",
+          "NoIncident": "O dia de viagem passou sem nenhum incidente.",
+          "Result": {
+            "Danger": "Perigo!",
+            "Discovery": "Descoberta!"
+          },
+          "Severity": {
+            "Minor": "Menor",
+            "Heavy": "Maior",
+            "Massive": "Enorme"
+          },
+          "TableHeaders": {
+            "Source": "Fonte",
+            "Effect": "Efeito",
+            "Traits": "Traços",
+            "Terrain": "Terreno"
+          }
+        }
       },
-      "Sources": {
-        "Source1": "Uma paisagem deslumbrante que permanece quase intocada por séculos.",
-        "Source2": "Ruínas de uma vila que conta a história de uma antiga guerra.",
-        "Source3": "Um altar com inscrições de uma civilização esquecida.",
-        "Source4": "Uma caverna onde um antigo acampamento e suprimentos são encontrados.",
-        "Source5": "Uma cápsula do tempo enterrada de uma era passada.",
-        "Source6": "Pegadas de uma espécie desconhecida.",
-        "Source7": "Um monólito coberto por runas brilhantes.",
-        "Source8": "Ossos de uma criatura massiva nunca vista antes.",
-        "Source9": "Um lugar onde as estrelas parecem se alinhar perfeitamente.",
-        "Source10": "Um fenômeno climático incomum que revela um terreno oculto.",
-        "Source11": "Uma melodia carregada pelo vento, sem origem clara.",
-        "Source12": "Uma árvore solitária crescendo sobre uma pedra, irradiando magia."
+      "Chat": {
+        "Alias": {
+          "Roll": "Rolagem de Viagem",
+          "Result": "Resultado da Viagem"
+        }
+      },
+      "Errors": {
+        "DataUnavailable": "Dados não disponíveis.",
+        "NoDangerEffect": "Nenhum efeito de perigo disponível.",
+        "NoDangerSource": "Nenhuma fonte de perigo disponível.",
+        "NoDiscoveryEffect": "Nenhum efeito de descoberta disponível.",
+        "NoDiscoverySource": "Nenhuma fonte de descoberta disponível."
+      }
+    },
+
+    
+    "__SECTION__TreasureRoll": "=== Rolagem de Tesouro ===",
+    "TreasureRoll": {
+      "Dialogs": {
+        "TreasureRoll": {
+          "Title": "Gerador de Tesouro",
+          "IgnoreValues": "Ignorar orçamento/nível",
+          "SelectAll": "Selecionar tudo",
+          "Buttons": {
+            "RollLoot": "Rolar Saque"
+          },
+          "ItemType": {
+            "Weapon": "Arma",
+            "Armor": "Armadura",
+            "Shield": "Escudo",
+            "Accessory": "Acessório",
+            "Material": "Material",
+            "Ingredient": "Ingrediente",
+            "Currency": "Moeda",
+            "Custom": "Personalizado"
+          },
+          "Fields": {
+            "Budget": "Orçamento",
+            "Level": "Nível",
+            "Origin": "Origem",
+            "Nature": "Natureza",
+            "Items": "Itens",
+            "Random": "Aleatório"
+          }
+        },
+        "TreasureResult": {
+          "Title": "Resultados de Tesouro",
+          "BudgetRemainder": "Orçamento restante",
+          "Martial": "Marcial",
+          "NonMartial": "Não-Marcial",
+          "Value": "Valor",
+          "NoQuality": "não tem propriedades especiais.",
+          "Buttons": {
+            "Keep": "Manter",
+            "Stash": "Guardar",
+            "Reroll": "Re-rolar"
+          }
+        }
+      },
+      "Sheets": {
+        "NamePatterns": {
+          "Material": "{nature} {origin} {detail}",
+          "Ingredient": "{nature} {origin} {taste}",
+          "Weapon": "{type} {element} {quality} {accuracyUp} {damageUp}",
+          "Armor": "{type} {quality}",
+          "Shield": "{type} {quality}",
+          "Accessory": "{type} {quality}"
+        },
+        "Stash": {
+          "DefaultName": "Nova Reserva #{num}",
+          "NamePrefix": "Nova Reserva #"
+        },
+        "Weapon": {
+          "Tokens": {
+            "AccuracyUp": "+1",
+            "DamageUp": "Obra-Prima"
+          },
+          "Prefix": {
+            "Base": "Uma arma do tipo {category}",
+            "Masterwork": "Uma arma Obra-Prima do tipo {category}"
+          }
+        },
+        "Summaries": {
+          "Ingredient": "Esse ingrediente tem um sabor {taste}.",
+          "Material": "material {nature} de origem {originLower}. Pode ser usado para fabricar itens {detail}.",
+          "Weapon": "{prefix} que {qualityText}",
+          "Armor": "Um conjunto de armadura {martialType} que {qualityText}",
+          "Shield": "Um escudo {martialType} que {qualityText}",
+          "Accessory": "Um acessório que {qualityText}"
+        }
+      },
+      "Chat": {
+        "Alias": "Resultado do Tesouro",
+        "CreatedStash": "{count} item(ns) foram criados em {stashLink}.",
+        "Deposited": "Foram depositados {amount} {currency} no depósito.",
+        "SkippedIngredients": "{count} ingrediente(s) foram ignorado(s), pois não podem ser armazenado(s) no depósito."
+      },
+      "Errors": {
+        "CustomTreasureTableMissing": "Nenhuma Tabela de Rolagem de Tesouro Personalizada selecionada nas configurações.",
+        "CustomTreasureTableNotFound": "A Tabela de Rolagem de Tesouro Personalizada selecionada não foi encontrada..",
+        "SkippedIngredientsWarning": "{count} ingrediente(s) ignorado(s): ingredientes ainda não podem ser adicionados a um depósito neste sistema.",
+        "NoLootGenerated": "Nenhum saque foi gerado."
+      }
+    },
+
+    
+    "__SECTION__ItemForge": "=== Forja de Itens ===",
+    "ItemForge": {
+      "Dialogs": {
+        "ItemForge": {
+          "Title": "Forja de Itens",
+          "MiniTitle": "Depósito de Materiais",
+          "Buttons": {
+            "Forge": "Forjar"
+          },
+          "ChooseItem": {
+            "Legend": "Escolher Item",
+            "Weapon": "Arma",
+            "Armor": "Armadura",
+            "Shield": "Escudo",
+            "Accessory": "Acessório"
+          },
+          "Attributes": {
+            "Legend": "Atributos",
+            "AttrA": "Atr. A:",
+            "AttrB": "Atr. B:",
+            "MIG": "VIG",
+            "DEX": "DES",
+            "WLP": "VON",
+            "INS": "AST"
+          },
+          "Customize": {
+            "Legend": "Personalizar",
+            "NoOptions": "Sem Opções",
+            "PlusOneAccuracy": "+1 Precisão",
+            "PlusFourDamage": "+4 de Dano",
+            "MakeOneHanded": "Tornar de Uma Mão",
+            "MakeTwoHanded": "Tornar de Duas Mãos",
+            "Element": "Elemento",
+            "Tooltip": {
+              "HandToggleRestricted": "Esta arma não pode mudar de empunhadura.",
+              "GMOnly": "Apenas o GM pode alterar esta opção.",
+              "PlusOneAlready": "Esta arma já possui pelo menos +1 de Precisão.",
+              "VariantDamageInfo": "O dano é escalonado a partir do valor do item. Esta opção está desativada."
+            }
+          },
+          "Qualities": {
+            "Legend": "Características",
+            "Options": {
+              "None": "Nenhuma",
+              "Basic": "Básicas",
+              "Custom": "Personalizadas"
+            },
+            "Custom": {
+              "CostLabel": "Custo",
+              "Tooltip": {
+                "Effect": "Digite o texto do seu efeito personalizado",
+                "Cost": "Insira um número inteiro não negativo"
+              },
+              "Button": "Aplicar"
+            }
+          },
+          "Preview": {
+            "Legend": "Pré-visualização",
+            "One-Handed": "de uma mão",
+            "Two-Handed": "de duas mãos",
+            "INIT": "INIC",
+            "MDEF": "DEF M.",
+            "DEF": "DEF",
+            "HR": "RA"
+          },
+          "Cost": {
+            "Legend": "Custo",
+            "Fee": "Sem custo"
+          },
+          "Materials": {
+            "Legend": "Materials",
+            "Hint": "Arraste e solte documentos de Item aqui (máx. 5).",
+            "RequireOriginHint": "É necessário pelo menos um material com origem \"{origin}\".",
+            "Tooltip": {
+              "Remove": "Clique para remover este material",
+              "RequestRemove": "Clique para solicitar a remoção deste material"
+            }
+          }
+        }
+      },
+      "Sheets": {
+        "NamePattern": {
+          "Weapon": "{type} Recém-Forjada",
+          "Armor": "{type} Recém-Forjada",
+          "Shield": "{type} Recém-Forjado",
+          "Accessory": "{type} Recém-Forjado"
+        },
+        "Summaries": {
+          "Weapon": "Uma {category} forjada.",
+          "Armor": "Uma armadura {martialType} forjada.",
+          "Shield": "Um escudo {martialType} forjado.",
+          "Accessory": "Um acessório forjado."
+        }
+      },
+      "Chat": {
+        "Forged": "Forjado: {name}"
+      },
+      "Errors": {
+        "NoTemplateSelected": "Nenhum modelo selecionado.",
+        "GenericForgeFailed": "A forja não pôde ser concluída.",
+        "CouldNotReadDrop": "Não foi possível ler os dados.",
+        "FilePickerOpen": "Não foi possível abrir o seletor de arquivos.",
+        "OnlyItems": "Apenas documentos do tipo Item podem ser usados como materiais.",
+        "OnlyTreasure": "Apenas itens do tipo Tesouro podem ser usados como materiais.",
+        "MaxMaterials": "Você não pode usar mais de 5 materiais.",
+        "NoMoreItem": "Você não pode usar este material mais vezes.",
+        "NotEnoughQuantity": "Não há cópias suficientes de {name}. Necessário: {need}; disponível: {have}.",
+        "ForgeFailed": "A forja falhou: {error}"
       }
     }
   }
