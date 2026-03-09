@@ -735,7 +735,7 @@ const buildItemData = (kind, html, {
                 },
                 summary: {
                     value: game.i18n.format("LOOKFAR.ItemForge.Sheets.Summaries.Weapon", {
-                        category: base?.category ?? ""
+                        category: weaponCategoryLabel(base?.category ?? "")
                     })
                 }
             }
