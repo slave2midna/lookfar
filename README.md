@@ -8,11 +8,9 @@ This module is a WIP and can change at any time. It requires the [Project FU](ht
 
 | Current Features               |                                                                                                                                                          |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Travel Check** | Adds a travel button to tools UI for Users and Gamemasters to perform Travel Checks, generate dangers and discoveries. Includes a popup with suggestions for improv, located by project FU toolbar. |
+| **Travel Check** | Adds a travel button to tools UI for Users and Gamemasters to perform Travel Checks, generate dangers and discoveries. Includes a popup with suggestions for improv, located by project FU toolbar. 
 | **Treasure Generator** | Adds a treasure button to tools UI for Gamemasters to generate loot based on party level and reward budget. Loot generated can be kept as items in foundry to be given to players. |
 | **Item Forge** | Adds an item forger the tools UI for Gamemasters and Users to collaborate and build custom items based on the core and playtest rules. Settings can be changed to restrict this function. |
-| **Dungeon Mapper** | Genertates a quick dungeon map in a similar style to Mythic Bastionland sites. It also provided tokens for tracking player progression through generates dungeons. |
-| **Conflict Builder** | Give the GM the ability to filter through a compendium of NPC's (not included) and spawn enemy tokens onto a Battle Scene for quick encounter setup on the fly. |
 
 **Manifest URL:** `https://github.com//slave2midna/lookfar/releases/latest/download/module.json`
 

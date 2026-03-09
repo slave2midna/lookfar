@@ -36,18 +36,18 @@ function getLookfarTools() {
     });
 
     // Dungeon Builder Button
-    tools.push({
-      name: "LOOKFAR.Button.DungeonBuilder.Name",
-      icon: "fa-solid fa-dungeon",
-      onClick: () => Hooks.call("lookfarShowDungeonMapperDialog")
-    });
+    // tools.push({
+    //  name: "LOOKFAR.Button.DungeonBuilder.Name",
+    //  icon: "fa-solid fa-dungeon",
+    //  onClick: () => Hooks.call("lookfarShowDungeonMapperDialog")
+    // });
 
     // Conflict Builder Button
-    tools.push({
-      name: "LOOKFAR.Button.ConflictBuilder.Name",
-      icon: "fa-solid fa-dragon",
-      onClick: () => Hooks.call("lookfarShowConflictBuilderDialog")
-    });
+    // tools.push({
+      // name: "LOOKFAR.Button.ConflictBuilder.Name",
+      // icon: "fa-solid fa-dragon",
+      // onClick: () => Hooks.call("lookfarShowConflictBuilderDialog")
+    // });
   }
 
   // ---------------------------------------------------------------------------
