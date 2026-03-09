@@ -243,8 +243,6 @@
         "TreasureResult": {
           "Title": "Treasure Results",
           "BudgetRemainder": "Remaining Budget",
-          "Martial": "Martial",
-          "NonMartial": "Non-martial",
           "Value": "Value",
           "NoQuality": "has no special properties.",
           "Buttons": {
@@ -401,3 +399,4 @@
     }
   }
 }
+
