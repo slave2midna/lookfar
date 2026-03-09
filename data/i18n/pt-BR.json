@@ -1,0 +1,1810 @@
+{
+  "version": 1,
+  "keywords": {
+    "traits": [
+      "Abandonado",
+      "Antigo",
+      "Arcano",
+      "Enfeitiçado",
+      "Maculado",
+      "Cavernoso",
+      "Celestial",
+      "Quimérico",
+      "Em Ruínas",
+      "Críptico",
+      "Amaldiçoado",
+      "Decomposto",
+      "Desolado",
+      "Deserto",
+      "Deteriorado",
+      "Dimensional",
+      "Sobrenatural",
+      "Efêmero",
+      "Etéreo",
+      "Eterno",
+      "Lendário",
+      "Desbotado",
+      "Proibido",
+      "Forjado",
+      "Esquecido",
+      "Fraturado",
+      "Congelado",
+      "Fantasmagórico",
+      "Sombrio",
+      "Diáfano",
+      "Consagrado",
+      "Assombrado",
+      "Oculto",
+      "Infernal",
+      "Isolado",
+      "Lendário",
+      "Luminoso",
+      "À Espreita",
+      "Mágico",
+      "Enluarado",
+      "Misterioso",
+      "Místico",
+      "Místico",
+      "Negligenciado",
+      "Obsidiano",
+      "Encoberto",
+      "Obscuro",
+      "Ofuscante",
+      "De Outro Mundo",
+      "Tomado pela Vegetação",
+      "Negligenciado",
+      "Petrificado",
+      "Fantasmal",
+      "Primevo",
+      "Imaculado",
+      "Relíquia",
+      "Resplandecente",
+      "Rúnico",
+      "Arruinado",
+      "Sagrado",
+      "Santificado",
+      "Secreto",
+      "Recluso",
+      "Sereno",
+      "Sombreado",
+      "Sombrio",
+      "Estilhaçado",
+      "Cintilante",
+      "Espectral",
+      "Estígio",
+      "Submerso",
+      "Surreal",
+      "Silvestre",
+      "Temporal",
+      "Gasto pelo Tempo",
+      "Crepuscular",
+      "Inexplorado",
+      "Profano",
+      "Invisível",
+      "Desenterrado",
+      "Verdejante",
+      "Velado",
+      "Venerável",
+      "Vívido",
+      "Desgastado",
+      "Ressequido",
+      "Espectriforme"
+	  ],
+    "terrain": [
+      "Alcova",
+      "Altar",
+      "Aqueduto",
+      "Arquipélago",
+      "Arena",
+      "Arquivo",
+      "Bazar",
+      "Quartel",
+      "Campo de Batalha",
+      "Morrotesco",
+      "Marco de Pedras",
+      "Acampamento",
+      "Catacumbas",
+      "Calçada Elevada",
+      "Caldeirão",
+      "Caverna",
+      "Castelo",
+      "Capela",
+      "Abismo",
+      "Cidadela",
+      "Penhasco",
+      "Conservatório",
+      "Corredor",
+      "Penedos",
+      "Cratera",
+      "Cripta",
+      "Covil",
+      "Cúpula",
+      "Masmorra",
+      "Redemoinho",
+      "Aterro",
+      "Estuário",
+      "Extensão",
+      "Templo",
+      "Pântano",
+      "Fiorde",
+      "Floresta",
+      "Fortaleza",
+      "Fonte",
+      "Fundição",
+      "Guarnição",
+      "Jardim",
+      "Clareira",
+      "Bosque",
+      "Gruta",
+      "Porto",
+      "Refúgio",
+      "Círculo de Pedras",
+      "Ilha",
+      "Selva",
+      "Fortim",
+      "Colina",
+      "Labirinto",
+      "Biblioteca",
+      "Pousada",
+      "Solar",
+      "Mausoléu",
+      "Prado",
+      "Menir",
+      "Mesa",
+      "Moinho",
+      "Charco",
+      "Monólito",
+      "Fosso",
+      "Nexo",
+      "Observatório",
+      "Oásis",
+      "Obelisco",
+      "Posto Avançado",
+      "Pomar",
+      "Parapeito",
+      "Caminho",
+      "Pavilhão",
+      "Poço",
+      "Praça",
+      "Portal",
+      "Promontório",
+      "Pedreira",
+      "Areia Movediça",
+      "Ravina",
+      "Recife",
+      "Crista",
+      "Fenda",
+      "Ruína",
+      "Ruínas",
+      "Santuário",
+      "Recinto Sagrado",
+      "Serralho",
+      "Santuário Menor",
+      "Naufrágio",
+      "Abrigo",
+      "Pináculo",
+      "Nascente",
+      "Estepe",
+      "Bastião",
+      "Cume",
+      "Taverna",
+      "Templo",
+      "Trono",
+      "Túmulo",
+      "Lápide",
+      "Torre",
+      "Trilhas",
+      "Trincheiras",
+      "Tundra",
+      "Cripta Subterrânea",
+      "Vale",
+      "Câmara",
+      "Vila",
+      "Vórtice",
+      "Cachoeira",
+      "Destroços",
+      "Xisto",
+      "Pátio",
+      "Zepelim",
+      "Zigurate"
+	  ],
+    "nature": {
+      "material": {
+        "anthropod": [
+          "Carapaça",
+          "Mandíbula",
+          "Pinça",
+          "Casco",
+          "Ferrão"
+        ],
+        "bird": [
+          "Pena",
+          "Garra",
+          "Bico",
+          "Garra",
+          "Osso"
+        ],
+        "fish": [
+          "Nadadeira",
+          "Escama",
+          "Brânquia",
+          "Dente",
+          "Osso"
+        ],
+        "mammal": [
+          "Osso",
+          "Pelo",
+          "Chifre",
+          "Couro",
+          "Presa"
+        ],
+        "mollusk": [
+          "Concha",
+          "Pérola",
+          "Valva",
+          "Manto",
+          "Bico"
+        ],
+        "reptile": [
+          "Garra",
+          "Escama",
+          "Cauda",
+          "Espinho",
+          "Presa"
+        ],
+        "fungus": [
+          "Esporângio",
+          "Chapéu",
+          "Veia",
+          "Caule",
+          "Fibra"
+        ],
+        "incorporeal": [
+          "Vulto",
+          "Vapor",
+          "Cinza",
+          "Essência",
+          "Alma"
+        ],
+        "liquid": [
+          "Gota",
+          "Glóbulo",
+          "Ícor",
+          "Resina",
+          "Película"
+        ],
+        "artificial": [
+          "Liga",
+          "Circuito",
+          "Estrutura",
+          "Invólucro",
+          "Componente"
+        ],
+        "mineral": [
+          "Cristal",
+          "Fragmento",
+          "Minério",
+          "Estilhaço",
+          "Nódulo"
+        ],
+        "plant": [
+          "Galho",
+          "Vinha",
+          "Casca",
+          "Espinho",
+          "Junco"
+        ]
+      },
+      "ingredient": {
+        "anthropod": [
+          "Carne",
+          "Bolsa",
+          "Ovo",
+          "Pata",
+          "Hemolinfa"
+        ],
+        "bird": [
+          "Ovo",
+          "Asa",
+          "Carne",
+          "Coração",
+          "Sangue"
+        ],
+        "fish": [
+          "Carne",
+          "Ovas",
+          "Óleo",
+          "Olho",
+          "Bile"
+        ],
+        "mammal": [
+          "Carne",
+          "Gordura",
+          "Órgão",
+          "Leite",
+          "Sangue"
+        ],
+        "mollusk": [
+          "Carne",
+          "Tinta",
+          "Glândula",
+          "Papa",
+          "Carne"
+        ],
+        "reptile": [
+          "Carne",
+          "Ovo",
+          "Veneno",
+          "Sangue",
+          "Fígado"
+        ],
+        "fungus": [
+          "Cogumelo",
+          "Esporo",
+          "Carne",
+          "Polpa",
+          "Resíduo"
+        ],
+        "incorporeal": [
+          "Névoa",
+          "Plasma",
+          "Sopro",
+          "Essência",
+          "Resíduo"
+        ],
+        "liquid": [
+          "Fluido",
+          "Reagente",
+          "Xarope",
+          "Limo",
+          "Gel"
+        ],
+        "artificial": [
+          "Gel",
+          "Solução",
+          "Composto",
+          "Soro",
+          "Extrato"
+        ],
+        "mineral": [
+          "Poeira",
+          "Grão",
+          "Pó",
+          "Sal",
+          "Resíduo"
+        ],
+        "plant": [
+          "Folha",
+          "Semente",
+          "Fruto",
+          "Seiva",
+          "Raiz"
+		  ]
+      }
+    },
+    "origin": {
+      "material": {
+        "aerial": [
+          "Leve",
+          "Oco",
+          "Aviano",
+          "Galináceo",
+          "Flutuante"
+        ],
+        "thunderous": [
+          "Condutivo",
+          "Magnético",
+          "Carregado",
+          "Iônico",
+          "Crepitante"
+        ],
+        "paradox": [
+          "Fraturado",
+          "Distorcido",
+          "Atemporal",
+          "Cíclico",
+          "Entrópico"
+        ],
+        "terrestrial": [
+          "Fossilizado",
+          "Extraído",
+          "Sedimentar",
+          "Ferroso",
+          "Terreno"
+        ],
+        "ardent": [
+          "Ardente",
+          "Fundido",
+          "Fumegante",
+          "Chamuscado",
+          "Em Brasa"
+        ],
+        "glacial": [
+          "Cristalino",
+          "Congelado",
+          "Encapsulado",
+          "Vítreo",
+          "Imóvel"
+        ],
+        "spiritual": [
+          "Santificado",
+          "Ecoante",
+          "Consagrado",
+          "Entrelaçado",
+          "Vinculado ao Outro Mundo"
+        ],
+        "corrupted": [
+          "Distorcido",
+          "Maculado",
+          "Decomposto",
+          "Tóxico",
+          "Salpicado"
+        ],
+        "aquatic": [
+          "Incrustado",
+          "Encharcado",
+          "Inundado",
+          "Marélico",
+          "Pantanoso"
+        ],
+        "mechanical": [
+          "Engrenado",
+          "Rebitado",
+          "Mecanizado",
+          "Forjado",
+          "Energizado"
+        
+        ]
+      },
+      "ingredient": {
+        "aerial": [
+          "Fofo",
+          "Leve",
+          "Crocante",
+          "Etéreo",
+          "Penugento"
+        ],
+        "thunderous": [
+          "Crepitante",
+          "Picante",
+          "Efervescente",
+          "Chiando",
+          "Carregado"
+        ],
+        "paradox": [
+          "Cintilante",
+          "Prismático",
+          "Retorcido",
+          "Disforme",
+          "Reluzente"
+        ],
+        "terrestrial": [
+          "Grosseiro",
+          "Terroso",
+          "Granuloso",
+          "Amarronzado",
+          "Argiloso"
+        ],
+        "ardent": [
+          "Assado",
+          "Defumado",
+          "Chamuscado",
+          "Tostado",
+          "Glaceado"
+        ],
+        "glacial": [
+          "Gelado",
+          "Cristalino",
+          "Frio",
+          "Liso",
+          "Quebradiço"
+        ],
+        "spiritual": [
+          "Luminoso",
+          "Sedoso",
+          "Translúcido",
+          "Oco",
+          "Nebuloso"
+        ],
+        "corrupted": [
+          "Manchado",
+          "Murchado",
+          "Marmorizado",
+          "Fermentado",
+          "Estragado"
+        ],
+        "aquatic": [
+          "Úmido",
+          "Escamoso",
+          "Em Conserva",
+          "Fofo",
+          "Escorregadio"
+        ],
+        "mechanical": [
+          "Refinado",
+          "Prensado",
+          "Destilado",
+          "Temperado",
+          "Infundido"
+        ]
+      }
+    },
+    "detail": {
+      "agility": [
+        "Elástico",
+        "Pontudo",
+        "Esguio",
+        "Escorregadio",
+        "Encapuzado",
+        "Úmido",
+        "Viscoso",
+        "Flexível",
+        "Pequeno",
+        "Responsivo"
+      ],
+      "powerful": [
+        "Forte",
+        "Grande",
+        "Pesado",
+        "Espinhoso",
+        "Serrilhado",
+        "Rombo",
+        "Vermelho",
+        "Enorme",
+        "Afiado",
+        "Nodoso"
+      ],
+      "protective": [
+        "Robusto",
+        "Revestido",
+        "Azul",
+        "Blindado",
+        "Endurecido",
+        "Resistente",
+        "Espesso",
+        "Em Camadas",
+        "Protuberante",
+        "Inchado"
+      ],
+      "recovery": [
+        "Curativo",
+        "Estável",
+        "Saudável",
+        "Viçoso",
+        "Revigorante",
+        "Restaurado",
+        "Firme",
+        "Fresco",
+        "Verde",
+        "Regenerativo"
+      ],
+      "debilitating": [
+        "Corrosivo",
+        "Drenado",
+        "Amaldiçoado",
+        "Mutado",
+        "Derretido",
+        "Murchado",
+        "Maldito",
+        "Sardento",
+        "Negro",
+        "Infectado"
+      ],
+      "support": [
+        "Amarelo",
+        "Esponjoso",
+        "Estriado",
+        "Estridente",
+        "Vibrante",
+        "Ressonante",
+        "Reflexivo",
+        "Poroso",
+        "Aprimorado",
+        "Pegajoso"
+      ]
+    },
+    "taste": {
+      "bitter": [
+        "Adstringente",
+        "Áspero",
+        "Tânico",
+        "Afiado",
+        "Acre",
+        "Seco",
+        "Medicinal",
+        "Pungente",
+        "Revigorante",
+        "Terroso"
+      ],
+      "sour": [
+        "Ácido",
+        "Picante",
+        "Cítrico",
+        "Citrus",
+        "Ácido",
+        "De Arrepiar",
+        "Avinagrado",
+        "Fermentado",
+        "Alimonado",
+        "Vívido"
+      ],
+      "sweet": [
+        "Açucarado",
+        "Melado",
+        "Xaroposo",
+        "Adocicado",
+        "Nectarino",
+        "Enjoativo",
+        "Saboroso",
+        "Caramelizado",
+        "Frutado",
+        "Encorpado"
+      ],
+      "salty": [
+        "Salmouroso",
+        "Saboroso",
+        "Em Conserva",
+        "Curado",
+        "Mineral",
+        "Vibrante",
+        "Picante",
+        "Envelhecido",
+        "Defumado",
+        "Oceânico"
+      ],
+      "umami": [
+        "Carnudo",
+        "Caldoso",
+        "Encorpado",
+        "Achtroomelado",
+        "Reforçado",
+        "Profundo",
+        "Robusto",
+        "Similar a Shoyu",
+        "Suave",
+        "Completo"
+      ]
+    },
+    "element": {
+      "fire": [
+        "Flamejante",
+        "Fogo"
+      ],
+      "ice": [
+        "Gélido",
+        "Gelo"
+      ],
+      "earth": [
+        "Pétreo",
+        "Terra"
+      ],
+      "bolt": [
+        "Elétrico",
+        "Raio"
+      ],
+      "air": [
+        "Energético",
+        "Vento"
+      ],
+      "dark": [
+        "Amaldiçoado",
+        "Trevas"
+      ],
+      "light": [
+        "Sagrado",
+        "Luz"
+      ],
+      "poison": [
+        "Tóxico",
+        "Veneno"
+      ]
+    }
+  },
+  "equipment": {
+    "weapon": {
+      "staff": "Cajado",
+      "tome": "Tomo",
+      "crossbow": "Besta",
+      "bow": "Arco",
+      "knuckle": "Soqueira",
+      "dagger": "Adaga",
+      "pistol": "Pistola",
+      "whip": "Mangual",
+      "hammer": "Martelo",
+      "broadaxe": "Machadinha",
+      "waraxe": "Machado de Guerra",
+      "light-spear": "Lança Leve",
+      "heavy-spear": "Lança Pesada",
+      "sword": "Espada",
+      "greatsword": "Montante",
+      "katana": "Katana",
+      "rapier": "Rapieira",
+      "shuriken": "Shuriken"
+	  },
+    "armor": {
+      "silk-shirt": "Camisa",
+      "travel-garb": "Trajes",
+      "combat-tunic": "Túnica",
+      "sage-robe": "Veste",
+      "brigandine": "Brigandina",
+      "bronze-plate": "Cota de Malha",
+      "runic-plate": "Couraça",
+      "steel-plate": "Armadura"
+	  },
+    "shield": {
+      "bronze-shield": "Broquel",
+      "runic-shield": "Escudo"
+	  },
+    "accessory": {
+      "amulet": "Amuleto",
+      "belt": "Cinto",
+      "cloak": "Capa",
+      "charm": "Talismã",
+      "hat": "Chapéu",
+      "helmet": "Elmo",
+      "hood": "Capuz",
+      "mask": "Máscara",
+      "ring": "Anel"
+	  }
+  },
+  "qualities": {
+    "basic": {
+      "anti-slow": {
+        "Weapon": "Fina",
+        "Armor": "Leve",
+        "Shield": "Zefirita",
+        "Accessory": "Ágil",
+        "Description": "concede imunidade à condição lenta."
+      },
+      "anti-daze": {
+        "Weapon": "Espessa",
+        "Armor": "Pesada",
+        "Shield": "Aço do Foco",
+        "Accessory": "Firme",
+        "Description": "concede imunidade à condição atordoado."
+      },
+      "anti-shaken": {
+        "Weapon": "Robusta",
+        "Armor": "Reforçada",
+        "Shield": "Pedracora",
+        "Accessory": "Corajoso",
+        "Description": "concede imunidade à condição abalado."
+      },
+      "anti-weak": {
+        "Weapon": "Forte",
+        "Armor": "Volumosa",
+        "Shield": "Muralha do Poder",
+        "Accessory": "Poderoso",
+        "Description": "concede imunidade à condição fraco."
+      },
+      "anti-poison": {
+        "Weapon": "Guarda-Veneno",
+        "Armor": "Hermética",
+        "Shield": "Toxibana",
+        "Accessory": "Reforçado",
+        "Description": "concede imunidade à condição envenenado."
+      },
+      "anti-enrage": {
+        "Weapon": "Aço da Alma",
+        "Armor": "Aço Sombrio",
+        "Shield": "Tranquilita",
+        "Accessory": "Calmo",
+        "Description": "concede imunidade à condição enfurecido."
+      },
+      "resist-fire": {
+        "Weapon": "Temperada",
+        "Armor": "Nomex",
+        "Shield": "Pírio",
+        "Accessory": "Escama de Dragão",
+        "Description": "concede resistência a dano de fogo."
+      },
+      "resist-earth": {
+        "Weapon": "Rachada",
+        "Armor": "Kevlar",
+        "Shield": "Terracita",
+        "Accessory": "Pedra",
+        "Description": "concede resistência a dano de terra."
+      },
+      "resist-ice": {
+        "Weapon": "Ferro Frio",
+        "Armor": "Isolante",
+        "Shield": "Pratargenta",
+        "Accessory": "Pelo de Yeti",
+        "Description": "concede resistência a dano de gelo."
+      },
+      "resist-air": {
+        "Weapon": "Gradeada",
+        "Armor": "Náilon",
+        "Shield": "Vidro Etéreo",
+        "Accessory": "Pena",
+        "Description": "concede resistência a dano de vento."
+      },
+      "resist-bolt": {
+        "Weapon": "Madeira",
+        "Armor": "Neoprene",
+        "Shield": "Prata da Tempestade",
+        "Accessory": "Borracha",
+        "Description": "concede resistência a dano de raio."
+      },
+      "resist-dark": {
+        "Weapon": "Sagrada",
+        "Armor": "Cetim",
+        "Shield": "Umbracita",
+        "Accessory": "Obsidiana",
+        "Description": "concede resistência a dano de trevas."
+      },
+      "resist-light": {
+        "Weapon": "Purificada",
+        "Armor": "Seda",
+        "Shield": "Aurório",
+        "Accessory": "Marfim",
+        "Description": "concede resistência a dano de luz."
+      },
+      "resist-poison": {
+        "Weapon": "Esterilizada",
+        "Armor": "Couro",
+        "Shield": "Venomita",
+        "Accessory": "Lodoso",
+        "Description": "concede resistência a dano de veneno."
+		},
+      "resist-fire-earth": {
+        "Weapon": "Dracônix",
+        "Armor": "Pedra de Fogo",
+        "Shield": "Moltrum",
+        "Accessory": "Terracita",
+        "Description": "concede resistência a dano de fogo e terra."
+      },
+      "resist-fire-ice": {
+        "Weapon": "Brasagelo",
+        "Armor": "Fogofrio",
+        "Shield": "Criopedra",
+        "Accessory": "Pratargenta",
+        "Description": "concede resistência a dano de fogo e gelo."
+      },
+      "resist-fire-air": {
+        "Weapon": "Ventibrasa",
+        "Armor": "Chama dos Ventos",
+        "Shield": "Vidro Etéreo",
+        "Accessory": "Aço Etéreo",
+        "Description": "concede resistência a dano de fogo e vento."
+      },
+      "resist-fire-bolt": {
+        "Weapon": "Tempesbrasa",
+        "Armor": "Tempestífoga",
+        "Shield": "Placa Voltaica",
+        "Accessory": "Prata da Tempestade",
+        "Description": "concede resistência a dano de fogo e raio."
+      },
+      "resist-fire-dark": {
+        "Weapon": "Brasa Infernal",
+        "Armor": "Fogo Sombrio",
+        "Shield": "Umbracita",
+        "Accessory": "Ferro Sangrento",
+        "Description": "concede resistência a dano de fogo e trevas."
+      },
+      "resist-fire-light": {
+        "Weapon": "Claribrasa",
+        "Armor": "Fogo Solar",
+        "Shield": "Aurório",
+        "Accessory": "Aço Solar",
+        "Description": "concede resistência a dano de fogo e luz."
+      },
+      "resist-fire-poison": {
+        "Weapon": "Cinza Venenosa",
+        "Armor": "Anã",
+        "Shield": "Venomita",
+        "Accessory": "Miastrum",
+        "Description": "concede resistência a dano de fogo e veneno."
+      },
+      "resist-earth-ice": {
+        "Weapon": "Pedragelo",
+        "Armor": "Pedra Gélida",
+        "Shield": "Glacita",
+        "Accessory": "Criolita",
+        "Description": "concede resistência a dano de terra e gelo."
+      },
+      "resist-earth-air": {
+        "Weapon": "Raiz Celeste",
+        "Armor": "Pedra dos Ventos",
+        "Shield": "Ferro das Nuvens",
+        "Accessory": "Zefirita",
+        "Description": "concede resistência a dano de terra e vento."
+      },
+      "resist-earth-bolt": {
+        "Weapon": "Terravolta",
+        "Armor": "Pedra do Trovão",
+        "Shield": "Núcleo da Tempestade",
+        "Accessory": "Voltita",
+        "Description": "concede resistência a dano de terra e raio."
+      },
+      "resist-earth-dark": {
+        "Weapon": "Pedra Sepulcral",
+        "Armor": "Pedra Sombria",
+        "Shield": "Noctita",
+        "Accessory": "Aço Sombrio",
+        "Description": "concede resistência a dano de terra e trevas."
+      },
+      "resist-earth-light": {
+        "Weapon": "Grão Solar",
+        "Armor": "Pedra da Luz",
+        "Shield": "Aço Solar",
+        "Accessory": "Aurório",
+        "Description": "concede resistência a dano de terra e luz."
+      },
+      "resist-earth-poison": {
+        "Weapon": "Rocha Podre",
+        "Armor": "Silvestre",
+        "Shield": "Ferro Maculado",
+        "Accessory": "Verdanita",
+        "Description": "concede resistência a dano de terra e veneno."
+      },
+      "resist-ice-air": {
+        "Weapon": "Ventigelo",
+        "Armor": "Vento Gélido",
+        "Shield": "Aeronita",
+        "Accessory": "Ferro das Nuvens",
+        "Description": "concede resistência a dano de gelo e vento."
+      },
+      "resist-ice-bolt": {
+        "Weapon": "Criotempestade",
+        "Armor": "Raio Gélido",
+        "Shield": "Prata da Tempestade",
+        "Accessory": "Voltsombra",
+        "Description": "concede resistência a dano de gelo e raio."
+      },
+      "resist-ice-dark": {
+        "Weapon": "Ruína Glacial",
+        "Armor": "Gelo Negro",
+        "Shield": "Vidro Umbral",
+        "Accessory": "Aço Sinistro",
+        "Description": "concede resistência a dano de gelo e trevas."
+      },
+      "resist-ice-light": {
+        "Weapon": "Aura Gélida",
+        "Armor": "Luz Gélida",
+        "Shield": "Celéstio",
+        "Accessory": "Luminita",
+        "Description": "concede resistência a dano de gelo e luz."
+      },
+      "resist-ice-poison": {
+        "Weapon": "Venenogelo",
+        "Armor": "Composta",
+        "Shield": "Toxífero",
+        "Accessory": "Virellium",
+        "Description": "concede resistência a dano de gelo e veneno."
+      },
+      "resist-air-bolt": {
+        "Weapon": "Tempestral",
+        "Armor": "Vendaval Tempestuoso",
+        "Shield": "Chargium",
+        "Accessory": "Aço Etéreo",
+        "Description": "concede resistência a dano de vento e raio."
+      },
+      "resist-air-dark": {
+        "Weapon": "Vendaval do Vazio",
+        "Armor": "Vento Sombrio",
+        "Shield": "Eclipsita",
+        "Accessory": "Umbracita",
+        "Description": "concede resistência a dano de vento e trevas."
+      },
+      "resist-air-light": {
+        "Weapon": "Zefirlume",
+        "Armor": "Angelical",
+        "Shield": "Luminita",
+        "Accessory": "Radiantita",
+        "Description": "concede resistência a dano de vento e luz."
+      },
+      "resist-air-poison": {
+        "Weapon": "Virellium",
+        "Armor": "Composta",
+        "Shield": "Miastrum",
+        "Accessory": "Venomita",
+        "Description": "concede resistência a dano de vento e veneno."
+      },
+      "resist-bolt-dark": {
+        "Weapon": "Voltsombra",
+        "Armor": "Raio Sombrio",
+        "Shield": "Noctium",
+        "Accessory": "Liga Abissal",
+        "Description": "concede resistência a dano de raio e trevas."
+      },
+      "resist-bolt-light": {
+        "Weapon": "Brilho Tempestuoso",
+        "Armor": "Relâmpago",
+        "Shield": "Radiantita",
+        "Accessory": "Aurório",
+        "Description": "concede resistência a dano de raio e luz."
+      },
+      "resist-bolt-poison": {
+        "Weapon": "Venotempestade",
+        "Armor": "Composta",
+        "Shield": "Pestelita",
+        "Accessory": "Ferrugem Podre",
+        "Description": "concede resistência a dano de raio e veneno."
+      },
+      "resist-dark-light": {
+        "Weapon": "Eclipsol",
+        "Armor": "Luz Noturna",
+        "Shield": "Auralita",
+        "Accessory": "Halocromo",
+        "Description": "concede resistência a dano de trevas e luz."
+      },
+      "resist-dark-poison": {
+        "Weapon": "Corvion",
+        "Armor": "Drow",
+        "Shield": "Ferrugem Podre",
+        "Accessory": "Morbium",
+        "Description": "concede resistência a dano de trevas e veneno."
+      },
+      "resist-light-poison": {
+        "Weapon": "Solveneno",
+        "Armor": "Composta",
+        "Shield": "Halocromo",
+        "Accessory": "Solarium",
+        "Description": "concede resistência a dano de luz e veneno."
+      },
+      "swordbreaker": {
+        "Weapon": "Monástica",
+        "Armor": "Adamante",
+        "Shield": "Torre",
+        "Accessory": "Protegido",
+        "Description": "concede resistência a dano físico."
+      },
+      "fire-immunity": {
+        "Weapon": "Aço Solar",
+        "Armor": "Guarda-Chamas",
+        "Shield": "Pírio",
+        "Accessory": "Rubi",
+        "Description": "concede imunidade a dano de fogo."
+      },
+      "earth-immunity": {
+        "Weapon": "Andapedra",
+        "Armor": "Guarda-Pedra",
+        "Shield": "Terracita",
+        "Accessory": "Esmeralda",
+        "Description": "concede imunidade a dano de terra."
+      },
+      "ice-immunity": {
+        "Weapon": "Pratargenta",
+        "Armor": "Guarda-Gelo",
+        "Shield": "Glacium",
+        "Accessory": "Safira",
+        "Description": "concede imunidade a dano de gelo."
+      },
+      "air-immunity": {
+        "Weapon": "Andavento",
+        "Armor": "Guarda-Vento",
+        "Shield": "Aço Etéreo",
+        "Accessory": "Opala",
+        "Description": "concede imunidade a dano de vento."
+      },
+      "bolt-immunity": {
+        "Weapon": "Andatempestade",
+        "Armor": "Guarda-Tempestade",
+        "Shield": "Núcleo da Tempestade",
+        "Accessory": "Topázio",
+        "Description": "concede imunidade a dano de raio."
+      },
+      "dark-immunity": {
+        "Weapon": "Umbracita",
+        "Armor": "Guarda-Sombras",
+        "Shield": "Noctita",
+        "Accessory": "Ametista",
+        "Description": "concede imunidade a dano de trevas."
+      },
+      "light-immunity": {
+        "Weapon": "Aço Solar",
+        "Armor": "Guarda-Luz",
+        "Shield": "Aurório",
+        "Accessory": "Pérola",
+        "Description": "concede imunidade a dano de luz."
+      },
+      "poison-immunity": {
+        "Weapon": "Ferro Sangrento",
+        "Armor": "Guarda-Ácido",
+        "Shield": "Venomita",
+        "Accessory": "Rosa",
+        "Description": "concede imunidade a dano de veneno."
+      },
+      "omnishield": {
+        "Weapon": "Protegida",
+        "Armor": "Oricalco",
+        "Shield": "Ômni",
+        "Accessory": "Reforçado",
+        "Description": "concede +1 em Defesa e Defesa Mágica."
+      },
+      "perfect-health": {
+        "Weapon": "Santificada",
+        "Armor": "do Médico",
+        "Shield": "do Cruzado",
+        "Accessory": "do Anjo",
+        "Description": "concede imunidade a todas as condições."
+      },
+      "magical": {
+        "Weapon": "Mágica",
+        "Description": "atinge Defesa Mágica em vez de Defesa."
+      },
+      "beast-hunter": {
+        "Weapon": "de Caça",
+        "Description": "causa 5 de dano extra a bestas."
+      },
+      "construct-hunter": {
+        "Weapon": "de Pulso",
+        "Description": "causa 5 de dano extra a construtos."
+      },
+      "demon-hunter": {
+        "Weapon": "Mata-Demônios",
+        "Description": "causa 5 de dano extra a demônios."
+      },
+      "elemental-hunter": {
+        "Weapon": "Vorpal",
+        "Description": "causa 5 de dano extra a elementais."
+      },
+      "monster-hunter": {
+        "Weapon": "Caça-Monstros",
+        "Description": "causa 5 de dano extra a monstros."
+      },
+      "plant-hunter": {
+        "Weapon": "Ceifadora",
+        "Description": "causa 5 de dano extra a plantas."
+      },
+      "undead-hunter": {
+        "Weapon": "Abençoada",
+        "Description": "causa 5 de dano extra a mortos-vivos."
+      },
+      "human-hunter": {
+        "Weapon": "Assassina",
+        "Description": "causa 5 de dano extra a humanoides."
+      },
+      "piercing": {
+        "Weapon": "Perfurante",
+        "Description": "ignora resistências."
+      },
+      "hunter-beasts-constructs": {
+        "Weapon": "Pedraforja",
+        "Description": "causa 5 de dano extra a bestas e construtos."
+      },
+      "hunter-beasts-demons": {
+        "Weapon": "Presa Infernal",
+        "Description": "causa 5 de dano extra a bestas e demônios."
+      },
+      "hunter-beasts-elementals": {
+        "Weapon": "Centelha Selvagem",
+        "Description": "causa 5 de dano extra a bestas e elementais."
+      },
+      "hunter-beasts-humanoids": {
+        "Weapon": "Presa Sangrenta",
+        "Description": "causa 5 de dano extra a bestas e humanoides."
+      },
+      "hunter-beasts-monsters": {
+        "Weapon": "de Prata",
+        "Description": "causa 5 de dano extra a bestas e monstros."
+      },
+      "hunter-beasts-plants": {
+        "Weapon": "Verdanita",
+        "Description": "causa 5 de dano extra a bestas e plantas."
+      },
+      "hunter-beasts-undead": {
+        "Weapon": "Aço Fúnebre",
+        "Description": "causa 5 de dano extra a bestas e mortos-vivos."
+      },
+      "hunter-constructs-demons": {
+        "Weapon": "Quebra-Runas",
+        "Description": "causa 5 de dano extra a construtos e demônios."
+      },
+      "hunter-constructs-elementals": {
+        "Weapon": "Núcleo da Tempestade",
+        "Description": "causa 5 de dano extra a construtos e elementais."
+      },
+      "hunter-constructs-humanoids": {
+        "Weapon": "Aço de Golem",
+        "Description": "causa 5 de dano extra a construtos e humanoides."
+      },
+      "hunter-constructs-monsters": {
+        "Weapon": "Machinita",
+        "Description": "causa 5 de dano extra a construtos e monstros."
+      },
+      "hunter-constructs-plants": {
+        "Weapon": "Raizferrum",
+        "Description": "causa 5 de dano extra a construtos e plantas."
+      },
+      "hunter-constructs-undead": {
+        "Weapon": "Forja-Almas",
+        "Description": "causa 5 de dano extra a construtos e mortos-vivos."
+      },
+      "hunter-demons-elementals": {
+        "Weapon": "Abíssion",
+        "Description": "causa 5 de dano extra a demônios e elementais."
+      },
+      "hunter-demons-humanoids": {
+        "Weapon": "Marca do Juramento",
+        "Description": "causa 5 de dano extra a demônios e humanoides."
+      },
+      "hunter-demons-monsters": {
+        "Weapon": "Vidro Infernal",
+        "Description": "causa 5 de dano extra a demônios e monstros."
+      },
+      "hunter-demons-plants": {
+        "Weapon": "Aço Maculado",
+        "Description": "causa 5 de dano extra a demônios e plantas."
+      },
+      "hunter-demons-undead": {
+        "Weapon": "Abençoada",
+        "Description": "causa 5 de dano extra a demônios e mortos-vivos."
+      },
+      "hunter-elementals-humanoids": {
+        "Weapon": "Aeterita",
+        "Description": "causa 5 de dano extra a elementais e humanoides."
+      },
+      "hunter-elementals-monsters": {
+        "Weapon": "Pedra-Centelha",
+        "Description": "causa 5 de dano extra a elementais e monstros."
+      },
+      "hunter-elementals-plants": {
+        "Weapon": "Zefirita",
+        "Description": "causa 5 de dano extra a elementais e plantas."
+      },
+      "hunter-elementals-undead": {
+        "Weapon": "Forja-Luz",
+        "Description": "causa 5 de dano extra a elementais e mortos-vivos."
+      },
+      "hunter-humanoids-monsters": {
+        "Weapon": "Prata Sangrenta",
+        "Description": "causa 5 de dano extra a humanoides e monstros."
+      },
+      "hunter-humanoids-plants": {
+        "Weapon": "Ferro-Espinho",
+        "Description": "causa 5 de dano extra a humanoides e plantas."
+      },
+      "hunter-humanoids-undead": {
+        "Weapon": "Ruína dos Túmulos",
+        "Description": "causa 5 de dano extra a humanoides e mortos-vivos."
+      },
+      "hunter-monsters-plants": {
+        "Weapon": "Espinho Vil",
+        "Description": "causa 5 de dano extra a monstros e plantas."
+      },
+      "hunter-monsters-undead": {
+        "Weapon": "Aço Sombrio",
+        "Description": "causa 5 de dano extra a monstros e mortos-vivos."
+      },
+      "hunter-plants-undead": {
+        "Weapon": "Ferrugem Podre",
+        "Description": "causa 5 de dano extra a plantas e mortos-vivos."
+      },
+      "multi": {
+        "Weapon": "Geminisita",
+        "Description": "concede Multi(2) aos ataques com esta arma."
+      },
+      "inflict-slow": {
+        "Weapon": "Tarrinita",
+        "Description": "causa lento ao acertar."
+      },
+      "inflict-daze": {
+        "Weapon": "Lunacita",
+        "Description": "causa atordoado ao acertar."
+      },
+      "inflict-shaken": {
+        "Weapon": "Luto Sepulcral",
+        "Description": "causa abalado ao acertar."
+      },
+      "inflict-weak": {
+        "Weapon": "Aço Definhante",
+        "Description": "causa fraco ao acertar."
+      },
+      "inflict-poison": {
+        "Weapon": "Corruptium",
+        "Description": "causa envenenado ao acertar."
+      },
+      "inflict-enrage": {
+        "Weapon": "Nascida da Ira",
+        "Description": "causa enfurecido ao acertar."
+      },
+      "initiative-up": {
+        "Armor": "Mithril",
+        "Shield": "Vidro Etéreo",
+        "Accessory": "Zefirita",
+        "Description": "concede +4 de bônus em iniciativa."
+      },
+      "accuracy-up": {
+        "Armor": "Vidro da Verdade",
+        "Shield": "Aço do Foco",
+        "Accessory": "Pedra da Precisão",
+        "Description": "concede +1 de bônus em Testes de Precisão."
+      },
+      "magic-up": {
+        "Armor": "Prata de Mana",
+        "Shield": "Vidro Arcano",
+        "Accessory": "Folha Dourada",
+        "Description": "concede +1 de bônus em Testes de Magia."
+      },
+      "vitality-up": {
+        "Armor": "Malha do Vigor",
+        "Shield": "Pedracora",
+        "Accessory": "Gema da Vida",
+        "Description": "quando você recupera PV, recupera 5 PV adicionais."
+      },
+      "healing-up": {
+        "Armor": "Tecido Sagrado",
+        "Shield": "Placa Abençoada",
+        "Accessory": "Pérola Coral",
+        "Description": "Feitiços que você conjura para restaurar PV restauram 5 PV adicionais."
+      },
+      "spell-up": {
+        "Armor": "Véu Dourado",
+        "Shield": "Pedra Arcana",
+        "Accessory": "Canção de Prata",
+        "Description": "Feitiços que você conjura causam 5 de dano extra."
+      },
+      "melee-up": {
+        "Armor": "Aço de Batalha",
+        "Shield": "Vidro Bélico",
+        "Accessory": "Coração de Ferro",
+        "Description": "ataques corpo a corpo com arma causam 5 de dano extra."
+      },
+      "ranged-up": {
+        "Armor": "Placa do Falcão",
+        "Shield": "Vidro da Mira",
+        "Accessory": "Olho de Falcão",
+        "Description": "ataques à distância com arma causam 5 de dano extra."
+      },
+      "amulet": {
+        "Weapon": "Dourada",
+        "Accessory": "Mithril",
+        "Description": "concede +1 em Defesa Mágica."
+      },
+      "bulwark": {
+        "Weapon": "Larga",
+        "Accessory": "Adamante",
+        "Description": "concede +1 em Defesa."
+      }
+    },
+    "aerial": {
+      "aerial-1": {
+        "Weapon": "Redemoinho",
+        "Armor": "Redemoinho",
+        "Shield": "Vidro Celeste",
+        "Accessory": "Redemoinho",
+        "Description": "causa 5 de dano extra durante a primeira rodada de um conflito."
+      },
+      "aerial-2": {
+        "Weapon": "Finesse",
+        "Description": "pode ser usada na mão inábil para lutar com duas armas, independentemente da categoria."
+      },
+      "aerial-3": {
+        "Weapon": "Alternante",
+        "Description": "permite que você realize a ação EQUIPAR gratuitamente quando acerta uma ou mais criaturas."
+      },
+      "aerial-4": {
+        "Weapon": "Quebra-Céus",
+        "Armor": "Quebra-Céus",
+        "Shield": "Estratósio",
+        "Accessory": "Quebra-Céus",
+        "Description": "concede imunidade a dano causado por criaturas voadoras."
+      },
+      "aerial-5": {
+        "Weapon": "Polarizada",
+        "Armor": "Polarizada",
+        "Shield": "Quartzo Celeste",
+        "Accessory": "Polarizada",
+        "Description": "reduz pela metade o custo em PM de Feitiços que têm como alvo uma criatura sofrendo de lento."
+      },
+      "aerial-6": {
+        "Weapon": "Corrente de Ar",
+        "Armor": "Corrente de Ar",
+        "Shield": "Tecido de Vendaval",
+        "Accessory": "Corrente de Ar",
+        "Description": "causa 5 de dano extra a uma criatura quando você causa dano a uma criatura fora do seu turno em um conflito."
+      }
+    },
+    "thunderous": {
+      "thunderous-1": {
+        "Weapon": "Espinhada",
+        "Armor": "Espinhada",
+        "Shield": "Vidro da Sobrecarga",
+        "Accessory": "Espinhada",
+        "Description": "dá a um aliado que você possa ver a opção de agir imediatamente após você quando você causa dano de raio a uma criatura."
+      },
+      "thunderous-2": {
+        "Weapon": "Onda de Choque",
+        "Description": "faz com que todos os inimigos presentes na cena sofram atordoado quando o dano causado por esta arma coloca um inimigo em Crise."
+      },
+      "thunderous-3": {
+        "Weapon": "Fio Vivo",
+        "Armor": "Fio Vivo",
+        "Shield": "Condutrita",
+        "Accessory": "Fio Vivo",
+        "Description": "concede【metade do seu nível na Classe Elementalista】como dano extra para seu Poder Cataclismo."
+      },
+      "thunderous-4": {
+        "Weapon": "do Condutor",
+        "Armor": "do Condutor",
+        "Shield": "Capácio",
+        "Accessory": "do Condutor",
+        "Description": "faz com que o alvo do seu Poder Encorajar recupere PV adicionais iguais a【metade do seu nível】."
+      },
+      "thunderous-5": {
+        "Weapon": "Eletrocutada",
+        "Armor": "Eletrocutada",
+        "Shield": "Aço do Choque",
+        "Accessory": "Eletrocutada",
+        "Description": "causa 5 de dano de raio a uma criatura que acerta você com um ataque corpo a corpo."
+      },
+      "thunderous-6": {
+        "Weapon": "Sobrecarregada",
+        "Description": "faz com que cada alvo desta arma perca 20 PM em um acerto bem-sucedido, se ao menos um deles estiver abalado."
+      }
+    },
+    "paradox": {
+      "paradox-1": {
+        "Weapon": "Temporal",
+        "Description": "causa 5 de dano extra contanto que você tenha outra arma equipada de uma categoria diferente."
+      },
+      "paradox-2": {
+        "Weapon": "Anômala",
+        "Armor": "Anômala",
+        "Shield": "Paradoxita",
+        "Accessory": "Anômala",
+        "Description": "concede a você os efeitos do Feitiço Espelho no início de uma cena de conflito."
+      },
+      "paradox-3": {
+        "Weapon": "Vinculada",
+        "Description": "prende até 2 alvos atingidos por esta arma. Quando qualquer um dos alvos perde PV por dano ao qual seja Vulnerável, o outro perde 5 PV."
+      },
+      "paradox-4": {
+        "Weapon": "Distorcida",
+        "Armor": "Distorcida",
+        "Shield": "Vidro Distorcido",
+        "Accessory": "Distorcida",
+        "Description": "fortalece um Feitiço para causar 5 de dano extra quando acerta com sucesso crítico."
+      },
+      "paradox-5": {
+        "Weapon": "Ecoante",
+        "Armor": "Ecoante",
+        "Shield": "Ecoquartzo",
+        "Accessory": "Ecoante",
+        "Description": "faz com que um inimigo na cena sofra uma condição aleatória (1d4: atordoado, abalado, lento ou fraco) quando esse inimigo se cura de uma ou mais condições."
+      },
+      "paradox-6": {
+        "Weapon": "Desvanecida",
+        "Description": "faz com que inimigos atingidos por esta arma desvaneçam. Se um inimigo desvanecente fosse recuperar PV, em vez disso não recupera PV e deixa de desvanecer."
+		}
+    },
+    "terrestrial": {
+      "terrestrial-1": {
+        "Weapon": "Telúrica",
+        "Armor": "Telúrica",
+        "Shield": "Casca de Pedra",
+        "Accessory": "Telúrica",
+        "Description": "concede resistência a dano causado por perigos ambientais."
+      },
+      "terrestrial-2": {
+        "Weapon": "Raiz Profunda",
+        "Armor": "Raiz Profunda",
+        "Shield": "Cerne",
+        "Accessory": "Raiz Profunda",
+        "Description": "recupera 5 PV adicionais quando você recupera PV enquanto está em Crise."
+      },
+      "terrestrial-3": {
+        "Weapon": "Sísmica",
+        "Description": "recupera PM iguais à sua RA quando você acerta uma criatura com esta arma."
+      },
+      "terrestrial-4": {
+        "Weapon": "Florescente",
+        "Armor": "Florescente",
+        "Shield": "Verdantina",
+        "Accessory": "Florescente",
+        "Description": "concede resistência a dano físico até o início do seu próximo turno quando você cura um aliado em um conflito."
+      },
+      "terrestrial-5": {
+        "Weapon": "Pedra Rúnica",
+        "Armor": "Pedra Rúnica",
+        "Shield": "Pedra Glífica",
+        "Accessory": "Pedra Rúnica",
+        "Description": "concede +2 de bônus em Testes de Magia para Rituais de Elementalismo com custo total em PM igual ou menor que 60."
+      },
+      "terrestrial-6": {
+        "Weapon": "Quebra-Espinha",
+        "Armor": "Quebra-Espinha",
+        "Shield": "Basaltina",
+        "Accessory": "Quebra-Espinha",
+        "Description": "faz com que qualquer arma pesada ou lança equipada cause 5 de dano extra."
+      }
+    },
+    "ardent": {
+      "ardent-1": {
+        "Weapon": "Dançante",
+        "Armor": "Dançante",
+        "Shield": "Vidro Flamejante",
+        "Accessory": "Dançante",
+        "Description": "reduz pela metade o custo em PM do seu Poder Tempestade de Lâminas ao usar esta arma."
+      },
+      "ardent-2": {
+        "Weapon": "Fogo Sombrio",
+        "Description": "permite que você altere, à vontade, o tipo de dano do seu Poder Golpe Sombrio para fogo em vez de trevas."
+      },
+      "ardent-3": {
+        "Weapon": "Cauterizada",
+        "Description": "causa 1 de dano extra para cada condição que você estiver sofrendo."
+      },
+      "ardent-4": {
+        "Weapon": "Vinculada",
+        "Armor": "Vinculada",
+        "Shield": "Aço do Juramento",
+        "Accessory": "Vinculada",
+        "Description": "restaura 5 PM quando você invoca um Laço durante qualquer teste."
+      },
+      "ardent-5": {
+        "Weapon": "Silenciadora",
+        "Description": "impede uma criatura de realizar a ação Feitiço durante o próximo turno dela quando é atingida com sucesso."
+      },
+      "ardent-6": {
+        "Weapon": "Tiro Rápido",
+        "Armor": "Tiro Rápido",
+        "Shield": "Liga de Cinzas",
+        "Accessory": "Tiro Rápido",
+        "Description": "faz com que qualquer arco ou arma de fogo equipada cause 5 de dano extra."
+      }
+    },
+    "glacial": {
+      "glacial-1": {
+        "Weapon": "Congelante",
+        "Armor": "Congelante",
+        "Shield": "Glacium",
+        "Accessory": "Congelante",
+        "Description": "causa 5 de dano de gelo a cada inimigo presente na cena quando você entra em Crise pela primeira vez."
+      },
+      "glacial-2": {
+        "Weapon": "Nívea",
+        "Armor": "Nívea",
+        "Shield": "Vidro de Geada",
+        "Accessory": "Nívea",
+        "Description": "faz com que o dano de Gelo que você causa ignore Imunidades e Resistências."
+      },
+      "glacial-3": {
+        "Weapon": "Presa à Geada",
+        "Armor": "Presa à Geada",
+        "Shield": "Geada",
+        "Accessory": "Presa à Geada",
+        "Description": "faz com que cada criatura na cena sofrendo de fraco perca 5 PV no início do seu turno em um conflito."
+      },
+      "glacial-4": {
+        "Weapon": "Brumosa",
+        "Armor": "Brumosa",
+        "Shield": "Winterita",
+        "Accessory": "Brumosa",
+        "Description": "concede +1 de bônus em DEF e MDEF contra ataques e Feitiços ofensivos de criaturas enfurecidas."
+      },
+      "glacial-5": {
+        "Weapon": "Boreal",
+        "Armor": "Boreal",
+        "Shield": "Quartzo Gélido",
+        "Accessory": "Boreal",
+        "Description": "faz uma criatura sofrer lento, ou perder 10 PM se já estiver lenta, quando você causa dano de gelo a ela."
+      },
+      "glacial-6": {
+        "Weapon": "Gélida",
+        "Armor": "Gélida",
+        "Shield": "Permaferrum",
+        "Accessory": "Gélida",
+        "Description": "causa 5 de dano extra a criaturas sofrendo da condição fraco."
+      }
+    },
+    "spiritual": {
+      "spiritual-1": {
+        "Weapon": "Anima",
+        "Armor": "Anima",
+        "Shield": "Auralita",
+        "Accessory": "Anima",
+        "Description": "cura você de uma única condição à sua escolha quando você encerra seu turno em Fusão com um Arcano."
+      },
+      "spiritual-2": {
+        "Weapon": "Etérea",
+        "Description": "causa 1 de dano extra para cada Laço de afeto que você tiver."
+      },
+      "spiritual-3": {
+        "Weapon": "Auroral",
+        "Armor": "Auroral",
+        "Shield": "Halocromo",
+        "Accessory": "Auroral",
+        "Description": "faz com que o dano que você causa ignore resistência enquanto você estiver sob efeito de um Feitiço com duração de cena."
+      },
+      "spiritual-4": {
+        "Weapon": "Enfeitiçada",
+        "Description": "aplica, em vez disso, todos os bônus de Teste de Precisão ao seu Teste de Magia ao usar o Poder Lâmina Mágica com esta arma."
+      },
+      "spiritual-5": {
+        "Weapon": "Vitalis",
+        "Armor": "Vitalis",
+        "Shield": "Pedracora",
+        "Accessory": "Vitalis",
+        "Description": "cura um aliado em 5 PV quando você realiza a ação Guarda e escolhe proteger esse aliado."
+      },
+      "spiritual-6": {
+        "Weapon": "Silvestre",
+        "Armor": "Silvestre",
+        "Shield": "Madeira Silvestre",
+        "Accessory": "Silvestre",
+        "Description": "concede resistência a dano de trevas, luz e veneno."
+      }
+    },
+    "corrupted": {
+      "corrupted-1": {
+        "Weapon": "Manchada",
+        "Description": "faz com que o dano de trevas causado por um Feitiço usando o Poder Lâmina Mágica ignore Imunidades e Resistências."
+      },
+      "corrupted-2": {
+        "Weapon": "Psíquica",
+        "Armor": "Psíquica",
+        "Shield": "Vidro Mental",
+        "Accessory": "Psíquica",
+        "Description": "trata a MDEF dos alvos dos seus Feitiços ofensivos como sendo igual ao dado de VON deles."
+      },
+      "corrupted-3": {
+        "Weapon": "Definhante",
+        "Armor": "Definhante",
+        "Shield": "Ferrugem Podre",
+        "Accessory": "Definhante",
+        "Description": "faz com que o dano de trevas e veneno que você causa ignore Imunidades e Resistências."
+      },
+      "corrupted-4": {
+        "Weapon": "Maliciosa",
+        "Armor": "Maliciosa",
+        "Shield": "Estilhaço de Ódio",
+        "Accessory": "Maliciosa",
+        "Description": "reduz pela metade o custo total em PM de Feitiços que tenham como alvo uma criatura pela qual você tenha um Laço de ódio."
+      },
+      "corrupted-5": {
+        "Weapon": "do Suserano",
+        "Armor": "do Suserano",
+        "Shield": "Aço do Pavor",
+        "Accessory": "do Suserano",
+        "Description": "concede +1 em DEF e MDEF contra ataques e Feitiços ofensivos de criaturas abaladas."
+      },
+      "corrupted-6": {
+        "Weapon": "Espectral",
+        "Description": "inflige a condição envenenado ao alvo do seu Poder Contra-Ataque."
+      }
+    },
+    "aquatic": {
+      "aquatic-1": {
+        "Weapon": "Coralina",
+        "Armor": "Coralina",
+        "Shield": "Pedra do Mar",
+        "Accessory": "Coralina",
+        "Description": "permite que você trate sua DES como se estivesse um dado acima até o fim do seu próximo turno quando você reduz um inimigo a 0 PV."
+      },
+      "aquatic-2": {
+        "Weapon": "Incrustada",
+        "Description": "trata a DEF de cada alvo desta arma como sendo igual ao tamanho atual do dado de VIG dele."
+      },
+      "aquatic-3": {
+        "Weapon": "Boreal",
+        "Armor": "Boreal",
+        "Shield": "Pérola da Maré",
+        "Accessory": "Boreal",
+        "Description": "recupera uma quantidade de PV igual à RA de um Teste de Magia bem-sucedido quando você conjura um Feitiço ofensivo."
+      },
+      "aquatic-4": {
+        "Weapon": "Maleável",
+        "Description": "impede que ataques com esta arma acionem contra-ataques ou outros Poderes reativos."
+      },
+      "aquatic-5": {
+        "Weapon": "Primaveril",
+        "Armor": "Primaveril",
+        "Shield": "Pedra da Fonte",
+        "Accessory": "Primaveril",
+        "Description": "faz com que qualquer aliado que recupere todos os PV também recupere 5 PM."
+      },
+      "aquatic-6": {
+        "Weapon": "Nebulosa",
+        "Description": "permite que você reduza o dano de uma criatura atingida por esta arma pela RA do último acerto registrado dela."
+      }
+    },
+    "mechanical": {
+      "mechanical-1": {
+        "Weapon": "do Ladrão",
+        "Armor": "do Ladrão",
+        "Shield": "Placa de Engrenagem",
+        "Accessory": "do Ladrão",
+        "Description": "permite que você gaste sua oportunidade para ganhar 100z."
+      },
+      "mechanical-2": {
+        "Weapon": "Perfurante",
+        "Description": "concede +2 ao seu Teste de Precisão quando você usa o Poder Brecha com esta arma."
+      },
+      "mechanical-3": {
+        "Weapon": "do Alquimista",
+        "Armor": "do Alquimista",
+        "Shield": "Catalita",
+        "Accessory": "do Alquimista",
+        "Description": "permite que você escolha a área e o efeito de uma poção que criar usando Engenhoca (Alquimia), se pelo menos 2 dados mostrarem o mesmo número."
+      },
+      "mechanical-4": {
+        "Weapon": "Magnética",
+        "Description": "causa 5 de dano adicional a criaturas com traços relacionados a metal."
+      },
+      "mechanical-5": {
+        "Weapon": "do Bardo",
+        "Armor": "do Bardo",
+        "Shield": "Disco de Ressonância",
+        "Accessory": "do Bardo",
+        "Description": "rende a você【200 x NP】em zenit quando você usa o Poder Papo de Taverna."
+      },
+      "mechanical-6": {
+        "Weapon": "Energizada",
+        "Shield": "Estrutura Voltaica",
+        "Description": "causa 5 de dano extra de raio quando você acerta duas ou mais criaturas em um único turno com esta arma."
+      }
+    }
+  },
+  "dangers": {
+  "effects": [
+    "O grupo sofre dano leve.",
+    "O grupo sofre dano moderado.",
+    "O grupo sofre dano grave.",
+    "O grupo fica atordoado.",
+    "O grupo fica lento.",
+    "O grupo fica fraco.",
+    "O grupo fica envenenado.",
+    "O grupo fica enfurecido.",
+    "O grupo encontra um inimigo fácil.",
+    "O grupo encontra um inimigo desafiador.",
+    "O grupo encontra um inimigo mortal.",
+    "O grupo aciona um relógio de perigo de 4 etapas.",
+    "O grupo aciona um relógio de perigo de 6 etapas.",
+    "O grupo aciona um relógio de perigo de 8 etapas.",
+    "O plano do vilão avança 1 etapa.",
+    "O plano do vilão avança 2 etapas.",
+    "O plano do vilão avança 3 etapas."
+  ],
+  "sources": [
+    "Mal da altitude, intoxicação alimentar ou exaustão geral atrasam o grupo.",
+    "O equipamento de viagem falha — carroças quebram, armas se partem ou itens cruciais desaparecem.",
+    "Instabilidade política local ou global causa interrupções ou confrontos.",
+    "Um evento natural severo — tempestades, terremotos, enchentes — traz atraso e perigo.",
+    "Você atrai a atenção de um rival, vilão ou monstro.",
+    "Uma interferência sobrenatural altera o caminho: portais, assombrações, presságios.",
+    "Um PNJ misterioso aparece, alterando ou bloqueando seu caminho.",
+    "Um mecanismo antigo ou oculto é acionado inesperadamente.",
+    "Você invade um local sagrado ou viola um tabu sem saber.",
+    "A natureza selvagem revela um segredo — mas isso tem um preço.",
+    "A vida selvagem se torna territorial ou agressiva, criando complicações.",
+    "Um marco mudou, desviando seu caminho.",
+    "Os recursos se esgotam mais rápido do que o esperado, pressionando a sobrevivência.",
+    "Sonhos ou visões atrapalham o progresso com avisos crípticos.",
+    "Uma presença divina ou arcana testa seu valor ou pureza.",
+    "Uma maldição ou interferência mágica distorce sutilmente seu ambiente.",
+    "Um aliado revela um segredo que põe tudo em dúvida."
+  ]
+},
+  "discoveries": {
+    "effects": [
+      "Cada membro do grupo recupera 1 PI.",
+      "Cada membro do grupo recupera 10 PV.",
+      "Vocês descobrem uma erva rara com propriedades curativas.",
+      "Vocês encontram uma relíquia de importância cultural ou histórica.",
+      "Vocês obtêm informações sobre um costume ou lenda local.",
+      "Vocês aprendem um atalho que ajudará em viagens futuras.",
+      "Uma criatura amigável ajuda seu grupo temporariamente.",
+      "Vocês encontram uma escrita antiga que insinua eventos futuros.",
+      "Uma pista para um mistério maior é descoberta.",
+      "A paisagem inspira uma súbita onda de criatividade.",
+      "Vocês forjam uma ferramenta ou item útil a partir de peças reaproveitadas."
+    ],
+    "sources": [
+      "Uma bela paisagem que permanece quase intocada há séculos.",
+      "Ruínas de uma vila que contam a história de uma antiga guerra.",
+      "Um altar com inscrições de uma civilização esquecida.",
+      "Uma caverna onde são encontrados uma velha fogueira e suprimentos.",
+      "Uma cápsula do tempo enterrada de outra era.",
+      "Rastros de uma espécie desconhecida.",
+      "Um monólito coberto de runas brilhantes.",
+      "Ossos de uma criatura colossal jamais vista antes.",
+      "Um lugar onde as estrelas parecem se alinhar perfeitamente.",
+      "Um fenômeno climático incomum revelando terreno oculto.",
+      "Uma melodia carregada pelo vento, sem origem aparente.",
+      "Uma única árvore crescendo da pedra, irradiando magia."
+	  ]
+  }
+}
