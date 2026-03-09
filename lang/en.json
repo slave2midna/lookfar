@@ -279,8 +279,8 @@
           "Ingredient": "An ingredient that tastes {taste}.",
           "Material": "{nature} material of {originLower} origins. It can be used to craft {detail} items.",
           "Weapon": "{prefix} that {qualityText}",
-          "Armor": "A set of {martialFlag} armor that {qualityText}",
-          "Shield": "A {martialFlag} shield that {qualityText}",
+          "Armor": "A set of {martialType} armor that {qualityText}",
+          "Shield": "A {martialType} shield that {qualityText}",
           "Accessory": "An accessory that {qualityText}"
         }
       },
@@ -376,8 +376,8 @@
         },
         "Summaries": {
           "Weapon": "A crafted {category}.",
-          "Armor": "A crafted {martialFlag} armor set.",
-          "Shield": "A crafted {martialFlag} shield.",
+          "Armor": "A crafted {martialType} armor set.",
+          "Shield": "A crafted {martialType} shield.",
           "Accessory": "A forged accessory."
         }
       },
@@ -399,4 +399,5 @@
     }
   }
 }
+
 
