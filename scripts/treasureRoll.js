@@ -691,8 +691,8 @@ async function renderTreasureResultDialog(items, budget, config) {
 
       const displayName = [qualityName, baseName].filter(Boolean).join(" ");
       const martialType = baseArmor?.isMartial
-        ? game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Martial")
-        : game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NonMartial");
+        ? game.i18n.localize("LOOKFAR.Terms.Common.Martial")
+        : game.i18n.localize("LOOKFAR.Terms.Common.Non-Martial");
 
       const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
@@ -740,8 +740,8 @@ async function renderTreasureResultDialog(items, budget, config) {
 
       const displayName = [qualityName, baseName].filter(Boolean).join(" ");
       const martialType = baseShield?.isMartial
-        ? game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Martial")
-        : game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NonMartial");
+        ? game.i18n.localize("LOOKFAR.Terms.Common.Martial")
+        : game.i18n.localize("LOOKFAR.Terms.Common.Non-Martial");
 
       const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
