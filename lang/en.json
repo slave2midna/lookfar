@@ -23,8 +23,6 @@
         "Title": "Forge an Item"
       }
     },
-
-    
     "__SECTION__Settings": "=== Settings ===",
     "Settings": {
       "ResultVisibility": {
@@ -89,14 +87,26 @@
       "NoActorCompendiums": "No Actor compendiums found",
       "NoScenes": "No scenes found"
     },
-
-    
     "__SECTION__Terms": "=== Terms ===",
     "Terms": {
       "Common": {
         "Zenit": "Zenit",
         "Martial": "Martial",
-        "Non-Martial": "Non-Martial"
+        "Non-Martial": "Non-Martial",
+        "Melee": "Melee",
+        "Ranged": "Ranged",
+        "One-Handed": "One-handed",
+        "Two-Handed": "Two-handed"
+      },
+      "Attributes": {
+        "MIG": "MIG",
+        "DEX": "DEX",
+        "WLP": "WLP",
+        "INS": "INS",
+        "INIT": "INIT",
+        "MDEF": "MDEF",
+        "DEF": "DEF",
+        "HR": "HR"
       },
       "Element": {
         "Physical": "Physical",
@@ -133,10 +143,20 @@
         "Liquid": "Liquid",
         "Artificial": "Artificial",
         "Mineral": "Mineral"
+      },
+      "Category": {
+        "Arcane": "Arcane",
+        "Bow": "Bow",
+        "Brawling": "Brawling",
+        "Dagger": "Dagger",
+        "Firearm": "Firearm",
+        "Flail": "Flail",
+        "Heavy": "Heavy",
+        "Spear": "Spear",
+        "Sword": "Sword",
+        "Thrown": "Thrown"
       }
     },
-
-    
     "__SECTION__TravelCheck": "=== Travel Check ===",
     "TravelCheck": {
       "Dialogs": {
@@ -191,8 +211,6 @@
         "NoDiscoverySource": "No discovery source available."
       }
     },
-
-    
     "__SECTION__TreasureRoll": "=== Treasure Roll ===",
     "TreasureRoll": {
       "Dialogs": {
@@ -281,8 +299,6 @@
         "NoLootGenerated": "No loot generated."
       }
     },
-
-    
     "__SECTION__ItemForge": "=== Item Forge ===",
     "ItemForge": {
       "Dialogs": {
@@ -302,11 +318,7 @@
           "Attributes": {
             "Legend": "Attributes",
             "AttrA": "Attr A:",
-            "AttrB": "Attr B:",
-            "MIG": "MIG",
-            "DEX": "DEX",
-            "WLP": "WLP",
-            "INS": "INS"
+            "AttrB": "Attr B:"
           },
           "Customize": {
             "Legend": "Customize",
@@ -340,13 +352,7 @@
             }
           },
           "Preview": {
-            "Legend": "Preview",
-            "One-Handed": "one-handed",
-            "Two-Handed": "two-handed",
-            "INIT": "INIT",
-            "MDEF": "MDEF",
-            "DEF": "DEF",
-            "HR": "HR"
+            "Legend": "Preview"
           },
           "Cost": {
             "Legend": "Cost",
@@ -365,15 +371,15 @@
       },
       "Sheets": {
         "NamePattern": {
-          "Weapon": "Newly Crafted {type}",
-          "Armor": "Newly Crafted {type}",
-          "Shield": "Newly Crafted {type}",
-          "Accessory": "Newly Crafted {type}"
+          "Weapon": "Newly Crafted {template}",
+          "Armor": "Newly Crafted {template}",
+          "Shield": "Newly Crafted {template}",
+          "Accessory": "Newly Crafted {template}"
         },
         "Summaries": {
           "Weapon": "A crafted {category}.",
-          "Armor": "A crafted {martialType} armor set.",
-          "Shield": "A crafted {martialType} shield.",
+          "Armor": "A crafted {martialFlag} armor set.",
+          "Shield": "A crafted {martialFlag} shield.",
           "Accessory": "A forged accessory."
         }
       },
@@ -395,6 +401,3 @@
     }
   }
 }
-
-
-
