@@ -1566,9 +1566,7 @@ async function openItemForgeDialog() {
 
                     let worthForPreview = 0;
                     try {
-                        const {
-                            worth
-                        } = getCurrentCosts(html, base2, currentQualities);
+                        const { worth } = getCurrentCosts(html, base2, currentQualities);
                             worthForPreview = worth;
                     } catch {
                         worthForPreview = 0;
