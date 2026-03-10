@@ -49,7 +49,7 @@
       },
       "UseVariantTravelRules": {
         "Name": "Use Variant Travel Rules",
-        "Hint": "Placeholder setting: Toggles alternative travel mechanics (currently unused)."
+        "Hint": "Travel rolls will generate minor and major results for dangers and discoveries."
       },
       "UseVariantDamageRules": {
         "Name": "Use Playtest Damage Rules",
@@ -400,3 +400,4 @@
     }
   }
 }
+
