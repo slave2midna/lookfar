@@ -201,15 +201,111 @@ function applyDangerPlaceholders(text, groupLevel) {
   return String(text).replaceAll("{dmg}", String(dmg));
 }
 
-function buildResultData({ titleText = "", noIncident = "", effectText = "", sourceText = "", keywords = null }) {
+function buildResultData({
+  titleText = "",
+  noIncident = "",
+  effectText = "",
+  sourceText = "",
+  keywords = null,
+  showEffect = Boolean(effectText),
+}) {
   return {
     titleText,
     noIncident,
-    showEffect: Boolean(effectText),
+    showEffect,
     effectText,
     sourceText,
     keywords,
   };
+}
+
+function getVariantDangerOutcome(selectedDifficulty) {
+  const majorChanceByThreat = {
+    d6: 0,     // Minimal => only Minor Danger
+    d8: 0.25,  // Low => leans Minor
+    d10: 0.5,  // Medium => 50/50
+    d12: 0.75, // High => leans Major
+    d20: 1,    // Very High => only Major Danger
+  };
+
+  const majorChance = majorChanceByThreat[selectedDifficulty] ?? 0.5;
+  return Math.random() < majorChance ? "majorDanger" : "minorDanger";
+}
+
+function getVariantOutcome(rollTotal, selectedDifficulty) {
+  if (rollTotal === 1) return "majorDiscovery";
+  if (rollTotal === 2 || rollTotal === 3) return "minorDiscovery";
+  if (rollTotal === 4 || rollTotal === 5) return "none";
+  if (rollTotal >= 6) return getVariantDangerOutcome(selectedDifficulty);
+  return "none";
+}
+
+function getOutcomeTitle(outcomeType, useVariantTravelRules) {
+  if (!useVariantTravelRules) {
+    if (outcomeType === "danger") {
+      return game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Danger");
+    }
+    if (outcomeType === "discovery") {
+      return game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Discovery");
+    }
+    return "";
+  }
+
+  const titleKeys = {
+    minorDanger: "LOOKFAR.TravelCheck.Dialogs.TravelResult.Severity.MinorDanger",
+    majorDanger: "LOOKFAR.TravelCheck.Dialogs.TravelResult.Severity.MajorDanger",
+    minorDiscovery: "LOOKFAR.TravelCheck.Dialogs.TravelResult.Severity.MinorDiscovery",
+    majorDiscovery: "LOOKFAR.TravelCheck.Dialogs.TravelResult.Severity.MajorDiscovery",
+  };
+
+  return game.i18n.localize(titleKeys[outcomeType] ?? "");
+}
+
+function shouldShowEffect(outcomeType, useVariantTravelRules) {
+  if (!useVariantTravelRules) return true;
+  return outcomeType === "majorDanger" || outcomeType === "majorDiscovery";
+}
+
+async function buildOutcomeResultData(outcomeType, groupLevel, useVariantTravelRules) {
+  const titleText = getOutcomeTitle(outcomeType, useVariantTravelRules);
+  const showEffect = shouldShowEffect(outcomeType, useVariantTravelRules);
+
+  if (
+    outcomeType === "danger" ||
+    outcomeType === "minorDanger" ||
+    outcomeType === "majorDanger"
+  ) {
+    const dangerResult = await generateDanger(groupLevel, { showEffect });
+
+    return buildResultData({
+      titleText,
+      effectText: dangerResult.effectText,
+      sourceText: dangerResult.sourceText,
+      keywords: dangerResult.keywords,
+      showEffect,
+    });
+  }
+
+  if (
+    outcomeType === "discovery" ||
+    outcomeType === "minorDiscovery" ||
+    outcomeType === "majorDiscovery"
+  ) {
+    const discoveryResult = await generateDiscovery(groupLevel, { showEffect });
+
+    return buildResultData({
+      titleText,
+      effectText: discoveryResult.effectText,
+      sourceText: discoveryResult.sourceText,
+      keywords: discoveryResult.keywords,
+      showEffect,
+    });
+  }
+
+  return buildResultData({
+    noIncident: game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.NoIncident"),
+    showEffect: false,
+  });
 }
 
 async function handleRoll(selectedDifficulty, html) {
@@ -246,43 +342,21 @@ async function handleRoll(selectedDifficulty, html) {
   }
 
   const groupLevel = html.find("#groupLevel").val();
-
-  let resultData = null;
   const treasureHunterLevel = parseInt(html.find("#treasureHunterLevelInput").val());
   const isDiscovery = shouldMakeDiscovery(roll.total, treasureHunterLevel);
+  const useVariantTravelRules = game.settings.get("lookfar", "useVariantTravelRules");
+
   let outcomeType = "none";
 
-  if (roll.total >= 6) {
+  if (useVariantTravelRules) {
+    outcomeType = getVariantOutcome(roll.total, effectiveDifficulty);
+  } else if (roll.total >= 6) {
     outcomeType = "danger";
-
-    const titleText = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Danger");
-    const dangerResult = await generateDanger(groupLevel);
-
-    resultData = buildResultData({
-      titleText,
-      effectText: dangerResult.effectText,
-      sourceText: dangerResult.sourceText,
-      keywords: dangerResult.keywords,
-    });
   } else if (isDiscovery) {
     outcomeType = "discovery";
-
-    const titleText = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Discovery");
-    const discoveryResult = await generateDiscovery(groupLevel);
-
-    resultData = buildResultData({
-      titleText,
-      effectText: discoveryResult.effectText,
-      sourceText: discoveryResult.sourceText,
-      keywords: discoveryResult.keywords,
-    });
-  } else {
-    outcomeType = "none";
-
-    resultData = buildResultData({
-      noIncident: game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.NoIncident"),
-    });
   }
+
+  const resultData = await buildOutcomeResultData(outcomeType, groupLevel, useVariantTravelRules);
 
   // Emit the result to all clients
   game.socket.emit("module.lookfar", {
@@ -307,13 +381,14 @@ async function handleRoll(selectedDifficulty, html) {
 // -----------------------------------------------------------------------------
 
 async function showRerollDialog(resultData, selectedDifficulty, groupLevel, outcomeType) {
-  const isDanger = outcomeType === "danger";
-  const isDiscovery = outcomeType === "discovery";
+  const isDanger = ["danger", "minorDanger", "majorDanger"].includes(outcomeType);
+  const isDiscovery = ["discovery", "minorDiscovery", "majorDiscovery"].includes(outcomeType);
 
   // Close the existing dialog if it's open
   if (currentDialog) currentDialog.close();
 
   const isGM = game.user.isGM;
+  const useVariantTravelRules = game.settings.get("lookfar", "useVariantTravelRules");
 
   const buttons = isGM
     ? {
@@ -344,31 +419,13 @@ async function showRerollDialog(resultData, selectedDifficulty, groupLevel, outc
           callback: async () => {
             if (outcomeType === "none") return;
 
-            let newResultData = null;
+            if (!isDanger && !isDiscovery) return;
 
-            if (isDanger) {
-              const titleText = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Danger");
-              const dangerResult = await generateDanger(groupLevel);
-
-              newResultData = buildResultData({
-                titleText,
-                effectText: dangerResult.effectText,
-                sourceText: dangerResult.sourceText,
-                keywords: dangerResult.keywords,
-              });
-            } else if (isDiscovery) {
-              const titleText = game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Result.Discovery");
-              const discoveryResult = await generateDiscovery(groupLevel);
-
-              newResultData = buildResultData({
-                titleText,
-                effectText: discoveryResult.effectText,
-                sourceText: discoveryResult.sourceText,
-                keywords: discoveryResult.keywords,
-              });
-            } else {
-              return;
-            }
+            const newResultData = await buildOutcomeResultData(
+              outcomeType,
+              groupLevel,
+              useVariantTravelRules
+            );
 
             // Emit the new result to all clients
             game.socket.emit("module.lookfar", {
@@ -435,47 +492,51 @@ function generateKeywordsData() {
 // Danger Generation (mirrors Discovery Generation)
 // -----------------------------------------------------------------------------
 
-async function generateDanger(groupLevel) {
+async function generateDanger(groupLevel, { showEffect = true } = {}) {
   console.log("Generating Danger...");
 
   const effectTableId = game.settings.get("lookfar", "dangerEffectRollTable");
   const sourceTableId = game.settings.get("lookfar", "dangerSourceRollTable");
 
-  let effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable");
+  let effectText = "";
   let sourceText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDangerSource");
 
   // -----------------------------
   // Danger Effect
   // -----------------------------
-  if (effectTableId && effectTableId !== "default") {
-    const rollTable = game.tables.get(effectTableId);
-    if (rollTable) {
-      console.log(`Rolling on the Danger Effect Roll Table: ${rollTable.name}`);
-      const rollResult = await rollTable.draw();
-      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-        effectText = rollResult.results[0].text;
+  if (showEffect) {
+    effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable");
+
+    if (effectTableId && effectTableId !== "default") {
+      const rollTable = game.tables.get(effectTableId);
+      if (rollTable) {
+        console.log(`Rolling on the Danger Effect Roll Table: ${rollTable.name}`);
+        const rollResult = await rollTable.draw();
+        if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+          effectText = rollResult.results[0].text;
+        }
+      } else {
+        console.error("Selected Danger Effect Roll Table not found. Falling back to defaults.");
       }
-    } else {
-      console.error("Selected Danger Effect Roll Table not found. Falling back to defaults.");
     }
-  }
 
-  // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
-  if (
-    effectText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable") ||
-    !effectText
-  ) {
-    const pool = dataLoader?.dangersData?.effects;
-    if (Array.isArray(pool) && pool.length) {
-      effectText = pool[Math.floor(Math.random() * pool.length)];
-    } else {
-      console.error("No danger effects available in dataLoader.dangersData.effects.");
-      effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable");
+    // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
+    if (
+      effectText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable") ||
+      !effectText
+    ) {
+      const pool = dataLoader?.dangersData?.effects;
+      if (Array.isArray(pool) && pool.length) {
+        effectText = pool[Math.floor(Math.random() * pool.length)];
+      } else {
+        console.error("No danger effects available in dataLoader.dangersData.effects.");
+        effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable");
+      }
     }
-  }
 
-  // Resolve any dynamic damage placeholder using a hidden severity roll
-  effectText = applyDangerPlaceholders(effectText, groupLevel);
+    // Resolve any dynamic damage placeholder using a hidden severity roll
+    effectText = applyDangerPlaceholders(effectText, groupLevel);
+  }
 
   // -----------------------------
   // Danger Source
@@ -516,42 +577,46 @@ async function generateDanger(groupLevel) {
 // Discovery Generation
 // -----------------------------------------------------------------------------
 
-async function generateDiscovery(groupLevel) {
+async function generateDiscovery(groupLevel, { showEffect = true } = {}) {
   console.log("Generating Discovery...");
 
   const effectTableId = game.settings.get("lookfar", "discoveryEffectRollTable");
   const sourceTableId = game.settings.get("lookfar", "discoverySourceRollTable");
 
-  let effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoveryEffect");
+  let effectText = "";
   let sourceText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoverySource");
 
   // -----------------------------
   // Discovery Effect
   // -----------------------------
-  if (effectTableId && effectTableId !== "default") {
-    const rollTable = game.tables.get(effectTableId);
-    if (rollTable) {
-      console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
-      const rollResult = await rollTable.draw();
-      if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
-        effectText = rollResult.results[0].text;
+  if (showEffect) {
+    effectText = game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoveryEffect");
+
+    if (effectTableId && effectTableId !== "default") {
+      const rollTable = game.tables.get(effectTableId);
+      if (rollTable) {
+        console.log(`Rolling on the Discovery Effect Roll Table: ${rollTable.name}`);
+        const rollResult = await rollTable.draw();
+        if (rollResult?.results?.length > 0 && rollResult.results[0]?.text) {
+          effectText = rollResult.results[0].text;
+        }
+      } else {
+        console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
       }
-    } else {
-      console.error("Selected Discovery Effect Roll Table not found. Falling back to defaults.");
     }
-  }
 
-  // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
-  if (effectText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoveryEffect")) {
-    const pool = dataLoader?.discoveryData?.effects;
-    if (Array.isArray(pool) && pool.length) {
-      effectText = pool[Math.floor(Math.random() * pool.length)];
-    } else {
-      console.error("No discovery effects available in dataLoader.discoveryData.effects.");
+    // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
+    if (effectText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoveryEffect")) {
+      const pool = dataLoader?.discoveryData?.effects;
+      if (Array.isArray(pool) && pool.length) {
+        effectText = pool[Math.floor(Math.random() * pool.length)];
+      } else {
+        console.error("No discovery effects available in dataLoader.discoveryData.effects.");
+      }
     }
-  }
 
-  effectText = applyDangerPlaceholders(effectText, groupLevel);
+    effectText = applyDangerPlaceholders(effectText, groupLevel);
+  }
 
   // -----------------------------
   // Discovery Source
