@@ -185,9 +185,10 @@
             "Discovery": "Discovery!"
           },
           "Severity": {
-            "Minor": "Minor",
-            "Heavy": "Heavy",
-            "Massive": "Massive"
+            "MinorDanger": "Minor Danger!",
+            "MajorDanger": "Major Danger!",
+            "MinorDiscovery": "Minor Discovery!",
+            "MajorDiscovery": "Major Discovery!"
           },
           "TableHeaders": {
             "Source": "Source",
@@ -399,7 +400,3 @@
     }
   }
 }
-
-
-
-
