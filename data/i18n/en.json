@@ -1740,14 +1740,15 @@
   "dangers": {
   "effects": [
     "The party takes {dmg} damage.",
+    "The party becomes shaken.",
     "The party becomes dazed.",
     "The party becomes slow.",
     "The party becomes weak.",
     "The party becomes poisoned.",
     "The party becomes enraged.",
-    "The party encounters an easy enemy.",
-    "The party encounters a challenging enemy.",
-    "The party encounters a deadly enemy.",
+    "The party encounters an easy battle.",
+    "The party encounters a normal battle.",
+    "The party encounters a hard battle.",
     "The party triggers a 4-step danger clock.",
     "The party triggers a 6-step danger clock.",
     "The party triggers an 8-step danger clock.",
