@@ -179,6 +179,30 @@ function reduceDiceSize(diceSize) {
   return diceMap[diceSize] || diceSize; // Returns the reduced size, or the original if not found
 }
 
+function getTravelDamageBySeverity(groupLevel, severity) {
+  const damageTable = {
+    "5+": { minor: 10, heavy: 30, massive: 40 },
+    "20+": { minor: 20, heavy: 40, massive: 60 },
+    "40+": { minor: 30, heavy: 50, massive: 80 },
+  };
+
+  const levelValues = damageTable[String(groupLevel).trim()] ?? damageTable["5+"];
+  return levelValues[severity] ?? levelValues.minor;
+}
+
+function rollDangerDamage(groupLevel) {
+  const severities = ["minor", "heavy", "massive"];
+  const severity = severities[Math.floor(Math.random() * severities.length)];
+  return getTravelDamageBySeverity(groupLevel, severity);
+}
+
+function applyDangerPlaceholders(text, groupLevel) {
+  if (!text) return text;
+
+  const dmg = rollDangerDamage(groupLevel);
+  return String(text).replaceAll("{dmg}", String(dmg));
+}
+
 async function handleRoll(selectedDifficulty, html) {
   const wellTraveled = html.find("#wellTraveled").is(":checked");
 
@@ -462,6 +486,9 @@ async function generateDanger(groupLevel) {
     }
   }
 
+  // Resolve any dynamic damage placeholder using a hidden severity roll
+  effectText = applyDangerPlaceholders(effectText, groupLevel);
+
   // -----------------------------
   // Danger Source
   // -----------------------------
@@ -600,3 +627,4 @@ async function generateDiscovery() {
     keywords,
   };
 }
+
