@@ -1739,9 +1739,7 @@
   },
   "dangers": {
   "effects": [
-    "The party takes minor damage.",
-    "The party takes medium damage.",
-    "The party takes heavy damage.",
+    "The party takes {dmg} damage.",
     "The party becomes dazed.",
     "The party becomes slow.",
     "The party becomes weak.",
@@ -1780,7 +1778,7 @@
   "discoveries": {
     "effects": [
       "Each party member regains 1 IP.",
-      "Each party member regains 10 HP.",
+      "Each party member heals {dmg} worth of HP.",
       "You discover a rare herb with healing properties.",
       "You find a relic of cultural or historical importance.",
       "You gain insight into a local custom or legend.",
