@@ -1778,7 +1778,7 @@
   "discoveries": {
     "effects": [
       "Each party member regains 1 IP.",
-      "Each party member heals {dmg} worth of HP.",
+      "Each party member heals {dmg} HP.",
       "You discover a rare herb with healing properties.",
       "You find a relic of cultural or historical importance.",
       "You gain insight into a local custom or legend.",
