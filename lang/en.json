@@ -216,10 +216,10 @@
       "Dialogs": {
         "TreasureRoll": {
           "Title": "Treasure Generator",
-          "IgnoreValues": "Ignore budget/level",
+          "IgnoreValues": "Ignore budget",
           "SelectAll": "Select all",
           "Buttons": {
-            "RollLoot": "Roll Loot"
+            "RollLoot": "Generate"
           },
           "ItemType": {
             "Weapon": "Weapon",
@@ -399,6 +399,7 @@
     }
   }
 }
+
 
 
 
