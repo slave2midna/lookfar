@@ -234,7 +234,7 @@
             "Custom": "Custom"
           },
           "Fields": {
-            "Budget": "Budget",
+            "Budget": "Reward Budget",
             "Level": "Level",
             "Origin": "Origin",
             "Nature": "Nature",
@@ -401,6 +401,7 @@
     }
   }
 }
+
 
 
 
