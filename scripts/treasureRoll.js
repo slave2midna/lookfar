@@ -610,7 +610,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           },
           featureType: "projectfu.ingredient",
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Ingredient", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Ingredient", {
               taste: data.taste
             })
           },
@@ -635,7 +635,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           summary: {
             value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Material", {
               nature: data.nature,
-              origin: game.i18n.localize(`LOOKFAR.Terms.Origin.${String(data.origin || "").charAt(0).toUpperCase()}${String(data.origin || "").slice(1)}`),
+              origin: lfTermLabel("Origin", data.origin),
               detail: data.detail
             })
           }
@@ -717,7 +717,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Weapon", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Weapon", {
               prefix,
               qualityText
             })
@@ -769,7 +769,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Armor", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Armor", {
               martialType,
               qualityText
             })
@@ -821,7 +821,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Shield", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Shield", {
               martialType,
               qualityText
             })
@@ -862,7 +862,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Accessory", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Accessory", {
               qualityText
             })
           }
