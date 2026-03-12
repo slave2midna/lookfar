@@ -14,7 +14,7 @@
 /* ========================================================================== */
 
 #lookfar-travel-check {
-  width: 100%;
+  width: auto;
   box-sizing: border-box;
 }
 
@@ -22,15 +22,16 @@
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  width: max-content;
 }
 
 #lookfar-travel-check .lf-travel-column {
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
 }
 
 #lookfar-travel-check .travel-check-table {
-  width: 100%;
+  width: auto;
   border-collapse: collapse;
 }
 
