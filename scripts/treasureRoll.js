@@ -8,7 +8,7 @@ const TREASURE_ROLL_TEMPLATE = "modules/lookfar/templates/treasure-roll.hbs";
 const TREASURE_RESULT_TEMPLATE = "modules/lookfar/templates/treasure-result.hbs";
 
 // ------------------------------
-// i18n dataset helpers
+// Helpers
 // ------------------------------
 function lfBundle() {
   return dataLoader?.i18nData || {};
@@ -77,9 +77,22 @@ function lfWeaponCategoryLabel(value) {
   return localized === key ? (value ?? "") : localized;
 }
 
-// ------------------------------
-// Utility
-// ------------------------------
+function lfTermLabel(group, value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+
+  const normalized = raw.toLowerCase();
+  const titled = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  const key = `LOOKFAR.Terms.${group}.${titled}`;
+  const localized = game.i18n.localize(key);
+
+  return localized === key ? raw : localized;
+}
+
+function lfFormatSummary(key, data = {}) {
+  return String(game.i18n.format(key, data) || "").toLocaleLowerCase();
+}
+
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -620,9 +633,9 @@ async function renderTreasureResultDialog(items, budget, config) {
           origin: { value: data.origin },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Material", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Material", {
               nature: data.nature,
-              originLower: String(data.origin || "").toLowerCase(),
+              origin: game.i18n.localize(`LOOKFAR.Terms.Origin.${String(data.origin || "").charAt(0).toUpperCase()}${String(data.origin || "").slice(1)}`),
               detail: data.detail
             })
           }
