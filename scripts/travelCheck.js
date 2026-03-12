@@ -525,7 +525,7 @@ async function generateDanger(groupLevel, { showEffect = true } = {}) {
       effectText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.DataUnavailable") ||
       !effectText
     ) {
-      const pool = dataLoader?.i18nData?.dangers?.effects;
+      const pool = dataLoader?.dangersData?.effects;
       if (Array.isArray(pool) && pool.length) {
         effectText = pool[Math.floor(Math.random() * pool.length)];
       } else {
@@ -556,7 +556,7 @@ async function generateDanger(groupLevel, { showEffect = true } = {}) {
 
   // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
   if (sourceText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDangerSource")) {
-    const pool = dataLoader?.i18nData?.dangers?.sources;
+    const pool = dataLoader?.dangersData?.sources;
     if (Array.isArray(pool) && pool.length) {
       sourceText = pool[Math.floor(Math.random() * pool.length)];
     } else {
@@ -607,7 +607,7 @@ async function generateDiscovery(groupLevel, { showEffect = true } = {}) {
 
     // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
     if (effectText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoveryEffect")) {
-      const pool = dataLoader?.i18nData?.discoveries?.effects;
+      const pool = dataLoader?.discoveryData?.effects;
       if (Array.isArray(pool) && pool.length) {
         effectText = pool[Math.floor(Math.random() * pool.length)];
       } else {
@@ -636,7 +636,7 @@ async function generateDiscovery(groupLevel, { showEffect = true } = {}) {
 
   // If we didn't get a rolltable result (or we're using defaults), pull from localized pool
   if (sourceText === game.i18n.localize("LOOKFAR.TravelCheck.Errors.NoDiscoverySource")) {
-    const pool = dataLoader?.i18nData?.discoveries?.sources;
+    const pool = dataLoader?.discoveryData?.sources;
     if (Array.isArray(pool) && pool.length) {
       sourceText = pool[Math.floor(Math.random() * pool.length)];
     } else {
@@ -652,4 +652,5 @@ async function generateDiscovery(groupLevel, { showEffect = true } = {}) {
     keywords,
   };
 }
+
 
