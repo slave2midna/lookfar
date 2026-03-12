@@ -70,7 +70,11 @@ function lfWeaponCategoryLabel(value) {
     thrown: "LOOKFAR.Terms.Category.Thrown"
   };
 
-  return game.i18n.localize(keyMap[normalized]);
+  const key = keyMap[normalized];
+  if (!key) return value ?? "";
+
+  const localized = game.i18n.localize(key);
+  return localized === key ? (value ?? "") : localized;
 }
 
 // ------------------------------
