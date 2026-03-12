@@ -142,7 +142,8 @@
         "Incorporeal": "Incorporeal",
         "Liquid": "Liquid",
         "Artificial": "Artificial",
-        "Mineral": "Mineral"
+        "Mineral": "Mineral",
+        "Plant": "Plant"
       },
       "Category": {
         "Arcane": "Arcane",
@@ -400,4 +401,5 @@
     }
   }
 }
+
 
