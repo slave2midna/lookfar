@@ -453,9 +453,6 @@ async function showRerollDialog(resultData, selectedDifficulty, groupLevel, outc
 
   currentDialog = new Dialog({
     title: game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Title"),
-    render: (html) => {
-      html.addClass("ff6-dialog");
-    },
     content,
     buttons,
     default: "keep",
@@ -652,5 +649,6 @@ async function generateDiscovery(groupLevel, { showEffect = true } = {}) {
     keywords,
   };
 }
+
 
 
