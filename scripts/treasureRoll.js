@@ -668,8 +668,6 @@ async function renderTreasureResultDialog(items, budget, config) {
         type: baseName
       });
 
-      const displayName = cleanName(weaponNameRaw);
-
       const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
       itemData = {
