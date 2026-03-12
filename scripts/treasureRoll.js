@@ -8,19 +8,18 @@ const TREASURE_ROLL_TEMPLATE = "modules/lookfar/templates/treasure-roll.hbs";
 const TREASURE_RESULT_TEMPLATE = "modules/lookfar/templates/treasure-result.hbs";
 
 // ------------------------------
-// i18n dataset helpers
+// Localization Helpers
 // ------------------------------
+
 function lfBundle() {
   return dataLoader?.i18nData || {};
 }
 
 function lfEquipName(kind, id) {
-  // kind: weapon|armor|shield|accessory
   return lfBundle()?.equipment?.[kind]?.[id] ?? id;
 }
 
 function lfQualityEntry(group, id) {
-  // First try the provided group
   const direct = lfBundle()?.qualities?.[group]?.[id];
   if (direct) return { group, entry: direct };
 
@@ -54,9 +53,67 @@ function lfQualityDesc(group, id) {
   return (typeof desc === "string" && desc.trim()) ? desc.trim() : "";
 }
 
+function lfWeaponCategoryLabel(value) {
+  const normalized = String(value ?? "").trim().toLowerCase();
+
+  const keyMap = {
+    arcane: "LOOKFAR.Terms.Category.Arcane",
+    bow: "LOOKFAR.Terms.Category.Bow",
+    brawling: "LOOKFAR.Terms.Category.Brawling",
+    dagger: "LOOKFAR.Terms.Category.Dagger",
+    firearm: "LOOKFAR.Terms.Category.Firearm",
+    flail: "LOOKFAR.Terms.Category.Flail",
+    heavy: "LOOKFAR.Terms.Category.Heavy",
+    spear: "LOOKFAR.Terms.Category.Spear",
+    sword: "LOOKFAR.Terms.Category.Sword",
+    thrown: "LOOKFAR.Terms.Category.Thrown"
+  };
+
+  const key = keyMap[normalized];
+  if (!key) return value ?? "";
+
+  const localized = game.i18n.localize(key);
+  return localized === key ? (value ?? "") : localized;
+}
+
+function lfTermLabel(group, value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+
+  const normalized = raw.toLowerCase();
+  const titled = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  const key = `LOOKFAR.Terms.${group}.${titled}`;
+  const localized = game.i18n.localize(key);
+
+  return localized === key ? raw : localized;
+}
+
+function lfFormatSummary(key, data = {}) {
+  return String(game.i18n.format(key, data) || "").toLocaleLowerCase();
+}
+
+function lfFormatNamePattern(type, data = {}) {
+  return cleanName(
+    game.i18n.format(`LOOKFAR.TreasureRoll.Sheets.NamePatterns.${type}`, data)
+  );
+}
+
+function lfCurrencyName() {
+  const systemCurrency = String(
+    game.settings.get("projectfu", "optionRenameCurrency") ?? ""
+  ).trim();
+
+  if (!systemCurrency || systemCurrency === "Zenit") {
+    return game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+  }
+
+  return systemCurrency;
+}
+
 // ------------------------------
-// Utility
+// Utility Helpers
 // ------------------------------
+
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -103,7 +160,11 @@ function rollMaterial(nature, origin, maxVal, budget, detailKeywords, originKeyw
   const detailWord = getRandom(detailKeywords[detail]);
   const originWord = getRandom(originKeywordsMaterial[localOrigin]);
   const natureWord = getRandom(natureKeywordsMaterial[localNature]);
-  const name = `${detailWord} ${originWord} ${natureWord}`;
+  const name = lfFormatNamePattern("Material", {
+    detail: detailWord,
+    origin: originWord,
+    nature: natureWord
+  });
 
   let value = Math.floor(Math.random() * (maxVal / 50)) * 50;
   value = Math.max(50, Math.min(value, budget));
@@ -137,7 +198,11 @@ function rollIngredient(nature, origin, budget, tasteKeywords, natureKeywordsIng
   const tasteWord = getRandom(tasteKeywords[taste]);
   const originWord = getRandom(originKeywordsIngredient[localOrigin]);
   const natureWord = getRandom(natureKeywordsIngredient[localNature]);
-  const name = `${tasteWord} ${originWord} ${natureWord}`;
+  const name = lfFormatNamePattern("Ingredient", {
+    taste: tasteWord,
+    origin: originWord,
+    nature: natureWord
+  });
 
   const quantity = Math.floor(Math.random() * 3) + 1;
   const unitValue = 10;
@@ -317,9 +382,7 @@ function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = 
   if (cap < Math.max(1, minAmount)) return null;
 
   // Grab the display name the system uses for money (or default to Zenit)
-  const currencyName =
-    game.settings.get("projectfu", "optionRenameCurrency") ||
-    game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+  const currencyName = lfCurrencyName();
 
   // Math Magic!
   const raw = Math.floor(Math.random() * (cap - minAmount + 1)) + minAmount;
@@ -452,9 +515,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
 
   // Deposit rolled currency into the stash's zenit resource
   if (currencyTotal > 0) {
-    const currencyName =
-      game.settings.get("projectfu", "optionRenameCurrency") ||
-      game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+    const currencyName = lfCurrencyName();
 
     const current = foundry.utils.getProperty(stash, "system.resources.zenit.value") ?? 0;
     await stash.update({
@@ -478,9 +539,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
   }
 
   // Build chat message
-  const currencyName =
-    game.settings.get("projectfu", "optionRenameCurrency") ||
-    game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+  const currencyName = lfCurrencyName();
 
   const stashLink = `<a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>`;
 
@@ -560,7 +619,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           },
           featureType: "projectfu.ingredient",
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Ingredient", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Ingredient", {
               taste: data.taste
             })
           },
@@ -583,9 +642,9 @@ async function renderTreasureResultDialog(items, budget, config) {
           origin: { value: data.origin },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Material", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Material", {
               nature: data.nature,
-              originLower: String(data.origin || "").toLowerCase(),
+              origin: lfTermLabel("Origin", data.origin),
               detail: data.detail
             })
           }
@@ -614,7 +673,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           ? "LOOKFAR.TreasureRoll.Sheets.Weapon.Prefix.Masterwork"
           : "LOOKFAR.TreasureRoll.Sheets.Weapon.Prefix.Base";
 
-      const prefix = game.i18n.format(prefixKey, { category: baseWeapon.category });
+      const prefix = game.i18n.format(prefixKey, { category: lfWeaponCategoryLabel(baseWeapon.category) });
 
       // Handle +1 accuracy variants
       const baseAcc = Number(baseWeapon?.accuracy ?? baseWeapon?.acc ?? 0) || 0;
@@ -627,15 +686,13 @@ async function renderTreasureResultDialog(items, budget, config) {
         ? game.i18n.localize("LOOKFAR.TreasureRoll.Sheets.Weapon.Tokens.DamageUp")
         : "";
 
-      const weaponNameRaw = game.i18n.format("LOOKFAR.TreasureRoll.Sheets.NamePatterns.Weapon", {
+      const displayName = lfFormatNamePattern("Weapon", {
         accuracyUp,
         quality: qualityName || "",
         damageUp,
         element: data.element?.name || "",
         type: baseName
       });
-
-      const displayName = cleanName(weaponNameRaw);
 
       const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
@@ -669,7 +726,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Weapon", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Weapon", {
               prefix,
               qualityText
             })
@@ -689,10 +746,13 @@ async function renderTreasureResultDialog(items, budget, config) {
       const baseName = lfEquipName("armor", baseArmor.id);
       const img = dataLoader.getRandomIconFor("armor", baseArmor) || "icons/svg/statue.svg";
 
-      const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+      const displayName = lfFormatNamePattern("Armor", {
+        quality: qualityName || "",
+        type: baseName
+      });
       const martialType = baseArmor?.isMartial
-        ? game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Martial")
-        : game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NonMartial");
+        ? game.i18n.localize("LOOKFAR.Terms.Common.Martial")
+        : game.i18n.localize("LOOKFAR.Terms.Common.Non-Martial");
 
       const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
@@ -718,7 +778,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Armor", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Armor", {
               martialType,
               qualityText
             })
@@ -738,10 +798,13 @@ async function renderTreasureResultDialog(items, budget, config) {
       const baseName = lfEquipName("shield", baseShield.id);
       const img = dataLoader.getRandomIconFor("shield", baseShield) || "icons/svg/shield.svg";
 
-      const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+      const displayName = lfFormatNamePattern("Shield", {
+        quality: qualityName || "",
+        type: baseName
+      });
       const martialType = baseShield?.isMartial
-        ? game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Martial")
-        : game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NonMartial");
+        ? game.i18n.localize("LOOKFAR.Terms.Common.Martial")
+        : game.i18n.localize("LOOKFAR.Terms.Common.Non-Martial");
 
       const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
@@ -767,7 +830,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Shield", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Shield", {
               martialType,
               qualityText
             })
@@ -787,7 +850,10 @@ async function renderTreasureResultDialog(items, budget, config) {
       const baseName = lfEquipName("accessory", baseAccessory.id);
       const img = dataLoader.getRandomIconFor("accessory", baseAccessory) || "icons/svg/stoned.svg";
 
-      const displayName = [qualityName, baseName].filter(Boolean).join(" ");
+      const displayName = lfFormatNamePattern("Accessory", {
+        quality: qualityName || "",
+        type: baseName
+      });
       const qualityText = qualityDesc || game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.NoQuality");
 
       itemData = {
@@ -805,7 +871,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           cost: { value: data.value },
           source: { value: "LOOKFAR" },
           summary: {
-            value: game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Summaries.Accessory", {
+            value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Accessory", {
               qualityText
             })
           }
@@ -848,9 +914,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       item.system?.data?.summary ??
       "";
 
-    const currencyName =
-      game.settings.get("projectfu", "optionRenameCurrency") ||
-      game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+    const currencyName = lfCurrencyName();
 
     return `<div style="text-align:center;margin-bottom:0.75em">
               <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">

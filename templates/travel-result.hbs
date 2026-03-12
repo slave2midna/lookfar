@@ -2,7 +2,31 @@
 
 <div id="lookfar-travel-result">
   <div class="travel-result-body">
-    {{{resultHtml}}}
+    {{#if titleText}}
+      <div class="lf-travel-result-title">
+        {{titleText}}
+      </div>
+    {{/if}}
+
+    {{#if noIncident}}
+      <div class="lf-travel-result-no-incident">
+        {{noIncident}}
+      </div>
+    {{else}}
+      <table class="lf-travel-result-table">
+        {{#if showEffect}}
+          <tr>
+            <th>{{localize "LOOKFAR.TravelCheck.Dialogs.TravelResult.TableHeaders.Effect"}}</th>
+            <td>{{effectText}}</td>
+          </tr>
+        {{/if}}
+
+        <tr>
+          <th>{{localize "LOOKFAR.TravelCheck.Dialogs.TravelResult.TableHeaders.Source"}}</th>
+          <td>{{sourceText}}</td>
+        </tr>
+      </table>
+    {{/if}}
   </div>
 
   {{#if keywords}}

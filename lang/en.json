@@ -23,8 +23,6 @@
         "Title": "Forge an Item"
       }
     },
-
-    
     "__SECTION__Settings": "=== Settings ===",
     "Settings": {
       "ResultVisibility": {
@@ -51,7 +49,7 @@
       },
       "UseVariantTravelRules": {
         "Name": "Use Variant Travel Rules",
-        "Hint": "Placeholder setting: Toggles alternative travel mechanics (currently unused)."
+        "Hint": "Travel rolls will generate minor and major results for dangers and discoveries."
       },
       "UseVariantDamageRules": {
         "Name": "Use Playtest Damage Rules",
@@ -89,14 +87,26 @@
       "NoActorCompendiums": "No Actor compendiums found",
       "NoScenes": "No scenes found"
     },
-
-    
     "__SECTION__Terms": "=== Terms ===",
     "Terms": {
       "Common": {
         "Zenit": "Zenit",
         "Martial": "Martial",
-        "Non-Martial": "Non-Martial"
+        "Non-Martial": "Non-Martial",
+        "Melee": "Melee",
+        "Ranged": "Ranged",
+        "One-Handed": "One-handed",
+        "Two-Handed": "Two-handed"
+      },
+      "Attributes": {
+        "MIG": "MIG",
+        "DEX": "DEX",
+        "WLP": "WLP",
+        "INS": "INS",
+        "INIT": "INIT",
+        "MDEF": "MDEF",
+        "DEF": "DEF",
+        "HR": "HR"
       },
       "Element": {
         "Physical": "Physical",
@@ -132,11 +142,22 @@
         "Incorporeal": "Incorporeal",
         "Liquid": "Liquid",
         "Artificial": "Artificial",
-        "Mineral": "Mineral"
+        "Mineral": "Mineral",
+        "Plant": "Plant"
+      },
+      "Category": {
+        "Arcane": "Arcane",
+        "Bow": "Bow",
+        "Brawling": "Brawling",
+        "Dagger": "Dagger",
+        "Firearm": "Firearm",
+        "Flail": "Flail",
+        "Heavy": "Heavy",
+        "Spear": "Spear",
+        "Sword": "Sword",
+        "Thrown": "Thrown"
       }
     },
-
-    
     "__SECTION__TravelCheck": "=== Travel Check ===",
     "TravelCheck": {
       "Dialogs": {
@@ -165,9 +186,10 @@
             "Discovery": "Discovery!"
           },
           "Severity": {
-            "Minor": "Minor",
-            "Heavy": "Heavy",
-            "Massive": "Massive"
+            "MinorDanger": "Minor Danger!",
+            "MajorDanger": "Major Danger!",
+            "MinorDiscovery": "Minor Discovery!",
+            "MajorDiscovery": "Major Discovery!"
           },
           "TableHeaders": {
             "Source": "Source",
@@ -191,17 +213,15 @@
         "NoDiscoverySource": "No discovery source available."
       }
     },
-
-    
     "__SECTION__TreasureRoll": "=== Treasure Roll ===",
     "TreasureRoll": {
       "Dialogs": {
         "TreasureRoll": {
           "Title": "Treasure Generator",
-          "IgnoreValues": "Ignore budget/level",
+          "IgnoreValues": "Ignore budget",
           "SelectAll": "Select all",
           "Buttons": {
-            "RollLoot": "Roll Loot"
+            "RollLoot": "Generate"
           },
           "ItemType": {
             "Weapon": "Weapon",
@@ -214,7 +234,7 @@
             "Custom": "Custom"
           },
           "Fields": {
-            "Budget": "Budget",
+            "Budget": "Reward Budget",
             "Level": "Level",
             "Origin": "Origin",
             "Nature": "Nature",
@@ -225,8 +245,6 @@
         "TreasureResult": {
           "Title": "Treasure Results",
           "BudgetRemainder": "Remaining Budget",
-          "Martial": "Martial",
-          "NonMartial": "Non-martial",
           "Value": "Value",
           "NoQuality": "has no special properties.",
           "Buttons": {
@@ -261,7 +279,7 @@
         },
         "Summaries": {
           "Ingredient": "An ingredient that tastes {taste}.",
-          "Material": "{nature} material of {originLower} origins. It can be used to craft {detail} items.",
+          "Material": "{nature} material of {origin} origins, used to craft {detail} items.",
           "Weapon": "{prefix} that {qualityText}",
           "Armor": "A set of {martialType} armor that {qualityText}",
           "Shield": "A {martialType} shield that {qualityText}",
@@ -281,8 +299,6 @@
         "NoLootGenerated": "No loot generated."
       }
     },
-
-    
     "__SECTION__ItemForge": "=== Item Forge ===",
     "ItemForge": {
       "Dialogs": {
@@ -302,11 +318,7 @@
           "Attributes": {
             "Legend": "Attributes",
             "AttrA": "Attr A:",
-            "AttrB": "Attr B:",
-            "MIG": "MIG",
-            "DEX": "DEX",
-            "WLP": "WLP",
-            "INS": "INS"
+            "AttrB": "Attr B:"
           },
           "Customize": {
             "Legend": "Customize",
@@ -340,13 +352,7 @@
             }
           },
           "Preview": {
-            "Legend": "Preview",
-            "One-Handed": "one-handed",
-            "Two-Handed": "two-handed",
-            "INIT": "INIT",
-            "MDEF": "MDEF",
-            "DEF": "DEF",
-            "HR": "HR"
+            "Legend": "Preview"
           },
           "Cost": {
             "Legend": "Cost",
@@ -395,6 +401,8 @@
     }
   }
 }
+
+
 
 
 

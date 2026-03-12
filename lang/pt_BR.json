@@ -365,8 +365,8 @@
       },
       "Sheets": {
         "NamePattern": {
-          "Weapon": "{type} Recém-Forjada",
-          "Armor": "{type} Recém-Forjada",
+          "Weapon": "{type} Recém-Forjado",
+          "Armor": "{type} Recém-Forjado",
           "Shield": "{type} Recém-Forjado",
           "Accessory": "{type} Recém-Forjado"
         },

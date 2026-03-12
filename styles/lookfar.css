@@ -83,6 +83,35 @@
   margin-bottom: 1rem;
 }
 
+#lookfar-travel-result .lf-travel-result-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+#lookfar-travel-result .lf-travel-result-no-incident {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+#lookfar-travel-result .lf-travel-result-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#lookfar-travel-result .lf-travel-result-table th,
+#lookfar-travel-result .lf-travel-result-table td {
+  padding: 5px;
+  border: 1px solid;
+  text-align: left;
+}
+
+#lookfar-travel-result .lf-travel-result-table th {
+  white-space: nowrap;
+}
+
+/* Existing generic table styling kept for keyword table compatibility */
 #lookfar-travel-result table {
   width: 100%;
   border-collapse: collapse;
@@ -472,20 +501,20 @@
 /* Arrow (now 50% larger and spaced above the compass) */
 #lookfar-dungeon-mapper .lf-dm-compass-north {
   position: absolute;
-  top: -3px;                           /* push upward */
+  top: -3px;
   left: 50%;
   transform: translateX(-50%) rotate(-45deg);
-  font-size: 16px;                     /* was 16px — now 50% larger */
+  font-size: 16px;
   opacity: 0.95;
 }
 
 /* North label (50% larger and spaced above the arrow) */
 #lookfar-dungeon-mapper .lf-dm-compass-n {
   position: absolute;
-  top: -20px;                          /* push further upward */
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 15px;                     /* was 10px — now 50% larger */
+  font-size: 15px;
   font-weight: bold;
   letter-spacing: 0.5px;
 }
@@ -680,7 +709,7 @@
 
 /* Slight horizontal shift for FA icons under Generate */
 #lookfar-dungeon-mapper .lf-dm-generate-options .lf-dm-icon {
-  transform: translateX(2px); /* try 1px, 2px, or even 0.5px */
+  transform: translateX(2px);
 }
 
 /* Fix SVG alignment inside shape buttons */
