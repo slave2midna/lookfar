@@ -8,19 +8,18 @@ const TREASURE_ROLL_TEMPLATE = "modules/lookfar/templates/treasure-roll.hbs";
 const TREASURE_RESULT_TEMPLATE = "modules/lookfar/templates/treasure-result.hbs";
 
 // ------------------------------
-// Helpers
+// Localization Helpers
 // ------------------------------
+
 function lfBundle() {
   return dataLoader?.i18nData || {};
 }
 
 function lfEquipName(kind, id) {
-  // kind: weapon|armor|shield|accessory
   return lfBundle()?.equipment?.[kind]?.[id] ?? id;
 }
 
 function lfQualityEntry(group, id) {
-  // First try the provided group
   const direct = lfBundle()?.qualities?.[group]?.[id];
   if (direct) return { group, entry: direct };
 
@@ -93,18 +92,34 @@ function lfFormatSummary(key, data = {}) {
   return String(game.i18n.format(key, data) || "").toLocaleLowerCase();
 }
 
+function lfFormatNamePattern(type, data = {}) {
+  return cleanName(
+    game.i18n.format(`LOOKFAR.TreasureRoll.Sheets.NamePatterns.${type}`, data)
+  );
+}
+
+function lfCurrencyName() {
+  const systemCurrency = String(
+    game.settings.get("projectfu", "optionRenameCurrency") ?? ""
+  ).trim();
+
+  if (!systemCurrency || systemCurrency === "Zenit") {
+    return game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+  }
+
+  return systemCurrency;
+}
+
+// ------------------------------
+// Utility Helpers
+// ------------------------------
+
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function cleanName(s) {
   return String(s || "").replace(/\s+/g, " ").trim();
-}
-
-function lfFormatNamePattern(type, data = {}) {
-  return cleanName(
-    game.i18n.format(`LOOKFAR.TreasureRoll.Sheets.NamePatterns.${type}`, data)
-  );
 }
 
 function normalizeTreasureKey(value) {
@@ -367,9 +382,7 @@ function rollCurrency(remainingBudget, maxVal, { minAmount = 1, roundTo = 1 } = 
   if (cap < Math.max(1, minAmount)) return null;
 
   // Grab the display name the system uses for money (or default to Zenit)
-  const currencyName =
-    game.settings.get("projectfu", "optionRenameCurrency") ||
-    game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+  const currencyName = lfCurrencyName();
 
   // Math Magic!
   const raw = Math.floor(Math.random() * (cap - minAmount + 1)) + minAmount;
@@ -502,9 +515,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
 
   // Deposit rolled currency into the stash's zenit resource
   if (currencyTotal > 0) {
-    const currencyName =
-      game.settings.get("projectfu", "optionRenameCurrency") ||
-      game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+    const currencyName = lfCurrencyName();
 
     const current = foundry.utils.getProperty(stash, "system.resources.zenit.value") ?? 0;
     await stash.update({
@@ -528,9 +539,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
   }
 
   // Build chat message
-  const currencyName =
-    game.settings.get("projectfu", "optionRenameCurrency") ||
-    game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+  const currencyName = lfCurrencyName();
 
   const stashLink = `<a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>`;
 
@@ -905,9 +914,7 @@ async function renderTreasureResultDialog(items, budget, config) {
       item.system?.data?.summary ??
       "";
 
-    const currencyName =
-      game.settings.get("projectfu", "optionRenameCurrency") ||
-      game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
+    const currencyName = lfCurrencyName();
 
     return `<div style="text-align:center;margin-bottom:0.75em">
               <img src="${item.img}" width="32" height="32" style="display:block;margin:0 auto 6px">
