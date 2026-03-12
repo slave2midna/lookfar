@@ -279,7 +279,7 @@
         },
         "Summaries": {
           "Ingredient": "An ingredient that tastes {taste}.",
-          "Material": "{nature} material of {origin} origins. It can be used to craft {detail} items.",
+          "Material": "{nature} material of {origin} origins, used to craft {detail} items.",
           "Weapon": "{prefix} that {qualityText}",
           "Armor": "A set of {martialType} armor that {qualityText}",
           "Shield": "A {martialType} shield that {qualityText}",
@@ -401,6 +401,7 @@
     }
   }
 }
+
 
 
 
