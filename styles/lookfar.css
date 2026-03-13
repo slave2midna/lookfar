@@ -385,7 +385,19 @@
 
 /* Qualities category dropdown */
 #if-body .lf-if-qualities-select {
-  margin-bottom: 2px;
+  margin-bottom: 0;
+}
+
+#if-body .lf-if-qualities-select .lf-if-select-full,
+#if-body #qualitiesCategory.lf-if-select-full {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 24px;
+  line-height: 24px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* ========================================================================== */
@@ -415,6 +427,7 @@
   height: 138px;
   min-height: 138px;
   max-height: 138px;
+  margin-top: 0;
 }
 
 .if-template,
