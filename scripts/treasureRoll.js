@@ -1306,11 +1306,6 @@ Hooks.once("ready", () => {
 
       await genDialog.render({ force: true });
       initializeTreasureGeneratorDialog(genDialog);
-
-      if (typeof genDialog.setPosition === "function") {
-        genDialog.setPosition({ height: "auto" });
-        setTimeout(() => genDialog.setPosition({ height: "auto" }), 0);
-      }
     })();
   });
 });
