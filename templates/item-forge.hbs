@@ -4,7 +4,7 @@
   <div class="lf-if-form">
     <div class="lf-if-layout">
 
-      {{!-- Left Column: Item selection, attributes, preview --}}
+      {{!-- Left Column: Item selection, preview, attributes --}}
       <div class="lf-if-col-left">
 
         {{!-- Choose Item --}}
@@ -35,6 +35,12 @@
               </div>
             </div>
           </div>
+        </fieldset>
+
+        {{!-- Preview --}}
+        <fieldset class="lf-if-fieldset">
+          <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Legend"}}</legend>
+          <div id="itemPreviewLarge" class="lf-if-preview"></div>
         </fieldset>
 
         {{!-- Attributes --}}
@@ -68,12 +74,6 @@
             </div>
           </fieldset>
         </div>
-
-        {{!-- Preview --}}
-        <fieldset class="lf-if-fieldset">
-          <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Preview.Legend"}}</legend>
-          <div id="itemPreviewLarge" class="lf-if-preview"></div>
-        </fieldset>
 
       </div>
 
@@ -161,7 +161,8 @@
             {{!-- CUSTOM QUALITY BLOCK --}}
             <div id="qualitiesCustomBlock" class="lf-if-qualities-custom-block">
 
-              <textarea id="customEffect"
+              <textarea
+                id="customEffect"
                 rows="2"
                 wrap="soft"
                 class="lf-if-custom-effect"
@@ -171,15 +172,16 @@
                 <label for="customCost" class="lf-if-custom-cost-label">
                   {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.CostLabel"}}
                 </label>
-                <input id="customCost"
-                       type="number"
-                       min="0"
-                       step="1"
-                       inputmode="numeric"
-                       pattern="\\d*"
-                       value="0"
-                       class="lf-if-custom-cost-input"
-                       title="{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Tooltip.Cost"}}">
+                <input
+                  id="customCost"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  pattern="\\d*"
+                  value="0"
+                  class="lf-if-custom-cost-input"
+                  title="{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Tooltip.Cost"}}">
               </div>
 
               <button type="button" id="customApply" class="lf-if-custom-apply">
