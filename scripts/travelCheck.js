@@ -57,6 +57,65 @@ class TravelRolls {
 // Travel Check Dialog
 // -----------------------------------------------------------------------------
 
+function initializeTravelCheckDialog(dialog) {
+  const html = $(dialog.element);
+
+  // Restore previous values
+  const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
+  const savedTreasureHunterLevel = parseInt(
+    localStorage.getItem("lookfar-treasureHunterLevel") || "0"
+  );
+  const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
+
+  // Restore Group Level dropdown
+  html.find("#groupLevel").val(savedGroupLevel);
+
+  // Restore Treasure Hunter stars
+  html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
+  html.find("#treasureHunterLevel i").each(function () {
+    const starVal = Number($(this).data("value"));
+    $(this)
+      .removeClass("fa-solid fa-regular")
+      .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
+  });
+
+  // Treasure Hunter logic
+  const stars = html.find("#treasureHunterLevel i");
+  stars.on("click", function () {
+    const clickedValue = Number($(this).data("value"));
+    const currentValue = Number(html.find("#treasureHunterLevelInput").val());
+    const newValue = clickedValue === currentValue ? 0 : clickedValue;
+
+    html.find("#treasureHunterLevelInput").val(newValue);
+
+    stars.each(function () {
+      const starVal = Number($(this).data("value"));
+      $(this)
+        .removeClass("fa-solid fa-regular")
+        .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
+    });
+  });
+
+  // Well-Traveled checkbox logic
+  html.find("#wellTraveled").on("change", (e) => {
+    const isChecked = e.target.checked;
+    const diceMap = {
+      d8: "d6",
+      d10: "d8",
+      d12: "d10",
+      d20: "d12",
+    };
+
+    html.find(".dice-display").each(function () {
+      const original = $(this).data("original");
+      $(this).text(isChecked ? diceMap[original] || original : original);
+    });
+  });
+
+  // Restore Well-Traveled checkbox and immediately trigger dice display update
+  html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
+}
+
 async function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
 
@@ -67,13 +126,19 @@ async function showTravelCheckDialog() {
 
   const formHtml = await renderTemplate(TRAVEL_CHECK_TEMPLATE, { travelChecks });
 
-  const dlg = new Dialog({
-    title: game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelCheck.Title"),
+  const dlg = new foundry.applications.api.DialogV2({
+    window: {
+      title: game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelCheck.Title"),
+    },
     content: formHtml,
-    buttons: {
-      roll: {
-        icon: '<i class="fas fa-check"></i>',
-        callback: (html) => {
+    buttons: [
+      {
+        action: "roll",
+        icon: "fas fa-check",
+        label: "",
+        default: true,
+        callback: async (_event, _button, dialog) => {
+          const html = $(dialog.element);
           const selectedDifficulty = html.find('[name="travelCheck"]:checked').val();
           const groupLevel = html.find("#groupLevel").val();
           const treasureHunterLevel = html.find("#treasureHunterLevelInput").val();
@@ -84,80 +149,27 @@ async function showTravelCheckDialog() {
           localStorage.setItem("lookfar-treasureHunterLevel", treasureHunterLevel);
           localStorage.setItem("lookfar-wellTraveled", wellTraveled);
 
-          handleRoll(selectedDifficulty, html);
+          await dialog.close();
+          await handleRoll(selectedDifficulty, html);
         },
       },
-    },
-    default: "roll",
-    render: (html) => {
-      // Restore previous values
-      const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
-      const savedTreasureHunterLevel = parseInt(
-        localStorage.getItem("lookfar-treasureHunterLevel") || "0"
-      );
-      const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
-
-      // Restore Group Level dropdown
-      html.find("#groupLevel").val(savedGroupLevel);
-
-      // Restore Treasure Hunter stars
-      html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
-      html.find("#treasureHunterLevel i").each(function () {
-        const starVal = Number($(this).data("value"));
-        $(this)
-          .removeClass("fa-solid fa-regular")
-          .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
-      });
-
-      // Treasure Hunter logic
-      const stars = html.find("#treasureHunterLevel i");
-      stars.on("click", function () {
-        const clickedValue = Number($(this).data("value"));
-        const currentValue = Number(html.find("#treasureHunterLevelInput").val());
-        const newValue = clickedValue === currentValue ? 0 : clickedValue;
-
-        html.find("#treasureHunterLevelInput").val(newValue);
-
-        stars.each(function () {
-          const starVal = Number($(this).data("value"));
-          $(this)
-            .removeClass("fa-solid fa-regular")
-            .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
-        });
-      });
-
-      // Well-Traveled checkbox logic
-      html.find("#wellTraveled").on("change", (e) => {
-        const isChecked = e.target.checked;
-        const diceMap = {
-          d8: "d6",
-          d10: "d8",
-          d12: "d10",
-          d20: "d12",
-        };
-
-        html.find(".dice-display").each(function () {
-          const original = $(this).data("original");
-          $(this).text(isChecked ? diceMap[original] || original : original);
-        });
-      });
-
-      // Restore Well-Traveled checkbox and immediately trigger dice display update
-      html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
-    },
-    close: () => {
-      _travelCheckDialog = null;
-    },
+    ],
   });
 
   _travelCheckDialog = dlg;
-  dlg.render(true);
+
+  dlg.addEventListener("close", () => {
+    if (_travelCheckDialog === dlg) _travelCheckDialog = null;
+  });
+
+  await dlg.render({ force: true });
+  initializeTravelCheckDialog(dlg);
 }
 
 // Singleton per client: open/bring-to-front hook
 Hooks.on("lookfarShowTravelCheckDialog", () => {
   if (_travelCheckDialog && _travelCheckDialog.rendered) {
-    _travelCheckDialog.bringToTop();
+    _travelCheckDialog.bringToFront();
     return;
   }
   showTravelCheckDialog();
@@ -385,22 +397,25 @@ async function showRerollDialog(resultData, selectedDifficulty, groupLevel, outc
   const isDiscovery = ["discovery", "minorDiscovery", "majorDiscovery"].includes(outcomeType);
 
   // Close the existing dialog if it's open
-  if (currentDialog) currentDialog.close();
+  if (currentDialog) await currentDialog.close();
 
   const isGM = game.user.isGM;
   const useVariantTravelRules = game.settings.get("lookfar", "useVariantTravelRules");
 
   const buttons = isGM
-    ? {
-        keep: {
-          icon: '<i class="fas fa-check"></i>',
+    ? [
+        {
+          action: "keep",
+          icon: "fas fa-check",
+          label: "",
+          default: true,
           callback: async () => {
             const chatContent = await renderTemplate(TRAVEL_RESULT_TEMPLATE, {
               ...resultData,
               promptText: "",
             });
 
-            ChatMessage.create({
+            await ChatMessage.create({
               content: chatContent,
               speaker: {
                 alias: game.i18n.localize("LOOKFAR.TravelCheck.Chat.Alias.Result"),
@@ -411,14 +426,15 @@ async function showRerollDialog(resultData, selectedDifficulty, groupLevel, outc
             game.socket.emit("module.lookfar", { type: "closeDialog" });
 
             // Close the dialog locally
-            if (currentDialog) currentDialog.close();
+            if (currentDialog) await currentDialog.close();
           },
         },
-        reroll: {
-          icon: '<i class="fas fa-redo"></i>',
+        {
+          action: "reroll",
+          icon: "fas fa-redo",
+          label: "",
           callback: async () => {
             if (outcomeType === "none") return;
-
             if (!isDanger && !isDiscovery) return;
 
             const newResultData = await buildOutcomeResultData(
@@ -439,8 +455,8 @@ async function showRerollDialog(resultData, selectedDifficulty, groupLevel, outc
             await showRerollDialog(newResultData, selectedDifficulty, groupLevel, outcomeType);
           },
         },
-      }
-    : {};
+      ]
+    : [];
 
   const promptKey = isGM
     ? "LOOKFAR.TravelCheck.Dialogs.TravelResult.Prompt"
@@ -451,17 +467,21 @@ async function showRerollDialog(resultData, selectedDifficulty, groupLevel, outc
     promptText: game.i18n.localize(promptKey),
   });
 
-  currentDialog = new Dialog({
-    title: game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Title"),
+  const dlg = new foundry.applications.api.DialogV2({
+    window: {
+      title: game.i18n.localize("LOOKFAR.TravelCheck.Dialogs.TravelResult.Title"),
+    },
     content,
     buttons,
-    default: "keep",
-    close: () => {
-      currentDialog = null;
-    },
   });
 
-  currentDialog.render(true);
+  currentDialog = dlg;
+
+  dlg.addEventListener("close", () => {
+    if (currentDialog === dlg) currentDialog = null;
+  });
+
+  await dlg.render({ force: true });
 }
 
 // -----------------------------------------------------------------------------
@@ -649,6 +669,4 @@ async function generateDiscovery(groupLevel, { showEffect = true } = {}) {
     keywords,
   };
 }
-
-
 

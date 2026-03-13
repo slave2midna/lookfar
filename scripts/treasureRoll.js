@@ -483,7 +483,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
 
   const allStashes = game.actors.filter(a => a.type === "stash");
   const prefix = game.i18n.localize("LOOKFAR.TreasureRoll.Sheets.Stash.NamePrefix");
-  const esc = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // escape for regex
+  const esc = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp(`^${esc}(\\d+)$`, "i");
   let nextNum = 1;
   for (const a of allStashes) {
@@ -515,8 +515,6 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
 
   // Deposit rolled currency into the stash's zenit resource
   if (currencyTotal > 0) {
-    const currencyName = lfCurrencyName();
-
     const current = foundry.utils.getProperty(stash, "system.resources.zenit.value") ?? 0;
     await stash.update({
       "system.resources.zenit.value": current + currencyTotal
@@ -540,7 +538,6 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
 
   // Build chat message
   const currencyName = lfCurrencyName();
-
   const stashLink = `<a class="content-link" data-uuid="${stash.uuid}"><i class="fas fa-box-archive"></i> <strong>${stash.name}</strong></a>`;
 
   let content = game.i18n.format("LOOKFAR.TreasureRoll.Chat.CreatedStash", {
@@ -572,6 +569,115 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
   stash.sheet?.render(true);
 
   return stash;
+}
+
+// ------------------------------
+// DialogV2 Helpers
+// ------------------------------
+
+function initializeTreasureGeneratorDialog(dialog) {
+  const html = $(dialog.element);
+  if (!html.find || !html.find("#lookfar-treasure-gen").length) return;
+
+  // Item count controls
+  const $count = html.find("#itemCount");
+  const min = Number($count.attr("min")) || 1;
+  const max = Number($count.attr("max")) || 10;
+
+  const clampSet = (val) => {
+    const n = parseInt(val, 10);
+    const safe = Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
+    $count.val(safe);
+  };
+
+  html.find("#addCount").on("click", (e) => {
+    e.preventDefault();
+    clampSet(Number($count.val()) + 1);
+  });
+
+  html.find("#subCount").on("click", (e) => {
+    e.preventDefault();
+    clampSet(Number($count.val()) - 1);
+  });
+
+  $count.on("wheel", (e) => e.preventDefault());
+
+  // Select All wiring
+  const $selectAll = html.find("#selectAllLoot");
+  if ($selectAll.length) {
+    const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreValues");
+
+    $selectAll.on("change", (ev) => {
+      const checked = ev.currentTarget.checked;
+      $boxes.prop("checked", checked);
+      $selectAll.prop("indeterminate", false);
+    });
+
+    $boxes.on("change", () => {
+      const arr = $boxes.toArray();
+      const allChecked = arr.every(b => b.checked);
+      const anyChecked = arr.some(b => b.checked);
+      $selectAll
+        .prop("checked", allChecked)
+        .prop("indeterminate", anyChecked && !allChecked);
+    });
+  }
+
+  // Grey-out logic for "Ignore budget/level"
+  const $ignore = html.find("#ignoreValues");
+  const $budgetLabel = html.find('label[for="treasureBudget"]');
+  const $budgetField = html.find("#treasureBudget");
+  const $levelLabel = html.find('label[for="highestPCLevel"]');
+  const $levelField = html.find("#highestPCLevel");
+
+  const setFieldState = ($el, isDisabled) => {
+    $el.prop("disabled", isDisabled);
+    $el.toggleClass("lf-tr-disabled-field", isDisabled);
+  };
+
+  const toggleDisabled = (isDisabled) => {
+    $budgetLabel.toggleClass("lf-tr-disabled-label", isDisabled);
+    $levelLabel.toggleClass("lf-tr-disabled-label", isDisabled);
+
+    setFieldState($budgetField, isDisabled);
+    setFieldState($levelField, isDisabled);
+  };
+
+  toggleDisabled($ignore.is(":checked"));
+  $ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
+}
+
+function initializeTreasureResultDialog(dialog, { needsWide = false } = {}) {
+  const html = $(dialog.element);
+  if (!html.find || !html.find("#lookfar-treasure-result").length) return;
+
+  const $dlg = html.closest(".application");
+  if (needsWide) {
+    // remove max width. <--- temp replacement
+  }
+
+  const $wc = $dlg.find(".window-content");
+  $wc.css({
+    "max-height": "none",
+    "overflow": "visible",
+    "overflow-y": "visible"
+  });
+
+  if (typeof dialog.setPosition === "function") {
+    dialog.setPosition({ height: "auto" });
+    setTimeout(() => dialog.setPosition({ height: "auto" }), 0);
+  }
+
+  const links = html.find("a.content-link");
+  if (links.length) {
+    links.on("click", async function (event) {
+      event.preventDefault();
+      const uuid = $(this).data("uuid");
+      if (!uuid) return;
+      const doc = await fromUuid(uuid);
+      if (doc?.sheet) doc.sheet.render(true);
+    });
+  }
 }
 
 // ------------------------------
@@ -960,19 +1066,26 @@ async function renderTreasureResultDialog(items, budget, config) {
 
   const content = await renderTemplate(TREASURE_RESULT_TEMPLATE, templateData);
 
-  const dialog = new Dialog({
-    title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Title"),
+  const dialog = new foundry.applications.api.DialogV2({
+    window: {
+      title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Title")
+    },
     content,
-    buttons: {
-      keep: {
+    buttons: [
+      {
+        action: "keep",
         label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Keep"),
-        callback: async () => {
+        default: true,
+        callback: async (_event, _button, dlg) => {
+          await dlg.close();
+
           // Move items out of cache
           for (const item of finalItems) {
             if (item?.folder?.id === cacheFolder.id) {
               await item.update({ folder: null });
             }
           }
+
           await ChatMessage.create({
             content: enrichedHtml,
             speaker: ChatMessage.getSpeaker({
@@ -981,57 +1094,28 @@ async function renderTreasureResultDialog(items, budget, config) {
           });
         }
       },
-      stash: {
+      {
+        action: "stash",
         label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Stash"),
-        callback: async () => {
+        callback: async (_event, _button, dlg) => {
+          await dlg.close();
           const currencyTotal = (currencyLines || []).reduce((sum, c) => sum + (Number(c?.value) || 0), 0);
           await createStash(finalItems, cacheFolder, currencyTotal);
         }
       },
-      reroll: {
+      {
+        action: "reroll",
         label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureResult.Buttons.Reroll"),
-        callback: () => Hooks.call("lookfarShowTreasureRollDialog", config)
+        callback: async (_event, _button, dlg) => {
+          await dlg.close();
+          Hooks.call("lookfarShowTreasureRollDialog", config);
+        }
       }
-    }
+    ]
   });
 
-  dialog.render(true);
-
-  // Styling & link behavior for the *result* dialog
-  Hooks.once("renderDialog", (app, html) => {
-    if (!html.find || !html.find("#lookfar-treasure-result").length) return;
-
-    const $dlg = html.closest(".dialog");
-    if (needsWide) {
-      $dlg.css({
-        width: "500px",
-        "max-width": "500px"
-      });
-    }
-
-    const $wc = $dlg.find(".window-content");
-    $wc.css({
-      "max-height": "none",
-      "overflow": "visible",
-      "overflow-y": "visible"
-    });
-
-    if (typeof app?.setPosition === "function") {
-      app.setPosition({ height: "auto" });
-      setTimeout(() => app.setPosition({ height: "auto" }), 0);
-    }
-
-    const links = html.find("a.content-link");
-    if (links.length) {
-      links.on("click", async function (event) {
-        event.preventDefault();
-        const uuid = $(this).data("uuid");
-        if (!uuid) return;
-        const doc = await fromUuid(uuid);
-        if (doc?.sheet) doc.sheet.render(true);
-      });
-    }
-  });
+  await dialog.render({ force: true });
+  initializeTreasureResultDialog(dialog, { needsWide });
 }
 
 // ------------------------------
@@ -1040,11 +1124,10 @@ async function renderTreasureResultDialog(items, budget, config) {
 Hooks.once("ready", () => {
   Hooks.on("lookfarShowTreasureRollDialog", (rerollConfig = null) => {
     (async () => {
-
       // --- Singleton guard for the Generator dialog
       if (!rerollConfig) {
         if (_treasureGenDialog && _treasureGenDialog.rendered) {
-          _treasureGenDialog.bringToTop();
+          _treasureGenDialog.bringToFront();
           return;
         }
       }
@@ -1092,7 +1175,7 @@ Hooks.once("ready", () => {
         let items = [];
         let ingredientCount = 0;
         let failedAttempts = 0;
-        const maxAttempts = 50; // infinite loop protection
+        const maxAttempts = 50;
 
         while ((ignoreValues || remainingBudget > 0) && items.length < itemCount && failedAttempts < maxAttempts) {
           let itemTypes = [];
@@ -1163,13 +1246,19 @@ Hooks.once("ready", () => {
 
       // --- Main Dialog Form via template ---
       const content = await renderTemplate(TREASURE_ROLL_TEMPLATE, {});
-      const genDialog = new Dialog({
-        title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Title"),
+      const genDialog = new foundry.applications.api.DialogV2({
+        window: {
+          title: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Title")
+        },
         content,
-        buttons: {
-          ok: {
+        buttons: [
+          {
+            action: "ok",
             label: game.i18n.localize("LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Buttons.RollLoot"),
-            callback: (html) => {
+            default: true,
+            callback: async (_event, _button, dialog) => {
+              const html = $(dialog.element);
+
               const budget = parseInt(html.find("#treasureBudget").val());
               const maxVal = parseInt(html.find("#highestPCLevel").val());
               const includeWeapons = html.find("#includeWeapons").is(":checked");
@@ -1185,6 +1274,8 @@ Hooks.once("ready", () => {
               const selectedOrigin = html.find("#origin").val();
               const selectedNature = html.find("#nature").val();
               const itemCount = parseInt(html.find("#itemCount").val(), 10) || 1;
+
+              await dialog.close();
 
               Hooks.call("lookfarShowTreasureRollDialog", {
                 budget,
@@ -1204,91 +1295,17 @@ Hooks.once("ready", () => {
               });
             }
           }
-        },
-        close: () => {
-          _treasureGenDialog = null;
-        }
+        ]
       });
 
       _treasureGenDialog = genDialog;
 
-      // Hook to wire up item count, select-all, and ignoreValues fields for the *generator* dialog
-      Hooks.once("renderDialog", (app, html) => {
-        if (!html.find || !html.find("#lookfar-treasure-gen").length) return;
-
-        // Item count controls
-        const $count = html.find("#itemCount");
-        const min = Number($count.attr("min")) || 1;
-        const max = Number($count.attr("max")) || 10;
-
-        const clampSet = (val) => {
-          const n = parseInt(val, 10);
-          const safe = Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
-          $count.val(safe);
-        };
-
-        html.find("#addCount").on("click", (e) => {
-          e.preventDefault();
-          clampSet(Number($count.val()) + 1);
-        });
-        html.find("#subCount").on("click", (e) => {
-          e.preventDefault();
-          clampSet(Number($count.val()) - 1);
-        });
-
-        $count.on("wheel", (e) => e.preventDefault());
-
-        // Select All wiring
-        const $selectAll = html.find("#selectAllLoot");
-        if ($selectAll.length) {
-          const $boxes = html.find('#lootOptions input[type="checkbox"]').not("#selectAllLoot, #ignoreValues");
-
-          $selectAll.on("change", (ev) => {
-            const checked = ev.currentTarget.checked;
-            $boxes.prop("checked", checked);
-            $selectAll.prop("indeterminate", false);
-          });
-
-          $boxes.on("change", () => {
-            const arr = $boxes.toArray();
-            const allChecked = arr.every(b => b.checked);
-            const anyChecked = arr.some(b => b.checked);
-            $selectAll
-              .prop("checked", allChecked)
-              .prop("indeterminate", anyChecked && !allChecked);
-          });
-        }
-
-        // Grey-out logic for "Ignore budget/level"
-        const $ignore = html.find("#ignoreValues");
-        const $budgetLabel = html.find('label[for="treasureBudget"]');
-        const $budgetField = html.find("#treasureBudget");
-        const $levelLabel = html.find('label[for="highestPCLevel"]');
-        const $levelField = html.find("#highestPCLevel");
-
-        const setFieldState = ($el, isDisabled) => {
-          $el.prop("disabled", isDisabled);
-          $el.css("opacity", isDisabled ? 0.5 : "");
-          $el.css("border", isDisabled ? "1px solid var(--color-border, #777)" : "");
-          $el.css("outline", isDisabled ? "none" : "");
-          $el.css("box-shadow", "none");
-        };
-
-        const toggleDisabled = (isDisabled) => {
-          const labelOpacity = isDisabled ? 0.5 : 1.0;
-          $budgetLabel.css("opacity", labelOpacity);
-          $levelLabel.css("opacity", labelOpacity);
-
-          setFieldState($budgetField, isDisabled);
-          setFieldState($levelField, isDisabled);
-        };
-
-        toggleDisabled($ignore.is(":checked"));
-        $ignore.on("change", (ev) => toggleDisabled(ev.currentTarget.checked));
+      genDialog.addEventListener("close", () => {
+        if (_treasureGenDialog === genDialog) _treasureGenDialog = null;
       });
 
-      genDialog.render(true);
-
+      await genDialog.render({ force: true });
+      initializeTreasureGeneratorDialog(genDialog);
     })();
   });
 });

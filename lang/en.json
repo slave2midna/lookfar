@@ -316,17 +316,15 @@
             "Accessory": "Accessory"
           },
           "Attributes": {
-            "Legend": "Attributes",
-            "AttrA": "Attr A:",
-            "AttrB": "Attr B:"
+            "Legend": "Attributes"
           },
           "Customize": {
             "Legend": "Customize",
             "NoOptions": "No Options",
             "PlusOneAccuracy": "+1 Accuracy",
             "PlusFourDamage": "+4 Damage",
-            "MakeOneHanded": "Make One-Handed",
-            "MakeTwoHanded": "Make Two-Handed",
+            "MakeOneHanded": "Make 1-Handed",
+            "MakeTwoHanded": "Make 2-Handed",
             "Element": "Element",
             "Tooltip": {
               "HandToggleRestricted": "This weapon cannot change its handedness.",

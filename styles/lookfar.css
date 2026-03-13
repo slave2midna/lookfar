@@ -3,18 +3,20 @@
  * Sections:
  *   1) Travel Check Dialog
  *   2) Travel Result Dialog
- *   3) Item Forger (main + mini)
- *   4) Dungeon Mapper
- *   5) Conflict Builder
+ *   3) Treasure Roll Dialog
+ *   4) Treasure Result Dialog
+ *   5) Item Forger
+ *   6) Dungeon Mapper
+ *   7) Conflict Builder
  * ========================================================================== */
 
 
 /* ========================================================================== */
-/* 1) Lookfar Travel Check Dialog                                             */
+/* 1) Travel Check                                                            */
 /* ========================================================================== */
 
 #lookfar-travel-check {
-  width: 100%;
+  width: auto;
   box-sizing: border-box;
 }
 
@@ -22,22 +24,23 @@
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  width: max-content;
 }
 
 #lookfar-travel-check .lf-travel-column {
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
 }
 
 #lookfar-travel-check .travel-check-table {
-  width: 100%;
+  width: auto;
   border-collapse: collapse;
 }
 
 #lookfar-travel-check .lf-travel-caption {
   font-weight: bold;
   font-size: 1.1em;
-  text-align: left;
+  text-align: center;
   margin-bottom: 4px;
 }
 
@@ -69,9 +72,14 @@
   gap: 4px;
 }
 
+#lookfar-travel-check #groupLevel {
+  width: auto;
+  min-width: 4.5em;
+}
+
 
 /* ========================================================================== */
-/* 2) Lookfar Travel Result Dialog                                            */
+/* 2) Travel Result                                                           */
 /* ========================================================================== */
 
 #lookfar-travel-result .travel-result-body {
@@ -124,8 +132,137 @@
   text-align: left;
 }
 
+
 /* ========================================================================== */
-/* 3) Lookfar – Item Forger (main + mini)                                     */
+/* 3) Treasure Roll                                                           */
+/* ========================================================================== */
+
+#lookfar-treasure-gen {
+  display: flex;
+  width: auto;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen #genOptions {
+  flex: 0 0 auto;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen .lf-tr-budget-row {
+  margin-bottom: 0.5em;
+  width: 100%;
+}
+
+#lookfar-treasure-gen .lf-tr-budget-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen .lf-tr-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+#lookfar-treasure-gen .lf-tr-label {
+  flex: 0 0 4em;
+  padding-right: 0.5em;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+#lookfar-treasure-gen .lf-tr-select {
+  flex: 0 0 auto;
+  width: 8em;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen .lf-tr-disabled-label {
+  opacity: 0.5;
+}
+
+#lookfar-treasure-gen .lf-tr-disabled-field {
+  opacity: 0.5;
+}
+
+#lookfar-treasure-gen .lf-tr-count-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+#lookfar-treasure-gen .lf-tr-count-btn {
+  width: 2em;
+  height: 2em;
+}
+
+#lookfar-treasure-gen .lf-tr-count-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#lookfar-treasure-gen #lootOptions {
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen .lf-tr-header-options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75em;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid var(--color-border-light, #8882);
+  padding-bottom: 0.25em;
+}
+
+#lookfar-treasure-gen .lf-tr-inline-option {
+  white-space: nowrap;
+  font-weight: normal;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+}
+
+#lookfar-treasure-gen .lf-tr-checkbox-columns {
+  display: flex;
+  min-width: 0;
+}
+
+#lookfar-treasure-gen .lf-tr-checkbox-group {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+#lookfar-treasure-gen .lf-tr-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  margin-bottom: 0.5em;
+}
+
+/* ========================================================================== */
+/* 4) Treasure Result                                                         */
+/* ========================================================================== */
+
+/* Intentionally minimal for now; result layout is primarily handled inline
+   in the generated treasure result HTML/template. */
+
+
+/* ========================================================================== */
+/* 5) Lookfar – Item Forger (main + mini)                                     */
 /* ========================================================================== */
 
 /* Shared container */
@@ -141,6 +278,7 @@
   padding: 4px 6px;
   border: 1px solid var(--color-border-light, #8882);
   border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .lf-if-fieldset > legend {
@@ -158,7 +296,7 @@
 }
 
 /* ========================================================================== */
-/* 3a) Updated FORGE Layout                                                   */
+/* 5a) Updated FORGE Layout                                                   */
 /* ========================================================================== */
 
 #if-body .lf-if-layout {
@@ -176,11 +314,41 @@
 }
 
 #if-body .lf-if-col-left {
-  flex: 0 0 60%;
+  flex: 0 0 auto;
+  width: 230px;
 }
 
 #if-body .lf-if-col-right {
-  flex: 0 0 40%;
+  flex: 0 0 auto;
+  width: 158px;
+}
+
+/* Fixed fieldset widths by column */
+#if-body .lf-if-col-left .lf-if-fieldset,
+#if-body .lf-if-col-left #attrRow {
+  width: 230px;
+  box-sizing: border-box;
+}
+
+#if-body .lf-if-col-right .lf-if-fieldset {
+  width: 158px;
+  box-sizing: border-box;
+}
+
+/* Matching fieldset heights */
+#if-body .lf-if-col-left .lf-if-fieldset:first-child,
+#if-body .lf-if-col-right .lf-if-fieldset:first-child {
+  min-height: 132px;
+}
+
+#if-body #attrRow .lf-if-fieldset,
+#if-body .lf-if-col-right .lf-if-fieldset:last-child {
+  min-height: 42px;
+}
+
+#if-body .lf-if-col-left .lf-if-fieldset:has(#itemPreviewLarge),
+#if-body .lf-if-col-right .lf-if-fieldset:has(#qualitiesList) {
+  min-height: 182px;
 }
 
 /* Choose Item panel */
@@ -188,24 +356,52 @@
   display: flex;
   gap: 8px;
   align-items: flex-start;
+  min-width: 0;
 }
 
 #if-body .lf-if-item-types {
-  flex: 0 0 auto;
+  flex: 0 0 105px;
+  width: 105px;
+}
+
+#if-body .lf-if-item-types label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.1;
+}
+
+#if-body .lf-if-item-types input[type="radio"] {
+  margin: 0;
+  vertical-align: middle;
+  transform: none;
 }
 
 #if-body .lf-if-template-wrapper {
-  flex: 1 1 auto;
+  flex: 0 0 103px;
+  width: 103px;
+  min-width: 103px;
 }
 
 /* Qualities category dropdown */
 #if-body .lf-if-qualities-select {
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
+#if-body .lf-if-qualities-select .lf-if-select-full,
+#if-body #qualitiesCategory.lf-if-select-full {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 24px;
+  line-height: 24px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
 
 /* ========================================================================== */
-/* 3b) Template & Quality Lists                                               */
+/* 5b) Template & Quality Lists                                               */
 /* ========================================================================== */
 
 #if-body #templateList,
@@ -217,11 +413,21 @@
 }
 
 #if-body #templateList {
+  width: 103px;
+  min-width: 103px;
+  max-width: 103px;
   height: 100px;
+  min-height: 100px;
+  max-height: 100px;
 }
 
 #if-body #qualitiesList {
+  width: 100%;
+  min-width: 0;
   height: 138px;
+  min-height: 138px;
+  max-height: 138px;
+  margin-top: 0;
 }
 
 .if-template,
@@ -232,52 +438,114 @@
 }
 
 .if-template:hover,
-.if-quality:hover {
-  background-color: rgba(0,0,0,0.1);
+.if-quality:hover,
+.lf-if-hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .if-template[data-selected="1"],
-.if-quality[data-selected="1"] {
-  background-color: rgba(65,105,225,1);
+.if-quality[data-selected="1"],
+.lf-if-selected {
+  background-color: rgba(65, 105, 225, 1);
   color: white;
 }
 
-
 /* ========================================================================== */
-/* 3c) Attributes / Customize                                                 */
+/* 5c) Attributes / Customize                                                 */
 /* ========================================================================== */
 
-#if-body #attrInner label {
+#if-body #attrInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  width: 100%;
+  text-align: center;
+}
+
+#if-body .lf-if-attr-bracket,
+#if-body .lf-if-attr-plus {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#if-body .lf-if-attr-bracket {
+  font-size: 16px;
+}
+
+#if-body .lf-if-attr-plus {
+  font-size: 13px;
+}
+
+#if-body .lf-if-select-medium {
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 24px;
+  line-height: 24px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+#if-body #attrInner .lf-if-select-medium,
+#if-body #weaponCustomize .lf-if-select-medium {
+  width: auto;
+  min-width: 5.5em;
+  height: 24px;
+  line-height: 24px;
+}
+
+#if-body .lf-if-select-full {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #if-body #customizeArea label {
   display: flex;
   align-items: center;
   gap: 4px;
-  line-height: 1;
+  line-height: 1.1;
 }
 
 #if-body #customizeArea input[type="checkbox"] {
+  margin: 0;
+  vertical-align: middle;
   transform: scale(0.9);
-  transform-origin: left center;
-  margin: 0 4px 0 0;
+  transform-origin: center;
 }
 
-#if-body #customizeArea select {
-  height: 22px;
+#if-body .lf-if-weapon-customize {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
+#if-body .lf-if-hand-toggle {
+  display: none;
+}
+
+#if-body .lf-if-no-customize {
+  opacity: 0.8;
+  display: none;
+}
 
 /* ========================================================================== */
-/* 3d) Preview Card                                                           */
+/* 5d) Preview Card                                                           */
 /* ========================================================================== */
 
 #if-body #itemPreviewLarge {
   width: 100%;
+  min-width: 100%;
+  max-width: 100%;
   height: 165px;
+  min-height: 165px;
+  max-height: 165px;
   border: 1px solid #999;
   display: flex;
   align-items: center;
@@ -352,12 +620,16 @@
   box-sizing: border-box;
 }
 
-.if-muted { opacity: 0.7; }
-.if-tight { letter-spacing: 0.2px; }
+.if-muted {
+  opacity: 0.7;
+}
 
+.if-tight {
+  letter-spacing: 0.2px;
+}
 
 /* ========================================================================== */
-/* 3e) Materials Drop Zone (main + mini)                                      */
+/* 5e) Materials Drop Zone (main + mini)                                      */
 /* ========================================================================== */
 
 .lf-if-materials-fieldset {
@@ -376,7 +648,16 @@
   box-sizing: border-box;
 }
 
-#materialsDrop.lf-if-materials-drop img[data-mat="1"] {
+#materialsDrop.lf-if-materials-drop.lf-if-drop-active {
+  background: rgba(65, 105, 225, 0.08);
+}
+
+#materialsDrop.lf-if-materials-drop.lf-if-materials-invalid {
+  border-color: red;
+}
+
+#materialsDrop.lf-if-materials-drop img[data-mat="1"],
+.lf-if-material-icon {
   width: 48px;
   height: 48px;
   cursor: pointer;
@@ -391,21 +672,25 @@
   min-height: 96px;
 }
 
-
 /* ========================================================================== */
-/* 3f) Cost Row                                                               */
+/* 5f) Cost Row                                                               */
 /* ========================================================================== */
 
 #if-body #costRow {
   font-size: 14px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  height: 25px;
+  justify-content: center;
+  gap: 10px;
+  height: 22px;
+  min-height: 22px;
+  width: 100%;
+  text-align: center;
 }
 
 #if-body #costValue {
   width: 4ch;
-  text-align: left;
+  text-align: center;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -414,15 +699,16 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
+  gap: 4px;
+  margin-left: 6px;
 }
 
 #if-body #optFee {
-  margin-right: 4px;
+  margin-right: 0;
 }
 
-
 /* ========================================================================== */
-/* 3g) Disabled / Locked State                                                */
+/* 5g) Disabled / Locked State                                                */
 /* ========================================================================== */
 
 .lf-if-disabled {
@@ -433,7 +719,7 @@
 
 
 /* ========================================================================== */
-/* 4) Lookfar – Dungeon Mapper                                                */
+/* 6) Lookfar – Dungeon Mapper                                                */
 /* ========================================================================== */
 
 #lookfar-dungeon-mapper {
@@ -745,8 +1031,9 @@
   justify-content: center;
 }
 
+
 /* ========================================================================== */
-/* 5) Lookfar – Conflict Builder                                              */
+/* 7) Lookfar – Conflict Builder                                              */
 /* ========================================================================== */
 
 #conflictBuilderDialog .dialog-body {
