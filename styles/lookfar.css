@@ -278,6 +278,7 @@
   padding: 4px 6px;
   border: 1px solid var(--color-border-light, #8882);
   border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .lf-if-fieldset > legend {
@@ -293,13 +294,6 @@
   align-items: flex-start;
   min-width: 0;
 }
-
-/* Dialog markers */
-.application.lf-if-main-dialog,
-.application.lf-if-mini-dialog {
-  box-sizing: border-box;
-}
-
 
 /* ========================================================================== */
 /* 5a) Updated FORGE Layout                                                   */
@@ -320,11 +314,25 @@
 }
 
 #if-body .lf-if-col-left {
-  flex: 0 0 60%;
+  flex: 0 0 auto;
+  width: 360px;
 }
 
 #if-body .lf-if-col-right {
-  flex: 0 0 40%;
+  flex: 0 0 auto;
+  width: 300px;
+}
+
+/* Fixed fieldset widths by column */
+#if-body .lf-if-col-left .lf-if-fieldset,
+#if-body .lf-if-col-left #attrRow {
+  width: 360px;
+  box-sizing: border-box;
+}
+
+#if-body .lf-if-col-right .lf-if-fieldset {
+  width: 300px;
+  box-sizing: border-box;
 }
 
 /* Choose Item panel */
@@ -336,21 +344,19 @@
 }
 
 #if-body .lf-if-item-types {
-  flex: 0 0 auto;
+  flex: 0 0 105px;
+  width: 105px;
 }
 
 #if-body .lf-if-template-wrapper {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 0 0 225px;
+  width: 225px;
+  min-width: 225px;
 }
 
 /* Qualities category dropdown */
 #if-body .lf-if-qualities-select {
   margin-bottom: 4px;
-}
-
-#if-body .lf-if-hidden {
-  display: none !important;
 }
 
 
@@ -367,11 +373,20 @@
 }
 
 #if-body #templateList {
+  width: 225px;
+  min-width: 225px;
+  max-width: 225px;
   height: 100px;
+  min-height: 100px;
+  max-height: 100px;
 }
 
 #if-body #qualitiesList {
+  width: 100%;
+  min-width: 0;
   height: 138px;
+  min-height: 138px;
+  max-height: 138px;
 }
 
 .if-template,
@@ -381,15 +396,15 @@
   user-select: none;
 }
 
-.if-template.lf-if-hover,
-.if-quality.lf-if-hover {
+.if-template:hover,
+.if-quality:hover,
+.lf-if-hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
 .if-template[data-selected="1"],
-.if-template.lf-if-selected,
 .if-quality[data-selected="1"],
-.if-quality.lf-if-selected {
+.lf-if-selected {
   background-color: rgba(65, 105, 225, 1);
   color: white;
 }
@@ -399,10 +414,29 @@
 /* 5c) Attributes / Customize                                                 */
 /* ========================================================================== */
 
+#if-body #attrInner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
 #if-body #attrInner label {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+#if-body .lf-if-select-medium {
+  width: 160px;
+  max-width: 160px;
+  min-width: 160px;
+  box-sizing: border-box;
+}
+
+#if-body .lf-if-select-full {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #if-body #customizeArea label {
@@ -422,6 +456,21 @@
   height: 22px;
 }
 
+#if-body .lf-if-weapon-customize {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#if-body .lf-if-hand-toggle {
+  display: none;
+}
+
+#if-body .lf-if-no-customize {
+  opacity: 0.8;
+  display: none;
+}
+
 
 /* ========================================================================== */
 /* 5d) Preview Card                                                           */
@@ -429,7 +478,11 @@
 
 #if-body #itemPreviewLarge {
   width: 100%;
+  min-width: 100%;
+  max-width: 100%;
   height: 165px;
+  min-height: 165px;
+  max-height: 165px;
   border: 1px solid #999;
   display: flex;
   align-items: center;
@@ -533,12 +586,6 @@
   box-sizing: border-box;
 }
 
-#materialsDrop.lf-if-materials-drop img[data-mat="1"] {
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-}
-
 #materialsDrop.lf-if-materials-drop.lf-if-drop-active {
   background: rgba(65, 105, 225, 0.08);
 }
@@ -547,9 +594,20 @@
   border-color: red;
 }
 
+#materialsDrop.lf-if-materials-drop img[data-mat="1"],
+.lf-if-material-icon {
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+}
+
 #materialsHint.lf-if-materials-hint {
   opacity: 0.6;
   font-size: 12px;
+}
+
+#lookfar-itemforge-mini #materialsDrop {
+  min-height: 96px;
 }
 
 
@@ -581,18 +639,12 @@
   margin-right: 4px;
 }
 
-button[data-action="forge"].lf-if-forge-disabled {
-  opacity: 0.5;
-  filter: grayscale(1);
-}
-
 
 /* ========================================================================== */
 /* 5g) Disabled / Locked State                                                */
 /* ========================================================================== */
 
-.lf-if-disabled,
-.lf-if-control-disabled {
+.lf-if-disabled {
   opacity: 0.5 !important;
   filter: grayscale(1) !important;
   cursor: not-allowed !important;
