@@ -1,10 +1,10 @@
-<div id="lookfar-treasure-gen" style="display:flex; width:100%; flex-wrap:nowrap; gap:0.25rem; box-sizing:border-box;">
+<div id="lookfar-treasure-gen">
 
-  <!-- Left Half of Dialog/Column 1 -->
-  <div id="genOptions" style="flex:1 1 40%; min-width:0; box-sizing:border-box;">
+  <!-- Left Half of Dialog / Column 1 -->
+  <div id="genOptions">
 
     <!-- Budget -->
-    <div class="form-group lf-tr-budget-row" style="margin-bottom:0.5em; width:100%;">
+    <div class="form-group lf-tr-budget-row">
       <input
         type="number"
         id="treasureBudget"
@@ -12,16 +12,15 @@
         placeholder='{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Fields.Budget"}}'
         title='{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Fields.Budget"}}'
         class="lf-tr-budget-input"
-        style="width:100%; min-width:0; box-sizing:border-box;"
       />
     </div>
 
     <!-- Level -->
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="highestPCLevel" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">
+    <div class="form-group lf-tr-row">
+      <label for="highestPCLevel" class="lf-tr-label">
         {{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Fields.Level"}}
       </label>
-      <select id="highestPCLevel" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+      <select id="highestPCLevel" class="lf-tr-select">
         <option value="500">5+</option>
         <option value="1000">10+</option>
         <option value="1500">20+</option>
@@ -31,11 +30,11 @@
     </div>
 
     <!-- Origin -->
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="origin" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">
+    <div class="form-group lf-tr-row">
+      <label for="origin" class="lf-tr-label">
         {{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Fields.Origin"}}
       </label>
-      <select id="origin" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+      <select id="origin" class="lf-tr-select">
         <option value="Random" selected>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Fields.Random"}}</option>
         <option value="Aerial">{{localize "LOOKFAR.Terms.Origin.Aerial"}}</option>
         <option value="Thunderous">{{localize "LOOKFAR.Terms.Origin.Thunderous"}}</option>
@@ -51,11 +50,11 @@
     </div>
 
     <!-- Nature -->
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="nature" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">
+    <div class="form-group lf-tr-row">
+      <label for="nature" class="lf-tr-label">
         {{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Fields.Nature"}}
       </label>
-      <select id="nature" style="flex:1 1 65%; min-width:0; box-sizing:border-box;">
+      <select id="nature" class="lf-tr-select">
         <option value="Random" selected>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Fields.Random"}}</option>
         <option value="Anthropod">{{localize "LOOKFAR.Terms.Nature.Anthropod"}}</option>
         <option value="Bird">{{localize "LOOKFAR.Terms.Nature.Bird"}}</option>
@@ -72,73 +71,80 @@
     </div>
 
     <!-- Item Count -->
-    <div class="form-group" style="display:flex; align-items:center; margin-bottom:0.5em;">
-      <label for="itemCount" style="flex:0 0 35%; padding-right:0.5em; box-sizing:border-box;">
+    <div class="form-group lf-tr-row">
+      <label for="itemCount" class="lf-tr-label">
         {{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.Fields.Items"}}
       </label>
-      <div style="display:flex; align-items:center; gap:0.25rem; flex:1 1 65%; min-width:0;">
-        <button type="button" id="subCount" style="height:2em; width:2em;">−</button>
-        <input type="number" id="itemCount" value="1" min="1" max="10" readonly
-               style="flex:1 1 auto; box-sizing:border-box; text-align:center; min-width:0;" />
-        <button type="button" id="addCount" style="height:2em; width:2em;">+</button>
+      <div class="lf-tr-count-controls">
+        <button type="button" id="subCount" class="lf-tr-count-btn">−</button>
+        <input
+          type="number"
+          id="itemCount"
+          value="1"
+          min="1"
+          max="10"
+          readonly
+          class="lf-tr-count-input"
+        />
+        <button type="button" id="addCount" class="lf-tr-count-btn">+</button>
       </div>
     </div>
 
   </div>
 
   <!-- Right half (Columns 2 & 3) -->
-  <div id="lootOptions" style="flex:1 1 60%; min-width:0; display:flex; flex-direction:column; box-sizing:border-box;">
+  <div id="lootOptions">
 
     <!-- Header Options -->
-    <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.75em; margin-bottom:0.5em; border-bottom:1px solid var(--color-border-light, #8882); padding-bottom:0.25em;">
-      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
+    <div class="lf-tr-header-options">
+      <label class="lf-tr-inline-option">
         <input type="checkbox" id="ignoreValues" />
         <small>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.IgnoreValues"}}</small>
       </label>
-      <label style="white-space:nowrap; font-weight:normal; display:inline-flex; align-items:center; gap:0.25em;">
+      <label class="lf-tr-inline-option">
         <input type="checkbox" id="selectAllLoot" />
         <small>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.SelectAll"}}</small>
       </label>
     </div>
 
     <!-- Checkbox columns -->
-    <div style="display:flex; min-width:0;">
+    <div class="lf-tr-checkbox-columns">
 
       <!-- Column 1 -->
-      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+      <div class="checkbox-group lf-tr-checkbox-group">
+        <label class="lf-tr-checkbox-row">
           <input type="checkbox" id="includeWeapons" />
           <span>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.ItemType.Weapon"}}</span>
         </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+        <label class="lf-tr-checkbox-row">
           <input type="checkbox" id="includeArmor" />
           <span>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.ItemType.Armor"}}</span>
         </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+        <label class="lf-tr-checkbox-row">
           <input type="checkbox" id="includeAccessories" />
           <span>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.ItemType.Accessory"}}</span>
         </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+        <label class="lf-tr-checkbox-row">
           <input type="checkbox" id="includeShields" />
           <span>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.ItemType.Shield"}}</span>
         </label>
       </div>
 
       <!-- Column 2 -->
-      <div class="checkbox-group" style="flex:1 1 0; min-width:0;">
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+      <div class="checkbox-group lf-tr-checkbox-group">
+        <label class="lf-tr-checkbox-row">
           <input type="checkbox" id="includeMaterials" />
           <span>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.ItemType.Material"}}</span>
         </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+        <label class="lf-tr-checkbox-row">
           <input type="checkbox" id="includeIngredients" />
           <span>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.ItemType.Ingredient"}}</span>
         </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+        <label class="lf-tr-checkbox-row">
           <input type="checkbox" id="includeCurrency" />
           <span>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.ItemType.Currency"}}</span>
         </label>
-        <label style="display:flex; align-items:center; gap:0.25em; margin-bottom:0.5em;">
+        <label class="lf-tr-checkbox-row">
           <input type="checkbox" id="includeCustom" />
           <span>{{localize "LOOKFAR.TreasureRoll.Dialogs.TreasureRoll.ItemType.Custom"}}</span>
         </label>
@@ -146,4 +152,4 @@
 
     </div>
   </div>
-</div> 
+</div>
