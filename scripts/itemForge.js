@@ -132,7 +132,6 @@ const getName = r =>
     r?.accessoryName ??
     "";
 
-// Resolve template display name from i18n bundle by id (primary).
 const getTemplateDisplayName = (kind, r) => {
     const id = r?.id ?? r?._id ?? null;
     if (!id) return "";
@@ -164,7 +163,6 @@ const matchesAppliesTo = (q, type) => {
 const qualityDisplayName = (q, type) => {
     if (q?.name) return q.name;
 
-    // Back-compat per-slot shapes
     if (type === "weapon") return q.weaponName ?? q.name ?? "";
     if (type === "armor") return q.armorName ?? q.name ?? "";
     if (type === "shield") return q.shieldName ?? q.name ?? "";
@@ -188,12 +186,10 @@ const normHand = (h) => {
     return null;
 };
 
-// Path to the extracted preview template
 const PREVIEW_TEMPLATE_PATH = "modules/lookfar/templates/item-forge-preview.hbs";
 
 // --- Setting Helpers ---------------------------------------------------------
 
-// Item Forge edit mode
 const getItemForgeEditMode = () => {
     try {
         return game.settings.get("lookfar", "itemForgeEditMode") || "gmOnly";
@@ -202,19 +198,13 @@ const getItemForgeEditMode = () => {
     }
 };
 
-// Public mode: collaborative, allows players and GM to control dialog
 const isItemForgeSharedMode = () => {
     const mode = getItemForgeEditMode();
     return mode === "public" || mode === "locked";
 };
 
-// Locked mode: full dialog for players, but controls are read-only
 const isItemForgeLockedMode = () => getItemForgeEditMode() === "locked";
 
-// Hidden mode: players should see no button and no dialogs at all
-const isItemForgeHiddenMode = () => getItemForgeEditMode() === "hidden";
-
-// Playtest damage rules
 const useVariantDamageRules = () => {
     try {
         return !!game.settings.get("lookfar", "useVariantDamageRules");
@@ -225,7 +215,6 @@ const useVariantDamageRules = () => {
 
 // --- FU Socket Helpers -------------------------------------------------------
 
-// Message names (unique within FU socket handler)
 const IF_MSG = {
     HostOpen: "lookfar:itemforge:host-open",
     HostClose: "lookfar:itemforge:host-close",
@@ -264,13 +253,11 @@ function ensureIFSocket() {
         return;
     }
 
-    // warning notifier so the host can ping specific clients
     sock.register(IF_MSG.MaterialsNotify, (payload) => {
         const text = payload?.text;
         if (text) ui.notifications?.warn(text);
     });
 
-    // A GM has opened the full forge dialog and is now the host
     sock.register(IF_MSG.HostOpen, (payload) => {
         _hostId = payload?.hostId ?? null;
         if (game.user.isGM && game.user.id === _hostId) {
@@ -283,12 +270,10 @@ function ensureIFSocket() {
         }
     });
 
-    // Host is closing
     sock.register(IF_MSG.HostClose, (payload) => {
         if (_hostId === (payload?.hostId ?? null)) _hostId = null;
     });
 
-    // A client (mini or fresh joiner) asks the host for the latest materials
     sock.register(IF_MSG.MaterialsRequest, (_payload, msg) => {
         if (game.user.isGM && game.user.id === _hostId) {
             sock.executeForUsers(
@@ -301,7 +286,6 @@ function ensureIFSocket() {
         }
     });
 
-    // Everyone: receive authoritative materials
     sock.register(IF_MSG.MaterialsReplace, (payload) => {
         _materials = Array.isArray(payload?.materials) ? payload.materials.slice(0, 5) : [];
         _requiredOriginKey = String(payload?.originReq || "").trim().toLowerCase();
@@ -343,7 +327,6 @@ function ensureIFSocket() {
         }
     });
 
-    // Player proposes ADD (host validates → updates → broadcasts)
     sock.register(IF_MSG.MaterialsAdd, async (payload, msg) => {
         if (!(game.user.isGM && game.user.id === _hostId)) return;
 
@@ -353,9 +336,7 @@ function ensureIFSocket() {
                 game.i18n.localize(textKey);
             const targetId = msg?.sender;
             if (targetId && game.projectfu?.socket) {
-                game.projectfu.socket.executeForUsers(IF_MSG.MaterialsNotify, [targetId], {
-                    text
-                });
+                game.projectfu.socket.executeForUsers(IF_MSG.MaterialsNotify, [targetId], { text });
             } else {
                 ui.notifications?.warn(text);
             }
@@ -403,7 +384,6 @@ function ensureIFSocket() {
         }
     });
 
-    // Player proposes REMOVE by index or uuid (host validates → updates → broadcasts)
     sock.register(IF_MSG.MaterialsRemove, (payload) => {
         if (!(game.user.isGM && game.user.id === _hostId)) return;
         const { index, uuid } = payload ?? {};
@@ -424,7 +404,6 @@ function ensureIFSocket() {
         );
     });
 
-    // UI state replace (item type, template, qualities, toggles, etc.)
     sock.register(IF_MSG.UIStateReplace, (payload) => {
         if (!isItemForgeSharedMode()) return;
         const state = payload?.state;
@@ -458,18 +437,14 @@ const toInt = (v) => {
     return Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0;
 };
 
-// resolve equipment.json cost value
 const getEquipCost = (r) =>
     toInt(r?.cost ?? r?.value ?? r?.data?.cost ?? r?.data?.cost?.value ?? 0);
 
-// resolve qualities cost value
 const getQualityCost = (q) => toInt(q?.cost ?? q?.value ?? 0);
 
-// resolve material item cost value
 const getTreasureCost = (doc) =>
     toInt(doc?.system?.cost?.value ?? doc?.system?.value ?? doc?.system?.cost ?? doc?.cost ?? 0);
 
-// resolve material origin value
 const getTreasureOrigin = (doc) =>
     String(doc?.system?.origin?.value ?? "").trim();
 
@@ -477,7 +452,6 @@ const getCurrencyName = () =>
     game.settings.get("projectfu", "optionRenameCurrency") ||
     game.i18n.localize("LOOKFAR.Terms.Common.Zenit");
 
-// resolve origin requirement for specific quality
 const getRequiredOriginKey = (html) => {
     const key = String(html.find("#qualitiesCategory").val() || "none").toLowerCase();
     return (key === "none" || key === "basic" || key === "custom") ? "" : key;
@@ -770,6 +744,25 @@ const buildItemData = (kind, html, {
 
 // --- Dialog Behavior ---------------------------------------------------------
 
+function setSelectedState($container, itemSel, el, triggerCallback = true, onSelect = null) {
+    $container.find(itemSel).each(function() {
+        this.dataset.selected = "";
+        $(this).removeClass("lf-if-selected");
+    });
+
+    if (!el) return;
+
+    el.dataset.selected = "1";
+    $(el).addClass("lf-if-selected");
+
+    if (triggerCallback) onSelect?.(el);
+}
+
+function setInteractiveDisabled($el, isDisabled, extraClass = "lf-if-control-disabled") {
+    $el.prop("disabled", isDisabled);
+    $el.toggleClass(extraClass, isDisabled);
+}
+
 async function initializeMaterialsMiniDialog(dialog) {
     const html = $(dialog.element);
     if (!html.find("#materialsDrop").length) return;
@@ -782,18 +775,10 @@ async function initializeMaterialsMiniDialog(dialog) {
     html.data("ifMaterials", _materials || []);
     html.data("ifRequiredOriginKey", _requiredOriginKey || "");
 
-    const $dlg = html.closest(".application");
-    $dlg.css({ width: "420px" });
+    html.closest(".application").addClass("lf-if-mini-dialog");
 
     const $materialsDrop = html.find("#materialsDrop");
     const $materialsHint = html.find("#materialsHint");
-
-    const relayout = () => {
-        if (typeof dialog.setPosition === "function") {
-            dialog.setPosition({ height: "auto" });
-            setTimeout(() => dialog.setPosition({ height: "auto" }), 0);
-        }
-    };
 
     const renderMaterialsMini = () => {
         const list = html.data("ifMaterials") || [];
@@ -841,28 +826,26 @@ async function initializeMaterialsMiniDialog(dialog) {
             });
         }
 
-        $materialsDrop.css({
-            borderColor: (!hasReq && needKey) ? "red" : "#999"
-        });
+        $materialsDrop.toggleClass("lf-if-materials-invalid", !hasReq && !!needKey);
 
         html.find("#materialsDrop").off("repaint").on("repaint", () => {
             html.data("ifMaterials", _materials);
             html.data("ifRequiredOriginKey", _requiredOriginKey);
             renderMaterialsMini();
         });
-
-        relayout();
     };
 
     $materialsDrop
         .on("dragover", (ev) => {
             ev.preventDefault();
-            $materialsDrop.css("background", "rgba(65,105,225,0.08)");
+            $materialsDrop.addClass("lf-if-drop-active");
         })
-        .on("dragleave", () => $materialsDrop.css("background", ""))
+        .on("dragleave", () => {
+            $materialsDrop.removeClass("lf-if-drop-active");
+        })
         .on("drop", async (ev) => {
             ev.preventDefault();
-            $materialsDrop.css("background", "");
+            $materialsDrop.removeClass("lf-if-drop-active");
             const dt = ev.originalEvent?.dataTransfer;
             if (!dt) return;
             const raw = dt.getData("text/plain");
@@ -883,10 +866,8 @@ async function initializeMaterialsMiniDialog(dialog) {
     }
 
     renderMaterialsMini();
-    relayout();
 }
 
-// Mini Materials Dialog (players & observers) uses item-forge-mini.hbs
 async function openMaterialsMiniDialog() {
     ensureIFSocket();
 
@@ -944,32 +925,14 @@ async function initializeItemForgeDialog(dialog, {
     }
 
     const $dlg = html.closest(".application");
-    const $wc = $dlg.find(".window-content");
-    $wc.css({
-        display: "block",
-        overflow: "visible"
-    });
-    $dlg.css({
-        width: "700px"
-    });
+    $dlg.addClass("lf-if-main-dialog");
 
     const setForgeEnabled = (enabled) => {
         const $btn = $dlg.find('button[data-action="forge"]');
         if (!$btn.length) return;
         $btn.prop("disabled", !enabled);
-        $btn.css({
-            opacity: enabled ? 1 : 0.5,
-            filter: enabled ? "" : "grayscale(1)"
-        });
+        $btn.toggleClass("lf-if-forge-disabled", !enabled);
     };
-
-    const relayout = () => {
-        if (typeof dialog.setPosition === "function") {
-            dialog.setPosition({ height: "auto" });
-            setTimeout(() => dialog.setPosition({ height: "auto" }), 0);
-        }
-    };
-    relayout();
 
     const $templateList = html.find("#templateList");
     const $qualitiesSelect = html.find("#qualitiesCategory");
@@ -982,7 +945,7 @@ async function initializeItemForgeDialog(dialog, {
     const $noCustomize = html.find("#noCustomize");
 
     if (!game.user.isGM) {
-        html.find("#optFee").closest("label").hide();
+        html.find("#optFee").closest("label").addClass("lf-if-hidden");
     }
 
     const lockControlsForPlayer = !game.user.isGM && isItemForgeLockedMode();
@@ -993,13 +956,19 @@ async function initializeItemForgeDialog(dialog, {
         if (!lockControlsForPlayer) return;
 
         html.find("input[name='itemType']").prop("disabled", true);
-
-        html
-            .find("#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee")
+        html.find("#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee")
             .prop("disabled", true);
-
         html.find("#qualitiesCategory").prop("disabled", true);
         html.find("#customEffect, #customCost, #customApply").prop("disabled", true);
+
+        html.find("input[name='itemType']").closest("label").addClass("lf-if-control-disabled");
+        html.find("#qualitiesCategory").addClass("lf-if-control-disabled");
+        html.find("#customEffect, #customCost, #customApply").addClass("lf-if-control-disabled");
+        html.find("#optAttrA, #optAttrB, #optPlusOne, #optPlusDamage, #optToggleHand, #optElement, #optFee")
+            .each(function() {
+                $(this).closest("label").addClass("lf-if-control-disabled");
+                $(this).addClass("lf-if-control-disabled");
+            });
     };
 
     applyLockState();
@@ -1064,11 +1033,11 @@ async function initializeItemForgeDialog(dialog, {
         if (suppressStateBroadcast) return;
         if (restrictInputs && !isHostGM) return;
 
-        const sock = game.projectfu?.socket;
-        if (!sock) return;
+        const socket = game.projectfu?.socket;
+        if (!socket) return;
 
         const forgeState = collectForgeState();
-        sock.executeForEveryone(IF_MSG.UIStateReplace, { state: forgeState });
+        socket.executeForEveryone(IF_MSG.UIStateReplace, { state: forgeState });
     };
 
     function updateCost() {
@@ -1314,53 +1283,36 @@ async function initializeItemForgeDialog(dialog, {
     } = {}) => {
         const $items = $container.find(itemSel);
 
-        const applySelection = (el, triggerCallback = true) => {
-            $container.find(itemSel).each(function() {
-                this.dataset.selected = "";
-                $(this).css({
-                    backgroundColor: "",
-                    color: ""
-                });
-            });
-            if (!el) return;
-            el.dataset.selected = "1";
-            $(el).css({
-                backgroundColor: "rgba(65,105,225,1)",
-                color: "white"
-            });
-            if (triggerCallback) onSelect?.(el);
-        };
-
         $items
-            .on("mouseenter", function() {
+            .off(".lfIfSelect")
+            .on("mouseenter.lfIfSelect", function() {
                 if (this.dataset.selected === "1") return;
                 if (blockClicks) return;
-                $(this).css({
-                    backgroundColor: "rgba(0,0,0,0.08)"
-                });
+                $(this).addClass("lf-if-hover");
             })
-            .on("mouseleave", function() {
+            .on("mouseleave.lfIfSelect", function() {
                 if (this.dataset.selected === "1") return;
                 if (blockClicks) return;
-                $(this).css({
-                    backgroundColor: "",
-                    color: ""
-                });
+                $(this).removeClass("lf-if-hover");
             });
 
-        $items.on("click", function(ev) {
+        $items.on("click.lfIfSelect", function(ev) {
             if (blockClicks) {
                 ev.preventDefault();
                 ev.stopImmediatePropagation?.();
                 return;
             }
-            applySelection(this, true);
+            setSelectedState($container, itemSel, this, true, onSelect);
+            $(this).removeClass("lf-if-hover");
         });
 
         const $initial = Number.isInteger(initialIndex) ?
             $items.eq(initialIndex) :
             $items.first();
-        if ($initial.length) applySelection($initial[0], true);
+
+        if ($initial.length) {
+            setSelectedState($container, itemSel, $initial[0], true, onSelect);
+        }
     };
 
     const renderMaterials = () => {
@@ -1421,10 +1373,7 @@ async function initializeItemForgeDialog(dialog, {
             });
         }
 
-        $materialsDrop.css({
-            borderColor: (!hasReq && needKey) ? "red" : "#999"
-        });
-
+        $materialsDrop.toggleClass("lf-if-materials-invalid", !hasReq && !!needKey);
         setForgeEnabled(hasReq);
 
         html.find("#materialsDrop").off("repaint").on("repaint", () => {
@@ -1432,90 +1381,96 @@ async function initializeItemForgeDialog(dialog, {
             renderMaterials();
             updateCost();
         });
-
-        relayout();
     };
 
-    $materialsDrop.on("drop", async (ev) => {
-        ev.preventDefault();
-        $materialsDrop.css("background", "");
-        const dt = ev.originalEvent?.dataTransfer;
-        if (!dt) return;
-        const raw = dt.getData("text/plain");
-        if (!raw) return;
+    $materialsDrop
+        .on("dragover", (ev) => {
+            ev.preventDefault();
+            $materialsDrop.addClass("lf-if-drop-active");
+        })
+        .on("dragleave", () => {
+            $materialsDrop.removeClass("lf-if-drop-active");
+        })
+        .on("drop", async (ev) => {
+            ev.preventDefault();
+            $materialsDrop.removeClass("lf-if-drop-active");
+            const dt = ev.originalEvent?.dataTransfer;
+            if (!dt) return;
+            const raw = dt.getData("text/plain");
+            if (!raw) return;
 
-        let data;
-        try {
-            data = JSON.parse(raw);
-        } catch (e) {
-            console.error("[Item Forger] Drop parse failed (JSON):", e);
-            ui.notifications?.error(game.i18n.localize("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
-            return;
-        }
-        if (!data?.uuid) return;
-
-        if (!(game.user.isGM && game.user.id === _hostId)) {
-            game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsAdd, {
-                uuid: data.uuid
-            });
-            return;
-        }
-
-        try {
-            const doc = await fromUuid(data.uuid);
-            if (!doc || doc.documentName !== "Item") {
-                return ui.notifications?.warn(
-                    game.i18n.localize("LOOKFAR.ItemForge.Errors.OnlyItems")
-                );
+            let data;
+            try {
+                data = JSON.parse(raw);
+            } catch (e) {
+                console.error("[Item Forger] Drop parse failed (JSON):", e);
+                ui.notifications?.error(game.i18n.localize("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
+                return;
             }
-            if (String(doc.type) !== "treasure") {
-                return ui.notifications?.warn(
-                    game.i18n.localize("LOOKFAR.ItemForge.Errors.OnlyTreasure")
-                );
-            }
-            if (_materials.length >= 5) {
-                return ui.notifications?.warn(
-                    game.i18n.localize("LOOKFAR.ItemForge.Errors.MaxMaterials")
-                );
+            if (!data?.uuid) return;
+
+            if (!(game.user.isGM && game.user.id === _hostId)) {
+                game.projectfu?.socket?.executeAsGM?.(IF_MSG.MaterialsAdd, {
+                    uuid: data.uuid
+                });
+                return;
             }
 
-            const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
-            if (qty <= 0) {
-                return ui.notifications?.warn(
-                    game.i18n.localize("LOOKFAR.ItemForge.Errors.NoMoreItem")
-                );
+            try {
+                const doc = await fromUuid(data.uuid);
+                if (!doc || doc.documentName !== "Item") {
+                    return ui.notifications?.warn(
+                        game.i18n.localize("LOOKFAR.ItemForge.Errors.OnlyItems")
+                    );
+                }
+                if (String(doc.type) !== "treasure") {
+                    return ui.notifications?.warn(
+                        game.i18n.localize("LOOKFAR.ItemForge.Errors.OnlyTreasure")
+                    );
+                }
+                if (_materials.length >= 5) {
+                    return ui.notifications?.warn(
+                        game.i18n.localize("LOOKFAR.ItemForge.Errors.MaxMaterials")
+                    );
+                }
+
+                const qty = Number(doc.system?.quantity?.value ?? 0) || 0;
+                if (qty <= 0) {
+                    return ui.notifications?.warn(
+                        game.i18n.localize("LOOKFAR.ItemForge.Errors.NoMoreItem")
+                    );
+                }
+
+                const alreadyUsed = _materials.filter(m => m.uuid === data.uuid).length;
+                if (alreadyUsed >= qty) {
+                    return ui.notifications?.warn(
+                        game.i18n.localize("LOOKFAR.ItemForge.Errors.NoMoreItem")
+                    );
+                }
+
+                const entry = {
+                    uuid: data.uuid,
+                    img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
+                    name: doc.name,
+                    cost: getTreasureCost(doc),
+                    origin: getTreasureOrigin(doc),
+                    quantity: qty
+                };
+
+                _materials = [..._materials, entry].slice(0, 5);
+                html.data("ifMaterials", _materials);
+                renderMaterials();
+                updateCost();
+
+                game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
+                    materials: _materials,
+                    originReq: _requiredOriginKey
+                });
+            } catch (e) {
+                console.error("[Item Forger] Drop parse failed:", e);
+                ui.notifications?.error(game.i18n.localize("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
             }
-
-            const alreadyUsed = _materials.filter(m => m.uuid === data.uuid).length;
-            if (alreadyUsed >= qty) {
-                return ui.notifications?.warn(
-                    game.i18n.localize("LOOKFAR.ItemForge.Errors.NoMoreItem")
-                );
-            }
-
-            const entry = {
-                uuid: data.uuid,
-                img: (doc.img || doc?.texture?.src || doc?.prototypeToken?.texture?.src || "icons/svg/mystery-man.svg"),
-                name: doc.name,
-                cost: getTreasureCost(doc),
-                origin: getTreasureOrigin(doc),
-                quantity: qty
-            };
-
-            _materials = [..._materials, entry].slice(0, 5);
-            html.data("ifMaterials", _materials);
-            renderMaterials();
-            updateCost();
-
-            game.projectfu?.socket?.executeForEveryone(IF_MSG.MaterialsReplace, {
-                materials: _materials,
-                originReq: _requiredOriginKey
-            });
-        } catch (e) {
-            console.error("[Item Forger] Drop parse failed:", e);
-            ui.notifications?.error(game.i18n.localize("LOOKFAR.ItemForge.Errors.CouldNotReadDrop"));
-        }
-    });
+        });
 
     function renderTemplates(rows, initialIndex = null) {
         state.currentTemplates = Array.isArray(rows) ? rows : [];
@@ -1589,10 +1544,14 @@ async function initializeItemForgeDialog(dialog, {
             if ($customCost.length) $customCost.val(cstCommitted);
 
             if (lockControlsForPlayer) {
-                $customEffect.prop("disabled", true);
-                $customCost.prop("disabled", true);
-                $customApply.prop("disabled", true);
+                $customEffect.prop("disabled", true).addClass("lf-if-control-disabled");
+                $customCost.prop("disabled", true).addClass("lf-if-control-disabled");
+                $customApply.prop("disabled", true).addClass("lf-if-control-disabled");
             } else {
+                $customEffect.removeClass("lf-if-control-disabled");
+                $customCost.removeClass("lf-if-control-disabled");
+                $customApply.removeClass("lf-if-control-disabled");
+
                 $customCost
                     .off(".customUX")
                     .on("keydown.customUX", (ev) => {
@@ -1734,10 +1693,7 @@ async function initializeItemForgeDialog(dialog, {
         const setDisabled = (disabled, title = "") => {
             $checkbox.prop("disabled", disabled);
             if (disabled) $checkbox.prop("checked", false);
-            $wrap.css({
-                opacity: disabled ? 0.5 : 1,
-                filter: disabled ? "grayscale(1)" : ""
-            });
+            $wrap.toggleClass("lf-if-control-disabled", disabled);
             if (title) $wrap.attr("title", title);
             else $wrap.removeAttr("title");
         };
@@ -1772,22 +1728,16 @@ async function initializeItemForgeDialog(dialog, {
         const alreadyPlusOne = game.i18n.localize("LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.Tooltip.PlusOneAlready");
 
         if (!game.user.isGM && lockControlsForPlayer) {
-            $cb.prop("disabled", true);
+            $cb.prop("disabled", true).addClass("lf-if-control-disabled");
             $label
                 .attr("title", gmOnlyLabel)
-                .css({
-                    opacity: 0.5,
-                    filter: "grayscale(1)"
-                });
+                .addClass("lf-if-control-disabled");
             return;
         }
 
         if (kind !== "weapon") {
-            $cb.prop("disabled", false);
-            $label.css({
-                opacity: 1,
-                filter: ""
-            }).attr("title", "");
+            $cb.prop("disabled", false).removeClass("lf-if-control-disabled");
+            $label.removeClass("lf-if-control-disabled").attr("title", "");
             return;
         }
 
@@ -1798,11 +1748,8 @@ async function initializeItemForgeDialog(dialog, {
         const base = Number.isFinite(idx) ? state.currentTemplates[idx] : null;
 
         if (!base) {
-            $cb.prop("disabled", false);
-            $label.css({
-                opacity: 1,
-                filter: ""
-            }).attr("title", "");
+            $cb.prop("disabled", false).removeClass("lf-if-control-disabled");
+            $label.removeClass("lf-if-control-disabled").attr("title", "");
             return;
         }
 
@@ -1810,21 +1757,15 @@ async function initializeItemForgeDialog(dialog, {
         const hasBasePlusOne = baseAcc >= 1;
 
         if (hasBasePlusOne) {
-            $cb.prop("checked", false).prop("disabled", true);
+            $cb.prop("checked", false).prop("disabled", true).addClass("lf-if-control-disabled");
             $label
                 .attr("title", alreadyPlusOne)
-                .css({
-                    opacity: 0.5,
-                    filter: "grayscale(1)"
-                });
+                .addClass("lf-if-control-disabled");
         } else {
-            $cb.prop("disabled", false);
+            $cb.prop("disabled", false).removeClass("lf-if-control-disabled");
             $label
                 .attr("title", "")
-                .css({
-                    opacity: 1,
-                    filter: ""
-                });
+                .removeClass("lf-if-control-disabled");
         }
     }
 
@@ -1843,21 +1784,16 @@ async function initializeItemForgeDialog(dialog, {
 
             if (useVariantDamageRules()) {
                 $pd.prop("checked", false)
-                    .prop("disabled", true);
+                    .prop("disabled", true)
+                    .addClass("lf-if-control-disabled");
                 $pdLabel
                     .attr("title", variantTooltip)
-                    .css({
-                        opacity: 0.5,
-                        filter: "grayscale(1)"
-                    });
+                    .addClass("lf-if-control-disabled");
             } else {
-                $pd.prop("disabled", false);
+                $pd.prop("disabled", false).removeClass("lf-if-control-disabled");
                 $pdLabel
                     .attr("title", "")
-                    .css({
-                        opacity: 1,
-                        filter: ""
-                    });
+                    .removeClass("lf-if-control-disabled");
             }
         }
 
@@ -1874,7 +1810,6 @@ async function initializeItemForgeDialog(dialog, {
             updatePlusOneToggle();
         }
 
-        relayout();
         updateCost();
         applyLockState();
     };
@@ -2068,11 +2003,8 @@ async function initializeItemForgeDialog(dialog, {
             );
         }
     }
-
-    relayout();
 }
 
-// Item Forger Dialog (main) uses item-forge.hbs
 async function openItemForgeDialog() {
     ensureIFSocket();
 
@@ -2102,7 +2034,6 @@ async function openItemForgeDialog() {
             const html = $(dlg.element);
             try {
                 const kind = html.find("input[name='itemType']:checked").val();
-                const base = getSelectedBase(html, state.currentTemplates);
 
                 const mats = html.data("ifMaterials") || [];
                 if (!validateMaterialsOrigin(html, mats)) return false;
