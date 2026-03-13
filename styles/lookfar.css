@@ -335,6 +335,23 @@
   box-sizing: border-box;
 }
 
+/* Matching fieldset heights */
+#if-body .lf-if-col-left .lf-if-fieldset:first-child,
+#if-body .lf-if-col-right .lf-if-fieldset:first-child {
+  min-height: 118px;
+}
+
+#if-body #attrRow .lf-if-fieldset,
+#if-body #costRow.lf-if-cost-row,
+#if-body .lf-if-col-right .lf-if-fieldset:last-child {
+  min-height: 48px;
+}
+
+#if-body .lf-if-col-left .lf-if-fieldset:has(#itemPreviewLarge),
+#if-body .lf-if-col-right .lf-if-fieldset:has(#qualitiesList) {
+  min-height: 182px;
+}
+
 /* Choose Item panel */
 #if-body .lf-if-choose-item {
   display: flex;
@@ -344,14 +361,14 @@
 }
 
 #if-body .lf-if-item-types {
-  flex: 0 0 80px;
-  width: 80px;
+  flex: 0 0 105px;
+  width: 105px;
 }
 
 #if-body .lf-if-template-wrapper {
-  flex: 0 0 165px;
-  width: 165px;
-  min-width: 165px;
+  flex: 0 0 82px;
+  width: 82px;
+  min-width: 82px;
 }
 
 /* Qualities category dropdown */
@@ -372,9 +389,9 @@
 }
 
 #if-body #templateList {
-  width: 165px;
-  min-width: 165px;
-  max-width: 165px;
+  width: 82px;
+  min-width: 82px;
+  max-width: 82px;
   height: 100px;
   min-height: 100px;
   max-height: 100px;
