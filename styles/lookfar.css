@@ -364,6 +364,19 @@
   width: 105px;
 }
 
+#if-body .lf-if-item-types label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.1;
+}
+
+#if-body .lf-if-item-types input[type="radio"] {
+  margin: 0;
+  vertical-align: middle;
+  transform: none;
+}
+
 #if-body .lf-if-template-wrapper {
   flex: 0 0 103px;
   width: 103px;
@@ -461,12 +474,18 @@
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
+  height: 24px;
+  line-height: 24px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 #if-body #attrInner .lf-if-select-medium,
 #if-body #weaponCustomize .lf-if-select-medium {
   width: auto;
   min-width: 5.5em;
+  height: 24px;
+  line-height: 24px;
 }
 
 #if-body .lf-if-select-full {
@@ -478,17 +497,14 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  line-height: 1;
+  line-height: 1.1;
 }
 
 #if-body #customizeArea input[type="checkbox"] {
+  margin: 0;
+  vertical-align: middle;
   transform: scale(0.9);
-  transform-origin: left center;
-  margin: 0 4px 0 0;
-}
-
-#if-body #customizeArea select {
-  height: 22px;
+  transform-origin: center;
 }
 
 #if-body .lf-if-weapon-customize {
