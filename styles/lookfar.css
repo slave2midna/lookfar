@@ -141,7 +141,7 @@
   display: flex;
   width: auto;
   flex-wrap: nowrap;
-  gap: 0.25rem;
+  gap: 0.5rem;
   box-sizing: border-box;
 }
 
