@@ -315,23 +315,23 @@
 
 #if-body .lf-if-col-left {
   flex: 0 0 auto;
-  width: 360px;
+  width: 270px;
 }
 
 #if-body .lf-if-col-right {
   flex: 0 0 auto;
-  width: 300px;
+  width: 225px;
 }
 
 /* Fixed fieldset widths by column */
 #if-body .lf-if-col-left .lf-if-fieldset,
 #if-body .lf-if-col-left #attrRow {
-  width: 360px;
+  width: 270px;
   box-sizing: border-box;
 }
 
 #if-body .lf-if-col-right .lf-if-fieldset {
-  width: 300px;
+  width: 225px;
   box-sizing: border-box;
 }
 
@@ -344,21 +344,20 @@
 }
 
 #if-body .lf-if-item-types {
-  flex: 0 0 105px;
-  width: 105px;
+  flex: 0 0 80px;
+  width: 80px;
 }
 
 #if-body .lf-if-template-wrapper {
-  flex: 0 0 225px;
-  width: 225px;
-  min-width: 225px;
+  flex: 0 0 165px;
+  width: 165px;
+  min-width: 165px;
 }
 
 /* Qualities category dropdown */
 #if-body .lf-if-qualities-select {
   margin-bottom: 4px;
 }
-
 
 /* ========================================================================== */
 /* 5b) Template & Quality Lists                                               */
@@ -373,9 +372,9 @@
 }
 
 #if-body #templateList {
-  width: 225px;
-  min-width: 225px;
-  max-width: 225px;
+  width: 165px;
+  min-width: 165px;
+  max-width: 165px;
   height: 100px;
   min-height: 100px;
   max-height: 100px;
@@ -409,7 +408,6 @@
   color: white;
 }
 
-
 /* ========================================================================== */
 /* 5c) Attributes / Customize                                                 */
 /* ========================================================================== */
@@ -428,10 +426,16 @@
 }
 
 #if-body .lf-if-select-medium {
-  width: 160px;
-  max-width: 160px;
-  min-width: 160px;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
   box-sizing: border-box;
+}
+
+#if-body #attrInner .lf-if-select-medium,
+#if-body #weaponCustomize .lf-if-select-medium {
+  width: auto;
+  min-width: 5.5em;
 }
 
 #if-body .lf-if-select-full {
@@ -470,7 +474,6 @@
   opacity: 0.8;
   display: none;
 }
-
 
 /* ========================================================================== */
 /* 5d) Preview Card                                                           */
@@ -565,7 +568,6 @@
   letter-spacing: 0.2px;
 }
 
-
 /* ========================================================================== */
 /* 5e) Materials Drop Zone (main + mini)                                      */
 /* ========================================================================== */
@@ -610,7 +612,6 @@
   min-height: 96px;
 }
 
-
 /* ========================================================================== */
 /* 5f) Cost Row                                                               */
 /* ========================================================================== */
@@ -639,7 +640,6 @@
   margin-right: 4px;
 }
 
-
 /* ========================================================================== */
 /* 5g) Disabled / Locked State                                                */
 /* ========================================================================== */
@@ -649,7 +649,6 @@
   filter: grayscale(1) !important;
   cursor: not-allowed !important;
 }
-
 
 /* ========================================================================== */
 /* 6) Lookfar – Dungeon Mapper                                                */
