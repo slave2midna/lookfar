@@ -632,16 +632,12 @@ function initializeTreasureGeneratorDialog(dialog) {
 
   const setFieldState = ($el, isDisabled) => {
     $el.prop("disabled", isDisabled);
-    $el.css("opacity", isDisabled ? 0.5 : "");
-    $el.css("border", isDisabled ? "1px solid var(--color-border, #777)" : "");
-    $el.css("outline", isDisabled ? "none" : "");
-    $el.css("box-shadow", "none");
+    $el.toggleClass("lf-tr-disabled-field", isDisabled);
   };
 
   const toggleDisabled = (isDisabled) => {
-    const labelOpacity = isDisabled ? 0.5 : 1.0;
-    $budgetLabel.css("opacity", labelOpacity);
-    $levelLabel.css("opacity", labelOpacity);
+    $budgetLabel.toggleClass("lf-tr-disabled-label", isDisabled);
+    $levelLabel.toggleClass("lf-tr-disabled-label", isDisabled);
 
     setFieldState($budgetField, isDisabled);
     setFieldState($levelField, isDisabled);
@@ -1310,6 +1306,11 @@ Hooks.once("ready", () => {
 
       await genDialog.render({ force: true });
       initializeTreasureGeneratorDialog(genDialog);
+
+      if (typeof genDialog.setPosition === "function") {
+        genDialog.setPosition({ height: "auto" });
+        setTimeout(() => genDialog.setPosition({ height: "auto" }), 0);
+      }
     })();
   });
 });
