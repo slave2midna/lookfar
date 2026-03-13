@@ -320,7 +320,7 @@
 
 #if-body .lf-if-col-right {
   flex: 0 0 auto;
-  width: 225px;
+  width: 158px;
 }
 
 /* Fixed fieldset widths by column */
@@ -331,7 +331,7 @@
 }
 
 #if-body .lf-if-col-right .lf-if-fieldset {
-  width: 225px;
+  width: 158px;
   box-sizing: border-box;
 }
 
@@ -342,9 +342,8 @@
 }
 
 #if-body #attrRow .lf-if-fieldset,
-#if-body #costRow.lf-if-cost-row,
 #if-body .lf-if-col-right .lf-if-fieldset:last-child {
-  min-height: 48px;
+  min-height: 42px;
 }
 
 #if-body .lf-if-col-left .lf-if-fieldset:has(#itemPreviewLarge),
@@ -366,9 +365,9 @@
 }
 
 #if-body .lf-if-template-wrapper {
-  flex: 0 0 82px;
-  width: 82px;
-  min-width: 82px;
+  flex: 0 0 103px;
+  width: 103px;
+  min-width: 103px;
 }
 
 /* Qualities category dropdown */
@@ -389,9 +388,9 @@
 }
 
 #if-body #templateList {
-  width: 82px;
-  min-width: 82px;
-  max-width: 82px;
+  width: 103px;
+  min-width: 103px;
+  max-width: 103px;
   height: 100px;
   min-height: 100px;
   max-height: 100px;
@@ -637,7 +636,8 @@
   font-size: 14px;
   display: inline-flex;
   align-items: center;
-  height: 25px;
+  height: 22px;
+  min-height: 22px;
 }
 
 #if-body #costValue {
