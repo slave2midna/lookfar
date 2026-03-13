@@ -430,15 +430,30 @@
 
 #if-body #attrInner {
   display: flex;
-  gap: 8px;
   align-items: center;
+  justify-content: center;
+  gap: 6px;
   flex-wrap: nowrap;
+  width: 100%;
+  text-align: center;
 }
 
-#if-body #attrInner label {
+#if-body .lf-if-attr-bracket,
+#if-body .lf-if-attr-plus {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#if-body .lf-if-attr-bracket {
+  font-size: 16px;
+}
+
+#if-body .lf-if-attr-plus {
+  font-size: 13px;
 }
 
 #if-body .lf-if-select-medium {
