@@ -315,7 +315,7 @@
 
 #if-body .lf-if-col-left {
   flex: 0 0 auto;
-  width: 270px;
+  width: 230px;
 }
 
 #if-body .lf-if-col-right {
@@ -326,7 +326,7 @@
 /* Fixed fieldset widths by column */
 #if-body .lf-if-col-left .lf-if-fieldset,
 #if-body .lf-if-col-left #attrRow {
-  width: 270px;
+  width: 230px;
   box-sizing: border-box;
 }
 
@@ -338,7 +338,7 @@
 /* Matching fieldset heights */
 #if-body .lf-if-col-left .lf-if-fieldset:first-child,
 #if-body .lf-if-col-right .lf-if-fieldset:first-child {
-  min-height: 118px;
+  min-height: 132px;
 }
 
 #if-body #attrRow .lf-if-fieldset,
@@ -372,7 +372,7 @@
 
 /* Qualities category dropdown */
 #if-body .lf-if-qualities-select {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 /* ========================================================================== */
@@ -634,15 +634,19 @@
 
 #if-body #costRow {
   font-size: 14px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 10px;
   height: 22px;
   min-height: 22px;
+  width: 100%;
+  text-align: center;
 }
 
 #if-body #costValue {
   width: 4ch;
-  text-align: left;
+  text-align: center;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -651,10 +655,12 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
+  gap: 4px;
+  margin-left: 6px;
 }
 
 #if-body #optFee {
-  margin-right: 4px;
+  margin-right: 0;
 }
 
 /* ========================================================================== */
@@ -666,6 +672,7 @@
   filter: grayscale(1) !important;
   cursor: not-allowed !important;
 }
+
 
 /* ========================================================================== */
 /* 6) Lookfar – Dungeon Mapper                                                */
