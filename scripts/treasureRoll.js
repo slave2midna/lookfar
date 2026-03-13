@@ -657,10 +657,7 @@ function initializeTreasureResultDialog(dialog, { needsWide = false } = {}) {
 
   const $dlg = html.closest(".application");
   if (needsWide) {
-    $dlg.css({
-      width: "500px",
-      "max-width": "500px"
-    });
+    // remove max width. <--- temp replacement
   }
 
   const $wc = $dlg.find(".window-content");
