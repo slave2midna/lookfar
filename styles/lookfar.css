@@ -177,8 +177,7 @@
 
 #lookfar-treasure-gen .lf-tr-select {
   flex: 0 0 auto;
-  min-width: 4.5em;
-  width: auto;
+  min-width: 10em;
   box-sizing: border-box;
 }
 
