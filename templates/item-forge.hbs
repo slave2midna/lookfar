@@ -1,7 +1,7 @@
 {{!-- modules/lookfar/templates/item-forge.hbs --}}
 
 <div id="if-body">
-  <form>
+  <div class="lf-if-form">
     <div class="lf-if-layout">
 
       {{!-- Left Column: Item selection, attributes, preview --}}
@@ -47,7 +47,7 @@
               {{!-- Always present, JS will show/hide --}}
               <label>
                 {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.AttrA"}}
-                <select id="optAttrA" style="max-width:160px;">
+                <select id="optAttrA" class="lf-if-select-medium">
                   <option value="MIG">{{localize "LOOKFAR.Terms.Attributes.MIG"}}</option>
                   <option value="DEX">{{localize "LOOKFAR.Terms.Attributes.DEX"}}</option>
                   <option value="INS">{{localize "LOOKFAR.Terms.Attributes.INS"}}</option>
@@ -57,7 +57,7 @@
 
               <label>
                 {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.AttrB"}}
-                <select id="optAttrB" style="max-width:160px;">
+                <select id="optAttrB" class="lf-if-select-medium">
                   <option value="MIG">{{localize "LOOKFAR.Terms.Attributes.MIG"}}</option>
                   <option value="DEX">{{localize "LOOKFAR.Terms.Attributes.DEX"}}</option>
                   <option value="INS">{{localize "LOOKFAR.Terms.Attributes.INS"}}</option>
@@ -87,7 +87,7 @@
           <div id="customizeArea" class="lf-if-customize">
 
             {{!-- Weapon-only customize options --}}
-            <div id="weaponCustomize" style="display:flex; flex-direction:column; gap:4px;">
+            <div id="weaponCustomize" class="lf-if-weapon-customize">
 
               <label>
                 <input type="checkbox" id="optPlusOne">
@@ -99,14 +99,14 @@
                 <span>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.PlusFourDamage"}}</span>
               </label>
 
-              <label id="handToggleWrap" style="display:none;">
+              <label id="handToggleWrap" class="lf-if-hand-toggle">
                 <input type="checkbox" id="optToggleHand">
                 <span id="handToggleLabel"></span>
               </label>
 
               <label>
                 {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.Element"}}
-                <select id="optElement" style="max-width:160px;">
+                <select id="optElement" class="lf-if-select-medium">
                   <option value="physical" selected>{{localize "LOOKFAR.Terms.Element.Physical"}}</option>
                   <option value="fire">{{localize "LOOKFAR.Terms.Element.Fire"}}</option>
                   <option value="ice">{{localize "LOOKFAR.Terms.Element.Ice"}}</option>
@@ -122,7 +122,7 @@
             </div>
 
             {{!-- Non-weapon fallback --}}
-            <div id="noCustomize" style="opacity:0.8; display:none;">
+            <div id="noCustomize" class="lf-if-no-customize">
               {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Customize.NoOptions"}}
             </div>
 
@@ -134,7 +134,7 @@
           <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Legend"}}</legend>
 
           <div class="lf-if-qualities-select">
-            <select id="qualitiesCategory" style="width: 100%;">
+            <select id="qualitiesCategory" class="lf-if-select-full">
               <option value="none" selected>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Options.None"}}</option>
               <option value="basic">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Options.Basic"}}</option>
               <option value="custom">{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Options.Custom"}}</option>
@@ -159,18 +159,16 @@
             <div id="qualitiesStandardBlock"></div>
 
             {{!-- CUSTOM QUALITY BLOCK --}}
-            <div id="qualitiesCustomBlock" style="display:none; padding:6px;">
+            <div id="qualitiesCustomBlock" class="lf-if-qualities-custom-block">
 
               <textarea id="customEffect"
                 rows="2"
                 wrap="soft"
-                style="width:100%; height:44px; box-sizing:border-box; resize:none; overflow-y:auto;"
-                title="{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Tooltip.Effect"}}">
-              </textarea>
+                class="lf-if-custom-effect"
+                title="{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Tooltip.Effect"}}"></textarea>
 
-              <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
-                <label for="customCost"
-                       style="font-size:12px; opacity:0.8; line-height:1; white-space:nowrap;">
+              <div class="lf-if-custom-cost-row">
+                <label for="customCost" class="lf-if-custom-cost-label">
                   {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.CostLabel"}}
                 </label>
                 <input id="customCost"
@@ -180,12 +178,11 @@
                        inputmode="numeric"
                        pattern="\\d*"
                        value="0"
-                       style="width:100%; height:25px; box-sizing:border-box;"
+                       class="lf-if-custom-cost-input"
                        title="{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Tooltip.Cost"}}">
               </div>
 
-              <button type="button" id="customApply"
-                style="width:auto; height:28px; margin:4px auto 0; padding:0 10px;">
+              <button type="button" id="customApply" class="lf-if-custom-apply">
                 {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Qualities.Custom.Button"}}
               </button>
 
@@ -221,5 +218,5 @@
       </div>
     </fieldset>
 
-  </form>
+  </div>
 </div>
