@@ -137,11 +137,117 @@
 /* 3) Lookfar Treasure Roll Dialog                                            */
 /* ========================================================================== */
 
+#lookfar-treasure-gen {
+  display: flex;
+  width: 100%;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen #genOptions {
+  flex: 1 1 40%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen .lf-tr-budget-row {
+  margin-bottom: 0.5em;
+  width: 100%;
+}
+
+#lookfar-treasure-gen .lf-tr-budget-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen .lf-tr-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+#lookfar-treasure-gen .lf-tr-label {
+  flex: 0 0 35%;
+  padding-right: 0.5em;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen .lf-tr-select {
+  flex: 1 1 65%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 #lookfar-treasure-gen #highestPCLevel,
 #lookfar-treasure-gen #origin,
 #lookfar-treasure-gen #nature {
   width: auto;
   min-width: 4.5em;
+}
+
+#lookfar-treasure-gen .lf-tr-count-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1 1 65%;
+  min-width: 0;
+}
+
+#lookfar-treasure-gen .lf-tr-count-btn {
+  width: 2em;
+  height: 2em;
+}
+
+#lookfar-treasure-gen .lf-tr-count-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#lookfar-treasure-gen #lootOptions {
+  flex: 1 1 60%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+#lookfar-treasure-gen .lf-tr-header-options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75em;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid var(--color-border-light, #8882);
+  padding-bottom: 0.25em;
+}
+
+#lookfar-treasure-gen .lf-tr-inline-option {
+  white-space: nowrap;
+  font-weight: normal;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+}
+
+#lookfar-treasure-gen .lf-tr-checkbox-columns {
+  display: flex;
+  min-width: 0;
+}
+
+#lookfar-treasure-gen .lf-tr-checkbox-group {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+#lookfar-treasure-gen .lf-tr-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  margin-bottom: 0.5em;
 }
 
 
