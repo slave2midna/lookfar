@@ -139,14 +139,14 @@
 
 #lookfar-treasure-gen {
   display: flex;
-  width: 100%;
+  width: auto;
   flex-wrap: nowrap;
   gap: 0.25rem;
   box-sizing: border-box;
 }
 
 #lookfar-treasure-gen #genOptions {
-  flex: 1 1 40%;
+  flex: 0 0 auto;
   min-width: 0;
   box-sizing: border-box;
 }
@@ -186,7 +186,7 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  flex: 1 1 65%;
+  flex: 0 0 auto;
   min-width: 0;
 }
 
@@ -203,7 +203,7 @@
 }
 
 #lookfar-treasure-gen #lootOptions {
-  flex: 1 1 60%;
+  flex: 0 0 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
