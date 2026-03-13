@@ -149,6 +149,7 @@ async function showTravelCheckDialog() {
           localStorage.setItem("lookfar-treasureHunterLevel", treasureHunterLevel);
           localStorage.setItem("lookfar-wellTraveled", wellTraveled);
 
+          await dialog.close();
           await handleRoll(selectedDifficulty, html);
         },
       },
@@ -668,3 +669,4 @@ async function generateDiscovery(groupLevel, { showEffect = true } = {}) {
     keywords,
   };
 }
+
