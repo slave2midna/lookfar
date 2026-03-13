@@ -169,22 +169,17 @@
 }
 
 #lookfar-treasure-gen .lf-tr-label {
-  flex: 0 0 35%;
+  flex: 0 0 auto;
   padding-right: 0.5em;
   box-sizing: border-box;
+  white-space: nowrap;
 }
 
 #lookfar-treasure-gen .lf-tr-select {
-  flex: 1 1 65%;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-#lookfar-treasure-gen #highestPCLevel,
-#lookfar-treasure-gen #origin,
-#lookfar-treasure-gen #nature {
-  width: auto;
+  flex: 0 0 auto;
   min-width: 4.5em;
+  width: auto;
+  box-sizing: border-box;
 }
 
 #lookfar-treasure-gen .lf-tr-count-controls {
