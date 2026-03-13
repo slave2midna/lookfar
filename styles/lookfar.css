@@ -5,14 +5,14 @@
  *   2) Travel Result Dialog
  *   3) Treasure Roll Dialog
  *   4) Treasure Result Dialog
- *   5) Item Forger (main + mini)
+ *   5) Item Forger
  *   6) Dungeon Mapper
  *   7) Conflict Builder
  * ========================================================================== */
 
 
 /* ========================================================================== */
-/* 1) Lookfar Travel Check Dialog                                             */
+/* 1) Travel Check                                                            */
 /* ========================================================================== */
 
 #lookfar-travel-check {
@@ -79,7 +79,7 @@
 
 
 /* ========================================================================== */
-/* 2) Lookfar Travel Result Dialog                                            */
+/* 2) Travel Result                                                           */
 /* ========================================================================== */
 
 #lookfar-travel-result .travel-result-body {
@@ -134,7 +134,7 @@
 
 
 /* ========================================================================== */
-/* 3) Lookfar Treasure Roll Dialog                                            */
+/* 3) Treasure Roll                                                           */
 /* ========================================================================== */
 
 #lookfar-treasure-gen {
@@ -254,7 +254,7 @@
 }
 
 /* ========================================================================== */
-/* 4) Lookfar Treasure Result Dialog                                          */
+/* 4) Treasure Result                                                         */
 /* ========================================================================== */
 
 /* Intentionally minimal for now; result layout is primarily handled inline
@@ -294,6 +294,13 @@
   min-width: 0;
 }
 
+/* Dialog markers */
+.application.lf-if-main-dialog,
+.application.lf-if-mini-dialog {
+  box-sizing: border-box;
+}
+
+
 /* ========================================================================== */
 /* 5a) Updated FORGE Layout                                                   */
 /* ========================================================================== */
@@ -325,6 +332,7 @@
   display: flex;
   gap: 8px;
   align-items: flex-start;
+  min-width: 0;
 }
 
 #if-body .lf-if-item-types {
@@ -333,11 +341,16 @@
 
 #if-body .lf-if-template-wrapper {
   flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* Qualities category dropdown */
 #if-body .lf-if-qualities-select {
   margin-bottom: 4px;
+}
+
+#if-body .lf-if-hidden {
+  display: none !important;
 }
 
 
@@ -368,14 +381,16 @@
   user-select: none;
 }
 
-.if-template:hover,
-.if-quality:hover {
-  background-color: rgba(0,0,0,0.1);
+.if-template.lf-if-hover,
+.if-quality.lf-if-hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .if-template[data-selected="1"],
-.if-quality[data-selected="1"] {
-  background-color: rgba(65,105,225,1);
+.if-template.lf-if-selected,
+.if-quality[data-selected="1"],
+.if-quality.lf-if-selected {
+  background-color: rgba(65, 105, 225, 1);
   color: white;
 }
 
@@ -489,8 +504,13 @@
   box-sizing: border-box;
 }
 
-.if-muted { opacity: 0.7; }
-.if-tight { letter-spacing: 0.2px; }
+.if-muted {
+  opacity: 0.7;
+}
+
+.if-tight {
+  letter-spacing: 0.2px;
+}
 
 
 /* ========================================================================== */
@@ -519,13 +539,17 @@
   cursor: pointer;
 }
 
+#materialsDrop.lf-if-materials-drop.lf-if-drop-active {
+  background: rgba(65, 105, 225, 0.08);
+}
+
+#materialsDrop.lf-if-materials-drop.lf-if-materials-invalid {
+  border-color: red;
+}
+
 #materialsHint.lf-if-materials-hint {
   opacity: 0.6;
   font-size: 12px;
-}
-
-#lookfar-itemforge-mini #materialsDrop {
-  min-height: 96px;
 }
 
 
@@ -557,12 +581,18 @@
   margin-right: 4px;
 }
 
+button[data-action="forge"].lf-if-forge-disabled {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
 
 /* ========================================================================== */
 /* 5g) Disabled / Locked State                                                */
 /* ========================================================================== */
 
-.lf-if-disabled {
+.lf-if-disabled,
+.lf-if-control-disabled {
   opacity: 0.5 !important;
   filter: grayscale(1) !important;
   cursor: not-allowed !important;
