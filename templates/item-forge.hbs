@@ -49,28 +49,25 @@
             <legend>{{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.Legend"}}</legend>
 
             <div id="attrInner" class="lf-if-attr-inner">
+              <span class="lf-if-attr-bracket">(</span>
 
-              {{!-- Always present, JS will show/hide --}}
-              <label>
-                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.AttrA"}}
-                <select id="optAttrA" class="lf-if-select-medium">
-                  <option value="MIG">{{localize "LOOKFAR.Terms.Attributes.MIG"}}</option>
-                  <option value="DEX">{{localize "LOOKFAR.Terms.Attributes.DEX"}}</option>
-                  <option value="INS">{{localize "LOOKFAR.Terms.Attributes.INS"}}</option>
-                  <option value="WLP">{{localize "LOOKFAR.Terms.Attributes.WLP"}}</option>
-                </select>
-              </label>
+              <select id="optAttrA" class="lf-if-select-medium">
+                <option value="MIG">{{localize "LOOKFAR.Terms.Attributes.MIG"}}</option>
+                <option value="DEX">{{localize "LOOKFAR.Terms.Attributes.DEX"}}</option>
+                <option value="INS">{{localize "LOOKFAR.Terms.Attributes.INS"}}</option>
+                <option value="WLP">{{localize "LOOKFAR.Terms.Attributes.WLP"}}</option>
+              </select>
 
-              <label>
-                {{localize "LOOKFAR.ItemForge.Dialogs.ItemForge.Attributes.AttrB"}}
-                <select id="optAttrB" class="lf-if-select-medium">
-                  <option value="MIG">{{localize "LOOKFAR.Terms.Attributes.MIG"}}</option>
-                  <option value="DEX">{{localize "LOOKFAR.Terms.Attributes.DEX"}}</option>
-                  <option value="INS">{{localize "LOOKFAR.Terms.Attributes.INS"}}</option>
-                  <option value="WLP">{{localize "LOOKFAR.Terms.Attributes.WLP"}}</option>
-                </select>
-              </label>
+              <span class="lf-if-attr-plus">+</span>
 
+              <select id="optAttrB" class="lf-if-select-medium">
+                <option value="MIG">{{localize "LOOKFAR.Terms.Attributes.MIG"}}</option>
+                <option value="DEX">{{localize "LOOKFAR.Terms.Attributes.DEX"}}</option>
+                <option value="INS">{{localize "LOOKFAR.Terms.Attributes.INS"}}</option>
+                <option value="WLP">{{localize "LOOKFAR.Terms.Attributes.WLP"}}</option>
+              </select>
+
+              <span class="lf-if-attr-bracket">)</span>
             </div>
           </fieldset>
         </div>
