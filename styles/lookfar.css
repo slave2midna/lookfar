@@ -70,6 +70,11 @@
   gap: 4px;
 }
 
+#lookfar-travel-check #groupLevel {
+  width: auto;
+  min-width: 4.5em;
+}
+
 
 /* ========================================================================== */
 /* 2) Lookfar Travel Result Dialog                                            */
