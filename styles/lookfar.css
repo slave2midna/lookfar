@@ -182,6 +182,14 @@
   box-sizing: border-box;
 }
 
+#lookfar-treasure-gen .lf-tr-disabled-label {
+  opacity: 0.5;
+}
+
+#lookfar-treasure-gen .lf-tr-disabled-field {
+  opacity: 0.5;
+}
+
 #lookfar-treasure-gen .lf-tr-count-controls {
   display: flex;
   align-items: center;
@@ -244,7 +252,6 @@
   gap: 0.25em;
   margin-bottom: 0.5em;
 }
-
 
 /* ========================================================================== */
 /* 4) Lookfar Treasure Result Dialog                                          */
