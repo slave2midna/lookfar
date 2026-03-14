@@ -1,1 +1,401 @@
-{}
+{
+  "LOOKFAR": {
+    "__SECTION__Buttons": "=== Botões ===",
+    "Button": {
+      "TravelCheck": {
+        "Name": "Teste de Viagem",
+        "Title": "Realizar um Teste de Viagem"
+      },
+      "TreasureRoll": {
+        "Name": "Rolagem de Tesouro",
+        "Title": "Gere algum tesouro"
+      },
+      "DungeonBuilder": {
+        "Name": "Mapeador de Dungeon",
+        "Title": "Mapeie uma Dungeon"
+      },
+      "ConflictBuilder": {
+        "Name": "Construtor de Conflitos",
+        "Title": "Crie um Conflito"
+      },
+      "ItemForger": {
+        "Name": "Forja de Itens",
+        "Title": "Forja um Item"
+      }
+    },    
+    "__SECTION__Settings": "=== Configurações ===",
+    "Settings": {
+      "ResultVisibility": {
+        "Name": "Visibilidade de Resultados",
+        "Hint": "Escolha se os resultados e chats serão públicos ou disponíveis apenas para o Narrador",
+        "Choices": {
+          "Public": "Público",
+          "GMOnly": "Apenas Narrador"
+        }
+      },
+      "ItemForgeEditMode": {
+        "Name": "Modo de Edição da Forja de Itens",
+        "Hint": "Muda como interagir com a Forja de Itens funciona para os usuários.",
+        "Choices": {
+          "Public": "Público",
+          "GMOnly": "Apenas Narrador",
+          "Locked": "Trancado",
+          "Hidden": "Escondido"
+        }
+      },
+      "EnableKeywords": {
+        "Name": "Habilitar Palavras-Chave",
+        "Hint": "Habilitar Palavras-Chave quando gerar resultados de Testes de Viagem."
+      },
+      "UseVariantTravelRules": {
+        "Name": "Usar as Regras Variantes de Viagem.",
+        "Hint": "Configuração Placeholder: Ativa as mecânicas de viagem alternativas (atualmente sem uso)."
+      },
+      "UseVariantDamageRules": {
+        "Name": "Usar as Regras de Dano do Playtest",
+        "Hint": "Ao gerar novas armas, o dano será baseado nas novas regras do Playtest."
+      },
+      "DiscoveryEffectTable": {
+        "Name": "Tabela de Descobertas (Efeitos)",
+        "Hint": "Selecione a tabela a ser usada para gerar efeitos de descoberta."
+      },
+      "DiscoverySourceTable": {
+        "Name": "Tabela de Descobertas (Fontes)",
+        "Hint": "Selecione a tabela a ser usada para gerar as fontes de descoberta."
+      },
+      "DangerEffectTable": {
+        "Name": "Tabela de Perigos (Efeitos)",
+        "Hint": "Selecione a tabela a ser usada para gerar efeitos de perigo."
+      },
+      "DangerSourceTable": {
+        "Name": "Tabela de Perigos (Fontes)",
+        "Hint": "Selecione a tabela a ser usada para gerar as fontes de perigo."
+      },
+      "CustomTreasureRollTable": {
+        "Name": "Tabela de Tesouro Personalizado",
+        "Hint": "Selecione a tabela a ser usada para gerar tesouros personalizados."
+      },
+      "MonsterCompendium": {
+        "Name": "Compêndio de Monstros",
+        "Hint": "Selecione o compêndio de atores a ser usado como fonte para o Construtor de Conflitos."
+      },
+      "BattleSceneName": {
+        "Name": "Cena de Batalha",
+        "Hint": "Selecione a Cena a ser usada para a pré-visualização do Construtor de Conflitos."
+      },
+      "DefaultRollTable": "Padrões Lookfar",
+      "NoActorCompendiums": "Não foram encontrados compêndios de atores.",
+      "NoScenes": "Nenhuma cena encontrada"
+    },   
+    "__SECTION__Terms": "=== Termos ===",
+    "Terms": {
+      "Common": {
+        "Zenit": "Zênite",
+        "Martial": "Marcial",
+        "Non-Martial": "Não-Marcial",
+		"Melee": "Corpo-a-Corpo",
+        "Ranged": "à Distância",
+        "One-Handed": "de Uma-Mão",
+        "Two-Handed": "de Duas-Mãos"
+      },
+      "Attributes": {
+        "MIG": "VIG",
+        "DEX": "DES",
+        "WLP": "VON",
+        "INS": "AST",
+        "INIT": "INIC",
+        "MDEF": "DEF M.",
+        "DEF": "DEF",
+        "HR": "RA"
+      },	  
+      "Element": {
+        "Physical": "Físico",
+        "Fire": "Fogo",
+        "Ice": "Gelo",
+        "Earth": "Terra",
+        "Air": "Ar",
+        "Bolt": "Raio",
+        "Dark": "Trevas",
+        "Light": "Luz",
+        "Poison": "Veneno"
+      },
+      "Origin": {
+        "Aerial": "Aéreo",
+        "Thunderous": "Trovejante",
+        "Paradox": "Paradoxal",
+        "Terrestrial": "Terrestre",
+        "Ardent": "Ardente",
+        "Glacial": "Glacial",
+        "Spiritual": "Espiritual",
+        "Corrupted": "Corrompido",
+        "Aquatic": "Aquático",
+        "Mechanical": "Mecânico"
+      },
+      "Nature": {
+        "Anthropod": "Artrópode",
+        "Bird": "Pássaro",
+        "Fish": "Peixe",
+        "Mammal": "Mamífero",
+        "Mollusk": "Molusco",
+        "Reptile": "Réptil",
+        "Fungus": "Fungo",
+        "Incorporeal": "Incorpóreo",
+        "Liquid": "Líquido",
+        "Artificial": "Artificial",
+        "Mineral": "Mineral",
+        "Plant": "Planta"		
+      },
+      "Category": {
+        "Arcane": "Arcana",
+        "Bow": "Arco",
+        "Brawling": "Luta",
+        "Dagger": "Adaga",
+        "Firearm": "Arma de Fogo",
+        "Flail": "Malho",
+        "Heavy": "Pesada",
+        "Spear": "Lança",
+        "Sword": "Espada",
+        "Thrown": "de Arremesso"
+      }
+		},    
+    "__SECTION__TravelCheck": "=== Teste de Viagem ===",
+    "TravelCheck": {
+      "Dialogs": {
+        "TravelCheck": {
+          "Title": "Teste de Viagem",
+          "ThreatLevel": "Nível de Ameaça",
+          "Wayfaring": "Viagem",
+          "PartyLevel": "Nível do Grupo:",
+          "TreasureHunting": "Caça ao Tesouro",
+          "WellTraveled": "Viajante Experiente",
+          "Difficulty": {
+            "Minimal": "Mínimo",
+            "Low": "Baixo",
+            "Medium": "Médio",
+            "High": "Alto",
+            "VeryHigh": "Muito Alto"
+          }
+        },
+        "TravelResult": {
+          "Title": "Resultado da Viagem",
+          "Prompt": "Você quer manter esse resultado ou prefere re-rolar?",
+          "Waiting": "Aguardando a decisão do Narrador..",
+          "NoIncident": "O dia de viagem passou sem nenhum incidente.",
+          "Result": {
+            "Danger": "Perigo!",
+            "Discovery": "Descoberta!"
+          },
+          "Severity": {
+            "MinorDanger": "Perigo Menor!",
+            "MajorDanger": "Perigo Maior!",
+            "MinorDiscovery": "Descoberta Menor!",
+            "MajorDiscovery": "Descoberta Maior!"
+          },
+          "TableHeaders": {
+            "Source": "Fonte",
+            "Effect": "Efeito",
+            "Traits": "Traços",
+            "Terrain": "Terreno"
+          }
+        }
+      },
+      "Chat": {
+        "Alias": {
+          "Roll": "Rolagem de Viagem",
+          "Result": "Resultado da Viagem"
+        }
+      },
+      "Errors": {
+        "DataUnavailable": "Dados não disponíveis.",
+        "NoDangerEffect": "Nenhum efeito de perigo disponível.",
+        "NoDangerSource": "Nenhuma fonte de perigo disponível.",
+        "NoDiscoveryEffect": "Nenhum efeito de descoberta disponível.",
+        "NoDiscoverySource": "Nenhuma fonte de descoberta disponível."
+      }
+    },    
+    "__SECTION__TreasureRoll": "=== Rolagem de Tesouro ===",
+    "TreasureRoll": {
+      "Dialogs": {
+        "TreasureRoll": {
+          "Title": "Gerador de Tesouro",
+          "IgnoreValues": "Ignorar orçamento/nível",
+          "SelectAll": "Selecionar tudo",
+          "Buttons": {
+            "RollLoot": "Rolar Saque"
+          },
+          "ItemType": {
+            "Weapon": "Arma",
+            "Armor": "Armadura",
+            "Shield": "Escudo",
+            "Accessory": "Acessório",
+            "Material": "Material",
+            "Ingredient": "Ingrediente",
+            "Currency": "Moeda",
+            "Custom": "Personalizado"
+          },
+          "Fields": {
+            "Budget": "Orçamento",
+            "Level": "Nível",
+            "Origin": "Origem",
+            "Nature": "Natureza",
+            "Items": "Itens",
+            "Random": "Aleatório"
+          }
+        },
+        "TreasureResult": {
+          "Title": "Resultados de Tesouro",
+          "BudgetRemainder": "Orçamento restante",
+          "Value": "Valor",
+          "NoQuality": "não tem propriedades especiais.",
+          "Buttons": {
+            "Keep": "Manter",
+            "Stash": "Guardar",
+            "Reroll": "Re-rolar"
+          }
+        }
+      },
+      "Sheets": {
+        "NamePatterns": {
+          "Material": "{nature} {origin} {detail}",
+          "Ingredient": "{nature} {origin} {taste}",
+          "Weapon": "{type} {element} {quality} {accuracyUp} {damageUp}",
+          "Armor": "{type} {quality}",
+          "Shield": "{type} {quality}",
+          "Accessory": "{type} {quality}"
+        },
+        "Stash": {
+          "DefaultName": "Nova Reserva #{num}",
+          "NamePrefix": "Nova Reserva #"
+        },
+        "Weapon": {
+          "Tokens": {
+            "AccuracyUp": "+1",
+            "DamageUp": "Obra-Prima"
+          },
+          "Prefix": {
+            "Base": "Uma arma do tipo {category}",
+            "Masterwork": "Uma arma Obra-Prima do tipo {category}"
+          }
+        },
+        "Summaries": {
+          "Ingredient": "Esse ingrediente tem um sabor {taste}.",
+          "Material": "material {nature} de origem {originLower}. Pode ser usado para fabricar itens {detail}.",
+          "Weapon": "{prefix} que {qualityText}",
+          "Armor": "Um conjunto de armadura {martialType} que {qualityText}",
+          "Shield": "Um escudo {martialType} que {qualityText}",
+          "Accessory": "Um acessório que {qualityText}"
+        }
+      },
+      "Chat": {
+        "Alias": "Resultado do Tesouro",
+        "CreatedStash": "{count} item(ns) foram criados em {stashLink}.",
+        "Deposited": "Foram depositados {amount} {currency} no depósito.",
+        "SkippedIngredients": "{count} ingrediente(s) foram ignorado(s), pois não podem ser armazenado(s) no depósito."
+      },
+      "Errors": {
+        "CustomTreasureTableMissing": "Nenhuma Tabela de Rolagem de Tesouro Personalizada selecionada nas configurações.",
+        "CustomTreasureTableNotFound": "A Tabela de Rolagem de Tesouro Personalizada selecionada não foi encontrada..",
+        "SkippedIngredientsWarning": "{count} ingrediente(s) ignorado(s): ingredientes ainda não podem ser adicionados a um depósito neste sistema.",
+        "NoLootGenerated": "Nenhum saque foi gerado."
+      }
+    },    
+    "__SECTION__ItemForge": "=== Forja de Itens ===",
+    "ItemForge": {
+      "Dialogs": {
+        "ItemForge": {
+          "Title": "Forja de Itens",
+          "MiniTitle": "Depósito de Materiais",
+          "Buttons": {
+            "Forge": "Forjar"
+          },
+          "ChooseItem": {
+            "Legend": "Escolher Item",
+            "Weapon": "Arma",
+            "Armor": "Armadura",
+            "Shield": "Escudo",
+            "Accessory": "Acessório"
+          },
+          "Attributes": {
+            "Legend": "Atributos"
+          },
+          "Customize": {
+            "Legend": "Personalizar",
+            "NoOptions": "Sem Opções",
+            "PlusOneAccuracy": "+1 Precisão",
+            "PlusFourDamage": "+4 de Dano",
+            "MakeOneHanded": "Tornar de Uma Mão",
+            "MakeTwoHanded": "Tornar de Duas Mãos",
+            "Element": "Elemento",
+            "Tooltip": {
+              "HandToggleRestricted": "Esta arma não pode mudar de empunhadura.",
+              "GMOnly": "Apenas o GM pode alterar esta opção.",
+              "PlusOneAlready": "Esta arma já possui pelo menos +1 de Precisão.",
+              "VariantDamageInfo": "O dano é escalonado a partir do valor do item. Esta opção está desativada."
+            }
+          },
+          "Qualities": {
+            "Legend": "Características",
+            "Options": {
+              "None": "Nenhuma",
+              "Basic": "Básicas",
+              "Custom": "Personalizadas"
+            },
+            "Custom": {
+              "CostLabel": "Custo",
+              "Tooltip": {
+                "Effect": "Digite o texto do seu efeito personalizado",
+                "Cost": "Insira um número inteiro não negativo"
+              },
+              "Button": "Aplicar"
+            }
+          },
+          "Preview": {
+            "Legend": "Pré-visualização"
+          },
+          "Cost": {
+            "Legend": "Custo",
+            "Fee": "Sem custo"
+          },
+          "Materials": {
+            "Legend": "Materiais",
+            "Hint": "Arraste e solte documentos de Item aqui (máx. 5).",
+            "RequireOriginHint": "É necessário pelo menos um material com origem \"{origin}\".",
+            "Tooltip": {
+              "Remove": "Clique para remover este material",
+              "RequestRemove": "Clique para solicitar a remoção deste material"
+            }
+          }
+        }
+      },
+      "Sheets": {
+        "NamePattern": {
+          "Weapon": "{type} Recém-Forjado",
+          "Armor": "{type} Recém-Forjado",
+          "Shield": "{type} Recém-Forjado",
+          "Accessory": "{type} Recém-Forjado"
+        },
+        "Summaries": {
+          "Weapon": "Uma arma do tipo {category} forjada com primor.",
+          "Armor": "Uma armadura {martialType} forjada com primor.",
+          "Shield": "Um escudo {martialType} forjado com primor.",
+          "Accessory": "Um acessório forjado com primor."
+        }
+      },
+      "Chat": {
+        "Forged": "Forjado: {name}"
+      },
+      "Errors": {
+        "NoTemplateSelected": "Nenhum modelo selecionado.",
+        "GenericForgeFailed": "A forja não pôde ser concluída.",
+        "CouldNotReadDrop": "Não foi possível ler os dados.",
+        "FilePickerOpen": "Não foi possível abrir o seletor de arquivos.",
+        "OnlyItems": "Apenas documentos do tipo Item podem ser usados como materiais.",
+        "OnlyTreasure": "Apenas itens do tipo Tesouro podem ser usados como materiais.",
+        "MaxMaterials": "Você não pode usar mais de 5 materiais.",
+        "NoMoreItem": "Você não pode usar este material mais vezes.",
+        "NotEnoughQuantity": "Não há cópias suficientes de {name}. Necessário: {need}; disponível: {have}.",
+        "ForgeFailed": "A forja falhou: {error}"
+      }
+    }
+  }
+}
