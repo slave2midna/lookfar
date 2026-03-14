@@ -154,9 +154,9 @@
         "Distinct": "Distinct"
       },
       "Detail": {
-        "Agility": "Sour",
-        "Recovery": "Savory",
-        "Powerful": "Sweet",
+        "Agility": "Agility",
+        "Recovery": "Recovery",
+        "Powerful": "Powerful",
         "Protective": "Protective",
         "Debilitating": "Debilitating",
         "Support": "Support"
