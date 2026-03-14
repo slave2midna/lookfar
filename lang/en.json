@@ -145,6 +145,22 @@
         "Mineral": "Mineral",
         "Plant": "Plant"
       },
+      "Taste": {
+        "Sour": "Sour",
+        "Savory": "Savory",
+        "Sweet": "Sweet",
+        "Bitter": "Bitter",
+        "Umami": "Umami",
+        "Distinct": "Distinct"
+      },
+      "Detail": {
+        "Agility": "Sour",
+        "Recovery": "Savory",
+        "Powerful": "Sweet",
+        "Protective": "Protective",
+        "Debilitating": "Debilitating",
+        "Support": "Support"
+      },
       "Category": {
         "Arcane": "Arcane",
         "Bow": "Bow",
