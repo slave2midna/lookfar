@@ -452,8 +452,7 @@
           "Rebitado",
           "Mecanizado",
           "Forjado",
-          "Energizado"
-        
+          "Energizado"        
         ]
       },
       "ingredient": {
@@ -662,7 +661,7 @@
         "Robusto",
         "Similar a Shoyu",
         "Suave",
-        "Completo"
+        "Complexo"
       ]
     },
     "element": {
@@ -709,9 +708,9 @@
       "knuckle": "Soqueira",
       "dagger": "Adaga",
       "pistol": "Pistola",
-      "whip": "Mangual",
+      "whip": "Chicote",
       "hammer": "Martelo",
-      "broadaxe": "Machadinha",
+      "broadaxe": "Machado Largo",
       "waraxe": "Machado de Guerra",
       "light-spear": "Lança Leve",
       "heavy-spear": "Lança Pesada",
@@ -723,13 +722,13 @@
 	  },
     "armor": {
       "silk-shirt": "Camisa",
-      "travel-garb": "Trajes",
+      "travel-garb": "Gabardina de Viagem",
       "combat-tunic": "Túnica",
-      "sage-robe": "Veste",
+      "sage-robe": "Manto do Sábio",
       "brigandine": "Brigandina",
       "bronze-plate": "Cota de Malha",
-      "runic-plate": "Couraça",
-      "steel-plate": "Armadura"
+      "runic-plate": "Couraça Rúnica",
+      "steel-plate": "Armadura de Aço"
 	  },
     "shield": {
       "bronze-shield": "Broquel",
@@ -1368,7 +1367,7 @@
         "Description": "causa 5 de dano extra durante a primeira rodada de um conflito."
       },
       "aerial-2": {
-        "Weapon": "Finesse",
+        "Weapon": "Refinada",
         "Description": "pode ser usada na mão inábil para lutar com duas armas, independentemente da categoria."
       },
       "aerial-3": {
@@ -1740,17 +1739,16 @@
   },
   "dangers": {
   "effects": [
-    "O grupo sofre dano leve.",
-    "O grupo sofre dano moderado.",
-    "O grupo sofre dano grave.",
-    "O grupo fica atordoado.",
-    "O grupo fica lento.",
-    "O grupo fica fraco.",
-    "O grupo fica envenenado.",
-    "O grupo fica enfurecido.",
-    "O grupo encontra um inimigo fácil.",
-    "O grupo encontra um inimigo desafiador.",
-    "O grupo encontra um inimigo mortal.",
+    "O grupo sofre {dmg} de dano.",
+    "O grupo sofre a condição abalado.",
+    "O grupo sofre a condição atordoado.",
+    "O grupo sofre a condição lento.",
+    "O grupo sofre a condição fraco.",
+    "O grupo sofre a condição envenenado.",
+    "O grupo sofre a condição enfurecido.",
+    "O grupo encontra uma batalha fácil.",
+    "O grupo encontra uma batalha desafiadora.",
+    "O grupo encontra uma batalha mortal.",
     "O grupo aciona um relógio de perigo de 4 etapas.",
     "O grupo aciona um relógio de perigo de 6 etapas.",
     "O grupo aciona um relógio de perigo de 8 etapas.",

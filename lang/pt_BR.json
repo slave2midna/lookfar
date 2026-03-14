@@ -23,8 +23,6 @@
         "Title": "Forja um Item"
       }
     },
-
-    
     "__SECTION__Settings": "=== Configurações ===",
     "Settings": {
       "ResultVisibility": {
@@ -89,14 +87,26 @@
       "NoActorCompendiums": "Não foram encontrados compêndios de atores.",
       "NoScenes": "Nenhuma cena encontrada"
     },
-
-    
-    "__SECTION__Terms": "=== Termos ===",
+    "__SECTION__Terms": "=== Termos===",
     "Terms": {
       "Common": {
         "Zenit": "Zênite",
         "Martial": "Marcial",
-        "Non-Martial": "Não-Marcial"
+        "Non-Martial": "Não-Marcial",
+        "Melee": "Corpo-a-Corpo",
+        "Ranged": "à Distância",
+        "One-Handed": "de Uma-Mão",
+        "Two-Handed": "de Duas-Mãos"
+      },
+      "Attributes": {
+        "MIG": "VIG",
+        "DEX": "DES",
+        "WLP": "VON",
+        "INS": "AST",
+        "INIT": "INIC",
+        "MDEF": "DEF M.",
+        "DEF": "DEF",
+        "HR": "RA"
       },
       "Element": {
         "Physical": "Físico",
@@ -132,11 +142,38 @@
         "Incorporeal": "Incorpóreo",
         "Liquid": "Líquido",
         "Artificial": "Artificial",
-        "Mineral": "Mineral"
+        "Mineral": "Mineral",
+        "Plant": "Planta"
+      },
+      "Taste": {
+        "Sour": "Azedo",
+        "Savory": "Salgado",
+        "Sweet": "Doce",
+        "Bitter": "Amargo",
+        "Umami": "Umami",
+        "Distinct": "Distinto"
+      },
+      "Detail": {
+        "Agility": "Ágil",
+        "Recovery": "Regenerativo",
+        "Powerful": "Poderoso",
+        "Protective": "Protetor",
+        "Debilitating": "Debilitante",
+        "Support": "de Suporte"
+      },
+      "Category": {
+        "Arcane": "Arcana",
+        "Bow": "Arco",
+        "Brawling": "Luta",
+        "Dagger": "Adaga",
+        "Firearm": "Arma de Fogo",
+        "Flail": "Malho",
+        "Heavy": "Pesada",
+        "Spear": "Lança",
+        "Sword": "Espada",
+        "Thrown": "de Arremesso"
       }
     },
-
-    
     "__SECTION__TravelCheck": "=== Teste de Viagem ===",
     "TravelCheck": {
       "Dialogs": {
@@ -165,9 +202,10 @@
             "Discovery": "Descoberta!"
           },
           "Severity": {
-            "Minor": "Menor",
-            "Heavy": "Maior",
-            "Massive": "Enorme"
+            "MinorDanger": "Perigo Menor!",
+            "MajorDanger": "Perigo Maior!",
+            "MinorDiscovery": "Descoberta Menor!",
+            "MajorDiscovery": "Descoberta Maior!"
           },
           "TableHeaders": {
             "Source": "Fonte",
@@ -191,8 +229,6 @@
         "NoDiscoverySource": "Nenhuma fonte de descoberta disponível."
       }
     },
-
-    
     "__SECTION__TreasureRoll": "=== Rolagem de Tesouro ===",
     "TreasureRoll": {
       "Dialogs": {
@@ -225,8 +261,6 @@
         "TreasureResult": {
           "Title": "Resultados de Tesouro",
           "BudgetRemainder": "Orçamento restante",
-          "Martial": "Marcial",
-          "NonMartial": "Não-Marcial",
           "Value": "Valor",
           "NoQuality": "não tem propriedades especiais.",
           "Buttons": {
@@ -281,8 +315,6 @@
         "NoLootGenerated": "Nenhum saque foi gerado."
       }
     },
-
-    
     "__SECTION__ItemForge": "=== Forja de Itens ===",
     "ItemForge": {
       "Dialogs": {
@@ -300,13 +332,7 @@
             "Accessory": "Acessório"
           },
           "Attributes": {
-            "Legend": "Atributos",
-            "AttrA": "Atr. A:",
-            "AttrB": "Atr. B:",
-            "MIG": "VIG",
-            "DEX": "DES",
-            "WLP": "VON",
-            "INS": "AST"
+            "Legend": "Atributos"
           },
           "Customize": {
             "Legend": "Personalizar",
@@ -340,20 +366,14 @@
             }
           },
           "Preview": {
-            "Legend": "Pré-visualização",
-            "One-Handed": "de uma mão",
-            "Two-Handed": "de duas mãos",
-            "INIT": "INIC",
-            "MDEF": "DEF M.",
-            "DEF": "DEF",
-            "HR": "RA"
+            "Legend": "Pré-visualização"
           },
           "Cost": {
             "Legend": "Custo",
             "Fee": "Sem custo"
           },
           "Materials": {
-            "Legend": "Materials",
+            "Legend": "Materiais",
             "Hint": "Arraste e solte documentos de Item aqui (máx. 5).",
             "RequireOriginHint": "É necessário pelo menos um material com origem \"{origin}\".",
             "Tooltip": {
@@ -371,10 +391,10 @@
           "Accessory": "{type} Recém-Forjado"
         },
         "Summaries": {
-          "Weapon": "Uma {category} forjada.",
-          "Armor": "Uma armadura {martialType} forjada.",
-          "Shield": "Um escudo {martialType} forjado.",
-          "Accessory": "Um acessório forjado."
+          "Weapon": "Uma arma do tipo {category} forjada com primor.",
+          "Armor": "Uma armadura {martialType} forjada com primor.",
+          "Shield": "Um escudo {martialType} forjado com primor.",
+          "Accessory": "Um acessório forjado com primor."
         }
       },
       "Chat": {

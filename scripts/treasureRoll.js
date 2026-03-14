@@ -726,7 +726,7 @@ async function renderTreasureResultDialog(items, budget, config) {
           featureType: "projectfu.ingredient",
           summary: {
             value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Ingredient", {
-              taste: data.taste
+              taste: lfTermLabel("Taste", data.taste)
             })
           },
           source: "LOOKFAR"
@@ -749,9 +749,9 @@ async function renderTreasureResultDialog(items, budget, config) {
           source: { value: "LOOKFAR" },
           summary: {
             value: lfFormatSummary("LOOKFAR.TreasureRoll.Sheets.Summaries.Material", {
-              nature: data.nature,
+              nature: lfTermLabel("Nature", data.nature),
               origin: lfTermLabel("Origin", data.origin),
-              detail: data.detail
+              detail: lfTermLabel("Detail", data.detail)
             })
           }
         }
