@@ -10,10 +10,6 @@
         "Name": "Rolagem de Tesouro",
         "Title": "Gere algum tesouro"
       },
-      "DungeonBuilder": {
-        "Name": "Mapeador de Dungeon",
-        "Title": "Mapeie uma Dungeon"
-      },
       "ConflictBuilder": {
         "Name": "Construtor de Conflitos",
         "Title": "Crie um Conflito"
