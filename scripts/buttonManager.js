@@ -35,13 +35,6 @@ function getLookfarTools() {
       onClick: () => Hooks.call("lookfarShowTreasureRollDialog")
     });
 
-    // Dungeon Builder Button
-    // tools.push({
-    //  name: "LOOKFAR.Button.DungeonBuilder.Name",
-    //  icon: "fa-solid fa-dungeon",
-    //  onClick: () => Hooks.call("lookfarShowDungeonMapperDialog")
-    // });
-
     // Conflict Builder Button
     // tools.push({
       // name: "LOOKFAR.Button.ConflictBuilder.Name",
@@ -51,7 +44,7 @@ function getLookfarTools() {
   }
 
   // ---------------------------------------------------------------------------
-  // Item Forger Button
+  // Item Forge Button
   // ---------------------------------------------------------------------------
   const mode = getItemForgeEditMode(); // "public" | "gmOnly" | "locked" | "hidden"
 
