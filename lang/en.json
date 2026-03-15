@@ -10,10 +10,6 @@
         "Name": "Treasure Roll",
         "Title": "Generate Some Treasure"
       },
-      "DungeonBuilder": {
-        "Name": "Dungeon Mapper",
-        "Title": "Map a Dungeon"
-      },
       "ConflictBuilder": {
         "Name": "Conflict Builder",
         "Title": "Create a Conflict"
