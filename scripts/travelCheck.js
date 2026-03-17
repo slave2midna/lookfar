@@ -92,7 +92,6 @@ function initializeTravelCheckDialog(dialog) {
   };
 
   const bindHandlers = () => {
-    // Treasure Hunter logic
     const stars = html.find("#treasureHunterLevel i");
     stars.off("click.lookfarTravel").on("click.lookfarTravel", function () {
       const clickedValue = Number($(this).data("value"));
@@ -109,7 +108,6 @@ function initializeTravelCheckDialog(dialog) {
       });
     });
 
-    // Well-Traveled checkbox logic
     html.find("#wellTraveled")
       .off("change.lookfarTravel")
       .on("change.lookfarTravel", (e) => {
@@ -119,9 +117,7 @@ function initializeTravelCheckDialog(dialog) {
 
   bindHandlers();
 
-  // Defer restoring values until the dialog has fully settled in the DOM
   requestAnimationFrame(() => {
-    // Restore previous values
     const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
     const savedTreasureHunterLevel = parseInt(
       localStorage.getItem("lookfar-treasureHunterLevel") || "0",
@@ -129,10 +125,8 @@ function initializeTravelCheckDialog(dialog) {
     );
     const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
 
-    // Restore Group Level dropdown
     html.find("#groupLevel").val(savedGroupLevel);
 
-    // Restore Treasure Hunter stars
     html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
     html.find("#treasureHunterLevel i").each(function () {
       const starVal = Number($(this).data("value"));
@@ -141,7 +135,12 @@ function initializeTravelCheckDialog(dialog) {
         .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
     });
 
-    // Restore Well-Traveled checkbox WITHOUT triggering a synthetic change event
+    // Set the default radio ONLY after first paint
+    const $radios = html.find('input[name="travelCheck"]');
+    $radios.prop("checked", false);
+    html.find('input[name="travelCheck"][value="d6"]').prop("checked", true);
+
+    // Restore Well-Traveled after first paint
     html.find("#wellTraveled").prop("checked", savedWellTraveled);
     applyWellTraveledDisplay(savedWellTraveled);
   });
