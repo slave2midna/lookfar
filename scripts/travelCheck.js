@@ -60,45 +60,7 @@ class TravelRolls {
 function initializeTravelCheckDialog(dialog) {
   const html = $(dialog.element);
 
-  // Restore previous values
-  const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
-  const savedTreasureHunterLevel = parseInt(
-    localStorage.getItem("lookfar-treasureHunterLevel") || "0"
-  );
-  const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
-
-  // Restore Group Level dropdown
-  html.find("#groupLevel").val(savedGroupLevel);
-
-  // Restore Treasure Hunter stars
-  html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
-  html.find("#treasureHunterLevel i").each(function () {
-    const starVal = Number($(this).data("value"));
-    $(this)
-      .removeClass("fa-solid fa-regular")
-      .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
-  });
-
-  // Treasure Hunter logic
-  const stars = html.find("#treasureHunterLevel i");
-  stars.on("click", function () {
-    const clickedValue = Number($(this).data("value"));
-    const currentValue = Number(html.find("#treasureHunterLevelInput").val());
-    const newValue = clickedValue === currentValue ? 0 : clickedValue;
-
-    html.find("#treasureHunterLevelInput").val(newValue);
-
-    stars.each(function () {
-      const starVal = Number($(this).data("value"));
-      $(this)
-        .removeClass("fa-solid fa-regular")
-        .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
-    });
-  });
-
-  // Well-Traveled checkbox logic
-  html.find("#wellTraveled").on("change", (e) => {
-    const isChecked = e.target.checked;
+  const applyWellTraveledDisplay = (isChecked) => {
     const diceMap = {
       d8: "d6",
       d10: "d8",
@@ -110,10 +72,62 @@ function initializeTravelCheckDialog(dialog) {
       const original = $(this).data("original");
       $(this).text(isChecked ? diceMap[original] || original : original);
     });
-  });
+  };
 
-  // Restore Well-Traveled checkbox and immediately trigger dice display update
-  html.find("#wellTraveled").prop("checked", savedWellTraveled).trigger("change");
+  const bindHandlers = () => {
+    // Treasure Hunter logic
+    const stars = html.find("#treasureHunterLevel i");
+    stars.off("click.lookfarTravel").on("click.lookfarTravel", function () {
+      const clickedValue = Number($(this).data("value"));
+      const currentValue = Number(html.find("#treasureHunterLevelInput").val());
+      const newValue = clickedValue === currentValue ? 0 : clickedValue;
+
+      html.find("#treasureHunterLevelInput").val(newValue);
+
+      stars.each(function () {
+        const starVal = Number($(this).data("value"));
+        $(this)
+          .removeClass("fa-solid fa-regular")
+          .addClass(starVal <= newValue ? "fa-solid" : "fa-regular");
+      });
+    });
+
+    // Well-Traveled checkbox logic
+    html.find("#wellTraveled")
+      .off("change.lookfarTravel")
+      .on("change.lookfarTravel", (e) => {
+        applyWellTraveledDisplay(e.currentTarget.checked);
+      });
+  };
+
+  bindHandlers();
+
+  // Defer restoring values until the dialog has fully settled in the DOM
+  requestAnimationFrame(() => {
+    // Restore previous values
+    const savedGroupLevel = localStorage.getItem("lookfar-groupLevel") || "5+";
+    const savedTreasureHunterLevel = parseInt(
+      localStorage.getItem("lookfar-treasureHunterLevel") || "0",
+      10
+    );
+    const savedWellTraveled = localStorage.getItem("lookfar-wellTraveled") === "true";
+
+    // Restore Group Level dropdown
+    html.find("#groupLevel").val(savedGroupLevel);
+
+    // Restore Treasure Hunter stars
+    html.find("#treasureHunterLevelInput").val(savedTreasureHunterLevel);
+    html.find("#treasureHunterLevel i").each(function () {
+      const starVal = Number($(this).data("value"));
+      $(this)
+        .removeClass("fa-solid fa-regular")
+        .addClass(starVal <= savedTreasureHunterLevel ? "fa-solid" : "fa-regular");
+    });
+
+    // Restore Well-Traveled checkbox WITHOUT triggering a synthetic change event
+    html.find("#wellTraveled").prop("checked", savedWellTraveled);
+    applyWellTraveledDisplay(savedWellTraveled);
+  });
 }
 
 async function showTravelCheckDialog() {
@@ -233,11 +247,11 @@ function buildResultData({
 
 function getVariantDangerOutcome(selectedDifficulty) {
   const majorChanceByThreat = {
-    d6: 0,     // Minimal => only Minor Danger
-    d8: 0.25,  // Low => leans Minor
-    d10: 0.5,  // Medium => 50/50
+    d6: 0, // Minimal => only Minor Danger
+    d8: 0.25, // Low => leans Minor
+    d10: 0.5, // Medium => 50/50
     d12: 0.75, // High => leans Major
-    d20: 1,    // Very High => only Major Danger
+    d20: 1, // Very High => only Major Danger
   };
 
   const majorChance = majorChanceByThreat[selectedDifficulty] ?? 0.5;
@@ -669,4 +683,3 @@ async function generateDiscovery(groupLevel, { showEffect = true } = {}) {
     keywords,
   };
 }
-
