@@ -10,6 +10,33 @@
  * ========================================================================== */
 
 
+/* ==========================================================================
+ * DialogV2 form control compatibility reset
+ * Let Foundry v13 control checkbox/radio rendering.
+ * ========================================================================== */
+
+#lookfar-travel-check input[type="checkbox"],
+#lookfar-travel-check input[type="radio"],
+#lookfar-treasure-gen input[type="checkbox"],
+#lookfar-treasure-gen input[type="radio"],
+#if-body input[type="checkbox"],
+#if-body input[type="radio"] {
+  transform: none !important;
+  margin: 0 !important;
+  vertical-align: middle !important;
+}
+
+/* Do not force label flex layout on labels that contain choice controls */
+#lookfar-travel-check td label,
+#lookfar-treasure-gen label,
+#if-body .lf-if-item-types label,
+#if-body #customizeArea label {
+  display: inline-block !important;
+  align-items: initial !important;
+  gap: 0 !important;
+}
+
+
 /* ========================================================================== */
 /* 1) Travel Check                                                            */
 /* ========================================================================== */
@@ -63,12 +90,6 @@
   font-size: 1.2em;
   white-space: nowrap;
   cursor: pointer;
-}
-
-#lookfar-travel-check td label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
 }
 
 #lookfar-travel-check #groupLevel {
@@ -252,6 +273,7 @@
   margin-bottom: 0.5em;
 }
 
+
 /* ========================================================================== */
 /* 4) Treasure Result                                                         */
 /* ========================================================================== */
@@ -293,6 +315,7 @@
   align-items: flex-start;
   min-width: 0;
 }
+
 
 /* ========================================================================== */
 /* 5a) Updated FORGE Layout                                                   */
@@ -364,16 +387,7 @@
 }
 
 #if-body .lf-if-item-types label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
   line-height: 1.1;
-}
-
-#if-body .lf-if-item-types input[type="radio"] {
-  margin: 0;
-  vertical-align: middle;
-  transform: none;
 }
 
 #if-body .lf-if-template-wrapper {
@@ -398,6 +412,7 @@
   padding-top: 0;
   padding-bottom: 0;
 }
+
 
 /* ========================================================================== */
 /* 5b) Template & Quality Lists                                               */
@@ -448,6 +463,7 @@
   background-color: rgba(65, 105, 225, 1);
   color: white;
 }
+
 
 /* ========================================================================== */
 /* 5c) Attributes / Customize                                                 */
@@ -506,17 +522,7 @@
 }
 
 #if-body #customizeArea label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   line-height: 1.1;
-}
-
-#if-body #customizeArea input[type="checkbox"] {
-  margin: 0;
-  vertical-align: middle;
-  transform: scale(0.9);
-  transform-origin: center;
 }
 
 #if-body .lf-if-weapon-customize {
@@ -533,6 +539,7 @@
   opacity: 0.8;
   display: none;
 }
+
 
 /* ========================================================================== */
 /* 5d) Preview Card                                                           */
@@ -627,6 +634,7 @@
   letter-spacing: 0.2px;
 }
 
+
 /* ========================================================================== */
 /* 5e) Materials Drop Zone (main + mini)                                      */
 /* ========================================================================== */
@@ -671,6 +679,7 @@
   min-height: 96px;
 }
 
+
 /* ========================================================================== */
 /* 5f) Cost Row                                                               */
 /* ========================================================================== */
@@ -705,6 +714,7 @@
 #if-body #optFee {
   margin-right: 0;
 }
+
 
 /* ========================================================================== */
 /* 5g) Disabled / Locked State                                                */
