@@ -9,26 +9,17 @@
           {{localize "LOOKFAR.TravelCheck.Dialogs.TravelCheck.ThreatLevel"}}
         </caption>
         <tbody>
-          {{!--
-            Expecting context:
-            travelChecks = [
-              { labelKey: "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.Minimal",  die: "d6"  },
-              { labelKey: "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.Low",      die: "d8"  },
-              { labelKey: "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.Medium",   die: "d10" },
-              { labelKey: "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.High",     die: "d12" },
-              { labelKey: "LOOKFAR.TravelCheck.Dialogs.TravelCheck.Difficulty.VeryHigh", die: "d20" }
-            ]
-          --}}
           {{#each travelChecks}}
             <tr>
               <td>
-                <label>
-                  <input
-                    type="radio"
-                    name="travelCheck"
-                    value="{{die}}"
-                    {{#if @first}}checked{{/if}}
-                  >
+                <input
+                  id="travelCheck-{{@index}}"
+                  type="radio"
+                  name="travelCheck"
+                  value="{{die}}"
+                  {{#if @first}}checked{{/if}}
+                >
+                <label for="travelCheck-{{@index}}">
                   {{localize labelKey}}
                   (
                     <span class="dice-display" data-original="{{die}}">
@@ -83,8 +74,8 @@
 
           <tr>
             <td>
-              <label>
-                <input type="checkbox" id="wellTraveled" name="wellTraveled">
+              <input type="checkbox" id="wellTraveled" name="wellTraveled">
+              <label for="wellTraveled">
                 {{localize "LOOKFAR.TravelCheck.Dialogs.TravelCheck.WellTraveled"}}
               </label>
             </td>
