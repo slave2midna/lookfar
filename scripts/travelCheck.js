@@ -2,6 +2,7 @@ import { dataLoader } from "./dataLoader.js";
 
 let _travelCheckDialog = null;
 let currentDialog = null;
+let _lookfarFontsReady = null;
 
 // Template paths (must match your module folder structure)
 const TRAVEL_CHECK_TEMPLATE = "modules/lookfar/templates/travel-check.hbs";
@@ -12,6 +13,22 @@ function generateUniqueList(list, minCount, maxCount) {
   const count = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
   const shuffled = list.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
+}
+
+async function ensureLookfarDialogFontsReady() {
+  if (_lookfarFontsReady) return _lookfarFontsReady;
+
+  _lookfarFontsReady = (async () => {
+    if (!document.fonts?.ready) return;
+
+    // Wait for currently pending fonts
+    await document.fonts.ready;
+
+    // Give the browser one paint after fonts settle
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  })();
+
+  return _lookfarFontsReady;
 }
 
 // -----------------------------------------------------------------------------
@@ -132,6 +149,8 @@ function initializeTravelCheckDialog(dialog) {
 
 async function showTravelCheckDialog() {
   console.log("Opening Travel Check dialog...");
+
+  await ensureLookfarDialogFontsReady();
 
   const travelChecks = Object.entries(TravelRolls.travelChecks).map(([labelKey, die]) => ({
     labelKey,
