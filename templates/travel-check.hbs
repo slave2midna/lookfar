@@ -17,7 +17,6 @@
                   type="radio"
                   name="travelCheck"
                   value="{{die}}"
-                  {{#if @first}}checked{{/if}}
                 >
                 <label for="travelCheck-{{@index}}">
                   {{localize labelKey}}
@@ -57,9 +56,9 @@
           <tr>
             <td class="lf-travel-th-row">
               <div class="lf-travel-treasure-row">
-                <label class="lf-travel-inline-label">
+                <span class="lf-travel-inline-label">
                   {{localize "LOOKFAR.TravelCheck.Dialogs.TravelCheck.TreasureHunting"}}:
-                </label>
+                </span>
 
                 <div id="treasureHunterLevel" class="lf-travel-stars">
                   <i class="fa-regular fa-star" data-value="1"></i>
