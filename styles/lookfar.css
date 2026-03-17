@@ -37,6 +37,47 @@
 }
 
 
+/* ==========================================================================
+ * DialogV2 reflow test
+ * Do not change checkbox/radio styling.
+ * Only relax outer layout constraints.
+ * ========================================================================== */
+
+/* Travel Check */
+#lookfar-travel-check .lf-travel-flex-row {
+  width: auto !important;
+  max-width: 100% !important;
+}
+
+/* Treasure Roll */
+#lookfar-treasure-gen {
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+}
+
+#lookfar-treasure-gen #genOptions,
+#lookfar-treasure-gen #lootOptions {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+}
+
+/* Item Forge */
+#if-body .lf-if-layout {
+  align-items: stretch !important;
+}
+
+#if-body .lf-if-col-left,
+#if-body .lf-if-col-right {
+  flex: 0 1 auto !important;
+}
+
+/* Temporarily disable :has()-driven height locking */
+#if-body .lf-if-col-left .lf-if-fieldset:has(#itemPreviewLarge),
+#if-body .lf-if-col-right .lf-if-fieldset:has(#qualitiesList) {
+  min-height: unset !important;
+}
+
+
 /* ========================================================================== */
 /* 1) Travel Check                                                            */
 /* ========================================================================== */
