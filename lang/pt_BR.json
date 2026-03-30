@@ -307,7 +307,6 @@
       "Errors": {
         "CustomTreasureTableMissing": "Nenhuma Tabela de Rolagem de Tesouro Personalizada selecionada nas configurações.",
         "CustomTreasureTableNotFound": "A Tabela de Rolagem de Tesouro Personalizada selecionada não foi encontrada..",
-        "SkippedIngredientsWarning": "{count} ingrediente(s) ignorado(s): ingredientes ainda não podem ser adicionados a um depósito neste sistema.",
         "NoLootGenerated": "Nenhum saque foi gerado."
       }
     },
