@@ -307,7 +307,6 @@
       "Errors": {
         "CustomTreasureTableMissing": "No Custom Treasure Roll Table selected in settings.",
         "CustomTreasureTableNotFound": "Selected Custom Treasure Roll Table not found.",
-        "SkippedIngredientsWarning": "Skipped {count} ingredient(s): ingredients can’t be added to a Stash in this system yet.",
         "NoLootGenerated": "No loot generated."
       }
     },
