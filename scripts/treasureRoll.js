@@ -471,21 +471,12 @@ async function rollCustom() {
 // Stash Creation
 // ------------------------------
 async function createStash(items, cacheFolder, currencyTotal = 0) {
-  // Identify ingredient items
-  const isIngredientItem = (it) => {
-    const ft = foundry.utils.getProperty(it, "system.featureType") ??
-      foundry.utils.getProperty(it, "system.data.featureType");
-    return it?.type === "classFeature" && ft === "projectfu.ingredient";
-  };
-
-  const stashableItems = items.filter(i => !isIngredientItem(i));
-  const skippedIngredients = items.filter(isIngredientItem);
-
   const allStashes = game.actors.filter(a => a.type === "stash");
   const prefix = game.i18n.localize("LOOKFAR.TreasureRoll.Sheets.Stash.NamePrefix");
   const esc = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp(`^${esc}(\\d+)$`, "i");
   let nextNum = 1;
+
   for (const a of allStashes) {
     const m = re.exec(a.name);
     if (m) {
@@ -493,6 +484,7 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
       if (!Number.isNaN(n) && n >= nextNum) nextNum = n + 1;
     }
   }
+
   const stashName = game.i18n.format("LOOKFAR.TreasureRoll.Sheets.Stash.DefaultName", { num: nextNum });
 
   const stash = await CONFIG.Actor.documentClass.create({
@@ -501,8 +493,8 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     img: "icons/svg/item-bag.svg"
   });
 
-  // Only embed stashable items
-  const embedded = stashableItems.map(i => {
+  // Embed all generated items, including ingredients
+  const embedded = items.map(i => {
     const data = i.toObject();
     delete data._id;
     delete data.folder;
@@ -521,20 +513,12 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
     });
   }
 
-  // Only delete from cache the items we actually stashed
-  const deletions = stashableItems
+  // Delete all cached source items after copying them into the stash
+  const deletions = items
     .filter(i => i?.folder?.id === cacheFolder.id)
     .map(i => i.delete());
-  if (deletions.length) await Promise.allSettled(deletions);
 
-  // Friendly warning when ingredients are skipped
-  if (skippedIngredients.length > 0) {
-    const skippedMsg = game.i18n.format(
-      "LOOKFAR.TreasureRoll.Errors.SkippedIngredientsWarning",
-      { count: skippedIngredients.length }
-    );
-    ui.notifications?.warn(skippedMsg);
-  }
+  if (deletions.length) await Promise.allSettled(deletions);
 
   // Build chat message
   const currencyName = lfCurrencyName();
@@ -550,12 +534,6 @@ async function createStash(items, cacheFolder, currencyTotal = 0) {
       amount: currencyTotal,
       currency: currencyName
     });
-  }
-
-  if (skippedIngredients.length > 0) {
-    content += "<br><em>" + game.i18n.format("LOOKFAR.TreasureRoll.Chat.SkippedIngredients", {
-      count: skippedIngredients.length
-    }) + "</em>";
   }
 
   await ChatMessage.create({
