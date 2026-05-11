@@ -479,8 +479,13 @@
 }
 
 #if-body .lf-if-custom-apply {
-  width: 100%;
+  align-self: center;
+  width: 70%;
   max-width: 100%;
+  min-height: 22px;
+  height: 24px;
+  line-height: 20px;
+  padding: 1px 6px;
   box-sizing: border-box;
 }
 
