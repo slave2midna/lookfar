@@ -727,8 +727,20 @@
   font-size: 12px;
 }
 
-#lookfar-itemforge-mini #materialsDrop {
-  min-height: 96px;
+.lf-if-mini-dialog #if-body,
+.lf-if-mini-dialog .lf-if-form,
+.lf-if-mini-dialog .lf-if-materials-fieldset {
+  width: 310px;
+  max-width: 310px;
+  box-sizing: border-box;
+}
+
+.lf-if-mini-dialog #materialsDrop.lf-if-materials-drop {
+  width: 100%;
+  min-width: 0;
+  min-height: 72px;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
 }
 
 /* ========================================================================== */
