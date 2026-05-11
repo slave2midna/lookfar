@@ -886,7 +886,11 @@ async function openMaterialsMiniDialog() {
             resizable: false
         },
         content,
-        buttons: []
+        buttons: [{
+            action: "close",
+            label: "Close",
+            icon: '<i class="fas fa-times"></i>'
+        }]
     });
 
     dlg.addEventListener("close", () => {
@@ -2093,7 +2097,11 @@ async function openItemForgeDialog() {
                 return false;
             }
         }
-    }] : [];
+    }] : [{
+        action: "close",
+        label: "Close",
+        icon: '<i class="fas fa-times"></i>'
+    }];
 
     const dlg = new foundry.applications.api.DialogV2({
         window: {
